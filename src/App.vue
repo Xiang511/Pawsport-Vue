@@ -7,14 +7,15 @@ import HelloWorld from './components/HelloWorld.vue'
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
+    <UPageCard
+      title="Tailwind CSS"
+      description="Nuxt UI integrates with latest Tailwind CSS, bringing significant improvements."
+      icon="i-simple-icons-tailwindcss"
+      orientation="horizontal"
+      spotlight
+      spotlight-color="primary"
+    >
+    </UPageCard>
   </header>
 
   <RouterView />
