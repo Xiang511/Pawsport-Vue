@@ -19,6 +19,7 @@ declare module 'vue' {
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Test: typeof import('./src/components/test.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     UAccordion: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Accordion.vue')['default']
     UPageCard: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageCard.vue')['default']
