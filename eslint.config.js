@@ -22,7 +22,7 @@ export default [
         'allowBinding': false // 是否允許 :style="{ color: 'red' }" 這種動態綁定，建議設為 false 或根據需求調整
       }],
       'vue/multi-word-component-names': 'off', // 允許 Home.vue
-      'no-unused-vars': 'warn',                // 沒用到的變數顯示警告
+      'no-unused-vars': 'off',                 // 隱藏未使用變數的警告
       'vue/no-v-html': 'warn',                // 使用 v-html 顯示警告，因為它可能導致 XSS 攻擊
       'vue/block-order': ['error', {
         'order': ['script', 'template', 'style']

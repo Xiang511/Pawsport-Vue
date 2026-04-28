@@ -1,11 +1,12 @@
 import { createApp } from 'vue'
 
-import ui from '@nuxt/ui/vue-plugin'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
-import './assets/main.css'
+import './assets/Tailadmin/main.css'
 import router from './router'
+
+// 現在從 ./router/index.js 導入
 
 const app = createApp(App)
 
