@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import Modal from './Modal.vue'
+import ProfileModal from './ProfileModal.vue'
 
 const isProfileInfoModal = ref(false)
 
@@ -133,7 +133,7 @@ const saveProfile = () => {
         </button>
       </div>
     </div>
-    <Modal v-if="isProfileInfoModal" @close="isProfileInfoModal = false">
+    <ProfileModal v-if="isProfileInfoModal" @close="isProfileInfoModal = false">
       <template #body>
         <div
           class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
@@ -320,6 +320,6 @@ const saveProfile = () => {
           </form>
         </div>
       </template>
-    </Modal>
+    </ProfileModal>
   </div>
 </template>

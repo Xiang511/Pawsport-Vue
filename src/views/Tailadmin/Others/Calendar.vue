@@ -7,7 +7,7 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import Modal from '@/components/Tailadmin/profile/Modal.vue'
+import ProfileModal from '@/components/Tailadmin/profile/ProfileModal.vue'
 
 const calendarRef = ref(null)
 const isOpen = ref(false)
@@ -163,7 +163,7 @@ const calendarOptions = reactive({
       </div>
 
       <!-- Modal -->
-      <Modal v-if="isOpen" @close="closeModal = false">
+      <ProfileModal v-if="isOpen" @close="closeModal = false">
         <template #body>
           <div
             class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
@@ -269,7 +269,7 @@ const calendarOptions = reactive({
             </div>
           </div>
         </template>
-      </Modal>
+      </ProfileModal>
       <!-- <Teleport to="body">
         <div v-if="isOpen" class="modal-backdrop" @click="closeModal"></div>
         <div v-if="isOpen" class="modal">
