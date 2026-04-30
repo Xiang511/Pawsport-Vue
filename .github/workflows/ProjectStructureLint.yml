@@ -1,0 +1,116 @@
+name: Project Structure Lint
+
+on:
+  push:
+
+jobs:
+  check-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步驟 1：檢查圖片位置 除了public/images外都拒絕
+      - name: Check for images outside public/images
+        run: |
+          ALLOWED_IMG_DIR="public/images"
+          BAD_FILES=$(find . -type f \
+            -not -path "./$ALLOWED_IMG_DIR/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./.git/*" \
+            \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.svg" -o -iname "*.webp" \))
+
+          if [ -n "$BAD_FILES" ]; then
+            echo "❌ 錯誤：發現不合規的圖片存放位置！"
+            echo "$BAD_FILES"
+            exit 1
+          fi
+
+      # 步驟 2：檢查 components 子資料夾規範 只會有client Pawsport Tailadmin
+      - name: Validate components subdirectories
+        run: |
+          COMP_DIR="src/components"
+
+          # 檢查目錄是否存在，避免專案結構異動導致腳本出錯
+          if [ ! -d "$COMP_DIR" ]; then
+            echo "⚠️ 警告：找不到 $COMP_DIR 目錄，跳過檢查。"
+            exit 0
+          fi
+
+          # 定義允許的資料夾名稱
+          ALLOWED="client Pawsport Tailadmin"
+
+          # 取得 src/components 下所有的子目錄名稱 (不含路徑)
+          # -maxdepth 1 確保只檢查第一層
+          ACTUAL_DIRS=$(find "$COMP_DIR" -maxdepth 1 -type d -not -path "$COMP_DIR" -exec basename {} \;)
+
+          ERROR_FOUND=false
+          for dir in $ACTUAL_DIRS; do
+            # 檢查目前資料夾是否在白名單內
+            if [[ ! " $ALLOWED " =~ " $dir " ]]; then
+              echo "❌ 錯誤：不允許的元件資料夾：$COMP_DIR/$dir"
+              echo "僅允許以下子資料夾：$ALLOWED"
+              ERROR_FOUND=true
+            fi
+          done
+
+          if [ "$ERROR_FOUND" = true ]; then
+            exit 1
+          else
+            echo "✅ 檢查通過：components 資料夾結構正確。"
+          fi
+      # 步驟 3：禁止使用 ../ 跨層級引用，強制使用 @
+      - name: Enforce @ alias for cross-directory imports
+        run: |
+          # 只搜尋包含 from "../ 的行
+          # \.\.\/ 代表匹配 ../
+          BAD_IMPORTS=$(grep -rE "from ['\"]\.\./" src --include="*.vue" --include="*.js" --include="*.ts" || true)
+
+          if [ -n "$BAD_IMPORTS" ]; then
+            echo "❌ 錯誤：偵測到跨層級相對路徑引用 (../)！"
+            echo "跨資料夾引用請統一使用 '@/' 起始路徑。"
+            echo "違規位置："
+            echo "$BAD_IMPORTS"
+            exit 1
+          else
+            echo "✅ 檢查通過：無跨層級相對路徑。"
+          fi
+
+      # 步驟 4：檢查 views/Tailadmin 下特定資料夾的檔案命名規範
+      - name: Validate Tailadmin view filenames
+        run: |
+          BASE_PATH="src/views/Tailadmin"
+
+          # 檢查基礎目錄是否存在
+          if [ ! -d "$BASE_PATH" ]; then
+            echo "⚠️ 找不到 $BASE_PATH，跳過檢查。"
+            exit 0
+          fi
+
+          # 定義需要檢查的子資料夾
+          TARGET_SUBDIRS="Member Pet Game Support Community"
+          ERROR_FOUND=false
+
+          for sub in $TARGET_SUBDIRS; do
+            CURRENT_DIR="$BASE_PATH/$sub"
+            
+            if [ -d "$CURRENT_DIR" ]; then
+              # 尋找該資料夾下的所有檔案（不含目錄）
+              # 使用 find 找出不包含該子資料夾名稱的檔案
+              # -v 代表不匹配
+              BAD_NAMED_FILES=$(find "$CURRENT_DIR" -type f ! -name "*$sub*" -exec basename {} \;)
+
+              if [ -n "$BAD_NAMED_FILES" ]; then
+                echo "❌ 錯誤：在 $CURRENT_DIR 中發現命名不符的檔案！"
+                echo "檔案名稱必須包含 '$sub' (大小寫需一致)。"
+                echo "違規檔案：$BAD_NAMED_FILES"
+                ERROR_FOUND=true
+              fi
+            fi
+          done
+
+          if [ "$ERROR_FOUND" = true ]; then
+            exit 1
+          else
+            echo "✅ 檢查通過：Tailadmin 下的所有 View 檔案命名正確。"
+          fi
