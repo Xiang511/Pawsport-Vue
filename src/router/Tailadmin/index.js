@@ -46,6 +46,30 @@ export default [
         },
       },
       {
+        path: 'questions',
+        name: 'admin-questionlist',
+        component: () => import('@/views/Tailadmin/Game/QuestionList.vue'),
+        meta: {
+          title: '題庫管理 | PawsPort',
+        },
+      },
+      {
+        path: 'players',
+        name: 'admin-playerlist',
+        component: () => import('@/views/Tailadmin/Game/PlayerList.vue'),
+        meta: {
+          title: '玩家管理 | PawsPort',
+        },
+      },
+      {
+        path: 'shop',
+        name: 'admin-shoplist',
+        component: () => import('@/views/Tailadmin/Game/ShopList.vue'),
+        meta: {
+          title: '商店管理 | PawsPort',
+        },
+      },
+      {
         path: 'calendar',
         name: 'admin-calendar',
         component: () => import('@/views/Tailadmin/Others/Calendar.vue'),
