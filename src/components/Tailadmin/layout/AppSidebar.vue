@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User } from 'lucide-vue-next'
+import { Gamepad2Icon, User } from 'lucide-vue-next'
 import {
   GridIcon,
   PieChartIcon,
@@ -40,7 +40,7 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
+        icon: Gamepad2Icon,
         name: '遊戲',
         subItems: [
           { name: '題庫管理', path: '/dashboard/questions', pro: false },
