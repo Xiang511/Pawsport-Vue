@@ -1,43 +1,130 @@
 <script setup>
-import { ref } from 'vue'
-import PlusIcon from '@/components/Tailadmin/icons/PlusIcon.vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
-// import SelectInput from '@/components/Tailadmin/forms/FormElements/SelectInput.vue'
 
-// 測試用的資料 (Mock Data)
-const questions = ref([
-  {
-    gameId: 1,
-    gameName: '認養須知',
-    questions: '夏季氣溫高，將寵物單獨留在熄火且窗戶緊閉的車內，即使只有十分鐘也是危險且違法的。',
-    answers: '是',
-    answersDetail: '車內高溫會迅速導致寵物中暑、器官衰竭甚至死亡，這屬於虐待行為。',
-    isActive: true,
-    rewards: 10,
-    type: '問答',
-  },
-  {
-    gameId: 2,
-    gameName: '認養須知',
-    questions: '若毛孩不小心走失，只要有植入晶片，就不需要去報案或掛失，等通知就好。',
-    answers: '否',
-    answersDetail:
-      '發現走失應立即聯繫寵物登記站點掛失，並透過社群、鄰里擴大搜尋，主動出擊成功率更高。',
-    isActive: true,
-    rewards: 10,
-    type: '問答',
-  },
-])
+const questions = ref([])
+// 定義存取資料中的狀態
+const isLoading = ref(false)
+const selectedType = ref('全部')
+// 定義儲存狀態
+const isSubmitting = ref(false)
+// 自動提取不重複的分類清單
+const gameCategories = computed(() => {
+  // 從 questions 陣列中取出所有的 gameName
+  const names = questions.value.map((q) => q.gameName)
+
+  // 使用 Set 來過濾重複項，並轉回陣列
+  const uniqueNames = [...new Set(names)]
+
+  // 回傳包含「全部」的清單
+  return ['全部', ...uniqueNames]
+})
+// 篩選資料
+const filteredQuestions = computed(() => {
+  if (selectedType.value === '全部') {
+    return questions.value
+  }
+  return questions.value.filter((q) => q.gameName === selectedType.value)
+})
+// 取資料
+const fetchQuestions = async () => {
+  console.log('嘗試發送請求...')
+  isLoading.value = true
+  try {
+    // 替換後端 API 路徑
+    const response = await axios.get('https://localhost:7048/api/Questions')
+
+    console.log('成功收到回應！回應內容如下：', response.data)
+
+    if (response.data && response.data.success) {
+      console.log('偵測到包裝格式，提取 data 欄位')
+      questions.value = response.data.data.questionContent
+      console.log(questions.value)
+    } else {
+      console.log('偵測到直接陣列格式')
+      questions.value = response.data
+    }
+  } catch (error) {
+    console.error('X. 抓取失敗，錯誤細節:', error)
+    if (error.response) {
+      console.error('後端回傳了錯誤狀態碼:', error.response.status)
+    } else if (error.request) {
+      console.error('請求已發出，但沒收到回應 (可能是後端沒開或網址錯了)')
+    }
+    alert('無法取得資料，請檢查主控台紅字')
+  } finally {
+    isLoading.value = false
+    console.log('請求流程結束')
+  }
+}
+// 元件掛載時執行
+onMounted(() => {
+  console.log('0. 元件掛載完成，準備執行 fetchQuestions')
+  fetchQuestions()
+})
+
+// 4. 新增題目的處理
+const saveQuestion = async () => {
+  // 簡單的表單驗證
+  if (!newQuestion.value.gameName || !newQuestion.value.questions) {
+    alert('請填寫必填欄位 (題目類型與內容)')
+    return
+  }
+
+  isSubmitting.value = true
+  try {
+    console.log('準備送出的資料：', newQuestion.value)
+
+    const response = await axios.post('https://localhost:7048/api/Questions', newQuestion.value)
+
+    // 根據你的 API 回傳結構 (success, message, data)
+    if (response.data.success) {
+      alert('資料已成功存入資料庫！')
+      closeModal() // 關閉視窗
+
+      // 重置表單內容
+      newQuestion.value = {
+        GameName: '',
+        Questions: '',
+        AnswersDetail: '',
+        Answers: 1,
+        IsActive: true,
+        Rewards: 0,
+        Type: '問答',
+      }
+
+      // 重要：重新抓取列表，讓新資料出現在畫面上
+      await fetchQuestions()
+    } else {
+      alert('儲存失敗：' + response.data.message)
+    }
+  } catch (error) {
+    console.error('API 錯誤：', error)
+    alert('連線伺服器失敗，請檢查後端是否正常運作')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// Modal 開/關
 const isModalOpen = ref(false)
 const newQuestion = ref({
-  gameName: '',
-  questions: '',
-  answers: '',
-  answersDetail: '',
-  rewards: 0,
-  type: '問答',
-  isActive: true,
+  GameName: '',
+  Questions: '',
+  AnswersDetail: '',
+  Answers: 1,
+  IsActive: true,
+  Rewards: 0,
+  Type: '問答',
 })
+// 監聽題目形式變化，切換時重置答案為 1，避免殘留舊資料
+watch(
+  () => newQuestion.value.Type,
+  (newType) => {
+    newQuestion.value.Answers = 1
+  },
+)
 const openModal = () => {
   isModalOpen.value = true
 }
@@ -57,16 +144,15 @@ const closeModal = () => {
           按照題目類型篩選：
         </span>
         <select
-          v-model="selectedCategory"
+          v-model="selectedType"
           class="text-theme-sm focus:border-brand-info-500 focus:shadow-focus-ring rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-gray-700 transition-all outline-none">
-          <option value="">-- 全部 --</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+          <option v-for="cat in gameCategories" :key="cat" :value="cat">{{ cat }}</option>
         </select>
       </div>
     </div>
     <button
       @click="openModal"
-      class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+      class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm text-info-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
       新增題目
     </button>
   </div>
@@ -77,36 +163,82 @@ const closeModal = () => {
     <div class="max-w-full overflow-x-auto">
       <table class="w-full table-auto border-collapse">
         <thead>
-          <tr class="border-b border-gray-100 dark:border-gray-800 text-center">
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">編號</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">題目類型</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">題目內容</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">詳細解答</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">Y/N</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">狀態</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">獎勵</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">形式</th>
-            <th class="px-4 py-4 font-semibold text-gray-500 text-theme-sm uppercase tracking-wider">動作</th>
+          <tr class="border-b border-gray-100 text-center dark:border-gray-800">
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              編號
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              題目類型
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              題目內容
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              詳細解答
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              答案
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              狀態
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              獎勵
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              形式
+            </th>
+            <th
+              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              動作
+            </th>
           </tr>
         </thead>
-
-        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 ">
+        <tbody v-if="isLoading">
+          <tr><td colspan="9" class="py-10 text-center text-gray-500">資料載入中...</td></tr>
+        </tbody>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
           <tr
-            v-for="(item, index) in questions"
+            v-for="(item, index) in filteredQuestions"
             :key="item.gameId"
             class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-            <td class="text-theme-sm px-4 py-4 text-gray-800 dark:text-white/90 text-center">
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-800 dark:text-white/90">
               {{ index + 1 }}
             </td>
-            <td class="text-theme-sm px-4 py-4 text-gray-500 text-center">{{ item.gameName }}</td>
-            <td class="text-theme-sm max-w-xs px-4 py-4 text-gray-500 text-left">{{ item.questions }}</td>
-            <td class="text-theme-sm max-w-xs px-4 py-4 text-gray-500 text-left">{{ item.answersDetail }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500">{{ item.gameName }}</td>
+            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500">
+              {{ item.questions }}
+            </td>
+            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500">
+              {{ item.answersDetail }}
+            </td>
             <td class="px-4 py-4 text-center">
-              <input
-                type="checkbox"
-                :checked="item.answers === '是'"
-                disabled
-                class="accent-primary h-4 w-4 rounded border-gray-300" />
+              <!-- 情況 A: 如果是問答題，顯示 是/否 -->
+              <template v-if="item.type === '問答'">
+                <span
+                  :class="item.answers == 1 ? 'text-brand-info-600' : 'text-brand-error-400'"
+                  class="font-medium">
+                  {{ item.answers == 1 ? '是 (Y)' : '否 (N)' }}
+                </span>
+              </template>
+
+              <!-- 情況 B: 如果是多選題，直接顯示選項數字 (例如 1, 2, 3, 4) -->
+              <template v-else-if="item.type === '多選'">
+                <span class="text-brand-info-600 font-medium">選項： {{ item.answers }}</span>
+              </template>
+
+              <!-- 其他情況 (保險起見) -->
+              <template v-else>
+                <span class="text-gray-500">{{ item.answers }}</span>
+              </template>
             </td>
             <td class="px-4 py-4 text-center">
               <span
@@ -119,16 +251,20 @@ const closeModal = () => {
                 {{ item.isActive ? '啟用' : '停用' }}
               </span>
             </td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500">{{ item.rewards }}</td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500">{{ item.type }}</td>
+            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium">
+              {{ item.rewards }}
+            </td>
+            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium">
+              {{ item.type }}
+            </td>
             <td class="px-4 py-4 text-center">
               <div class="flex items-center justify-center gap-2">
                 <button
-                  class="bg-brand-warning-300 text-theme-sm hover:bg-brand-warning-400 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
                   編輯
                 </button>
                 <button
-                  class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
                   刪除
                 </button>
               </div>
@@ -182,19 +318,47 @@ const closeModal = () => {
               class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500"></textarea>
           </div>
 
-          <!-- 正確答案 -->
-          <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
-              正確答案
-              <span class="text-error-500">*</span>
-            </label>
-            <select
-              v-model="newQuestion.answers"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500">
-              <option value="">-- 請選擇 --</option>
-              <option value="是">是 (Yes)</option>
-              <option value="否">否 (No)</option>
-            </select>
+          <div class="grid grid-cols-2 gap-4">
+            <!-- 題目形式 (唯讀範例) -->
+            <div>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+                題目形式
+                <span class="text-error-500">*</span>
+              </label>
+              <select
+                v-model="newQuestion.Type"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:bg-gray-900 dark:text-gray-500">
+                <option value="問答">問答</option>
+                <option value="多選">多選</option>
+              </select>
+            </div>
+            <!-- 正確答案 (根據形式動態顯示) -->
+            <div>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+                正確答案
+                <span class="text-error-500">*</span>
+              </label>
+
+              <!-- A 區塊：問答 -->
+              <select
+                v-if="newQuestion.Type === '問答'"
+                v-model.number="newQuestion.Answers"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500">
+                <option :value="1">是 (Yes)</option>
+                <option :value="0">否 (No)</option>
+              </select>
+
+              <!-- B 區塊：多選 (如果 Type 不是問答，就顯示這個) -->
+              <select
+                v-else
+                v-model.number="newQuestion.Answers"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500">
+                <option :value="1">1</option>
+                <option :value="2">2</option>
+                <option :value="3">3</option>
+                <option :value="4">4</option>
+              </select>
+            </div>
           </div>
 
           <!-- 詳細解答 -->
@@ -211,51 +375,44 @@ const closeModal = () => {
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-          <!-- 解題獎勵 -->
-          <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
-              解題獎勵 (點數) <span class="text-error-500">*</span>
-            </label>
-            <input
-              v-model="newQuestion.rewards"
-              type="number"
-              placeholder="輸入獎勵點數"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all dark:text-gray-500" />
-          </div>
-
-          <!-- 啟用狀態 (改回 Select 方式) -->
-          <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
-              啟用狀態 <span class="text-error-500">*</span>
-            </label>
-            <select
-              v-model="newQuestion.isActive"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all dark:text-gray-500">
-              <option :value="true">啟用</option>
-              <option :value="false">停用</option>
-            </select>
-          </div>
-        </div>
-
-          <!-- 題目形式 (唯讀範例) -->
-          <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">題目形式</label>
-            <input
-              v-model="newQuestion.type"
-              type="text"
-              readonly
-              class="text-theme-sm w-full rounded-lg border border-gray-100 bg-gray-50 px-4 py-2 text-gray-500 dark:text-gray-500 dark:bg-gray-900" />
+            <!-- 解題獎勵 -->
+            <div>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+                解題獎勵 (點數)
+                <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model.number="newQuestion.rewards"
+                type="number"
+                placeholder="輸入獎勵點數"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500" />
             </div>
 
+            <!-- 啟用狀態 (改回 Select 方式) -->
+            <div>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+                啟用狀態
+                <span class="text-error-500">*</span>
+              </label>
+              <select
+                v-model="newQuestion.isActive"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500">
+                <option :value="true">啟用</option>
+                <option :value="false">停用</option>
+              </select>
+            </div>
+          </div>
         </div>
-
         <!-- Footer -->
         <div
-          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:bg-gray-900 dark:border-gray-800">
+          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
           <button
             @click="saveQuestion"
-            class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm rounded-lg px-5 py-2 font-semibold text-white active:scale-95">
-            新增題目
+            :disabled="isSubmitting"
+            class="bg-brand-info-500 text-info-950 flex items-center gap-2 rounded-lg px-5 py-2 font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
+            <!-- 如果正在傳輸，顯示一個簡單的小轉圈或文字 -->
+            <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
+            {{ isSubmitting ? '處理中...' : '確認新增' }}
           </button>
           <button
             @click="closeModal"
