@@ -34,7 +34,7 @@ const saveSkin = () => {
   <!-- 頁面頂部：標題 + 新增按鈕 -->
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h2 class="text-2xl font-bold text-gray-800">商店管理</h2>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">商店管理</h2>
     </div>
     <button
       @click="openModal"
@@ -49,31 +49,31 @@ const saveSkin = () => {
       <table class="w-full table-auto border-collapse">
         <thead>
           <tr class="border-b border-gray-200 text-center dark:border-gray-700">
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">編號</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">造型名稱</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">圖片</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500 text-left">描述</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">價格</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">狀態</th>
-            <th class="text-theme-sm px-4 py-4 font-medium text-gray-500">動作</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">編號</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">造型名稱</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">圖片</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">描述</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">價格</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">狀態</th>
+            <th class="text-theme-sm px-4 py-4 font-semibold text-gray-500">動作</th>
           </tr>
         </thead>
 
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-center">
           <tr v-for="skin in skins" :key="skin.id" class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
             <td class="text-theme-sm px-4 py-4 text-gray-800 dark:text-white/90">{{ skin.id }}</td>
-            <td class="text-theme-sm px-4 py-4 font-bold text-gray-700">{{ skin.name }}</td>
+            <td class="text-theme-sm px-4 py-4 text-gray-700 dark:text-gray-500">{{ skin.name }}</td>
             
             <!-- 圖片預覽格 -->
             <td class="px-4 py-4">
               <div class="mx-auto h-16 w-16 overflow-hidden rounded-lg border border-gray-100 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400">
-                <!-- 這裡未來放 <img> 標籤 -->
+                <!-- 準備放 <img>  -->
                 <span class="p-1 leading-tight">{{ skin.name }}<br>Image</span>
               </div>
             </td>
             
-            <td class="text-theme-sm max-w-md px-4 py-4 text-left text-gray-500 leading-relaxed">{{ skin.description }}</td>
-            <td class="text-theme-sm px-4 py-4 font-semibold text-gray-800">{{ skin.price }}</td>
+            <td class="text-theme-sm max-w-md px-4 py-4 text-center text-gray-500 leading-relaxed">{{ skin.description }}</td>
+            <td class="text-theme-sm px-4 py-4 text-gray-800 dark:text-gray-500">{{ skin.price }}</td>
             
             <td class="px-4 py-4">
               <span 
@@ -86,10 +86,12 @@ const saveSkin = () => {
 
             <td class="px-4 py-4">
               <div class="flex items-center justify-center gap-2">
-                <button class="bg-brand-warning-500 text-theme-xs hover:bg-brand-warning-600 shadow-theme-sm flex items-center gap-1 rounded px-3 py-1.5 font-bold text-white transition-all active:scale-95">
+                <button
+                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   編輯
                 </button>
-                <button class="bg-brand-error-500 text-theme-xs hover:bg-brand-error-600 shadow-theme-sm flex items-center gap-1 rounded px-3 py-1.5 font-bold text-white transition-all active:scale-95">
+                <button
+                  class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   刪除
                 </button>
               </div>

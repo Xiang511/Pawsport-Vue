@@ -50,7 +50,7 @@ const closeModal = () => {
   <!-- 頁面頂部：標題 + 新增按鈕 + 篩選功能 -->
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-6">
-      <h2 class="text-2xl font-bold text-gray-800">題庫管理</h2>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">題庫管理</h2>
 
       <div class="flex items-center gap-2">
         <span class="text-theme-sm font-medium whitespace-nowrap text-gray-500">
@@ -124,7 +124,7 @@ const closeModal = () => {
             <td class="px-4 py-4 text-center">
               <div class="flex items-center justify-center gap-2">
                 <button
-                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-warning-300 text-theme-sm hover:bg-brand-warning-400 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   編輯
                 </button>
                 <button
@@ -148,7 +148,7 @@ const closeModal = () => {
         <!-- Header -->
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-white">新增題目</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">新增題目</h3>
           <button @click="closeModal" class="text-gray-400 transition-colors hover:text-gray-600">
             <span class="text-2xl">&times;</span>
           </button>
@@ -158,7 +158,7 @@ const closeModal = () => {
         <div class="custom-scrollbar max-h-[70vh] space-y-4 overflow-y-auto p-6">
           <!-- 題目類型 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               題目類型
               <span class="text-error-500">*</span>
             </label>
@@ -166,12 +166,12 @@ const closeModal = () => {
               v-model="newQuestion.gameName"
               type="text"
               placeholder="輸入題目類型"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none" />
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500" />
           </div>
 
           <!-- 題目內容 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               題目內容
               <span class="text-error-500">*</span>
             </label>
@@ -179,18 +179,18 @@ const closeModal = () => {
               v-model="newQuestion.questions"
               rows="3"
               placeholder="輸入題目內容"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none"></textarea>
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500"></textarea>
           </div>
 
           <!-- 正確答案 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               正確答案
               <span class="text-error-500">*</span>
             </label>
             <select
               v-model="newQuestion.answers"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none">
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500">
               <option value="">-- 請選擇 --</option>
               <option value="是">是 (Yes)</option>
               <option value="否">否 (No)</option>
@@ -199,7 +199,7 @@ const closeModal = () => {
 
           <!-- 詳細解答 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               詳細解答
               <span class="text-error-500">*</span>
             </label>
@@ -207,30 +207,30 @@ const closeModal = () => {
               v-model="newQuestion.answersDetail"
               rows="3"
               placeholder="輸入詳細解答"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none"></textarea>
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
           <!-- 解題獎勵 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               解題獎勵 (點數) <span class="text-error-500">*</span>
             </label>
             <input
               v-model="newQuestion.rewards"
               type="number"
               placeholder="輸入獎勵點數"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all" />
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all dark:text-gray-500" />
           </div>
 
           <!-- 啟用狀態 (改回 Select 方式) -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
               啟用狀態 <span class="text-error-500">*</span>
             </label>
             <select
               v-model="newQuestion.isActive"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all">
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all dark:text-gray-500">
               <option :value="true">啟用</option>
               <option :value="false">停用</option>
             </select>
@@ -239,19 +239,19 @@ const closeModal = () => {
 
           <!-- 題目形式 (唯讀範例) -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700">題目形式</label>
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">題目形式</label>
             <input
               v-model="newQuestion.type"
               type="text"
               readonly
-              class="text-theme-sm w-full rounded-lg border border-gray-100 bg-gray-50 px-4 py-2 text-gray-500" />
+              class="text-theme-sm w-full rounded-lg border border-gray-100 bg-gray-50 px-4 py-2 text-gray-500 dark:text-gray-500 dark:bg-gray-900" />
             </div>
 
         </div>
 
         <!-- Footer -->
         <div
-          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800">
+          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:bg-gray-900 dark:border-gray-800">
           <button
             @click="saveQuestion"
             class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm rounded-lg px-5 py-2 font-semibold text-white active:scale-95">

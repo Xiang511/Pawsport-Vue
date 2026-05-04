@@ -18,7 +18,7 @@ const currentPage = ref(1)
   <!-- 標題欄 -->
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-6">
-      <h2 class="text-2xl font-bold text-gray-800">玩家管理</h2>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">玩家管理</h2>
     </div>
   </div>
 
@@ -40,16 +40,16 @@ const currentPage = ref(1)
         </thead>
         
         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-          <tr v-for="player in players" :key="player.id" class="hover:bg-gray-25/50 transition-colors text-center">
+          <tr v-for="player in players" :key="player.id" class="hover:bg-gray-25/50 dark:hover:bg-white/[0.02] transition-colors text-center">
             <!-- 查看會員檔案按鈕 -->
             <td class="px-4 py-4">
               <button
-                  class="bg-brand-info-800 text-theme-sm hover:bg-brand-info-900 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   查看會員檔案
                 </button>
             </td>
             
-            <td class="px-4 py-4 text-theme-sm text-gray-800">{{ player.id }}</td>
+            <td class="px-4 py-4 text-theme-sm text-gray-800 dark:text-gray-500">{{ player.id }}</td>
             <td class="px-4 py-4 text-theme-sm text-gray-500 ">{{ player.createdAt }}</td>
             <td class="px-4 py-4 text-theme-sm text-gray-500 font-medium">{{ player.points.toLocaleString() }}</td>
             <td class="px-4 py-4 text-theme-sm text-gray-500">{{ player.skins }}</td>
@@ -68,11 +68,11 @@ const currentPage = ref(1)
                   刪除
                 </button>
                 <button
-                  class="bg-brand-info-800 text-theme-sm hover:bg-brand-info-900 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   交易紀錄
                 </button>
                 <button
-                  class="bg-brand-success-800 text-theme-sm hover:bg-brand-success-900 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
+                  class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white transition-all active:scale-95">
                   消費紀錄
                 </button>
               </div>
