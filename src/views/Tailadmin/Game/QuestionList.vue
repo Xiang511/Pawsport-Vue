@@ -4,22 +4,36 @@ import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
 
 const questions = ref([])
-// 定義存取資料中的狀態
 const isLoading = ref(false)
 const selectedType = ref('全部')
-// 定義儲存狀態
 const isSubmitting = ref(false)
+const isModalOpen = ref(false)
+
+// 編輯
+const isEditMode = ref(false)
+const editingId = ref(null)
+
+//  1. 定義初始狀態函數，方便重複使用
+const getInitialQuestionState = () => ({
+  GameName: '',
+  Questions: '',
+  AnswersDetail: '',
+  Answers: 1, // 預設為 1 (是)
+  IsActive: true, // 預設為啟用
+  Rewards: 10, // 預設為 10 點
+  Type: '問答', // 預設為問答
+})
+
+// 初始化資料
+const newQuestion = ref(getInitialQuestionState())
+
 // 自動提取不重複的分類清單
 const gameCategories = computed(() => {
-  // 從 questions 陣列中取出所有的 gameName
   const names = questions.value.map((q) => q.gameName)
-
-  // 使用 Set 來過濾重複項，並轉回陣列
   const uniqueNames = [...new Set(names)]
-
-  // 回傳包含「全部」的清單
   return ['全部', ...uniqueNames]
 })
+
 // 篩選資料
 const filteredQuestions = computed(() => {
   if (selectedType.value === '全部') {
@@ -27,109 +41,186 @@ const filteredQuestions = computed(() => {
   }
   return questions.value.filter((q) => q.gameName === selectedType.value)
 })
+
 // 取資料
 const fetchQuestions = async () => {
-  console.log('嘗試發送請求...')
   isLoading.value = true
   try {
-    // 替換後端 API 路徑
     const response = await axios.get('https://localhost:7048/api/Questions')
-
-    console.log('成功收到回應！回應內容如下：', response.data)
-
     if (response.data && response.data.success) {
-      console.log('偵測到包裝格式，提取 data 欄位')
       questions.value = response.data.data.questionContent
-      console.log(questions.value)
     } else {
-      console.log('偵測到直接陣列格式')
       questions.value = response.data
     }
   } catch (error) {
-    console.error('X. 抓取失敗，錯誤細節:', error)
-    if (error.response) {
-      console.error('後端回傳了錯誤狀態碼:', error.response.status)
-    } else if (error.request) {
-      console.error('請求已發出，但沒收到回應 (可能是後端沒開或網址錯了)')
-    }
-    alert('無法取得資料，請檢查主控台紅字')
+    console.error('抓取失敗:', error)
   } finally {
     isLoading.value = false
-    console.log('請求流程結束')
   }
 }
-// 元件掛載時執行
+
 onMounted(() => {
-  console.log('0. 元件掛載完成，準備執行 fetchQuestions')
   fetchQuestions()
 })
 
-// 4. 新增題目的處理
+// 監聽題目形式變化，切換時重置答案
+watch(
+  () => newQuestion.value.Type,
+  () => {
+    newQuestion.value.Answers = 1
+  },
+)
+
+//  2. 修改後的 Modal 關閉函數：關閉即清空
+const closeModal = () => {
+  isModalOpen.value = false
+  isEditMode.value = false
+  editingId.value = null
+  newQuestion.value = getInitialQuestionState()
+}
+
+const openModal = (item = null) => {
+  if (item && item.gameId) {
+    // 進入編輯模式
+    isEditMode.value = true
+    editingId.value = item.id || item.gameId
+
+    // 將現有資料帶入表單 (注意屬性大小寫要對齊你的 DTO)
+    newQuestion.value = {
+      GameName: item.gameName || '',
+      Questions: item.questions || '',
+      AnswersDetail: item.answersDetail || '',
+      Answers: Number(item.answers), // 強制轉數字以匹配 select
+      IsActive: item.isActive,
+      Rewards: Number(item.rewards), // 強制轉數字
+      Type: item.type || '問答',
+    }
+  } else {
+    // 進入新增模式
+    isEditMode.value = false
+    editingId.value = null
+    newQuestion.value = getInitialQuestionState()
+  }
+  isModalOpen.value = true
+}
+
+// 儲存題目的處理
 const saveQuestion = async () => {
-  // 簡單的表單驗證
-  if (!newQuestion.value.gameName || !newQuestion.value.questions) {
+  // 注意：這裡檢查要用大寫 GameName，因為你的 ref 定義是大寫
+  if (!newQuestion.value.GameName || !newQuestion.value.Questions) {
     alert('請填寫必填欄位 (題目類型與內容)')
+    console.log('驗證失敗，目前的資料：', newQuestion.value) // 除錯
     return
   }
 
   isSubmitting.value = true
+
   try {
-    console.log('準備送出的資料：', newQuestion.value)
+    let response
 
-    const response = await axios.post('https://localhost:7048/api/Questions', newQuestion.value)
+    // 準備要發送的資料
+    const payload = {
+      GameId: isEditMode.value ? editingId.value : 0,
+      GameName: newQuestion.value.GameName,
+      Questions: newQuestion.value.Questions,
+      AnswersDetail: newQuestion.value.AnswersDetail,
+      Answers: newQuestion.value.Answers,
+      IsActive: newQuestion.value.IsActive,
+      Rewards: newQuestion.value.Rewards,
+      Type: newQuestion.value.Type,
+    }
+    console.log('準備發送的資料:', payload)
 
-    // 根據你的 API 回傳結構 (success, message, data)
-    if (response.data.success) {
-      alert('資料已成功存入資料庫！')
-      closeModal() // 關閉視窗
+    if (isEditMode.value) {
+      // 編輯模式：使用 PUT 請求
+      response = await axios.put(
+        `https://localhost:7048/api/Questions/${editingId.value}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+    } else {
+      // 新增模式：使用 POST 請求
+      console.log(`新增模式 - 發送 POST 請求到: https://localhost:7048/api/Questions`)
+      response = await axios.post('https://localhost:7048/api/Questions', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
 
-      // 重置表單內容
-      newQuestion.value = {
-        GameName: '',
-        Questions: '',
-        AnswersDetail: '',
-        Answers: 1,
-        IsActive: true,
-        Rewards: 0,
-        Type: '問答',
-      }
+    console.log('API 回應:', response.data)
 
-      // 重要：重新抓取列表，讓新資料出現在畫面上
+    if (response.data && response.data.success) {
+      const successMessage = isEditMode.value ? '資料已成功修改！' : '資料已成功存入資料庫！'
+      alert(successMessage)
+      closeModal() // 自動執行清空邏輯
       await fetchQuestions()
     } else {
-      alert('儲存失敗：' + response.data.message)
+      const errorMessage = response.data?.message || '未知錯誤'
+      alert('儲存失敗：' + errorMessage)
+      console.error('儲存失敗詳情:', response.data)
     }
   } catch (error) {
-    console.error('API 錯誤：', error)
-    alert('連線伺服器失敗，請檢查後端是否正常運作')
+    console.error('完整錯誤訊息:', error)
+
+    // 詳細的錯誤診斷
+    if (error.response) {
+      // 伺服器有回應，但狀態碼表示錯誤
+      console.error('HTTP 狀態碼:', error.response.status)
+      console.error('伺服器回應:', error.response.data)
+      alert(
+        `伺服器錯誤 (${error.response.status})：${error.response.data?.message || '請檢查伺服器日誌'}`,
+      )
+    } else if (error.request) {
+      // 請求已發送但沒有收到回應
+      console.error('未收到伺服器回應:', error.request)
+      alert('無法連線到伺服器，請檢查：\n1. 後端服務是否正在運行\n2. URL 是否正確\n3. 防火牆設置')
+    } else {
+      // 其他錯誤
+      console.error('錯誤訊息:', error.message)
+      alert('發生錯誤：' + error.message)
+    }
   } finally {
     isSubmitting.value = false
   }
 }
+// 刪除題目
+const deleteQuestion = async (id) => {
+  if (!confirm('確定要刪除此題目嗎？')) {
+    return
+  }
 
-// Modal 開/關
-const isModalOpen = ref(false)
-const newQuestion = ref({
-  GameName: '',
-  Questions: '',
-  AnswersDetail: '',
-  Answers: 1,
-  IsActive: true,
-  Rewards: 0,
-  Type: '問答',
-})
-// 監聽題目形式變化，切換時重置答案為 1，避免殘留舊資料
-watch(
-  () => newQuestion.value.Type,
-  (newType) => {
-    newQuestion.value.Answers = 1
-  },
-)
-const openModal = () => {
-  isModalOpen.value = true
-}
-const closeModal = () => {
-  isModalOpen.value = false
+  try {
+    console.log(`刪除題目 ID: ${id}`)
+    const response = await axios.delete(`https://localhost:7048/api/Questions/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    console.log('刪除回應:', response.data)
+
+    if (response.data && response.data.success) {
+      alert('題目已成功刪除！')
+      await fetchQuestions()
+    } else {
+      alert('刪除失敗：' + (response.data?.message || '未知錯誤'))
+    }
+  } catch (error) {
+    console.error('刪除失敗:', error)
+    if (error.response) {
+      alert(
+        `刪除失敗 (${error.response.status})：${error.response.data?.message || '請檢查伺服器日誌'}`,
+      )
+    } else if (error.request) {
+      alert('無法連線到伺服器')
+    } else {
+      alert('刪除失敗：' + error.message)
+    }
+  }
 }
 </script>
 
@@ -245,7 +336,7 @@ const closeModal = () => {
                 :class="
                   item.isActive
                     ? 'text-brand-success-900 bg-brand-success-50'
-                    : 'text-error-600 bg-error-50'
+                    : 'text-warning-950 bg-brand-error-500'
                 "
                 class="text-theme-sm rounded-full px-3 py-1 font-medium">
                 {{ item.isActive ? '啟用' : '停用' }}
@@ -260,10 +351,12 @@ const closeModal = () => {
             <td class="px-4 py-4 text-center">
               <div class="flex items-center justify-center gap-2">
                 <button
+                  @click="openModal(item)"
                   class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
                   編輯
                 </button>
                 <button
+                  @click="deleteQuestion(item.gameId)"
                   class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
                   刪除
                 </button>
@@ -284,7 +377,9 @@ const closeModal = () => {
         <!-- Header -->
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">新增題目</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">
+            {{ isEditMode ? '編輯題目' : '新增題目' }}
+          </h3>
           <button @click="closeModal" class="text-gray-400 transition-colors hover:text-gray-600">
             <span class="text-2xl">&times;</span>
           </button>
@@ -298,11 +393,18 @@ const closeModal = () => {
               題目類型
               <span class="text-error-500">*</span>
             </label>
-            <input
-              v-model="newQuestion.gameName"
-              type="text"
-              placeholder="輸入題目類型"
-              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500" />
+            <select
+              v-model="newQuestion.GameName"
+              class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:bg-gray-900 dark:text-gray-500">
+              <option value="" disabled>請選擇既有類型</option>
+              <!-- 使用 v-for 跑原本篩選用的 gameCategories，但排除「全部」 -->
+              <option
+                v-for="cat in gameCategories.filter((c) => c !== '全部')"
+                :key="cat"
+                :value="cat">
+                {{ cat }}
+              </option>
+            </select>
           </div>
 
           <!-- 題目內容 -->
@@ -312,7 +414,7 @@ const closeModal = () => {
               <span class="text-error-500">*</span>
             </label>
             <textarea
-              v-model="newQuestion.questions"
+              v-model="newQuestion.Questions"
               rows="3"
               placeholder="輸入題目內容"
               class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500"></textarea>
@@ -329,7 +431,7 @@ const closeModal = () => {
                 v-model="newQuestion.Type"
                 class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:bg-gray-900 dark:text-gray-500">
                 <option value="問答">問答</option>
-                <option value="多選">多選</option>
+                <!-- <option value="多選">多選</option> -->
               </select>
             </div>
             <!-- 正確答案 (根據形式動態顯示) -->
@@ -368,7 +470,7 @@ const closeModal = () => {
               <span class="text-error-500">*</span>
             </label>
             <textarea
-              v-model="newQuestion.answersDetail"
+              v-model="newQuestion.AnswersDetail"
               rows="3"
               placeholder="輸入詳細解答"
               class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:text-gray-500"></textarea>
@@ -381,11 +483,13 @@ const closeModal = () => {
                 解題獎勵 (點數)
                 <span class="text-error-500">*</span>
               </label>
-              <input
-                v-model.number="newQuestion.rewards"
-                type="number"
-                placeholder="輸入獎勵點數"
-                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500" />
+              <select
+                v-model.number="newQuestion.Rewards"
+                class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:bg-gray-900 dark:text-gray-500">
+                <option :value="10">10 點</option>
+                <option :value="20">20 點</option>
+                <option :value="30">30 點</option>
+              </select>
             </div>
 
             <!-- 啟用狀態 (改回 Select 方式) -->
@@ -395,7 +499,7 @@ const closeModal = () => {
                 <span class="text-error-500">*</span>
               </label>
               <select
-                v-model="newQuestion.isActive"
+                v-model="newQuestion.IsActive"
                 class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500">
                 <option :value="true">啟用</option>
                 <option :value="false">停用</option>
@@ -412,7 +516,7 @@ const closeModal = () => {
             class="bg-brand-info-500 text-info-950 flex items-center gap-2 rounded-lg px-5 py-2 font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
             <!-- 如果正在傳輸，顯示一個簡單的小轉圈或文字 -->
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
-            {{ isSubmitting ? '處理中...' : '確認新增' }}
+            {{ isSubmitting ? '處理中...' : isEditMode ? '確認修改' : '確認新增' }}
           </button>
           <button
             @click="closeModal"
