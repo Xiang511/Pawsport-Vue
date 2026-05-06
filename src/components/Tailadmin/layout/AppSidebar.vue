@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User } from 'lucide-vue-next'
+import { User, NotebookPen } from 'lucide-vue-next'
 import {
   GridIcon,
   PieChartIcon,
@@ -49,9 +49,10 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
+        icon: NotebookPen,
         name: '社群',
         subItems: [
+          { name: '貼文管理', path: '/dashboard/article-list', pro: false },
           { name: '基本資料', path: '/dashboard/basic-tables', pro: false },
           { name: '違規名單', path: '/violation-list', pro: false },
           { name: '權限管理', path: '/permissions', pro: false },
