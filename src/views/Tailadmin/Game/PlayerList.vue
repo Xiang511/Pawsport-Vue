@@ -325,7 +325,6 @@ const closeModal = () => {
     </div>
   </div>
 
-  // 編輯玩家的 Modal
   <Modal v-if="isModalOpen" @close="closeModal">
     <template #body>
       <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" @click="closeModal"></div>
@@ -351,14 +350,14 @@ const closeModal = () => {
               <input
                 :value="editingPlayer.playerId"
                 disabled
-                class="w-full rounded-lg border bg-gray-50 px-4 py-2 outline-none dark:bg-gray-800 dark:text-gray-400" />
+                class="w-full rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 outline-none dark:bg-gray-800 dark:text-gray-400" />
             </div>
             <div>
               <label class="text-theme-sm mb-1 block font-medium text-gray-500">建立時間</label>
               <input
                 :value="formatDate(editingPlayer.createTime)"
                 disabled
-                class="w-full rounded-lg border bg-gray-50 px-4 py-2 outline-none dark:bg-gray-800 dark:text-gray-400" />
+                class="w-full rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 outline-none dark:bg-gray-800 dark:text-gray-400" />
             </div>
           </div>
 
@@ -376,14 +375,14 @@ const closeModal = () => {
             <div>
               <label class="text-theme-sm mb-1 block font-medium text-gray-500">目前進度</label>
               <div
-                class="rounded-lg border bg-gray-50 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                class="rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 第 {{ editingPlayer.maxGameId }} 關
               </div>
             </div>
             <div>
               <label class="text-theme-sm mb-1 block font-medium text-gray-500">最後遊玩時間</label>
               <div
-                class="rounded-lg border bg-gray-50 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                class="rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 {{ formatDate(editingPlayer.lastPlayedDate) }}
               </div>
             </div>
@@ -444,7 +443,7 @@ const closeModal = () => {
       </div>
     </template>
   </Modal>
-  // 紀錄 Modal
+
   <Modal v-if="isRecordModalOpen" @close="isRecordModalOpen = false">
     <template #body>
       <div
@@ -475,16 +474,16 @@ const closeModal = () => {
           <template v-else>
             <section>
               <div class="mb-3 flex items-center gap-2">
-                <div class="h-5 w-1.5 rounded-full bg-orange-500"></div>
+                <div class="bg-brand-error-500 h-5 w-1.5 rounded-full"></div>
                 <h4 class="font-bold text-gray-700 dark:text-gray-300">造型消費紀錄</h4>
               </div>
               <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
-                <table class="w-full text-left text-sm">
+                <table class="w-full table-fixed text-left text-sm">
                   <thead class="bg-gray-50/50 text-gray-500 dark:bg-gray-800/50">
                     <tr>
-                      <th class="px-4 py-3 font-medium">造型名稱</th>
-                      <th class="px-4 py-3 font-medium">時間</th>
-                      <th class="px-4 py-3 text-right font-medium">點數</th>
+                      <th class="w-[30%] px-4 py-3 font-medium">造型名稱</th>
+                      <th class="w-[40%] px-4 py-3 text-center font-medium">時間</th>
+                      <th class="w-[30%] px-4 py-3 text-right font-medium">點數</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -495,14 +494,18 @@ const closeModal = () => {
                       <td class="px-4 py-3 font-bold text-gray-800 dark:text-gray-200">
                         {{ log.description }}
                       </td>
-                      <td class="px-4 py-3 text-gray-400">{{ formatDate(log.transactionDate) }}</td>
+                      <td class="px-4 py-3 text-center font-mono text-gray-400">
+                        {{ formatDate(log.transactionDate) }}
+                      </td>
                       <td class="px-4 py-3 text-right font-mono font-bold text-red-500">
                         {{ log.amount }}
                       </td>
                     </tr>
                     <tr v-if="playerRecords.consumptionLogs.length === 0">
                       <td colspan="3" class="py-6 text-center text-gray-400 italic">
-                        尚無消費紀錄
+                        <div class="flex flex-col items-center justify-center gap-2">
+                          尚無消費紀錄
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -516,12 +519,12 @@ const closeModal = () => {
                 <h4 class="font-bold text-gray-700 dark:text-gray-300">點數獲取紀錄</h4>
               </div>
               <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
-                <table class="w-full text-left text-sm">
+                <table class="w-full table-fixed text-left text-sm">
                   <thead class="bg-gray-50/50 text-gray-500 dark:bg-gray-800/50">
                     <tr>
-                      <th class="px-4 py-3 font-medium">獲取來源</th>
-                      <th class="px-4 py-3 font-medium">時間</th>
-                      <th class="px-4 py-3 text-right font-medium">點數</th>
+                      <th class="w-[30%] px-4 py-3 font-medium">獲取來源</th>
+                      <th class="w-[40%] px-4 py-3 text-center font-medium">時間</th>
+                      <th class="w-[30%] px-4 py-3 text-right font-medium">點數</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -532,14 +535,18 @@ const closeModal = () => {
                       <td class="px-4 py-3 font-bold text-gray-800 dark:text-gray-200">
                         {{ log.description }}
                       </td>
-                      <td class="px-4 py-3 text-gray-400">{{ formatDate(log.transactionDate) }}</td>
+                      <td class="px-4 py-3 text-center font-mono text-gray-400">
+                        {{ formatDate(log.transactionDate) }}
+                      </td>
                       <td class="px-4 py-3 text-right font-mono font-bold text-green-500">
                         +{{ log.amount }}
                       </td>
                     </tr>
                     <tr v-if="playerRecords.pointLogs.length === 0">
                       <td colspan="3" class="py-6 text-center text-gray-400 italic">
-                        尚無點數獲取紀錄
+                        <div class="flex flex-col items-center justify-center gap-2">
+                          尚無點數獲取紀錄
+                        </div>
                       </td>
                     </tr>
                   </tbody>
