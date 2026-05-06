@@ -11,7 +11,6 @@ export default [
     component: () => import('@/views/Tailadmin/Auth/Signin.vue'),
     meta: {
       title: 'Sign In',
-
     },
   },
   {
@@ -20,7 +19,6 @@ export default [
     component: () => import('@/views/Tailadmin/Auth/Signup.vue'),
     meta: {
       title: 'Sign Up',
-
     },
   },
   {
@@ -34,7 +32,6 @@ export default [
         component: () => import('@/views/Ecommerce.vue'),
         meta: {
           title: 'eCommerce Dashboard',
-
         },
       },
       {
@@ -46,12 +43,27 @@ export default [
         },
       },
       {
+        path: 'blocklist',
+        name: 'admin-blocklist',
+        component: () => import('@/views/Tailadmin/Member/BlockList.vue'),
+        meta: {
+          title: '違規名單 | PawsPort',
+        },
+      },
+      {
+        path: 'permissions',
+        name: 'admin-permissions',
+        component: () => import('@/views/Tailadmin/Member/Permissions.vue'),
+        meta: {
+          title: '權限管理 | PawsPort',
+        },
+      },
+      {
         path: 'calendar',
         name: 'admin-calendar',
         component: () => import('@/views/Tailadmin/Others/Calendar.vue'),
         meta: {
           title: 'Calendar',
-
         },
       },
       {
@@ -60,7 +72,6 @@ export default [
         component: () => import('@/views/Tailadmin/Others/UserProfile.vue'),
         meta: {
           title: 'User Profile',
-
         },
       },
       {
@@ -69,7 +80,6 @@ export default [
         component: () => import('@/views/Tailadmin/Forms/FormElements.vue'),
         meta: {
           title: 'Form Elements',
-
         },
       },
       {
@@ -78,7 +88,6 @@ export default [
         component: () => import('@/views/Tailadmin/Tables/BasicTables.vue'),
         meta: {
           title: 'Basic Tables',
-
         },
       },
       {
@@ -87,7 +96,6 @@ export default [
         component: () => import('@/views/Tailadmin/Pages/BlankPage.vue'),
         meta: {
           title: 'Blank Page',
-
         },
       },
       {
@@ -96,7 +104,6 @@ export default [
         component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
           title: '404 Page',
-
         },
       },
       {
@@ -105,7 +112,6 @@ export default [
         component: () => import('@/views/Tailadmin/Chart/LineChart/LineChart.vue'),
         meta: {
           title: 'Line Chart',
-
         },
       },
       {
@@ -114,7 +120,6 @@ export default [
         component: () => import('@/views/Tailadmin/Chart/BarChart/BarChart.vue'),
         meta: {
           title: 'Bar Chart',
-
         },
       },
       {
@@ -123,7 +128,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Alerts.vue'),
         meta: {
           title: 'Alerts',
-
         },
       },
       {
@@ -132,7 +136,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Avatars.vue'),
         meta: {
           title: 'Avatars',
-
         },
       },
       {
@@ -141,7 +144,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Badges.vue'),
         meta: {
           title: 'Badge',
-
         },
       },
       {
@@ -150,7 +152,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Buttons.vue'),
         meta: {
           title: 'Buttons',
-
         },
       },
       {
@@ -159,7 +160,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Images.vue'),
         meta: {
           title: 'Images',
-
         },
       },
       {

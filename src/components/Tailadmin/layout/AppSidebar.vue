@@ -23,10 +23,10 @@ const menuGroups = [
     items: [
       {
         icon: User,
-        name: '會員',
+        name: '會員管理',
         subItems: [
           { name: '基本資料', path: '/dashboard/member' },
-          { name: '違規名單', path: '/dashboard/violation-list' },
+          { name: '違規名單', path: '/dashboard/Blocklist' },
           { name: '權限管理', path: '/dashboard/permissions' },
         ],
       },
