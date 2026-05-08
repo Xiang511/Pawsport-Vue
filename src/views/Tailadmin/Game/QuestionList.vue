@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
-import { EditIcon, Icon, icons, Trash2 } from 'lucide-vue-next'
+import { EditIcon, Trash2 } from 'lucide-vue-next'
 
 const questions = ref([])
 const isLoading = ref(false)
@@ -229,10 +229,10 @@ const deleteQuestion = async (id) => {
   <!-- 頁面頂部：標題 + 新增按鈕 + 篩選功能 -->
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-6">
-      <h2 class="text-title-md text-gray-800 dark:text-gray-500">題庫管理</h2>
+      <h2 class="text-title-md text-gray-800 dark:text-white/90">題庫管理</h2>
 
       <div class="flex items-center gap-2">
-        <span class="text-theme-xl font-medium whitespace-nowrap text-gray-500">
+        <span class="text-theme-xl font-medium whitespace-nowrap text-gray-500 dark:text-white/90">
           按照題目類型篩選：
         </span>
         <select
@@ -254,42 +254,42 @@ const deleteQuestion = async (id) => {
     class="rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="max-w-full overflow-x-auto">
       <table class="w-full table-auto border-collapse">
-        <thead>
+        <thead >
           <tr class="border-b border-gray-100 text-center dark:border-gray-800">
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               編號
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               題目類型
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               題目內容
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               詳細解答
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               答案
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               狀態
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               獎勵
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               形式
             </th>
             <th
-              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               動作
             </th>
           </tr>
@@ -302,21 +302,21 @@ const deleteQuestion = async (id) => {
             v-for="(item, index) in filteredQuestions"
             :key="item.gameId"
             class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-800 dark:text-white/90">
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
               {{ index + 1 }}
             </td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500">{{ item.gameName }}</td>
-            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500">
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.gameName }}</td>
+            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500 dark:text-white/90">
               {{ item.questions }}
             </td>
-            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500">
+            <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500 dark:text-white/90">
               {{ item.answersDetail }}
             </td>
-            <td class="px-4 py-4 text-center">
+            <td class="px-4 py-4 text-center dark:text-white/90">
               <!-- 情況 A: 如果是問答題，顯示 是/否 -->
               <template v-if="item.type === '問答'">
                 <span
-                  :class="item.answers == 1 ? 'text-brand-info-600' : 'text-brand-error-400'"
+                  :class="item.answers == 1 ? 'text-brand-success-600' : 'text-brand-error-400'"
                   class="font-medium">
                   {{ item.answers == 1 ? '是 (Y)' : '否 (N)' }}
                 </span>
@@ -343,10 +343,10 @@ const deleteQuestion = async (id) => {
                 {{ item.isActive ? '啓用' : '停用' }}
               </span>
             </td>
-            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium">
+            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
               {{ item.rewards }}
             </td>
-            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium">
+            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
               {{ item.type }}
             </td>
             <td class="px-4 py-4 text-center">
