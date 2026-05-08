@@ -290,7 +290,7 @@ const handleFileUpload = (event) => {
                 type="file"
                 accept="image/*"
                 @change="handleFileUpload"
-                class="text-theme-sm file:bg-brand-success-50 hover:file:bg-brand-success-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm file:text-white dark:bg-gray-900 dark:text-gray-500" />
+                class="text-theme-sm file:bg-brand-success-500 hover:file:bg-brand-success-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm file:text-white dark:bg-gray-900 dark:text-gray-500" />
             </div>
             <div class="flex flex-col items-center">
               <span class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
