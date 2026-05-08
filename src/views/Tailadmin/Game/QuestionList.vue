@@ -378,7 +378,7 @@ const deleteQuestion = async (id) => {
         <!-- Header -->
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl text-gray-800 dark:text-gray-500">
+          <h3 class="text-xl text-gray-800 dark:text-white">
             {{ isEditMode ? '編輯題目' : '新增題目' }}
           </h3>
           <button @click="closeModal" class="text-gray-400 transition-colors hover:text-gray-600">
@@ -390,7 +390,7 @@ const deleteQuestion = async (id) => {
         <div class="custom-scrollbar max-h-[70vh] space-y-4 overflow-y-auto p-6">
           <!-- 題目類型 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
               題目類型
               <span class="text-error-500">*</span>
             </label>
@@ -410,7 +410,7 @@ const deleteQuestion = async (id) => {
 
           <!-- 題目內容 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
               題目內容
               <span class="text-error-500">*</span>
             </label>
@@ -424,7 +424,7 @@ const deleteQuestion = async (id) => {
           <div class="grid grid-cols-2 gap-4">
             <!-- 題目形式 (唯讀範例) -->
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
                 題目形式
                 <span class="text-error-500">*</span>
               </label>
@@ -437,7 +437,7 @@ const deleteQuestion = async (id) => {
             </div>
             <!-- 正確答案 (根據形式動態顯示) -->
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
                 正確答案
                 <span class="text-error-500">*</span>
               </label>
@@ -466,7 +466,7 @@ const deleteQuestion = async (id) => {
 
           <!-- 詳細解答 -->
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
               詳細解答
               <span class="text-error-500">*</span>
             </label>
@@ -480,7 +480,7 @@ const deleteQuestion = async (id) => {
           <div class="grid grid-cols-2 gap-4">
             <!-- 解題獎勵 -->
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
                 解題獎勵 (點數)
                 <span class="text-error-500">*</span>
               </label>
@@ -495,8 +495,8 @@ const deleteQuestion = async (id) => {
 
             <!-- 啟用狀態 (改回 Select 方式) -->
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
-                啟用狀態
+              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-white">
+                啓用狀態
                 <span class="text-error-500">*</span>
               </label>
               <select
