@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
 import SearchBar from '@/components/Pawsport/SearchBar.vue'
+import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 // 初始化
 const players = ref([])
@@ -215,7 +216,7 @@ const closeModal = () => {
 <template>
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-6">
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">玩家管理</h2>
+      <h2 class="text-title-md text-gray-800 dark:text-white/90">玩家管理</h2>
     </div>
     <SearchBar @search="searchPlayers" />
   </div>
@@ -226,35 +227,35 @@ const closeModal = () => {
         <thead>
           <tr class="border-b border-gray-100 text-center dark:border-gray-800">
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               會員檔案
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               玩家帳號
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               玩家資料建立時間
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               現有點數
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               持有造型數量
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               遊玩進度
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               最後遊玩時間
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
               動作
             </th>
           </tr>
@@ -271,28 +272,32 @@ const closeModal = () => {
             class="hover:bg-gray-25/50 text-center transition-colors dark:hover:bg-white/[0.02]">
             <td class="px-4 py-4">
               <button
-                class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm text-info-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-                查看會員檔案
+                class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                查看玩家檔案
               </button>
             </td>
 
-            <td class="text-theme-sm px-4 py-4 text-gray-800 dark:text-gray-300">
+            <td class="text-theme-sm px-4 py-4 text-gray-500 dark:text-white/90">
               {{ player.userName || '未提供' }}
             </td>
 
-            <td class="text-theme-sm px-4 py-4 text-gray-500">
+            <td class="text-theme-sm px-4 py-4 text-gray-500 dark:text-white/90">
               {{ formatDate(player.createTime) }}
             </td>
 
-            <td class="text-theme-sm px-4 py-4 font-medium text-gray-500">
+            <td class="text-theme-sm px-4 py-4 font-medium text-gray-500 dark:text-white/90">
               {{ (player.currentPoint || 0).toLocaleString() }}
             </td>
 
-            <td class="text-theme-sm px-4 py-4 text-gray-500">{{ player.skinCount }} 個</td>
+            <td class="text-theme-sm px-4 py-4 text-gray-500 dark:text-white/90">
+              {{ player.skinCount }} 個
+            </td>
 
-            <td class="text-theme-sm px-4 py-4 text-gray-500">第 {{ player.maxGameId || 0 }} 關</td>
+            <td class="text-theme-sm px-4 py-4 text-gray-500 dark:text-white/90">
+              第 {{ player.maxGameId || 0 }} 關
+            </td>
 
-            <td class="text-theme-sm px-4 py-4 text-gray-500">
+            <td class="text-theme-sm px-4 py-4 text-gray-500 dark:text-white/90">
               {{ formatDate(player.lastPlayedDate) }}
             </td>
 
@@ -300,18 +305,18 @@ const closeModal = () => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openEditModal(player)"
-                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm text-warning-950 rounded-lg px-4 py-2 font-semibold transition-all active:scale-95">
-                  編輯
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <EditIcon />
                 </button>
                 <button
                   @click="deletePlayer(player.playerId, player.userName)"
-                  class="bg-brand-error-800 text-theme-sm hover:bg-brand-error-900 shadow-theme-sm text-warning-950 rounded-lg px-4 py-2 font-semibold transition-all active:scale-95">
-                  刪除
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <Trash2 />
                 </button>
                 <button
                   @click="openRecordModal(player)"
-                  class="bg-brand-success-50 text-theme-sm hover:bg-brand-success-100 shadow-theme-sm text-brand-success-900 rounded-lg px-4 py-2 font-semibold transition-all active:scale-95">
-                  紀錄
+                  class="bg-brand-info-500 text-theme-xl hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <FileText />
                 </button>
               </div>
             </td>
@@ -399,9 +404,15 @@ const closeModal = () => {
                 class="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                 <div class="flex items-center gap-4">
                   <img
+                    v-if="skin.skinImage && !skin.hasError"
                     :src="`/images/${skin.skinImage}`"
                     class="h-12 w-12 rounded-lg object-cover shadow-sm"
-                    @error="(e) => (e.target.src = '/images/default-skin.png')" />
+                    @error="skin.hasError = true" />
+                  <div
+                    v-else
+                    class="flex h-12 w-12 items-center justify-center rounded-lg border border-dashed border-gray-400 bg-gray-200 text-[10px] text-gray-500 dark:border-white/20 dark:bg-white/10 dark:text-gray-400">
+                    無圖片
+                  </div>
                   <div>
                     <p class="text-sm font-bold text-gray-800 dark:text-white/90">
                       {{ skin.skinName }}
