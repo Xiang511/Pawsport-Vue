@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
+import { EditIcon, Icon, icons, Trash2 } from 'lucide-vue-next'
 
 const questions = ref([])
 const isLoading = ref(false)
@@ -228,10 +229,10 @@ const deleteQuestion = async (id) => {
   <!-- 頁面頂部：標題 + 新增按鈕 + 篩選功能 -->
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-6">
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">題庫管理</h2>
+      <h2 class="text-title-md text-gray-800 dark:text-gray-500">題庫管理</h2>
 
       <div class="flex items-center gap-2">
-        <span class="text-theme-sm font-medium whitespace-nowrap text-gray-500">
+        <span class="text-theme-xl font-medium whitespace-nowrap text-gray-500">
           按照題目類型篩選：
         </span>
         <select
@@ -243,7 +244,7 @@ const deleteQuestion = async (id) => {
     </div>
     <button
       @click="openModal"
-      class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm text-info-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
+      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl transition-all active:scale-95">
       新增題目
     </button>
   </div>
@@ -256,39 +257,39 @@ const deleteQuestion = async (id) => {
         <thead>
           <tr class="border-b border-gray-100 text-center dark:border-gray-800">
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               編號
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               題目類型
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               題目內容
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               詳細解答
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               答案
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               狀態
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               獎勵
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               形式
             </th>
             <th
-              class="text-theme-sm px-4 py-4 font-semibold tracking-wider text-gray-500 uppercase">
+              class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase">
               動作
             </th>
           </tr>
@@ -339,7 +340,7 @@ const deleteQuestion = async (id) => {
                     : 'text-warning-950 bg-brand-error-500'
                 "
                 class="text-theme-sm rounded-full px-3 py-1 font-medium">
-                {{ item.isActive ? '啟用' : '停用' }}
+                {{ item.isActive ? '啓用' : '停用' }}
               </span>
             </td>
             <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium">
@@ -352,13 +353,13 @@ const deleteQuestion = async (id) => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openModal(item)"
-                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-                  編輯
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  <EditIcon />
                 </button>
                 <button
                   @click="deleteQuestion(item.gameId)"
-                  class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-                  刪除
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  <Trash2 />
                 </button>
               </div>
             </td>
@@ -377,7 +378,7 @@ const deleteQuestion = async (id) => {
         <!-- Header -->
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">
+          <h3 class="text-xl text-gray-800 dark:text-gray-500">
             {{ isEditMode ? '編輯題目' : '新增題目' }}
           </h3>
           <button @click="closeModal" class="text-gray-400 transition-colors hover:text-gray-600">
@@ -501,7 +502,7 @@ const deleteQuestion = async (id) => {
               <select
                 v-model="newQuestion.IsActive"
                 class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none dark:text-gray-500">
-                <option :value="true">啟用</option>
+                <option :value="true">啓用</option>
                 <option :value="false">停用</option>
               </select>
             </div>
@@ -513,7 +514,7 @@ const deleteQuestion = async (id) => {
           <button
             @click="saveQuestion"
             :disabled="isSubmitting"
-            class="bg-brand-info-500 text-info-950 flex items-center gap-2 rounded-lg px-5 py-2 font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
+            class="bg-brand-success-500 text-white flex items-center gap-2 rounded-lg px-5 py-2 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
             <!-- 如果正在傳輸，顯示一個簡單的小轉圈或文字 -->
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '處理中...' : isEditMode ? '確認修改' : '確認新增' }}
