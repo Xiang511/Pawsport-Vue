@@ -11,7 +11,6 @@ export default [
     component: () => import('@/views/Tailadmin/Auth/Signin.vue'),
     meta: {
       title: 'Sign In',
-
     },
   },
   {
@@ -20,7 +19,6 @@ export default [
     component: () => import('@/views/Tailadmin/Auth/Signup.vue'),
     meta: {
       title: 'Sign Up',
-
     },
   },
   {
@@ -34,7 +32,6 @@ export default [
         component: () => import('@/views/Ecommerce.vue'),
         meta: {
           title: 'eCommerce Dashboard',
-
         },
       },
       {
@@ -46,12 +43,59 @@ export default [
         },
       },
       {
+        path: 'pet',
+        name: 'admin-petlist',
+        component: () => import('@/views/Tailadmin/Pet/PetList.vue'),
+        meta: {
+          title: '寵物資訊 | PawsPort',
+        },
+      },
+      {
+        path: 'pet/create',
+        name: 'admin-petcreate',
+        component: () => import('@/views/Tailadmin/Pet/PetCreate.vue'),
+        meta: {
+          title: '新增寵物資料 | PawsPort',
+        },
+      },
+      {
+        path: 'pet/edit/:id',
+        name: 'admin-petedit',
+        component: () => import('@/views/Tailadmin/Pet/PetEdit.vue'),
+        meta: {
+          title: '修改寵物資料 | PawsPort',
+        },
+      },
+      {
+        path: 'adoption',
+        name: 'admin-adoptionlist',
+        component: () => import('@/views/Tailadmin/Pet/AdoptList.vue'),
+        meta: {
+          title: '領養記錄 | PawsPort',
+        },
+      },
+      {
+        path: 'passport',
+        name: 'admin-passportlist',
+        component: () => import('@/views/Tailadmin/Pet/PassportList.vue'),
+        meta: {
+          title: '寵物健康護照 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport',
+        name: 'admin-missinglist',
+        component: () => import('@/views/Tailadmin/Pet/MissingList.vue'),
+        meta: {
+          title: '寵物走失紀錄 | PawsPort',
+        },
+      },
+      {
         path: 'calendar',
         name: 'admin-calendar',
         component: () => import('@/views/Tailadmin/Others/Calendar.vue'),
         meta: {
           title: 'Calendar',
-
         },
       },
       {
@@ -60,7 +104,6 @@ export default [
         component: () => import('@/views/Tailadmin/Others/UserProfile.vue'),
         meta: {
           title: 'User Profile',
-
         },
       },
       {
@@ -69,7 +112,6 @@ export default [
         component: () => import('@/views/Tailadmin/Forms/FormElements.vue'),
         meta: {
           title: 'Form Elements',
-
         },
       },
       {
@@ -78,7 +120,6 @@ export default [
         component: () => import('@/views/Tailadmin/Tables/BasicTables.vue'),
         meta: {
           title: 'Basic Tables',
-
         },
       },
       {
@@ -87,7 +128,6 @@ export default [
         component: () => import('@/views/Tailadmin/Pages/BlankPage.vue'),
         meta: {
           title: 'Blank Page',
-
         },
       },
       {
@@ -96,7 +136,6 @@ export default [
         component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
           title: '404 Page',
-
         },
       },
       {
@@ -105,7 +144,6 @@ export default [
         component: () => import('@/views/Tailadmin/Chart/LineChart/LineChart.vue'),
         meta: {
           title: 'Line Chart',
-
         },
       },
       {
@@ -114,7 +152,6 @@ export default [
         component: () => import('@/views/Tailadmin/Chart/BarChart/BarChart.vue'),
         meta: {
           title: 'Bar Chart',
-
         },
       },
       {
@@ -123,7 +160,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Alerts.vue'),
         meta: {
           title: 'Alerts',
-
         },
       },
       {
@@ -132,7 +168,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Avatars.vue'),
         meta: {
           title: 'Avatars',
-
         },
       },
       {
@@ -141,7 +176,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Badges.vue'),
         meta: {
           title: 'Badge',
-
         },
       },
       {
@@ -150,7 +184,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Buttons.vue'),
         meta: {
           title: 'Buttons',
-
         },
       },
       {
@@ -159,7 +192,6 @@ export default [
         component: () => import('@/views/Tailadmin/UiElements/Images.vue'),
         meta: {
           title: 'Images',
-
         },
       },
       {
