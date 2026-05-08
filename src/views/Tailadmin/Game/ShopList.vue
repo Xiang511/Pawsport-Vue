@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
+import { EditIcon, Trash2 } from 'lucide-vue-next'
 
 // 資料狀態
 const skins = ref([])
@@ -143,11 +144,10 @@ const handleFileUpload = (event) => {
 
 <template>
   <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-500">商店管理</h2>
+    <h2 class="text-title-md text-gray-800 dark:text-white/90">商店管理</h2>
     <button
       @click="openModal()"
-      class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm text-info-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-      <span class="text-lg">+</span>
+      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl transition-all active:scale-95">
       新增造型
     </button>
   </div>
@@ -158,13 +158,13 @@ const handleFileUpload = (event) => {
       <table class="w-full table-fixed border-collapse text-center">
         <thead>
           <tr class="border-b border-gray-100 text-sm text-gray-500 dark:border-gray-800">
-            <th class="w-[80px] px-4 py-4 font-semibold">編號</th>
-            <th class="w-[150px] px-4 py-4 font-semibold">造型名稱</th>
-            <th class="w-[120px] px-4 py-4 font-semibold">圖片</th>
-            <th class="px-4 py-4 text-left font-semibold">描述</th>
-            <th class="w-[100px] px-4 py-4 font-semibold">價格</th>
-            <th class="w-[100px] px-4 py-4 font-semibold">是否上架</th>
-            <th class="w-[180px] px-4 py-4 font-semibold">動作</th>
+            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">編號</th>
+            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">造型名稱</th>
+            <th class="w-[15%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">圖片</th>
+            <th class="w-[25%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">描述</th>
+            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">價格</th>
+            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">是否上架</th>
+            <th class="w-[20%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">動作</th>
           </tr>
         </thead>
 
@@ -176,9 +176,9 @@ const handleFileUpload = (event) => {
           <tr
             v-for="(item, index) in skins"
             :key="item.skinId"
-            class="transition-colors hover:bg-gray-50">
-            <td class="px-2 py-4 text-gray-800">{{ index + 1 }}</td>
-            <td class="px-2 py-4 font-bold text-gray-800">{{ item.skinName }}</td>
+            class="transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ index + 1 }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.skinName }}</td>
             <td class="px-2 py-4">
               <div class="flex justify-center">
                 <div
@@ -191,12 +191,12 @@ const handleFileUpload = (event) => {
                 </div>
               </div>
             </td>
-            <td class="mt-4 line-clamp-2 px-4 py-4 text-left text-sm text-gray-500">
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
               {{ item.description }}
             </td>
-            <td class="px-2 py-4 font-mono font-bold text-gray-700">{{ item.price }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.price }}</td>
             <td class="px-2 py-4">
-              <span :class="item.isAvailable ? 'text-green-600' : 'text-red-500'">
+              <span :class="item.isAvailable ? 'text-brand-success-600' : 'text-brand-error-400'">
                 {{ item.isAvailable ? '是' : '否' }}
               </span>
             </td>
@@ -204,13 +204,13 @@ const handleFileUpload = (event) => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openModal(item)"
-                  class="bg-brand-warning-800 text-theme-sm hover:bg-brand-warning-900 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-                  編輯
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  <EditIcon />
                 </button>
                 <button
                   @click="deleteSkin(item.skinId)"
-                  class="bg-brand-error-500 text-theme-sm hover:bg-brand-error-600 shadow-theme-sm text-warning-950 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 font-semibold transition-all active:scale-95">
-                  刪除
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  <Trash2 />
                 </button>
               </div>
             </td>
@@ -226,7 +226,7 @@ const handleFileUpload = (event) => {
         class="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-900">
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">
+          <h3 class="text-xl text-gray-800 dark:text-white">
             {{ isEditMode ? '編輯造型' : '新增造型' }}
           </h3>
           <button @click="closeModal" class="text-gray-400 transition-colors hover:text-gray-600">
@@ -236,7 +236,7 @@ const handleFileUpload = (event) => {
 
         <div class="custom-scrollbar max-h-[75vh] space-y-4 overflow-y-auto p-6">
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
               造型名稱
               <span class="text-red-500">*</span>
             </label>
@@ -249,7 +249,7 @@ const handleFileUpload = (event) => {
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div class="sm:col-span-3">
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
                 上傳造型圖片
                 <span class="text-xs text-gray-400">(建議 1:1 比例)</span>
               </label>
@@ -257,10 +257,10 @@ const handleFileUpload = (event) => {
                 type="file"
                 accept="image/*"
                 @change="handleFileUpload"
-                class="text-theme-sm file:bg-brand-info-50 file:text-brand-info-700 hover:file:bg-brand-info-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm file:font-semibold dark:bg-gray-900 dark:text-gray-500" />
+                class="text-theme-sm file:bg-brand-success-50 file:text-white hover:file:bg-brand-success-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm  dark:bg-gray-900 dark:text-gray-500" />
             </div>
             <div class="flex flex-col items-center">
-              <span class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <span class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
                 預覽
               </span>
               <div class="h-16 w-16 overflow-hidden rounded-lg border border-gray-200">
@@ -275,7 +275,7 @@ const handleFileUpload = (event) => {
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
                 價格 (點數)
                 <span class="text-red-500">*</span>
               </label>
@@ -285,7 +285,7 @@ const handleFileUpload = (event) => {
                 class="text-theme-sm focus:border-brand-500 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none dark:bg-gray-900 dark:text-gray-500" />
             </div>
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
                 是否上架
               </label>
               <select
@@ -298,7 +298,7 @@ const handleFileUpload = (event) => {
           </div>
 
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-500">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
               造型描述
             </label>
             <textarea
@@ -310,17 +310,17 @@ const handleFileUpload = (event) => {
         </div>
 
         <div
-          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+          class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900/50">
           <button
             @click="saveSkin"
             :disabled="isSubmitting"
-            class="bg-brand-info-500 text-info-950 flex items-center gap-2 rounded-lg px-5 py-2 font-semibold transition-all active:scale-95 disabled:opacity-50">
+            class="bg-brand-success-500 text-white dark:text-white flex items-center gap-2 rounded-lg px-6 py-2.5 transition-all active:scale-95 disabled:opacity-50">
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '處理中...' : isEditMode ? '確認修改' : '確認新增' }}
           </button>
           <button
             @click="closeModal"
-            class="text-theme-sm rounded-lg border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50 active:scale-95">
+            class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 font-semibold text-gray-700 transition-all hover:bg-gray-50 active:scale-95">
             取消
           </button>
         </div>
