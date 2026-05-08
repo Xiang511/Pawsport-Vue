@@ -108,7 +108,7 @@ const deleteSkin = async (id) => {
     if (response.data && response.data.success) {
       alert('造型已成功刪除')
       await fetchSkins()
-    }else {
+    } else {
       alert('刪除失敗：' + (response.data?.message || '伺服器拒絕請求'))
     }
   } catch (error) {
@@ -116,7 +116,9 @@ const deleteSkin = async (id) => {
 
     if (error.response) {
       // 伺服器有回應但狀態碼錯誤 (如 404 或 500)
-      alert(`刪除失敗 (${error.response.status})：${error.response.data?.message || '後端發生錯誤'}`)
+      alert(
+        `刪除失敗 (${error.response.status})：${error.response.data?.message || '後端發生錯誤'}`,
+      )
     } else if (error.request) {
       // 請求發出但沒收到回應
       alert('無法連線到伺服器，請檢查後端服務是否正常。')
@@ -147,7 +149,7 @@ const handleFileUpload = (event) => {
     <h2 class="text-title-md text-gray-800 dark:text-white/90">商店管理</h2>
     <button
       @click="openModal()"
-      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl transition-all active:scale-95">
+      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl text-white transition-all active:scale-95">
       新增造型
     </button>
   </div>
@@ -158,13 +160,34 @@ const handleFileUpload = (event) => {
       <table class="w-full table-fixed border-collapse text-center">
         <thead>
           <tr class="border-b border-gray-100 text-sm text-gray-500 dark:border-gray-800">
-            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">編號</th>
-            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">造型名稱</th>
-            <th class="w-[15%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">圖片</th>
-            <th class="w-[25%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">描述</th>
-            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">價格</th>
-            <th class="w-[10%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">是否上架</th>
-            <th class="w-[20%] text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">動作</th>
+            <th
+              class="text-theme-xl w-[10%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              編號
+            </th>
+            <th
+              class="text-theme-xl w-[10%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              造型名稱
+            </th>
+            <th
+              class="text-theme-xl w-[15%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              圖片
+            </th>
+            <th
+              class="text-theme-xl w-[25%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              描述
+            </th>
+            <th
+              class="text-theme-xl w-[10%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              價格
+            </th>
+            <th
+              class="text-theme-xl w-[10%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              是否上架
+            </th>
+            <th
+              class="text-theme-xl w-[20%] px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
+              動作
+            </th>
           </tr>
         </thead>
 
@@ -177,24 +200,34 @@ const handleFileUpload = (event) => {
             v-for="(item, index) in skins"
             :key="item.skinId"
             class="transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ index + 1 }}</td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.skinName }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
+              {{ index + 1 }}
+            </td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
+              {{ item.skinName }}
+            </td>
             <td class="px-2 py-4">
               <div class="flex justify-center">
                 <div
-                  class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-200">
+                  class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-200 dark:bg-white/5">
+                  <div class="flex flex-col items-center justify-center">
+                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 ">無圖片</span>
+                  </div>
+
                   <img
                     v-if="item.skinImage"
                     :src="'https://localhost:7048' + item.skinImage"
-                    class="h-full w-full object-cover" />
-                  <span v-else class="text-[10px] text-gray-400">No Image</span>
+                    class="absolute inset-0 z-10 h-full w-full object-cover"
+                    @error="(e) => (e.target.style.opacity = 0)" />
                 </div>
               </div>
             </td>
             <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
               {{ item.description }}
             </td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.price }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
+              {{ item.price }}
+            </td>
             <td class="px-2 py-4">
               <span :class="item.isAvailable ? 'text-brand-success-600' : 'text-brand-error-400'">
                 {{ item.isAvailable ? '是' : '否' }}
@@ -204,12 +237,12 @@ const handleFileUpload = (event) => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openModal(item)"
-                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
                   <EditIcon />
                 </button>
                 <button
                   @click="deleteSkin(item.skinId)"
-                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
                   <Trash2 />
                 </button>
               </div>
@@ -257,18 +290,22 @@ const handleFileUpload = (event) => {
                 type="file"
                 accept="image/*"
                 @change="handleFileUpload"
-                class="text-theme-sm file:bg-brand-success-50 file:text-white hover:file:bg-brand-success-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm  dark:bg-gray-900 dark:text-gray-500" />
+                class="text-theme-sm file:bg-brand-success-50 hover:file:bg-brand-success-100 w-full rounded-lg border border-gray-300 px-4 py-2 outline-none file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm file:text-white dark:bg-gray-900 dark:text-gray-500" />
             </div>
             <div class="flex flex-col items-center">
               <span class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
                 預覽
               </span>
-              <div class="h-16 w-16 overflow-hidden rounded-lg border border-gray-200">
+
+              <div
+                class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:bg-white/5">
+                <span class="text-[10px] font-bold text-gray-400">無圖片</span>
+
                 <img
                   v-if="newSkin.SkinImage"
                   :src="newSkin.SkinImage"
-                  class="h-full w-full object-cover" />
-                <span v-else class="text-[10px] text-gray-400">無圖片</span>
+                  class="absolute inset-0 z-10 h-full w-full object-cover"
+                  @error="(e) => (e.target.style.opacity = 0)" />
               </div>
             </div>
           </div>
@@ -314,7 +351,7 @@ const handleFileUpload = (event) => {
           <button
             @click="saveSkin"
             :disabled="isSubmitting"
-            class="bg-brand-success-500 text-white dark:text-white flex items-center gap-2 rounded-lg px-6 py-2.5 transition-all active:scale-95 disabled:opacity-50">
+            class="bg-brand-success-500 flex items-center gap-2 rounded-lg px-6 py-2.5 text-white transition-all active:scale-95 disabled:opacity-50 dark:text-white">
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '處理中...' : isEditMode ? '確認修改' : '確認新增' }}
           </button>
