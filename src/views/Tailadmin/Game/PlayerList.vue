@@ -269,7 +269,7 @@ const closeModal = () => {
           <tr
             v-for="player in players"
             :key="player.playerId"
-            class="hover:bg-gray-25/50 text-center transition-colors dark:hover:bg-white/[0.02]">
+            class="text-center transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
             <td class="px-4 py-4">
               <button
                 class="bg-brand-info-500 text-theme-sm hover:bg-brand-info-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
@@ -338,7 +338,7 @@ const closeModal = () => {
         class="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-900">
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-500">
+          <h3 class="text-xl text-gray-800 dark:text-white">
             編輯玩家：{{ editingPlayer.userName }}
           </h3>
           <button
@@ -351,14 +351,14 @@ const closeModal = () => {
         <div class="custom-scrollbar max-h-[70vh] space-y-5 overflow-y-auto p-6">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-500">玩家 ID</label>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">玩家 ID</label>
               <input
                 :value="editingPlayer.playerId"
                 disabled
                 class="w-full rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 outline-none dark:bg-gray-800 dark:text-gray-400" />
             </div>
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-500">建立時間</label>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">建立時間</label>
               <input
                 :value="formatDate(editingPlayer.createTime)"
                 disabled
@@ -367,7 +367,7 @@ const closeModal = () => {
           </div>
 
           <div>
-            <label class="text-theme-sm mb-1 block font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">
               現有點數
             </label>
             <input
@@ -378,14 +378,14 @@ const closeModal = () => {
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-500">目前進度</label>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">目前進度</label>
               <div
                 class="rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 第 {{ editingPlayer.maxGameId }} 關
               </div>
             </div>
             <div>
-              <label class="text-theme-sm mb-1 block font-medium text-gray-500">最後遊玩時間</label>
+              <label class="text-theme-sm mb-1 block font-medium text-gray-800 dark:text-white">最後遊玩時間</label>
               <div
                 class="rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 {{ formatDate(editingPlayer.lastPlayedDate) }}
@@ -405,16 +405,16 @@ const closeModal = () => {
                 <div class="flex items-center gap-4">
                   <img
                     v-if="skin.skinImage && !skin.hasError"
-                    :src="`/images/${skin.skinImage}`"
+                    :src="'https://localhost:7048' + skin.skinImage"
                     class="h-12 w-12 rounded-lg object-cover shadow-sm"
                     @error="skin.hasError = true" />
                   <div
                     v-else
-                    class="flex h-12 w-12 items-center justify-center rounded-lg border border-dashed border-gray-400 bg-gray-200 text-[10px] text-gray-500 dark:border-white/20 dark:bg-white/10 dark:text-gray-400">
+                    class="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 bg-gray-200 text-[10px] text-gray-500 dark:border-white/20 dark:bg-white/10 dark:text-gray-400">
                     無圖片
                   </div>
                   <div>
-                    <p class="text-sm font-bold text-gray-800 dark:text-white/90">
+                    <p class="text-sm text-gray-800 dark:text-white/90">
                       {{ skin.skinName }}
                     </p>
                     <p class="font-mono text-xs text-gray-400">ID: {{ skin.skinId }}</p>
@@ -429,7 +429,7 @@ const closeModal = () => {
 
               <div
                 v-if="!editingPlayer.ownedSkins || editingPlayer.ownedSkins.length === 0"
-                class="py-6 text-center text-sm text-gray-400 italic">
+                class="py-6 text-center text-sm text-gray-800 dark:text-white italic">
                 此玩家尚未擁有任何造型
               </div>
             </div>
@@ -441,7 +441,7 @@ const closeModal = () => {
           <button
             @click="saveChanges"
             :disabled="isSubmitting"
-            class="bg-brand-info-500 text-info-950 flex items-center gap-2 rounded-lg px-6 py-2.5 font-semibold transition-all active:scale-95 disabled:opacity-50">
+            class="bg-brand-info-500 text-white dark:text-white flex items-center gap-2 rounded-lg px-6 py-2.5 transition-all active:scale-95 disabled:opacity-50">
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '儲存中...' : '確認修改' }}
           </button>
@@ -465,7 +465,7 @@ const closeModal = () => {
         class="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-900">
         <div
           class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">
+          <h3 class="text-xl text-gray-800 dark:text-white">
             玩家紀錄：{{ playerRecords.playerName }}
           </h3>
           <button
@@ -486,15 +486,15 @@ const closeModal = () => {
             <section>
               <div class="mb-3 flex items-center gap-2">
                 <div class="bg-brand-error-500 h-5 w-1.5 rounded-full"></div>
-                <h4 class="font-bold text-gray-700 dark:text-gray-300">造型消費紀錄</h4>
+                <h4 class="text-xl text-gray-800 dark:text-white">造型消費紀錄</h4>
               </div>
               <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
                 <table class="w-full table-fixed text-left text-sm">
                   <thead class="bg-gray-50/50 text-gray-500 dark:bg-gray-800/50">
                     <tr>
-                      <th class="w-[30%] px-4 py-3 font-medium">造型名稱</th>
-                      <th class="w-[40%] px-4 py-3 text-center font-medium">時間</th>
-                      <th class="w-[30%] px-4 py-3 text-right font-medium">點數</th>
+                      <th class="w-[30%] px-4 py-3 font-medium dark:text-white">造型名稱</th>
+                      <th class="w-[40%] px-4 py-3 text-center font-medium dark:text-white">時間</th>
+                      <th class="w-[30%] px-4 py-3 text-right font-medium dark:text-white">點數</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -502,13 +502,13 @@ const closeModal = () => {
                       v-for="log in playerRecords.consumptionLogs"
                       :key="log.transactionDate"
                       class="transition-colors hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
-                      <td class="px-4 py-3 font-bold text-gray-800 dark:text-gray-200">
+                      <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
                         {{ log.description }}
                       </td>
                       <td class="px-4 py-3 text-center font-mono text-gray-400">
                         {{ formatDate(log.transactionDate) }}
                       </td>
-                      <td class="px-4 py-3 text-right font-mono font-bold text-red-500">
+                      <td class="px-4 py-3 text-right font-mono text-red-500">
                         {{ log.amount }}
                       </td>
                     </tr>
@@ -527,15 +527,15 @@ const closeModal = () => {
             <section>
               <div class="mb-3 flex items-center gap-2">
                 <div class="bg-brand-success-500 h-5 w-1.5 rounded-full"></div>
-                <h4 class="font-bold text-gray-700 dark:text-gray-300">點數獲取紀錄</h4>
+                <h4 class="text-xl text-gray-800 dark:text-white">點數獲取紀錄</h4>
               </div>
               <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
                 <table class="w-full table-fixed text-left text-sm">
                   <thead class="bg-gray-50/50 text-gray-500 dark:bg-gray-800/50">
                     <tr>
-                      <th class="w-[30%] px-4 py-3 font-medium">獲取來源</th>
-                      <th class="w-[40%] px-4 py-3 text-center font-medium">時間</th>
-                      <th class="w-[30%] px-4 py-3 text-right font-medium">點數</th>
+                      <th class="w-[30%] px-4 py-3 font-medium dark:text-white">獲取來源</th>
+                      <th class="w-[40%] px-4 py-3 text-center font-medium dark:text-white">時間</th>
+                      <th class="w-[30%] px-4 py-3 text-right font-medium dark:text-white">點數</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -543,13 +543,13 @@ const closeModal = () => {
                       v-for="log in playerRecords.pointLogs"
                       :key="log.transactionDate"
                       class="transition-colors hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
-                      <td class="px-4 py-3 font-bold text-gray-800 dark:text-gray-200">
+                      <td class="px-4 py-3  text-gray-800 dark:text-gray-200">
                         {{ log.description }}
                       </td>
                       <td class="px-4 py-3 text-center font-mono text-gray-400">
                         {{ formatDate(log.transactionDate) }}
                       </td>
-                      <td class="px-4 py-3 text-right font-mono font-bold text-green-500">
+                      <td class="px-4 py-3 text-right font-mono text-green-500">
                         +{{ log.amount }}
                       </td>
                     </tr>
@@ -571,7 +571,7 @@ const closeModal = () => {
           class="flex items-center justify-end border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900/50">
           <button
             @click="isRecordModalOpen = false"
-            class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 font-semibold text-gray-700 transition-all hover:bg-gray-50 active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+            class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-gray-700 transition-all hover:bg-gray-50 active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
             關閉
           </button>
         </div>
