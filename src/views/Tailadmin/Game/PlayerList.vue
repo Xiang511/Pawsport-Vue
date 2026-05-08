@@ -441,7 +441,7 @@ const closeModal = () => {
           <button
             @click="saveChanges"
             :disabled="isSubmitting"
-            class="bg-brand-info-500 text-white dark:text-white flex items-center gap-2 rounded-lg px-6 py-2.5 transition-all active:scale-95 disabled:opacity-50">
+            class="bg-brand-success-500 text-white dark:text-white flex items-center gap-2 rounded-lg px-6 py-2.5 transition-all active:scale-95 disabled:opacity-50">
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '儲存中...' : '確認修改' }}
           </button>
