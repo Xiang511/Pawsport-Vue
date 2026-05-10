@@ -6,10 +6,10 @@ export function useDataTable(userList, search, sortColumn, sortDirection, curren
         return userList
             .filter(
                 (user) =>
-                    user.name.toLowerCase().includes(searchLower) ||
-                    user.phone.toLowerCase().includes(searchLower) ||
-                    user.city.toLowerCase().includes(searchLower) ||
-                    (user.job && user.job.toLowerCase().includes(searchLower)),
+                    user.name ? user.name.toLowerCase().includes(searchLower) : false ||
+                        user.phone ? user.phone.toLowerCase().includes(searchLower) : false ||
+                            user.city ? user.city.toLowerCase().includes(searchLower) : false ||
+                    (user.job ? user.job.toLowerCase().includes(searchLower) : false),
             )
             .sort((a, b) => {
                 let modifier = sortDirection.value === 'asc' ? 1 : -1
