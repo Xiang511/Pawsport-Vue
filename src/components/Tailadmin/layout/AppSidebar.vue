@@ -10,7 +10,7 @@ import {
 } from '@/components/Tailadmin/icons'
 
 import { useSidebar } from '@/composables/Tailadmin/useSidebar'
-
+import { UsersRound } from 'lucide-vue-next'
 import SidebarWidget from './SidebarWidget.vue'
 
 const route = useRoute()
@@ -22,7 +22,7 @@ const menuGroups = [
     title: 'Menu',
     items: [
       {
-        icon: User,
+        icon: UsersRound,
         name: '會員管理',
         subItems: [
           { name: '基本資料', path: '/dashboard/member' },
