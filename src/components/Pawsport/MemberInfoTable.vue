@@ -85,7 +85,7 @@ function handleEdit(user) {
 async function handleDelete(userId) {
   if (confirm('確定要刪除此會員嗎？')) {
     try {
-      await axios.delete(`https://localhost:7048/api/Users/${userId}`)
+      await axios.patch(`https://localhost:7048/api/Users/${userId}`)
       // 從列表中移除該用戶
       const index = userList.findIndex((u) => u.userId === userId)
       if (index !== -1) {
