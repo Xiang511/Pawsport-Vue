@@ -13,8 +13,8 @@ const currentPageTitle = ref('編輯走失資料')
 // 麵包屑
 const breadcrumbItems = ref([
   { name: '首頁', route: '/dashboard' },
-  { name: '走失列表', route: '/dashboard/missing' },
-  { name: '編輯資料', route: '' }
+  { name: '走失列表', route: '/dashboard/missingreport' },
+  { name: '編輯資料', route: '' },
 ])
 
 // 1. 定義表單結構
@@ -29,7 +29,7 @@ const form = ref({
   lastSeenLng: null,
   lostLocation: '',
   createdAt: '',
-  updatedAt: ''
+  updatedAt: '',
 })
 
 const loading = ref(false)
@@ -54,8 +54,8 @@ const fetchReportData = async () => {
         ...data,
         lastSeenDate: formatDateForInput(data.lastSeenDate),
         // 若後端有提供 CreatedAt，也一併轉換
-        createdAt: data.createdAt, 
-        updatedAt: data.updatedAt
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
       }
     } else {
       alert('找不到該筆走失紀錄')
@@ -73,8 +73,11 @@ const fetchReportData = async () => {
 const handleSubmit = async () => {
   loading.value = true
   try {
-    const response = await axios.put(`https://localhost:7048/api/MissingReports/${reportId}`, form.value)
-    
+    const response = await axios.put(
+      `https://localhost:7048/api/MissingReports/${reportId}`,
+      form.value,
+    )
+
     if (response.status === 204 || response.data?.success === true) {
       alert('資料儲存成功！')
       router.push({ name: 'admin-missinglist' })
@@ -103,49 +106,58 @@ onMounted(fetchReportData)
     <div class="text-lg font-medium text-gray-500">載入走失資料中...</div>
   </div>
 
-  <div v-else class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div
+    v-else
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-7 py-4 dark:border-gray-800">
-      <h3 class="font-medium text-gray-800 dark:text-white/90">編輯報告內容 (ID: {{ reportId }})</h3>
+      <h3 class="font-medium text-gray-800 dark:text-white/90">
+        編輯報告內容 (ID: {{ reportId }})
+      </h3>
     </div>
 
     <div class="p-7">
       <form @submit.prevent="handleSubmit">
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">寵物 ID</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              寵物 ID
+            </label>
             <input
               v-model.number="form.petId"
               type="number"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-              required
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"
+              required />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">申報人 ID</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              申報人 ID
+            </label>
             <input
               v-model.number="form.userId"
               type="number"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-              required
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"
+              required />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">最後目擊日期</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              最後目擊日期
+            </label>
             <input
               v-model="form.lastSeenDate"
               type="date"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div class="flex flex-col justify-center">
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">刊登狀態</label>
-            <label class="relative inline-flex cursor-pointer items-center mt-2">
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              刊登狀態
+            </label>
+            <label class="relative mt-2 inline-flex cursor-pointer items-center">
               <input type="checkbox" v-model="form.isActive" class="peer sr-only" />
-              <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700"></div>
+              <div
+                class="peer peer-checked:bg-primary h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700"></div>
               <span class="ml-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                 {{ form.isActive ? '尋找中' : '已結案' }}
               </span>
@@ -153,42 +165,53 @@ onMounted(fetchReportData)
           </div>
 
           <div class="md:col-span-2">
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">走失地點描述</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              走失地點描述
+            </label>
             <input
               v-model="form.lostLocation"
               type="text"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">緯度 (Lat)</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              緯度 (Lat)
+            </label>
             <input
               v-model.number="form.lastSeenLat"
               type="number"
               step="any"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">經度 (Lng)</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              經度 (Lng)
+            </label>
             <input
               v-model.number="form.lastSeenLng"
               type="number"
               step="any"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
             <label class="mb-2.5 block text-sm font-medium text-gray-400">建立時間</label>
-            <input :value="form.createdAt" type="text" disabled class="w-full bg-transparent px-5 py-3 text-gray-400" />
+            <input
+              :value="form.createdAt"
+              type="text"
+              disabled
+              class="w-full bg-transparent px-5 py-3 text-gray-400" />
           </div>
 
           <div>
             <label class="mb-2.5 block text-sm font-medium text-gray-400">最後更新</label>
-            <input :value="form.updatedAt" type="text" disabled class="w-full bg-transparent px-5 py-3 text-gray-400" />
+            <input
+              :value="form.updatedAt"
+              type="text"
+              disabled
+              class="w-full bg-transparent px-5 py-3 text-gray-400" />
           </div>
         </div>
 
@@ -196,15 +219,13 @@ onMounted(fetchReportData)
           <button
             type="submit"
             :disabled="loading"
-            class="flex justify-center rounded bg-primary px-10 py-3 font-medium text-white hover:bg-opacity-90 disabled:bg-gray-400"
-          >
+            class="bg-primary hover:bg-opacity-90 flex justify-center rounded px-10 py-3 font-medium text-white disabled:bg-gray-400">
             {{ loading ? '儲存中...' : '儲存修改' }}
           </button>
           <button
             @click="goBack"
             type="button"
-            class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:text-white dark:border-gray-700"
-          >
+            class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:border-gray-700 dark:text-white">
             取消
           </button>
         </div>
