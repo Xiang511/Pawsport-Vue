@@ -37,6 +37,14 @@ export default [
           title: '遊戲主選單 | Petmily',
         },
       },
+      {
+        path: 'playerprofile',
+        name: 'client-playerprofile',
+        component: () => import('@/views/client/Game/PlayerProfile.vue'),
+        meta: {
+          title: '玩家資料 | Petmily',
+        },
+      },
       // 在這裡添加更多前台路由
     ],
   },
