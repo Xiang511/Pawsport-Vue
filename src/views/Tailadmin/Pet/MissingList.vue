@@ -14,9 +14,9 @@ const breadcrumbItems = ref([
 ])
 
 // --- 狀態定義 ---
-const allReports = ref([])      // 原始資料
-const keyword = ref('')         // 搜尋關鍵字
-const loading = ref(false)      // 載入狀態
+const allReports = ref([]) // 原始資料
+const keyword = ref('') // 搜尋關鍵字
+const loading = ref(false) // 載入狀態
 
 // --- 分頁狀態 ---
 const currentPage = ref(1)
@@ -28,13 +28,13 @@ const fetchReports = async () => {
   try {
     // 假設後端 API 為 /api/MissingReports
     const response = await axios.get('https://localhost:7048/api/MissingReports', {
-      params: { keyword: keyword.value }
+      params: { keyword: keyword.value },
     })
 
     const result = response.data
     if (result.success === true) {
       allReports.value = result.data || []
-      currentPage.value = 1 
+      currentPage.value = 1
     }
   } catch (error) {
     console.error('取得走失列表失敗:', error)
@@ -47,12 +47,12 @@ const fetchReports = async () => {
 // --- 刪除方法 ---
 const deleteReport = async (id) => {
   if (!confirm('確定要刪除這筆走失報告嗎?')) return
-  
+
   try {
     const response = await axios.delete(`https://localhost:7048/api/MissingReports/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
-      fetchReports() 
+      fetchReports()
     }
   } catch (error) {
     console.error('刪除失敗:', error)
@@ -84,27 +84,25 @@ onMounted(fetchReports)
 <template>
   <PageBreadcrumb :pageTitle="currentPageTitle" :items="breadcrumbItems" />
 
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+  <div
+    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex gap-2">
-        <input 
-          v-model="keyword" 
-          type="text" 
+        <input
+          v-model="keyword"
+          type="text"
           placeholder="搜尋名稱或地點..."
-          class="rounded-lg border border-gray-300 bg-transparent px-4 py-2 outline-none focus:border-primary dark:border-gray-700"
-          @keyup.enter="fetchReports"
-        />
-        <button 
-          @click="fetchReports" 
-          class="rounded-lg bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90"
-        >
+          class="focus:border-primary rounded-lg border border-gray-300 bg-transparent px-4 py-2 outline-none dark:border-gray-700"
+          @keyup.enter="fetchReports" />
+        <button
+          @click="fetchReports"
+          class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700">
           查詢
         </button>
       </div>
-      <button 
-        @click="goToCreate" 
-        class="rounded-lg bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90"
-      >
+      <button
+        @click="goToCreate"
+        class="bg-brand-success-500 hover:bg-brand-success-600 rounded-lg px-6 py-2 font-medium text-white">
         新增走失資料
       </button>
     </div>
@@ -123,8 +121,10 @@ onMounted(fetchReports)
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <tr v-for="(item, index) in paginatedReports" :key="item.reportId" 
-              class="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+          <tr
+            v-for="(item, index) in paginatedReports"
+            :key="item.reportId"
+            class="border-b hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.02]">
             <td class="px-4 py-4 text-sm">
               {{ (currentPage - 1) * pageSize + index + 1 }}
             </td>
@@ -137,40 +137,50 @@ onMounted(fetchReports)
               {{ item.lastSeenLat?.toFixed(4) }}, {{ item.lastSeenLng?.toFixed(4) }}
             </td>
             <td class="px-4 py-4 text-sm">
-              <span :class="item.isActive ? 'text-red-500 bg-red-50' : 'text-green-500 bg-green-50'" 
-                    class="rounded-full px-3 py-1 text-xs font-medium">
+              <span
+                :class="item.isActive ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'"
+                class="rounded-full px-3 py-1 text-xs font-medium">
                 {{ item.isActive ? '尋找中' : '已結案' }}
               </span>
             </td>
             <td class="px-4 py-4 text-center text-sm">
-              <button @click="goToEdit(item.reportId)" class="mr-3 font-medium text-primary hover:underline">編輯</button>
-              <button @click="deleteReport(item.reportId)" class="font-medium text-red-500 hover:underline">刪除</button>
+              <button
+                @click="goToEdit(item.reportId)"
+                class="text-primary mr-3 font-medium hover:underline">
+                編輯
+              </button>
+              <button
+                @click="deleteReport(item.reportId)"
+                class="font-medium text-red-500 hover:underline">
+                刪除
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
-      
+
       <div v-if="loading" class="py-20 text-center text-gray-500">讀取中...</div>
-      <div v-else-if="allReports.length === 0" class="py-20 text-center text-gray-500">尚無走失紀錄</div>
+      <div v-else-if="allReports.length === 0" class="py-20 text-center text-gray-500">
+        尚無走失紀錄
+      </div>
     </div>
 
     <div class="mt-6 flex items-center justify-between">
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到 {{ Math.min(currentPage * pageSize, allReports.length) }} 筆
+        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到
+        {{ Math.min(currentPage * pageSize, allReports.length) }} 筆
       </p>
       <div class="flex gap-2">
-        <button 
-          :disabled="currentPage === 1" 
+        <button
+          :disabled="currentPage === 1"
           @click="currentPage--"
-          class="rounded border border-gray-300 px-4 py-2 text-sm disabled:opacity-30 hover:bg-gray-100 dark:border-gray-700"
-        >
+          class="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700">
           上一頁
         </button>
-        <button 
-          :disabled="currentPage === totalPages" 
+        <button
+          :disabled="currentPage === totalPages"
           @click="currentPage++"
-          class="rounded border border-gray-300 px-4 py-2 text-sm disabled:opacity-30 hover:bg-gray-100 dark:border-gray-700"
-        >
+          class="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700">
           下一頁
         </button>
       </div>

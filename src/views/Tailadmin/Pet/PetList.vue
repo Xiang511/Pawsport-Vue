@@ -101,7 +101,7 @@ onMounted(fetchPets)
       </div>
       <button
         @click="goToCreate"
-        class="rounded-lg border border-gray-200 bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+        class="bg-brand-success-500 hover:bg-brand-success-600 rounded-lg border border-gray-200 px-4 py-2 text-white">
         建立新資料
       </button>
     </div>

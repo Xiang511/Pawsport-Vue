@@ -27,9 +27,9 @@ const fetchPassports = async () => {
   loading.value = true
   try {
     const response = await axios.get('https://localhost:7048/api/PassPort', {
-      params: { keyword: keyword.value }
+      params: { keyword: keyword.value },
     })
-    
+
     if (response.data.success === true) {
       passports.value = response.data.data || []
       currentPage.value = 1
@@ -45,7 +45,7 @@ const fetchPassports = async () => {
 // --- 刪除方法 ---
 const deletePassport = async (id) => {
   if (!confirm('確定要刪除這筆健康護照紀錄嗎？此動作不可撤回。')) return
-  
+
   try {
     const response = await axios.delete(`https://localhost:7048/api/PassPort/${id}`)
     if (response.status === 204 || response.data?.success === true) {
@@ -83,21 +83,25 @@ onMounted(fetchPassports)
 <template>
   <PageBreadcrumb :pageTitle="currentPageTitle" :items="breadcrumbItems" />
 
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+  <div
+    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex gap-2">
-        <input 
-          v-model="keyword" 
-          type="text" 
+        <input
+          v-model="keyword"
+          type="text"
           placeholder="搜尋寵物名稱或紀錄類型..."
-          class="rounded-lg border border-gray-300 bg-transparent px-4 py-2 outline-none focus:border-primary dark:border-gray-700"
-          @keyup.enter="fetchPassports"
-        />
-        <button @click="fetchPassports" class="rounded-lg bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90">
+          class="focus:border-primary rounded-lg border border-gray-300 bg-transparent px-4 py-2 outline-none dark:border-gray-700"
+          @keyup.enter="fetchPassports" />
+        <button
+          @click="fetchPassports"
+          class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700">
           查詢
         </button>
       </div>
-      <button @click="goToCreate" class="rounded-lg bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90">
+      <button
+        @click="goToCreate"
+        class="bg-brand-success-500 hover:bg-brand-success-600 rounded-lg px-6 py-2 font-medium text-white">
         新增護照紀錄
       </button>
     </div>
@@ -115,45 +119,72 @@ onMounted(fetchPassports)
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <tr v-for="item in paginatedPassports" :key="item.passportId" class="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+          <tr
+            v-for="item in paginatedPassports"
+            :key="item.passportId"
+            class="border-b hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.02]">
             <td class="px-4 py-4 text-sm">{{ item.passportId }}</td>
             <td class="px-4 py-4">
               <div class="flex flex-col">
-                <span class="text-sm font-medium text-gray-800 dark:text-white">{{ item.name }}</span>
+                <span class="text-sm font-medium text-gray-800 dark:text-white">
+                  {{ item.name }}
+                </span>
                 <span class="text-xs text-gray-500">ID: {{ item.petId }}</span>
               </div>
             </td>
             <td class="px-4 py-4 text-sm">{{ item.weight || '---' }}</td>
             <td class="px-4 py-4 text-sm">
-              <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600">
+              <span
+                class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600">
                 {{ item.recordType }}
               </span>
             </td>
             <td class="px-4 py-4 text-sm">{{ formatDate(item.recordDate) }}</td>
             <td class="px-4 py-4 text-center text-sm">
               <div class="flex items-center justify-center gap-3">
-                <button @click="goToDetails(item.passportId)" class="font-medium text-primary hover:underline">詳情</button>
-                <button @click="goToEdit(item.passportId)" class="font-medium text-success hover:underline">編輯</button>
-                <button @click="deletePassport(item.passportId)" class="font-medium text-red-500 hover:underline">刪除</button>
+                <button
+                  @click="goToDetails(item.passportId)"
+                  class="text-primary font-medium hover:underline">
+                  詳情
+                </button>
+                <button
+                  @click="goToEdit(item.passportId)"
+                  class="text-success font-medium hover:underline">
+                  編輯
+                </button>
+                <button
+                  @click="deletePassport(item.passportId)"
+                  class="font-medium text-red-500 hover:underline">
+                  刪除
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      
+
       <div v-if="loading" class="py-20 text-center text-gray-500">讀取中...</div>
-      <div v-else-if="passports.length === 0" class="py-20 text-center text-gray-500">尚無護照資料</div>
+      <div v-else-if="passports.length === 0" class="py-20 text-center text-gray-500">
+        尚無護照資料
+      </div>
     </div>
 
     <div class="mt-6 flex items-center justify-between">
       <p class="text-sm text-gray-600 dark:text-gray-400">
-        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到 {{ Math.min(currentPage * pageSize, passports.length) }} 筆
+        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到
+        {{ Math.min(currentPage * pageSize, passports.length) }} 筆
       </p>
       <div class="flex gap-2">
-        <button :disabled="currentPage === 1" @click="currentPage--" class="rounded border border-gray-300 px-4 py-2 text-sm disabled:opacity-30 hover:bg-gray-100 dark:border-gray-700">
+        <button
+          :disabled="currentPage === 1"
+          @click="currentPage--"
+          class="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700">
           上一頁
         </button>
-        <button :disabled="currentPage === totalPages" @click="currentPage++" class="rounded border border-gray-300 px-4 py-2 text-sm disabled:opacity-30 hover:bg-gray-100 dark:border-gray-700">
+        <button
+          :disabled="currentPage === totalPages"
+          @click="currentPage++"
+          class="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700">
           下一頁
         </button>
       </div>
