@@ -22,6 +22,22 @@ export default [
         },
       },
       // 在這裡添加更多前台路由
+      {
+        path: '/create-article',
+        name: 'create-article',
+        component: () => import('../../views/client/Community/CreateArticle.vue'),
+        meta: {
+          title: '新增貼文',
+        },
+      },
+      {
+        path: '/article-list',
+        name: 'article-list',
+        component: () => import('../../views/client/Community/ArticleList.vue'),
+        meta: {
+          title: '貼文列表',
+        },
+      },
     ],
   },
 ]
