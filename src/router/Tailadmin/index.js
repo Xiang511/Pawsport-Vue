@@ -75,6 +75,22 @@ export default [
         },
       },
       {
+        path: 'adoption/create',
+        name: 'admin-adoptcreate',
+        component: () => import('@/views/Tailadmin/Pet/AdoptCreate.vue'),
+        meta: {
+          title: '新增領養紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'adoption/edit/:id',
+        name: 'admin-adoptedit',
+        component: () => import('@/views/Tailadmin/Pet/AdoptEdit.vue'),
+        meta: {
+          title: '修改領養紀錄 | PawsPort',
+        },
+      },
+      {
         path: 'passport',
         name: 'admin-passportlist',
         component: () => import('@/views/Tailadmin/Pet/PassportList.vue'),
@@ -83,11 +99,51 @@ export default [
         },
       },
       {
+        path: 'passport/detail/:id',
+        name: 'admin-passportdetails',
+        component: () => import('@/views/Tailadmin/Pet/PassportDetails.vue'),
+        meta: {
+          title: '健康護照詳情 | PawsPort',
+        },
+      },
+      {
+        path: 'passport/create',
+        name: 'admin-passportcreate',
+        component: () => import('@/views/Tailadmin/Pet/PassportCreate.vue'),
+        meta: {
+          title: '新增健康護照 | PawsPort',
+        },
+      },
+      {
+        path: 'passport/edit/:id',
+        name: 'admin-passportedit',
+        component: () => import('@/views/Tailadmin/Pet/PassportEdit.vue'),
+        meta: {
+          title: '修改健康護照 | PawsPort',
+        },
+      },
+      {
         path: 'missingreport',
         name: 'admin-missinglist',
         component: () => import('@/views/Tailadmin/Pet/MissingList.vue'),
         meta: {
           title: '寵物走失紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport/create',
+        name: 'admin-missingcreate',
+        component: () => import('@/views/Tailadmin/Pet/MissingCreate.vue'),
+        meta: {
+          title: '新增走失紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport/edit/:id',
+        name: 'admin-missingedit',
+        component: () => import('@/views/Tailadmin/Pet/MissingEdit.vue'),
+        meta: {
+          title: '修改走失紀錄 | PawsPort',
         },
       },
       {
