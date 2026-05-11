@@ -2,15 +2,15 @@
 export default [
   {
     path: '/',
-    name: 'client-home',
-    // component: () => import('../../layouts/client/default.vue'),
+    name: 'Client',
+    component: () => import('../../layouts/client/Basic.vue'),
     children: [
       {
         path: '',
         name: 'home',
-        component: () => import('../../views/client/AboutView.vue'),
+        component: () => import('../../views/client/HomeView.vue'),
         meta: {
-          title: '關於我們',
+          title: '首頁 | Petmily ',
         },
       },
       {
