@@ -21,6 +21,22 @@ export default [
           title: '調色盤',
         },
       },
+      {
+        path: 'game',
+        name: 'client-gameview',
+        component: () => import('@/views/client/Game/GameView.vue'),
+        meta: {
+          title: '遊戲 | Petmily',
+        },
+      },
+      {
+        path: 'mainmenu',
+        name: 'client-mainmenu',
+        component: () => import('@/views/client/Game/MainMenu.vue'),
+        meta: {
+          title: '遊戲主選單 | Petmily',
+        },
+      },
       // 在這裡添加更多前台路由
     ],
   },
