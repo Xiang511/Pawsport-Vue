@@ -16,13 +16,13 @@ const detail = ref(null)
 const breadcrumbItems = ref([
   { name: '首頁', route: '/dashboard' },
   { name: '健康護照', route: '/dashboard/passport' },
-  { name: '詳細病歷', route: '' }
+  { name: '詳細病歷', route: '' },
 ])
 
 // 取得詳情資料
 const fetchDetails = async () => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/PassPort/${passportId}/Details`)
+    const response = await axios.get(`https://localhost:7048/api/PassPort/${passportId}/detail`)
     if (response.data.success) {
       detail.value = response.data.data
     } else {
@@ -46,7 +46,7 @@ const formatDateTime = (dateString) => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -64,13 +64,15 @@ onMounted(fetchDetails)
   </div>
 
   <div v-else-if="detail" class="space-y-6">
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-      <div class="border-b border-gray-200 px-7 py-4 dark:border-gray-800 flex justify-between items-center">
-        <h3 class="font-bold text-gray-800 dark:text-white/90 text-lg">🩺 醫療與診斷明細</h3>
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+      <div
+        class="flex items-center justify-between border-b border-gray-200 px-7 py-4 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">🩺 醫療與診斷明細</h3>
         <span class="text-sm text-gray-500">護照 ID: {{ detail.passportId }}</span>
       </div>
 
-      <div class="p-7 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12">
+      <div class="grid grid-cols-1 gap-x-12 gap-y-4 p-7 md:grid-cols-2">
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">醫療明細 ID</span>
           <span class="text-gray-800 dark:text-gray-200">{{ detail.medicalDetailId }}</span>
@@ -78,39 +80,51 @@ onMounted(fetchDetails)
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">就診地點</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ detail.treatmentLocation || '尚未記錄' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ detail.treatmentLocation || '尚未記錄' }}
+          </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">診斷病症</span>
-          <span class="text-gray-800 dark:text-gray-200 font-medium text-primary">{{ detail.disease || '無' }}</span>
+          <span class="text-primary font-medium text-gray-800 dark:text-gray-200">
+            {{ detail.disease || '無' }}
+          </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">治療方式</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ detail.diseaseTreatment || '尚未記錄' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ detail.diseaseTreatment || '尚未記錄' }}
+          </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">就診時間</span>
-          <span :class="detail.treatmentTime ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 italic'">
+          <span
+            :class="
+              detail.treatmentTime ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 italic'
+            ">
             {{ formatDateTime(detail.treatmentTime) || '尚未有資料' }}
           </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">醫療紀錄最後更新</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ formatDateTime(detail.treatmentUpdatedAt) || '尚未有資料' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ formatDateTime(detail.treatmentUpdatedAt) || '尚未有資料' }}
+          </span>
         </div>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div class="border-b border-gray-200 px-7 py-4 dark:border-gray-800">
-        <h3 class="font-bold text-gray-800 dark:text-white/90 text-lg">💉 疫苗施打紀錄</h3>
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">💉 疫苗施打紀錄</h3>
       </div>
 
-      <div class="p-7 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12">
+      <div class="grid grid-cols-1 gap-x-12 gap-y-4 p-7 md:grid-cols-2">
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">疫苗歷史 ID</span>
           <span class="text-gray-800 dark:text-gray-200">{{ detail.historyId }}</span>
@@ -118,31 +132,41 @@ onMounted(fetchDetails)
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">疫苗種類</span>
-          <span class="inline-flex w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success mt-1">
+          <span
+            class="bg-success/10 text-success mt-1 inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium">
             {{ detail.type || '尚未記錄' }}
           </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">施打地點</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ detail.vaccinationLocation || '尚未記錄' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ detail.vaccinationLocation || '尚未記錄' }}
+          </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">施打時間</span>
-          <span :class="detail.vaccinationTime ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 italic'">
+          <span
+            :class="
+              detail.vaccinationTime ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 italic'
+            ">
             {{ formatDateTime(detail.vaccinationTime) || '尚未有資料' }}
           </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">疫苗紀錄最後更新</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ formatDateTime(detail.vaccinationUpdatedAt) || '尚未有資料' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ formatDateTime(detail.vaccinationUpdatedAt) || '尚未有資料' }}
+          </span>
         </div>
 
         <div class="flex flex-col">
           <span class="text-sm font-semibold text-gray-400 uppercase">疫苗紀錄建立時間</span>
-          <span class="text-gray-800 dark:text-gray-200">{{ formatDateTime(detail.vaccinationCreatedAt) || '尚未有資料' }}</span>
+          <span class="text-gray-800 dark:text-gray-200">
+            {{ formatDateTime(detail.vaccinationCreatedAt) || '尚未有資料' }}
+          </span>
         </div>
       </div>
     </div>
@@ -150,14 +174,12 @@ onMounted(fetchDetails)
     <div class="flex gap-4">
       <button
         @click="goToEdit"
-        class="flex justify-center rounded bg-primary px-10 py-3 font-medium text-white hover:bg-opacity-90"
-      >
+        class="bg-primary hover:bg-opacity-90 flex justify-center rounded px-10 py-3 font-medium text-white">
         編輯此病歷
       </button>
       <button
         @click="goBack"
-        class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:text-white dark:border-gray-700"
-      >
+        class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:border-gray-700 dark:text-white">
         返回列表
       </button>
     </div>
