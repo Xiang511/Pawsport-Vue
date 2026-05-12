@@ -3,12 +3,12 @@ export default [
   {
     path: '/',
     name: 'Client',
-    component: () => import('../../layouts/client/Basic.vue'),
+    component: () => import('@/layouts/client/Basic.vue'),
     children: [
       {
         path: '',
         name: 'home',
-        component: () => import('../../views/client/HomeView.vue'),
+        component: () => import('@/views/client/HomeView.vue'),
         meta: {
           title: '首頁 | Petmily ',
         },
@@ -16,7 +16,7 @@ export default [
       {
         path: '/color',
         name: 'color-palette',
-        component: () => import('../../views/client/ColorPalette.vue'),
+        component: () => import('@/views/client/ColorPalette.vue'),
         meta: {
           title: '調色盤',
         },
