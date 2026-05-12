@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
+// 自己做的按鈕樣式
 import Article_BaseButton from './Article_BaseButton.vue'
 
 //控制Quill的響應式變數
@@ -14,13 +15,13 @@ const loadQuill = () => {
   return new Promise((resolve) => {
     // 1. 載入 CSS
     const link = document.createElement('link')
-    link.href = 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
+    link.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css'
     link.rel = 'stylesheet'
     document.head.appendChild(link)
 
     // 2. 載入 JS
     const script = document.createElement('script')
-    script.src = 'https://cdn.quilljs.com/1.3.6/quill.min.js'
+    script.src = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js'
     //onload觸發才算完成
     script.onload = () => resolve(window.Quill)
     //若載入失敗
@@ -87,7 +88,7 @@ const handleSubmit = () => {
     <div class="editor-card">
       <div>分類選取區</div>
       <!-- 標題輸入框 -->
-      <!-- plus:這裡之後加上require的動態顯示 -->
+      <!-- note:這裡之後加上require的動態顯示 -->
       <div class="title-section">
         <input type="text" v-model="post.title" placeholder="標題*" maxlength="100" />
         <span class="char-count">{{ post.title.length }}/100</span>
@@ -95,7 +96,7 @@ const handleSubmit = () => {
       <!-- Quill 編輯器區塊 -->
       <div class="quill-wrapper">
         <div id="editor-container" ref="editorRef"></div>
-        <!-- plus:之後可以加一個字數計數器(可能需要npm install Quill) -->
+        <!-- note:之後可以加一個字數計數器(可能需要npm install Quill) -->
       </div>
       <!-- 標籤輸入框 -->
       <div class="tag-section">
