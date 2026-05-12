@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User } from 'lucide-vue-next'
+import { User, MessageCircleMore } from 'lucide-vue-next'
 import {
   GridIcon,
   PieChartIcon,
@@ -58,12 +58,13 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
+        icon: MessageCircleMore,
         name: '客服',
         subItems: [
-          { name: '基本資料', path: '/dashboard/line-chart', pro: false },
-          { name: '違規名單', path: '/violation-list', pro: false },
-          { name: '權限管理', path: '/permissions', pro: false },
+          { name: '常見問題', path: '/dashboard/faq', pro: false },
+          { name: 'QA記錄', path: '/dashboard/qa', pro: false },
+          { name: '電子報', path: '/dashboard/enewsletter', pro: false },
+          { name: 'LINE BOT', path: '/dashboard/linebot', pro: false },
         ],
       },
     ],
