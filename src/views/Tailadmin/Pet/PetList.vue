@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 // 1. 引入 axios
 import axios from 'axios'
 import PageBreadcrumb from '@/components/Pawsport/PageBreadcrumb.vue'
+import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 // --- 狀態定義 ---
 const currentPageTitle = ref('寵物資料一覽表')
@@ -118,14 +119,27 @@ onMounted(fetchPets)
           </tr>
         </thead>
         <tbody v-if="!loading">
-          <tr v-for="item in paginatedPets" :key="item.petId" class="border-b dark:border-gray-800">
+          <tr
+            v-for="item in paginatedPets"
+            :key="item.petId"
+            class="border-b text-center transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.02]">
             <td class="px-4 py-3">{{ item.petId }}</td>
             <td class="px-4 py-3">{{ item.name }}</td>
             <td class="px-4 py-3">{{ item.coatColor }}</td>
             <td class="px-4 py-3">{{ item.currentStatus }}</td>
             <td class="px-4 py-3 text-center">
-              <button @click="goToEdit(item.petId)" class="mr-3 text-green-600">編輯</button>
-              <button @click="deletePet(item.petId)" class="text-red-600">刪除</button>
+              <div class="flex items-center justify-center gap-2">
+                <button
+                  @click="goToEdit(item.petId)"
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <EditIcon />
+                </button>
+                <button
+                  @click="deletePet(item.petId)"
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <Trash2 />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>

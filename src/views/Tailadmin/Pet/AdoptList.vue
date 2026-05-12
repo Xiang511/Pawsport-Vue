@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import PageBreadcrumb from '@/components/Pawsport/PageBreadcrumb.vue'
+import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 const router = useRouter()
 const currentPageTitle = ref('領養紀錄一覽')
@@ -137,16 +138,18 @@ onMounted(fetchRecords)
               </span>
             </td>
             <td class="px-4 py-4 text-center text-sm">
-              <button
-                @click="goToEdit(item.adoptionId)"
-                class="text-primary mr-3 font-medium hover:underline">
-                編輯
-              </button>
-              <button
-                @click="deleteRecord(item.adoptionId)"
-                class="font-medium text-red-500 hover:underline">
-                刪除
-              </button>
+              <div class="flex items-center justify-center gap-2">
+                <button
+                  @click="goToEdit(item.adoptionId)"
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <EditIcon />
+                </button>
+                <button
+                  @click="deleteRecord(item.adoptionId)"
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
+                  <Trash2 />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
