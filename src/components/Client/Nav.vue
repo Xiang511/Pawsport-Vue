@@ -54,6 +54,22 @@
                 class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
                 這是測試 Nav !!
               </a>
+              <!-- 暫時新增的開發中頁面 -->
+              <router-link
+                :to="{ name: 'home' }"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧首頁
+              </router-link>
+              <router-link
+                :to="{ name: 'article-list' }"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧貼文列表
+              </router-link>
+              <router-link
+                :to="{ name: 'create-article' }"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧新增貼文
+              </router-link>
             </div>
           </div>
         </div>
@@ -145,4 +161,9 @@
   </nav>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* 解決scroll時壓過nav問題 */
+nav {
+  z-index: 1000 !important;
+}
+</style>
