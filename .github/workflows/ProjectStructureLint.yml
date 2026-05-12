@@ -26,7 +26,7 @@ jobs:
             exit 1
           fi
 
-      # 步驟 2：檢查 components 子資料夾規範 只會有client Pawsport Tailadmin
+      # 步驟 2：檢查 components 子資料夾規範 只會有Client Pawsport Tailadmin
       - name: Validate components subdirectories
         run: |
           COMP_DIR="src/components"
@@ -38,7 +38,7 @@ jobs:
           fi
 
           # 定義允許的資料夾名稱
-          ALLOWED="client Pawsport Tailadmin"
+          ALLOWED="Client Pawsport Tailadmin"
 
           # 取得 src/components 下所有的子目錄名稱 (不含路徑)
           # -maxdepth 1 確保只檢查第一層
