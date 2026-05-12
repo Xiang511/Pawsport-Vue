@@ -1,8 +1,36 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router';
 import { Home } from 'lucide-vue-next';
+import { animate, stagger } from 'animejs'
+// import 'animate.css';
 
 const router = useRouter();
+const titleText = 'PETMILY'
+onMounted(() => {
+  const playTitleAnimation = () => {
+    animate('.letter', {
+      y: [
+        { to: '-3rem', ease: 'out-expo', duration: 600 },
+        { to: 0, ease: 'out-bounce', duration: 800, delay: 100 }
+      ],
+      rotate: { from: '0turn', to: '1turn' }
+    }, {
+      delay: stagger(50)
+    });
+  };
+
+  // 1. 進入時立刻跑一次
+  playTitleAnimation();
+
+  // 2. 每 5 秒觸發一次（動畫 2秒 + 閒置 3秒 = 5000ms）
+  const timer = setInterval(playTitleAnimation, 5000);
+
+  // 3. 重要：離開頁面時要清掉計時器，避免記憶體洩漏
+  onUnmounted(() => {
+    clearInterval(timer);
+  });
+});
 
 const proceedToMenu = () => {
   // 點擊後跳轉到主選單路由
@@ -26,7 +54,11 @@ const backToWebHome = (event) => {
     </div>
 
     <div class="logo-container">
-      <h1 class="game-logo">PETMILY</h1>
+      <h1 class="game-logo">
+        <span v-for="(char, index) in titleText" :key="index" class="letter">
+          {{ char }}
+        </span>
+      </h1>
       <div class="logo-accent"></div>
     </div>
 
@@ -82,11 +114,26 @@ const backToWebHome = (event) => {
 }
 
 .game-logo {
-  font-size: 120px;
+  font-size: 200px;
   color: #453A27;
   font-weight: 900;
   letter-spacing: 15px;
-  text-shadow: 2px 2px 0px rgba(252, 200, 109, 0.3);
+  display: flex;
+  justify-content: center;
+  -webkit-text-stroke: 4px #453a27;
+  paint-order: stroke fill;
+  text-shadow: 
+    1px 1px 0 #453a27, 
+    -1px -1px 0 #453a27, 
+    1px -1px 0 #453a27, 
+    -1px 1px 0 #453a27,
+    5px 5px 0px rgba(252, 200, 109, 0.3);
+}
+
+.letter {
+  display: inline-block; /* 極度重要：否則 transform 不會生效 */
+  padding: 0 5px;
+  opacity: 1;
 }
 
 .press-hint {
