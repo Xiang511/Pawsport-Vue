@@ -1,12 +1,52 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import { LucideCat, Save } from 'lucide-vue-next'
+import 'animate.css';
 const emit = defineEmits(['close']);
+const isVisible = ref(false);
+onMounted(() => {
+  isVisible.value = true;
+});
+// JavaScript 離開動畫
+const onLeave = (el, done) => {
+  const animation = el.animate([
+    { transform: 'scale(1) translateY(0)', opacity: 1, filter: 'blur(0px)' },
+    { transform: 'scale(1.05) translateY(-70px)', opacity: 1, offset: 0.35 },
+    { transform: 'scale(0.4) translateY(400px)', opacity: 0, filter: 'blur(10px)', offset: 1 }
+  ], {
+    duration: 800,
+    easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    fill: 'forwards'
+  });
+
+  animation.onfinish = done;
+};
+// 內部控制
+const startClose = (type) => {
+  // 發送事件讓父組件知道現在是什麼類型的退出
+  emit('close', type); 
+
+  if (type === 'save') {
+    // 儲存：延遲一下再讓卡片彈走，給大圖示留表演時間
+    setTimeout(() => {
+      isVisible.value = false; 
+    }, 1200);
+  } else {
+    // 普通退出：立刻讓卡片彈走
+    isVisible.value = false;
+  }
+};
 </script>
 
 <template>
-  <div class="modal-overlay" @click.self="$emit('close')">
-    <div class="profile-card">
-      
+  <div class="modal-overlay " @click.self="startClose('default')">
+    <Transition 
+      appear
+      enter-active-class="animate__animated animate__bounceIn"
+      @leave="onLeave"
+      :css="true"
+    >
+    <div v-if="isVisible" class="profile-card">
       <div class="card-decorations">
         <div class="line horizontal top"></div>
         <div class="line horizontal bottom"></div>
@@ -65,39 +105,40 @@ const emit = defineEmits(['close']);
         </div>
       </div>
 
-      <button class="sticky-save-btn" @click="$emit('close')">
-        <Save />儲存並返回
-      </button>
+      <button class="sticky-save-btn" @click="startClose('save')">
+          <Save />儲存並返回
+        </button>
     </div>
+    </Transition>
   </div>
 </template>
 
 <style scoped>
+/* modal相關 */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(45, 38, 27, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 9999;
 }
 
 /* 玩家檔案主體：圓角與背景 */
 .profile-card {
+  --animate-duration: 0.8s;
   background-color: #FCF4E5;
-  width: 850px;
-  min-height: 500px;
-  padding: 60px 50px;
+  width: 1050px;
+  min-height: 620px;
+  padding: 80px 60px;
   border: 1px solid rgba(69, 58, 39, 0.3);
-  border-radius: 20px; /* 圓角頁面 */
+  border-radius: 25px; /* 圓角頁面 */
   position: relative;
   color: #453A27;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
 }
 
 /* 半透明線條裝飾層 */
@@ -133,19 +174,41 @@ const emit = defineEmits(['close']);
 .top-tag-internal {
   background-color: #453A27;
   color: #FCF4E5;
-  padding: 8px 60px;
-  border-radius: 0 0 15px 15px; /* 下圓角 */
+  padding: 10px 80px;
+  border-radius: 0 0 30px 30px; /* 下圓角 */
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-top: -62px;
+  margin-top: -85px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  justify-content: center;
 }
 
 .tag-title {
-  font-size: 1.3rem;
+  font-size: 2rem;
   letter-spacing: 4px;
   font-weight: bold;
+}
+
+.tag-decorator {
+  display: inline-flex; 
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px; 
+}
+
+.tag-decorator :deep(svg) {
+  width: 32px;  
+  height: 32px; 
+  stroke: #FCF4E5;
+  stroke-width: 2.5px;
+  
+  /* 應用動畫：持續 3 秒，平滑循環 */
+  animation: cat-breath 3s ease-in-out infinite;
+  animation: cat-wiggle 3s ease-in-out infinite;
+  
+  /* 為了讓縮放從中心開始，設定基準點 */
+  transform-origin: center;
 }
 
 /* 右上角半透明資訊 */
@@ -169,11 +232,11 @@ const emit = defineEmits(['close']);
 
 /* 照片區塊 */
 .photo-frame {
-  width: 220px;
-  height: 250px;
+  width: 280px;
+  height: 320px;
   background: #fff;
   border: 1px solid #e0e0e0;
-  padding: 10px;
+  padding: 12px;
   position: relative;
   box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
 }
@@ -206,19 +269,19 @@ const emit = defineEmits(['close']);
 
 /* 右側文字資訊 */
 .player-name {
-  font-size: 2.8rem;
-  margin-bottom: 25px;
+  font-size: 3.2rem;
+  margin-bottom: 35px;
   font-weight: 900;
 }
 
 .stats-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
 }
 
 .stat-row {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   border-bottom: 1px dashed rgba(69, 58, 39, 0.1);
   padding-bottom: 10px;
 }
@@ -254,16 +317,60 @@ const emit = defineEmits(['close']);
   align-items: center;    /* 垂直置中 */
   justify-content: center; /* 水平置中 */
   gap: 10px;              /* 圖示與文字間的距離 */
+  z-index: 5;
 }
 
 .sticky-save-btn :deep(svg) {
   display: block;
   stroke-width: 2.5px; /* 讓 Lucide 圖示線條跟文字粗細更接近 */
+    /* 新增：圖示本身的放大與動畫 transition */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: center;
 }
 
 .sticky-save-btn:hover {
   background-color: #fcc86d;
   color: #453A27;
-  transform: translateY(-5px) scale(1.05);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.sticky-save-btn:hover :deep(svg) {
+  /* 1. 圖示放大一些，比貓咪更明顯，更有強調感 */
+  transform: scale(1.3); 
+  
+  /* 2. 套用持續晃動動畫，比貓咪的搖晃速度稍快，增加張力 */
+  animation: save-wiggle 1.5s ease-in-out infinite;
+  animation-delay: 0.1s; /* 在放大完成後稍稍延遲一點點開始，更有層次 */
+}
+
+@keyframes cat-breath {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15); /* 稍微放大 */
+    opacity: 1;
+  }
+}
+
+@keyframes cat-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+@keyframes save-wiggle {
+  0%, 100% { transform: scale(1.3) rotate(0deg); } /* 維持在放大狀態 */
+  25% { transform: scale(1.3) rotate(-15deg); }    /* 搖晃幅度稍大 */
+  75% { transform: scale(1.3) rotate(15deg); }
+}
+
+@keyframes save-pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  70% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.2); opacity: 0; } /* 最後微微放大並消失 */
 }
 </style>
