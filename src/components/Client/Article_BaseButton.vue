@@ -52,10 +52,9 @@ const typeClass = computed(() => `btn-${props.type}`)
 /* 草稿按鈕樣式：淺色底灰字 */
 .btn-draft {
   background: #f5f5f5;
-  color: #888;
+  color: #747bbd;
 }
 /* 禁用狀態：淺灰底灰字，禁止游標 */
-/*  */
 .base-button:disabled,
 .is-disabled {
   background: #e0e0e0;

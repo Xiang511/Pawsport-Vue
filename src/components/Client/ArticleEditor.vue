@@ -40,10 +40,12 @@ onMounted(async () => {
     modules: {
       toolbar: [
         [{ header: [1, 2, 3, 4, false] }],
-        [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+        [{ font: [] }],
         ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
-        ['link', 'image'],
-        ['blockquote', 'code-block'],
+        [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
+        [{ color: [] }, { background: [] }],
+        [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+        ['image', 'blockquote', 'link'],
         ['clean'],
       ],
     },
@@ -79,11 +81,13 @@ const handleSubmit = () => {
     <!-- 頂部功能 -->
     <div class="post-header">
       <span class="main-title">建立貼文</span>
-      <Article_BaseButton class="draft">草稿匣</Article_BaseButton>
+      <Article_BaseButton type="draft">草稿匣</Article_BaseButton>
     </div>
     <!-- 主要發文區塊 (包覆標題與編輯器) -->
     <div class="editor-card">
+      <div>分類選取區</div>
       <!-- 標題輸入框 -->
+      <!-- plus:這裡之後加上require的動態顯示 -->
       <div class="title-section">
         <input type="text" v-model="post.title" placeholder="標題*" maxlength="100" />
         <span class="char-count">{{ post.title.length }}/100</span>
@@ -91,6 +95,7 @@ const handleSubmit = () => {
       <!-- Quill 編輯器區塊 -->
       <div class="quill-wrapper">
         <div id="editor-container" ref="editorRef"></div>
+        <!-- plus:之後可以加一個字數計數器(可能需要npm install Quill) -->
       </div>
       <!-- 標籤輸入框 -->
       <div class="tag-section">
@@ -100,8 +105,8 @@ const handleSubmit = () => {
     </div>
     <!-- 底部按鈕 -->
     <div class="footer-actions">
-      <Article_BaseButton class="draft" @click="handleSaveDraft">儲存草稿</Article_BaseButton>
-      <Article_BaseButton class="primary" :disabled="!post.title" @click="handleSubmit">
+      <Article_BaseButton type="draft" @click="handleSaveDraft">儲存草稿</Article_BaseButton>
+      <Article_BaseButton type="primary" :disabled="!post.title" @click="handleSubmit">
         發佈貼文
       </Article_BaseButton>
     </div>
@@ -136,7 +141,11 @@ const handleSubmit = () => {
 }
 /* Quill的外層容器高度 */
 #editor-container {
-  height: 200px;
+  min-height: 200px;
+}
+/* 覆寫Quill字體大小設定 */
+:deep(.ql-editor) {
+  font-size: 16px;
 }
 
 /* 核心編輯卡片樣式 (對應 image_0ad233.png 的灰色圓角框) */

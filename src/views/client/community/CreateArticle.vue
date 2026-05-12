@@ -12,8 +12,7 @@ const handleSave = () => {
     <!-- 內容區：最大1280px -->
     <div class="container mx-auto w-full max-w-7xl px-4">
       <div class="page-container">
-        <h1 class="text-2xl text-[#433D3C]">新增文章</h1>
-        <!-- 直接渲染在頁面上 -->
+        <!-- 編輯器元件 -->
         <ArticleEditor @save="handleSave" />
       </div>
     </div>
