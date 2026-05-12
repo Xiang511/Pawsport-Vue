@@ -6,7 +6,6 @@ import { useDataTable } from '@/composables/Tailadmin/useMemberDataTableLogic.js
 import { EditIcon, Trash2, X, UserRoundX, UserRound } from 'lucide-vue-next'
 import DataTablePagination from './DataTablePagination.vue'
 import ProfileModal from './ProfileModal.vue'
-import Button from '../Tailadmin/ui/Button.vue'
 
 const blockList = reactive([])
 const search = ref('')

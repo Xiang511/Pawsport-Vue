@@ -1,8 +1,4 @@
 <script setup>
-import { UserPlus } from 'lucide-vue-next'
-import { MailCheck } from 'lucide-vue-next'
-import { Rss } from 'lucide-vue-next'
-
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 
