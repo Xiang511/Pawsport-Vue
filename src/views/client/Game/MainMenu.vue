@@ -39,6 +39,9 @@ const router = useRouter()
 const exitGame = () => {
   router.push({ name: 'client-gameview' })
 }
+const levelSelect = () => {
+  router.push({ name: 'client-levelselect' })
+}
 </script>
 
 <template>
@@ -64,7 +67,7 @@ const exitGame = () => {
     <div class="menu-side">
       <h2 class="mini-logo animate__animated animate__jackInTheBox">PETMILY</h2>
       <nav class="nav-list animate__animated animate__jackInTheBox">
-        <div class="nav-item" @click="exitGame">
+        <div class="nav-item" @click="levelSelect">
           <span class="paw-icon"><PawPrint /></span>
           選擇關卡
         </div>
