@@ -21,8 +21,17 @@ export default [
           title: '調色盤',
         },
       },
+
+      // 在這裡添加更多前台路由
+    ],
+  },
+  {
+    path: '/game',
+    name: 'GameLayout',
+    component: () => import('../../layouts/client/GameLayout.vue'),
+    children: [
       {
-        path: 'game',
+        path: '',
         name: 'client-gameview',
         component: () => import('@/views/client/Game/GameView.vue'),
         meta: {
@@ -45,7 +54,14 @@ export default [
           title: '玩家資料 | Petmily',
         },
       },
-      // 在這裡添加更多前台路由
+      {
+        path: 'levelselect',
+        name: 'client-levelselect',
+        component: () => import('@/views/client/Game/LevelSelect.vue'),
+        meta: {
+          title: '選擇關卡 | Petmily',
+        },
+      },
     ],
   },
 ]
