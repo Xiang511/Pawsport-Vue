@@ -206,7 +206,7 @@ onMounted(() => {
       <table class="min-w-full">
         <thead>
           <tr class="border-b border-gray-200 dark:border-gray-700">
-            <th class="w-min px-4 py-3 text-left sm:px-4">
+            <th class="w-1/12 px-4 py-3 text-left sm:px-4">
               <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">User ID</p>
             </th>
             <th class="w-max px-2 py-3 text-left sm:px-4">
@@ -233,7 +233,7 @@ onMounted(() => {
               v-for="i in perPage"
               :key="'skeleton-' + i"
               class="animate-pulse border-t border-gray-100 dark:border-gray-800">
-              <td class="w-min px-4 py-4 text-left sm:px-4">
+              <td class="w-1/12 px-4 py-4 text-left sm:px-4">
                 <div class="h-4 w-8 rounded bg-gray-200 dark:bg-gray-700"></div>
               </td>
               <td class="w-max px-2 py-4 text-left sm:px-4">
@@ -269,7 +269,7 @@ onMounted(() => {
             v-for="(user, index) in paginatedData"
             :key="index"
             class="border-t border-gray-100 dark:border-gray-800">
-            <td class="w-min px-4 py-4 text-left sm:px-4">
+            <td class="w-1/12 px-4 py-4 text-left sm:px-4">
               <p class="text-theme-sm text-gray-500 dark:text-gray-400">{{ user.userId }}</p>
             </td>
 
