@@ -23,6 +23,13 @@ export default [
       },
 
       // 在這裡添加更多前台路由
+      {path: '/adopt',
+        name: 'pet-adoption',
+        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
+        },
+      },
       {
         path: '/create-article',
         name: 'create-article',
