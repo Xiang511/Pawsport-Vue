@@ -23,7 +23,8 @@ export default [
       },
 
       // 在這裡添加更多前台路由
-      {path: '/adopt',
+      {
+        path: '/adopt',
         name: 'pet-adoption',
         component: () => import('@/views/client/pet/PetAdoptionView.vue'),
         meta: {
@@ -92,6 +93,14 @@ export default [
         component: () => import('@/views/client/Game/LevelSelect.vue'),
         meta: {
           title: '選擇關卡 | Petmily',
+        },
+      },
+      {
+        path: '/adopt',
+        name: 'pet-adoption',
+        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
         },
       },
     ],
