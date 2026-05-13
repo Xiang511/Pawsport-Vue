@@ -147,23 +147,6 @@ const startGame = () => {
     // router.push({ name: 'game-play', params: { id: selectedLevel.value.id } })
   }
 }
-
-const showMenu = ref(false)
-
-const toggleMenu = () => {
-  showMenu.value = !showMenu.value
-}
-
-const handleSettings = () => {
-  console.log('打開設定')
-  showMenu.value = false
-}
-
-const handleAbout = () => {
-  console.log('打開關於')
-  showMenu.value = false
-}
-
 onMounted(() => updateAreaContent())
 const goBack = () => router.push({ name: 'client-mainmenu' })
 </script>
@@ -174,8 +157,9 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     :style="{ backgroundImage: `url(${areas[currentAreaIndex].bgUrl})` }">
     <header class="game-header">
       <div class="nav-menu">
-        <button class="nav-btn" @click="toggleMenu">
-          <Home />
+        <button class="nav-btn" @click="goBack">
+          <Home :size="30" />
+          <span>返回主選單</span>
         </button>
       </div>
       <div class="area-title">
@@ -209,7 +193,10 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
               v-for="lvl in levels"
               :key="lvl.id"
               class="level-card-item"
-              :class="{ 'is-active': selectedLevel?.id === lvl.id, 'is-locked': lvl.locked }"
+              :class="{
+                'is-active': selectedLevel?.id === lvl.id && !lvl.locked,
+                'is-locked': lvl.locked,
+              }"
               :style="{ left: lvl.x + '%', top: lvl.y + '%' }">
               <div class="circle-spot-card" @click="selectLevel(lvl)">
                 <span v-if="!lvl.locked" class="lvl-num">{{ lvl.id }}</span>
@@ -229,7 +216,10 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
               <img :key="selectedLevel?.id" :src="selectedLevel?.previewUrl" alt="關卡預覽" />
             </div>
             <p class="info-description">{{ areas[currentAreaIndex].desc }}</p>
-            <button class="start-game-btn" @click="startGame">
+            <button
+              class="start-game-btn"
+              @click="startGame"
+              :disabled="!selectedLevel || selectedLevel.locked">
               開始 (START)
               <Play :size="24" fill="currentColor" />
             </button>
@@ -296,10 +286,27 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   z-index: 5;
 }
 
-.level-card-item.is-active .circle-spot-card {
+.level-card-item.is-active .circle-spot-card,
+.level-card-item.is-active .circle-spot-card:hover {
+  background: #453a27 !important; /* 強制保持咖啡色背景 */
+  color: #fcf4e5 !important; /* 強制保持米色文字 */
   border-color: #fcc86d;
-  background: #fcf4e5;
-  transform: scale(1.1);
+  animation: pulse 1.2s infinite ease-in-out;
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+.level-card-item.is-active .circle-spot-card,
+.level-card-item:not(.is-locked) .circle-spot-card:hover {
+  background: #453a27 !important; /* 切換為咖啡色背景 */
+  color: #fcf4e5 !important; /* 切換為米色文字 */
+  border-color: #fcc86d;
+  transform: translateY(-5px); /* 懸停或選定時微浮 */
+}
+.level-card-item:not(.is-locked) .circle-spot-card:active {
+  transform: translateY(4px) scale(0.95); /* 往下壓並稍微縮小 */
+  box-shadow: 0 2px 0 #453a27; /* 陰影變短 */
+  transition: all 0.05s ease;
 }
 .circle-spot-card {
   width: 140px;
@@ -307,6 +314,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   background: #fcf4e5;
   border-radius: 50%;
   border: 5px solid #453a27;
+  color: #453a27;
   box-shadow: 0 6px 0 #453a27;
   display: flex;
   flex-direction: column; /* 讓內容上下排列 */
@@ -315,17 +323,11 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   position: relative;
   gap: 2px; /* 數字與星星之間的間距 */
   cursor: pointer;
-  transition:
-    border-color 0.3s,
-    background 0.3s,
-    box-shadow 0.3s;
+  transition: all 0.2s ease;
 }
 .circle-spot-card:hover:not(.is-locked *) {
-  /* 結合原本的位移與動畫 */
-  animation: pulse 1.2s infinite ease-in-out;
-  /* 稍微偏移讓陰影更有立體感 */
-  transform: translateY(-5px);
-  z-index: 10;
+  background: #fcebd0; /* 懸停時米色稍微加深 */
+  transform: translateY(-3px); /* 輕微浮起即可，不要 pulse */
 }
 .is-locked .circle-spot-card {
   background: #b5b5b5;
@@ -451,9 +453,23 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
 .lvl-num {
   font-size: 3rem;
   font-weight: 900;
-  color: #453a27;
+  color: inherit;
   line-height: 1.1;
   transform: translateY(-20px);
+  transition: color 0.3s;
+  z-index: 2;
+  position: relative;
+}
+
+.level-card-item.is-active .lvl-num {
+  color: #fcf4e5 !important; /* 使用 !important 確保覆蓋任何動畫中的預設顏色 */
+  transform: translateY(-20px); /* 保持數字在圓圈內較上方的位置 */
+}
+
+.level-card-item.is-active .lvl-stars svg:not(.active),
+.level-card-item:not(.is-locked) .circle-spot-card:hover .lvl-stars svg:not(.active) {
+  color: #fcf4e5;
+  opacity: 0.6;
 }
 
 /* 修改星星容器，使其與圓圈重合 */
@@ -479,6 +495,12 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
      2. rotate 控制在圓形上的角度
      3. translateY 控制距離圓心的距離（正值向下）
   */
+  color: #453a27; /* 星星的外框顏色 */
+  fill: none; /* 未獲取時不填滿 */
+  opacity: 1; /* 稍微降低透明度，讓它看起來像背景 */
+  transition:
+    color 0.3s ease,
+    fill 0.3s ease;
 }
 
 /* 設定三顆星星的角度與弧度 */
@@ -532,7 +554,30 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   transform: translateY(4px); /* 往下壓 */
   box-shadow: 0 4px 0 #453a27;
 }
+.start-game-btn:disabled {
+  background: #b5b5b5; /* 灰色背景 */
+  color: #666; /* 灰色文字 */
+  border-color: #666;
+  box-shadow: none; /* 移除陰影，看起來像是壓扁的 */
+  cursor: not-allowed; /* 滑鼠游標顯示不可點擊 */
+  transform: none; /* 取消懸停位移 */
+  opacity: 0.7;
+}
+.start-game-btn:hover:not(:disabled) {
+  background: #fcc86d;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 #453a27;
+}
+.start-game-btn:active:not(:disabled) {
+  /* 往下壓的位移：原本 -4px + 下壓 8px = 4px */
+  transform: translateY(4px);
 
+  /* 陰影縮短，模擬按下的感覺 */
+  box-shadow: 0 4px 0 #453a27;
+
+  /* 縮短點擊時的過渡時間，讓反應更即時 */
+  transition: all 0.05s ease;
+}
 .arrow-btn {
   width: 100px;
   height: 150px;
@@ -597,15 +642,16 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
 }
 
 .nav-btn {
-  width: 50px;
-  height: 50px;
-  background: #fcf4e5;
-  border: 4px solid #453a27;
-  border-radius: 15px;
-  color: #453a27;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  background: #fcf4e5;
+  color: #453a27;
+  border: 4px solid #453a27;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
   box-shadow: 0 4px 0 #453a27;
   cursor: pointer;
   transition: all 0.2s ease;
