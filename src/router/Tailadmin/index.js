@@ -290,6 +290,14 @@ export default [
           title: 'Videos',
         },
       },
+      {
+        path: 'article-list',
+        name: 'admin-article',
+        component: () => import('@/views/Tailadmin/Community/ArticleList.vue'),
+        meta: {
+          title: '貼文管理 | PawsPort',
+        },
+      },
     ],
   },
 ]
