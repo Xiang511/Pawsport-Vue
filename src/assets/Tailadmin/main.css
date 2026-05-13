@@ -2,16 +2,18 @@
 @import 'tailwindcss';
 
 @font-face {
-  font-family: 'GenJyuu'; /* 建議改成好辨識的名字 */
-  src: url('../fonts/GenJyuuGothic-Normal.ttf') format('truetype'); 
+  font-family: 'GenJyuu';
+  /* 建議改成好辨識的名字 */
+  src: url('../fonts/GenJyuuGothic-Normal.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
-:root, body, #app {
+:root,
+body,
+#app {
   /* 將你的字體放在最前面，如果找不到才會往後找 Noto Sans TC */
   font-family: 'GenJyuu', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-

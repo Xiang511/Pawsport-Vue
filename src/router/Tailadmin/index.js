@@ -43,6 +43,22 @@ export default [
         },
       },
       {
+        path: 'blocklist',
+        name: 'admin-blocklist',
+        component: () => import('@/views/Tailadmin/Member/BlockList.vue'),
+        meta: {
+          title: '違規名單 | PawsPort',
+        },
+      },
+      {
+        path: 'permissions',
+        name: 'admin-permissions',
+        component: () => import('@/views/Tailadmin/Member/Permissions.vue'),
+        meta: {
+          title: '權限管理 | PawsPort',
+        },
+      },
+      {
         path: 'questions',
         name: 'admin-questionlist',
         component: () => import('@/views/Tailadmin/Game/QuestionList.vue'),
