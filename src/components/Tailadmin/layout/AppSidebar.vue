@@ -1,12 +1,15 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, MessageCircleMore } from 'lucide-vue-next'
+import {
+  User,
+  MessageCircleMore,
+  NotebookPen,
+  Gamepad2Icon,
+  UsersRound,
+  Dog,
+} from 'lucide-vue-next'
 
-import { Dog } from 'lucide-vue-next'
-
-import { User, NotebookPen } from 'lucide-vue-next'
-import { Gamepad2Icon, User } from 'lucide-vue-next'
 import {
   GridIcon,
   PieChartIcon,
@@ -15,7 +18,6 @@ import {
 } from '@/components/Tailadmin/icons'
 
 import { useSidebar } from '@/composables/Tailadmin/useSidebar'
-import { UsersRound } from 'lucide-vue-next'
 import SidebarWidget from './SidebarWidget.vue'
 
 const route = useRoute()
