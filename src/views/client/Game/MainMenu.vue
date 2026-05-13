@@ -55,7 +55,7 @@ const levelSelect = () => {
 
     <div v-if="showBigSave" class="big-save-overlay">
       <div class="big-save-icon">
-        <img src="../../../../src/assets/images/cat.gif" alt="Save Icon" class="custom-save-gif" />
+        <img src="../../../../public/images/game/cat.gif" alt="Save Icon" class="custom-save-gif" />
         <!-- <Save :size="500" /> -->
       </div>
     </div>

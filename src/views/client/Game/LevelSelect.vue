@@ -44,19 +44,19 @@ const areas = ref([
   {
     name: '微風森林',
     idRange: [1, 10],
-    bgUrl: '/src/assets/images/map-bg-1.png',
+    bgUrl: '/public/images/game/map-bg-1.png',
     desc: '探索綠意盎然的森林，尋找隱藏的足跡。',
   },
   {
     name: '霓虹雨後街',
     idRange: [11, 20],
-    bgUrl: '/src/assets/images/map-bg-2.png',
+    bgUrl: '/public/images/game/map-bg-2.png',
     desc: '在城市燈火中，追尋貓咪留下的線索。',
   },
   {
     name: '恆溫冰原',
     idRange: [21, 30],
-    bgUrl: '/src/assets/images/map-bg-3.png',
+    bgUrl: '/public/images/game/map-bg-3.png',
     desc: '在寒冷的冰原上，守護溫暖的歸宿。',
   },
 ])
@@ -75,7 +75,7 @@ const generateLevelLayout = (startId) => {
       x: layoutCoords[i].x,
       y: layoutCoords[i].y,
       // 為每一關定義專屬的小圖路徑，例如 level-1.png, level-2.png...
-      previewUrl: `/src/assets/images/previews/level-${levelId}.png`,
+      previewUrl: `/public/images/game/level-${levelId}.png`,
     }
   })
 }
