@@ -110,7 +110,7 @@ onMounted(fetchPets)
     <div class="overflow-x-auto">
       <table class="w-full text-left">
         <thead class="bg-gray-50 dark:bg-gray-800">
-          <tr>
+          <tr class="text-center">
             <th class="px-4 py-3">ID</th>
             <th class="px-4 py-3">寵物名稱</th>
             <th class="px-4 py-3">花色</th>
