@@ -21,6 +21,7 @@ export default [
           title: '調色盤',
         },
       },
+
       // 在這裡添加更多前台路由
       {
         path: '/create-article',
@@ -45,6 +46,45 @@ export default [
         meta: {
           title: '文章內容 | Petmily',
           // plus:之後可以更新動態顯示文章標題
+        },
+      },
+    ],
+  },
+  {
+    path: '/game',
+    name: 'GameLayout',
+    component: () => import('../../layouts/client/GameLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'client-gameview',
+        component: () => import('@/views/client/Game/GameView.vue'),
+        meta: {
+          title: '遊戲 | Petmily',
+        },
+      },
+      {
+        path: 'mainmenu',
+        name: 'client-mainmenu',
+        component: () => import('@/views/client/Game/MainMenu.vue'),
+        meta: {
+          title: '遊戲主選單 | Petmily',
+        },
+      },
+      {
+        path: 'playerprofile',
+        name: 'client-playerprofile',
+        component: () => import('@/views/client/Game/PlayerProfile.vue'),
+        meta: {
+          title: '玩家資料 | Petmily',
+        },
+      },
+      {
+        path: 'levelselect',
+        name: 'client-levelselect',
+        component: () => import('@/views/client/Game/LevelSelect.vue'),
+        meta: {
+          title: '選擇關卡 | Petmily',
         },
       },
     ],

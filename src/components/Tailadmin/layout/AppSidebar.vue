@@ -6,6 +6,7 @@ import { User, MessageCircleMore } from 'lucide-vue-next'
 import { Dog } from 'lucide-vue-next'
 
 import { User, NotebookPen } from 'lucide-vue-next'
+import { Gamepad2Icon, User } from 'lucide-vue-next'
 import {
   GridIcon,
   PieChartIcon,
@@ -45,12 +46,12 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
+        icon: Gamepad2Icon,
         name: '遊戲',
         subItems: [
-          { name: '基本資料', path: '/dashboard/blank', pro: false },
-          { name: '違規名單', path: '/violation-list', pro: false },
-          { name: '權限管理', path: '/permissions', pro: false },
+          { name: '題庫管理', path: '/dashboard/questions', pro: false },
+          { name: '玩家管理', path: '/dashboard/players', pro: false },
+          { name: '商店管理', path: '/dashboard/shop', pro: false },
         ],
       },
       {
