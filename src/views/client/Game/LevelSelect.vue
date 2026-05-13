@@ -142,11 +142,22 @@ const changeArea = (dir) => {
 }
 
 const startGame = () => {
-  if (selectedLevel.value) {
-    console.log(`前往第 ${selectedLevel.value.id} 關`)
-    // router.push({ name: 'game-play', params: { id: selectedLevel.value.id } })
+  if (selectedLevel.value && !selectedLevel.value.locked) {
+    const targetRouteName = `client-levelselect-${selectedLevel.value.id}`
+
+    // 使用 router.hasRoute 檢查路由表中是否有這個名稱
+    if (router.hasRoute(targetRouteName)) {
+      router.push({ name: targetRouteName }).catch((err) => {
+        console.error('導航失敗:', err)
+      })
+    } else {
+      // 如果路由表中找不到對應名稱，就跳出提示
+      console.warn(`找不到路由: ${targetRouteName}`)
+      alert(`關卡 ${selectedLevel.value.id} 製作中，敬請期待後續更新！`)
+    }
   }
 }
+
 onMounted(() => updateAreaContent())
 const goBack = () => router.push({ name: 'client-mainmenu' })
 </script>
