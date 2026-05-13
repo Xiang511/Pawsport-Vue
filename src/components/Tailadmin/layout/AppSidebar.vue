@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { User, MessageCircleMore } from 'lucide-vue-next'
+
+import { Dog } from 'lucide-vue-next'
+
 import {
   GridIcon,
   PieChartIcon,
@@ -31,12 +34,13 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
-        name: '寵物',
+        icon: Dog,
+        name: '寵物管理',
         subItems: [
-          { name: '基本資料', path: '/dashboard/profile', pro: false },
-          { name: '違規名單', path: '/violation-list', pro: false },
-          { name: '權限管理', path: '/permissions', pro: false },
+          { name: '寵物資訊一覽', path: '/dashboard/pet', pro: false },
+          { name: '寵物健康護照', path: '/dashboard/passport', pro: false },
+          { name: '領養記錄一覽', path: '/dashboard/adoption', pro: false },
+          { name: '寵物走失紀錄', path: '/dashboard/missingreport', pro: false },
         ],
       },
       {

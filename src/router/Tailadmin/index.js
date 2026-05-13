@@ -43,6 +43,110 @@ export default [
         },
       },
       {
+        path: 'pet',
+        name: 'admin-petlist',
+        component: () => import('@/views/Tailadmin/Pet/PetList.vue'),
+        meta: {
+          title: '寵物資訊 | PawsPort',
+        },
+      },
+      {
+        path: 'pet/create',
+        name: 'admin-petcreate',
+        component: () => import('@/views/Tailadmin/Pet/PetCreate.vue'),
+        meta: {
+          title: '新增寵物資料 | PawsPort',
+        },
+      },
+      {
+        path: 'pet/edit/:id',
+        name: 'admin-petedit',
+        component: () => import('@/views/Tailadmin/Pet/PetEdit.vue'),
+        meta: {
+          title: '修改寵物資料 | PawsPort',
+        },
+      },
+      {
+        path: 'adoption',
+        name: 'admin-adoptionlist',
+        component: () => import('@/views/Tailadmin/Pet/AdoptList.vue'),
+        meta: {
+          title: '領養記錄 | PawsPort',
+        },
+      },
+      {
+        path: 'adoption/create',
+        name: 'admin-adoptcreate',
+        component: () => import('@/views/Tailadmin/Pet/AdoptCreate.vue'),
+        meta: {
+          title: '新增領養紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'adoption/edit/:id',
+        name: 'admin-adoptedit',
+        component: () => import('@/views/Tailadmin/Pet/AdoptEdit.vue'),
+        meta: {
+          title: '修改領養紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'passport',
+        name: 'admin-passportlist',
+        component: () => import('@/views/Tailadmin/Pet/PassportList.vue'),
+        meta: {
+          title: '寵物健康護照 | PawsPort',
+        },
+      },
+      {
+        path: 'passport/detail/:id',
+        name: 'admin-passportdetails',
+        component: () => import('@/views/Tailadmin/Pet/PassportDetails.vue'),
+        meta: {
+          title: '健康護照詳情 | PawsPort',
+        },
+      },
+      {
+        path: 'passport/create',
+        name: 'admin-passportcreate',
+        component: () => import('@/views/Tailadmin/Pet/PassportCreate.vue'),
+        meta: {
+          title: '新增健康護照 | PawsPort',
+        },
+      },
+      {
+        path: 'passport/edit/:id',
+        name: 'admin-passportedit',
+        component: () => import('@/views/Tailadmin/Pet/PassportEdit.vue'),
+        meta: {
+          title: '修改健康護照 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport',
+        name: 'admin-missinglist',
+        component: () => import('@/views/Tailadmin/Pet/MissingList.vue'),
+        meta: {
+          title: '寵物走失紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport/create',
+        name: 'admin-missingcreate',
+        component: () => import('@/views/Tailadmin/Pet/MissingCreate.vue'),
+        meta: {
+          title: '新增走失紀錄 | PawsPort',
+        },
+      },
+      {
+        path: 'missingreport/edit/:id',
+        name: 'admin-missingedit',
+        component: () => import('@/views/Tailadmin/Pet/MissingEdit.vue'),
+        meta: {
+          title: '修改走失紀錄 | PawsPort',
+        },
+      },
+      {
         path: 'faq',
         name: 'admin-faqlist',
         component: () => import('@/views/Tailadmin/Support/FaqList.vue'),
