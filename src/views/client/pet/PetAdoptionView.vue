@@ -118,7 +118,16 @@ onMounted(() => {
     </section>
 
     <main class="container mx-auto px-4 py-12">
-      <h1 class="mb-12 text-center text-4xl font-black text-gray-800">領養狗狗</h1>
+      <div class="mb-10 flex flex-col items-center justify-between gap-4 md:flex-row">
+        <h1 class="text-4xl font-black text-gray-800">領養狗狗</h1>
+
+        <router-link
+          to="/post-pet"
+          class="flex transform items-center gap-2 rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-orange-600">
+          <span class="text-xl">🐾</span>
+          我要刊登送養
+        </router-link>
+      </div>
 
       <div class="mb-12 flex flex-wrap justify-center gap-4">
         <button
