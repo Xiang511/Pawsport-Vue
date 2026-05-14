@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   X,
@@ -13,7 +13,30 @@ import {
   Star,
 } from 'lucide-vue-next'
 import { animate } from 'animejs'
+import { useGameAudio } from '@/composables/useGameAudio'
 
+const { playSFX, updateBGMVolume, bgmVolume, sfxVolume, updateSFXVolume, pauseCountdown, 
+  resumeCountdown } = useGameAudio()
+const bgmSlider = ref(bgmVolume ? bgmVolume.value * 100 : 30)
+const sfxSlider = ref(sfxVolume ? sfxVolume.value * 100 : 50)
+
+watch(bgmSlider, (newVal) => {
+  updateBGMVolume(newVal)
+})
+watch(sfxSlider, (newVal) => {
+  updateSFXVolume(newVal)
+})
+const handlePauseToggle = () => {
+  playSFX('click');
+  isPaused.value = !isPaused.value;
+  if (!gameStarted.value) {
+    if (isPaused.value) {
+      pauseCountdown() // 暫停音效
+    } else {
+      resumeCountdown() // 繼續音效
+    }
+  }
+}
 const router = useRouter()
 
 // --- 遊戲狀態管理 ---
@@ -122,17 +145,31 @@ const startTimer = () => {
 
 // --- 開場倒數邏輯 ---
 const runStartCountdown = () => {
+  // 1. 一開始就播放完整的三秒倒數音效
+  playSFX('countdown');
+
   const cd = setInterval(() => {
     if (!isPaused.value) {
-      startCountdown.value--
-      if (startCountdown.value <= 0) {
-        clearInterval(cd)
-        gameStarted.value = true
-        startTimer()
+      // 如果還沒到 0，就繼續扣數字
+      if (startCountdown.value > 1) {
+        startCountdown.value--;
+      } 
+      // 當數字變成 1 之後的下一秒，顯示 GO!
+      else if (startCountdown.value === 1) {
+        startCountdown.value = 'START!';
+      } 
+      // 當顯示為 GO! 之後的下一秒，正式開始遊戲
+      else {
+        clearInterval(cd);
+        gameStarted.value = true;
+        startTimer(); // 啟動你原本寫的精準計時器
       }
+    } else {
+      // 如果倒數時玩家按了暫停，這裡可以考慮要不要暫停音效
+      // 但通常開場倒數很快，不處理暫停音效也沒關係
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
 // --- 答題處理 ---
 const handleAnswer = (choice, event) => {
@@ -141,18 +178,20 @@ const handleAnswer = (choice, event) => {
 
   const correct = choice === currentQuestion.value.answer
   isUserCorrect.value = correct
-  if (correct) userScore.value++
-
-  // 觸發特效：傳入是否正確
+  if (correct) {
+    playSFX('success') // 播放成功音效 (對應你 useGameAudio 裡的 key)
+    userScore.value++
+  } else {
+    playSFX('fail') // 播放失敗音效 (對應你 useGameAudio 裡的 key)
+  }
   createStars(event, correct)
-
   showExplanation.value = true
 }
 
 // --- 星星噴發特效 ---
 const createStars = (e, isCorrect) => {
   if (!e || !e.target) return
-  
+
   const rect = e.target.getBoundingClientRect()
   const centerX = rect.left + rect.width / 2
   const centerY = rect.top + rect.height / 2
@@ -163,39 +202,50 @@ const createStars = (e, isCorrect) => {
   wrongEffects.value = []
 
   if (isCorrect) {
-    // --- 答對：星星減少至 12 顆 ---
-    const count = 12 
+    const count = 6
     for (let i = 0; i < count; i++) {
       stars.value.push({ id: `${batchId}-${i}`, x: centerX, y: centerY })
     }
 
     nextTick(() => {
-      animate('.star-particle-wrapper', {
-        x: [0, () => (Math.random() - 0.5) * 1000], 
-        y: [0, () => (Math.random() * -700) - 100], 
-        scale: [0, 4, 0],
-        rotate: [0, () => (Math.random() - 0.5) * 1500],
-        opacity: [1, 0],
-      }, {
-        duration: 1500,
-        easing: 'out-expo',
-        onComplete: () => { stars.value = [] }
-      })
+      animate(
+        '.star-particle-wrapper',
+        {
+          x: [0, () => (Math.random() - 0.5) * 1000],
+          y: [0, () => Math.random() * -700 - 100],
+          scale: [0, 4, 0],
+          rotate: [0, () => (Math.random() - 0.5) * 1500],
+          opacity: [1, 0],
+        },
+        {
+          duration: 1500,
+          easing: 'out-expo',
+          onComplete: () => {
+            stars.value = []
+          },
+        },
+      )
     })
   } else {
     // --- 答錯：狗狗 GIF ---
     wrongEffects.value.push({ id: batchId, x: centerX, y: centerY })
 
     nextTick(() => {
-      animate('.wrong-gif-wrapper', {
-        scale: [0, 2.5], 
-        opacity: [0, 1, 0],
-        translateY: [0, -120] 
-      }, {
-        duration: 1800,
-        easing: 'out-quad',
-        onComplete: () => { wrongEffects.value = [] }
-      })
+      animate(
+        '.wrong-gif-wrapper',
+        {
+          scale: [0, 2.5],
+          opacity: [0, 1, 0],
+          translateY: [0, -120],
+        },
+        {
+          duration: 1800,
+          easing: 'out-quad',
+          onComplete: () => {
+            wrongEffects.value = []
+          },
+        },
+      )
     })
   }
 }
@@ -231,13 +281,14 @@ const restartLevel = () => {
 }
 
 const exitLevel = () => {
+  playSFX('click')
   // 1. 清除計時器
   if (timerInterval.value) clearInterval(timerInterval.value)
-  
+
   // 2. 清空特效資料（避免 Teleport 殘留）
   stars.value = []
   wrongEffects.value = []
-  
+
   // 3. 執行跳轉
   router.push({ name: 'client-levelselect' })
 }
@@ -245,51 +296,87 @@ const exitLevel = () => {
 
 <template>
   <div class="game-page">
-    <button class="pause-btn-trigger" @click="togglePause">
+    <button
+      class="pause-btn-trigger" @click="handlePauseToggle">
       <component :is="isPaused ? Play : Pause" :size="32" />
     </button>
 
     <Teleport to="body">
-  <div v-for="star in stars" :key="star.id" class="star-particle-wrapper"
-    :style="{ left: star.x + 'px', top: star.y + 'px' }">
-    <div class="star-visual">
-      <Star fill="#fcc86d" color="#fcc86d" :size="32" />
-    </div>
-  </div>
+      <div
+        v-for="star in stars"
+        :key="star.id"
+        class="star-particle-wrapper"
+        :style="{ left: star.x + 'px', top: star.y + 'px' }">
+        <div class="star-visual">
+          <Star fill="#fcc86d" color="#fcc86d" :size="32" />
+        </div>
+      </div>
 
-  <div v-for="effect in wrongEffects" :key="effect.id" class="wrong-gif-wrapper"
-    :style="{ left: effect.x + 'px', top: effect.y + 'px' }">
-    <img src="/images/game/dog.gif" :key="effect.id" class="wrong-gif" />
-  </div>
-</Teleport>
+      <div
+        v-for="effect in wrongEffects"
+        :key="effect.id"
+        class="wrong-gif-wrapper"
+        :style="{ left: effect.x + 'px', top: effect.y + 'px' }">
+        <img src="/images/game/dog.gif" :key="effect.id" class="wrong-gif" />
+      </div>
+    </Teleport>
 
     <Transition name="modal-wrapper">
       <div v-if="isPaused" class="modal-overlay">
-        <div class="modal-backdrop" @click="togglePause"></div>
+        <div
+          class="modal-backdrop"
+          @click="
+            playSFX('click');
+            togglePause()
+          "></div>
 
         <div class="modal-content pause-modal">
           <h2 class="modal-title">遊戲暫停</h2>
           <div class="modal-body">
             <p class="pause-info">休息一下吧！準備好再繼續挑戰。</p>
             <div class="pause-options">
-              <button class="menu-opt continue" @click="togglePause">
+              <button
+                class="menu-opt continue"
+                @click="
+                  playSFX('click');
+                  togglePause()
+                ">
                 <Play :size="20" fill="currentColor" />
                 繼續遊戲
               </button>
-              <button class="menu-opt restart" @click="restartLevel">
+              <button
+                class="menu-opt restart"
+                @click="
+                  playSFX('click');
+                  restartLevel()
+                ">
                 <RotateCcw :size="20" />
                 重新開始
               </button>
-              <button class="menu-opt exit" @click="exitLevel">
+              <button
+                class="menu-opt exit"
+                @click="
+                  playSFX('click');
+                  exitLevel()
+                ">
                 <LogOut :size="20" />
                 退出關卡
               </button>
             </div>
           </div>
           <div class="modal-footer">
-            <div class="volume-control">
-              <span>音量</span>
-              <input type="range" v-model="volume" min="0" max="100" class="volume-slider" />
+            <div class="audio-settings">
+              <div class="volume-control">
+                <span class="label">背景音樂</span>
+                <input type="range" v-model="bgmSlider" min="0" max="100" class="volume-slider" />
+                <span class="val-num">{{ Math.round(bgmSlider) }}%</span>
+              </div>
+
+              <div class="volume-control">
+                <span class="label">遊戲音效</span>
+                <input type="range" v-model="sfxSlider" min="0" max="100" class="volume-slider" />
+                <span class="val-num">{{ Math.round(sfxSlider) }}%</span>
+              </div>
             </div>
           </div>
         </div>
@@ -319,6 +406,7 @@ const exitLevel = () => {
           <button class="answer-btn circle-btn" @click="handleAnswer(true, $event)">
             <Circle :size="70" stroke-width="4" />
           </button>
+
           <button class="answer-btn cross-btn" @click="handleAnswer(false, $event)">
             <X :size="80" stroke-width="4" />
           </button>
@@ -329,7 +417,12 @@ const exitLevel = () => {
             {{ isUserCorrect ? '回答正確！' : '回答錯誤...' }}
           </div>
           <p class="explanation-text">{{ currentQuestion.explanation }}</p>
-          <button class="next-btn" @click="nextQuestion">
+          <button
+            class="next-btn"
+            @click="
+              playSFX('click');
+              nextQuestion()
+            ">
             下一題
             <ChevronRight />
           </button>
@@ -484,19 +577,40 @@ const exitLevel = () => {
 }
 
 /* 音量條樣式 (參考 Audio 截圖) */
+.audio-settings {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .volume-control {
-  margin-top: 30px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   color: #453a27;
-  font-weight: bold;
+  font-weight: 800;
+}
+
+.volume-control .label {
+  width: 80px; /* 固定寬度讓滑桿對齊 */
+  text-align: left;
+  font-size: 1rem;
+}
+
+.volume-control .val-num {
+  width: 45px;
+  font-size: 0.9rem;
+  text-align: right;
 }
 
 .volume-slider {
   flex: 1;
   accent-color: #453a27;
   cursor: pointer;
+  height: 8px;
+  border-radius: 4px;
 }
 
 /* 過渡動畫 */
@@ -820,10 +934,10 @@ const exitLevel = () => {
     transform: translateY(0);
   }
 }
-
 </style>
 <style>
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;

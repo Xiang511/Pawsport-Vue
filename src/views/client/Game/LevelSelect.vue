@@ -3,6 +3,9 @@ import { onMounted, ref, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play } from 'lucide-vue-next'
 import { animate } from 'animejs'
+import { useGameAudio } from '@/composables/useGameAudio'
+
+const { playSFX } = useGameAudio()
 
 const router = useRouter()
 const layoutCoords = [
@@ -168,7 +171,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     :style="{ backgroundImage: `url(${areas[currentAreaIndex].bgUrl})` }">
     <header class="game-header">
       <div class="nav-menu">
-        <button class="nav-btn" @click="goBack">
+        <button class="nav-btn" @click="playSFX('click'); goBack()">
           <Home :size="30" />
           <span>返回主選單</span>
         </button>
@@ -183,9 +186,9 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     </header>
 
     <div v-if="showMenu" class="menu-dropdown">
-      <button class="menu-item" @click="goBack">返回主選單</button>
-      <button class="menu-item" @click="handleSettings">設定</button>
-      <button class="menu-item" @click="handleAbout">關於</button>
+      <button class="menu-item" @click="playSFX('click'); goBack()">返回主選單</button>
+      <button class="menu-item" @click="playSFX('click'); handleSettings()">設定</button>
+      <button class="menu-item" @click="playSFX('click'); handleAbout()">關於</button>
     </div>
 
     <main class="map-view">
@@ -209,7 +212,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
                 'is-locked': lvl.locked,
               }"
               :style="{ left: lvl.x + '%', top: lvl.y + '%' }">
-              <div class="circle-spot-card" @click="selectLevel(lvl)">
+              <div class="circle-spot-card" @click="playSFX('click'); selectLevel(lvl)">
                 <span v-if="!lvl.locked" class="lvl-num">{{ lvl.id }}</span>
                 <Lock v-else :size="24" class="lock-icon" />
                 <div v-if="!lvl.locked" class="lvl-stars">
@@ -229,7 +232,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
             <p class="info-description">{{ areas[currentAreaIndex].desc }}</p>
             <button
               class="start-game-btn"
-              @click="startGame"
+              @click="playSFX('click'); startGame()"
               :disabled="!selectedLevel || selectedLevel.locked">
               開始 (START)
               <Play :size="24" fill="currentColor" />

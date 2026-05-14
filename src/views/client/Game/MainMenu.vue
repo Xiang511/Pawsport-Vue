@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
 import 'animate.css';
+import { useGameAudio } from '@/composables/useGameAudio'
+
+const { playSFX } = useGameAudio()
 
 const isProfileOpen = ref(false)
 const showBigSave = ref(false)
@@ -17,10 +20,12 @@ const handleClose = (type) => {
   closeType.value = type;
 
   if (type === 'save') {
+    playSFX('click');
     showBigSave.value = true;
     setTimeout(() => { isProfileOpen.value = false; }, 2000); 
     setTimeout(() => { showBigSave.value = false; }, 1800);
   } else {
+    playSFX('click');
     // 新增：普通退出的視覺回饋
     showCancelEffect.value = true;
     
@@ -49,7 +54,7 @@ const levelSelect = () => {
     <div class="cancel-circle"></div>
   </div>
   <div class="main-menu-container">
-    <div class="user-profile-trigger animate__animated animate__jackInTheBox" @click="openProfile">
+    <div class="user-profile-trigger animate__animated animate__jackInTheBox" @click="playSFX('click'); openProfile()">
       <span class="player-name">玩家名稱：DevUser_01</span>
     </div>
 
@@ -67,23 +72,23 @@ const levelSelect = () => {
     <div class="menu-side">
       <h2 class="mini-logo animate__animated animate__jackInTheBox">PETMILY</h2>
       <nav class="nav-list animate__animated animate__jackInTheBox">
-        <div class="nav-item" @click="levelSelect">
+        <div class="nav-item" @click="playSFX('click');levelSelect()">
           <span class="paw-icon"><PawPrint /></span>
           選擇關卡
         </div>
-        <div class="nav-item" @click="exitGame">
+        <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
           我的收藏
         </div>
-        <div class="nav-item" @click="exitGame">
+        <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
           遊戲設定
         </div>
-        <div class="nav-item" @click="exitGame">
+        <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
           造型商店
         </div>
-        <div class="nav-item" @click="exitGame">
+        <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
           離開遊戲
         </div>
