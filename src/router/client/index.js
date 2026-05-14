@@ -34,7 +34,7 @@ export default [
       {
         path: '/create-article',
         name: 'create-article',
-        component: () => import('../../views/client/Community/CreateArticle.vue'),
+        component: () => import('../../views/client/community/CreateArticle.vue'),
         meta: {
           title: '新增貼文 | Petmily',
         },
@@ -42,7 +42,7 @@ export default [
       {
         path: '/article-list',
         name: 'article-list',
-        component: () => import('../../views/client/Community/ArticleList.vue'),
+        component: () => import('../../views/client/community/ArticleList.vue'),
         meta: {
           title: '貼文列表 | Petmily',
         },
@@ -50,7 +50,7 @@ export default [
       {
         path: '/article-detail',
         name: 'article-detail',
-        component: () => import('../../views/client/Community/ArticleDetail.vue'),
+        component: () => import('../../views/client/community/ArticleDetail.vue'),
         meta: {
           title: '文章內容 | Petmily',
           // plus:之後可以更新動態顯示文章標題
