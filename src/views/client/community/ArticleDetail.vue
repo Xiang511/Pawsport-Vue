@@ -67,58 +67,17 @@ const articleDetail = ref({
   <!-- 頁面最外層：只寫背景顏色 -->
   <div class="min-h-screen bg-[#FCF8F2] pb-12 text-slate-800">
     <!-- 頂部麵包屑 (巴哈常用) -->
-    <nav class="container mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
+    <nav class="container mx-auto max-w-6xl px-4 py-3 text-sm text-slate-500">
       首頁 > 論壇 > {{ articleDetail.categoryname }} > {{ articleDetail.title }}
     </nav>
 
     <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-7xl px-4">
+    <div class="container mx-auto w-full max-w-6xl px-4">
       <!-- 左右分邊容器，flex -->
       <!--  -->
       <div class="flex flex-col gap-6 py-8 md:flex-row">
         <!-- 左邊30%：作者資訊 (類似巴哈左側或 Reddit Sidebar) -->
         <!--  -->
-        <aside class="w-full md:w-1/4">
-          <div class="sticky top-6 flex flex-col gap-4">
-            <div class="overflow-hidden rounded-xl bg-white shadow-sm">
-              <div class="h-16 bg-linear-to-r from-orange-400 to-amber-500"></div>
-              <div class="px-4 pb-6">
-                <div class="-mt-8 mb-3 flex justify-center">
-                  <img
-                    :src="articleDetail.userphoto"
-                    class="h-20 w-20 rounded-full border-4 border-white object-cover shadow-sm" />
-                </div>
-                <div class="text-center">
-                  <h3 class="text-lg font-bold">{{ articleDetail.username }}</h3>
-                  <p class="text-xs text-slate-400">Lv.99 貓咪觀察員</p>
-                  <button
-                    class="mt-4 w-full rounded-full bg-slate-900 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
-                    + 追蹤
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 文章資訊統計 -->
-            <div class="rounded-xl bg-white p-4 shadow-sm">
-              <h4 class="mb-3 text-sm font-bold text-slate-500">文章數據</h4>
-              <div class="space-y-2 text-sm text-slate-600">
-                <div class="flex justify-between">
-                  <span>閱讀數</span>
-                  <span class="font-mono">{{ articleDetail.viewcount }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>收藏數</span>
-                  <span class="font-mono">{{ articleDetail.bookmark }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>發表日期</span>
-                  <span class="font-mono text-xs">{{ articleDetail.create_at }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
 
         <!-- 右邊70% 主內容：文章樓層 -->
         <main class="w-full md:w-3/4">
@@ -201,6 +160,48 @@ const articleDetail = ref({
             </div>
           </section>
         </main>
+
+        <aside class="w-full md:w-1/4">
+          <div class="sticky top-6 flex flex-col gap-4">
+            <div class="overflow-hidden rounded-xl bg-white shadow-sm">
+              <div class="h-16 bg-linear-to-r from-orange-400 to-amber-500"></div>
+              <div class="px-4 pb-6">
+                <div class="-mt-8 mb-3 flex justify-center">
+                  <img
+                    :src="articleDetail.userphoto"
+                    class="h-20 w-20 rounded-full border-4 border-white object-cover shadow-sm" />
+                </div>
+                <div class="text-center">
+                  <h3 class="text-lg font-bold">{{ articleDetail.username }}</h3>
+                  <p class="text-xs text-slate-400">Lv.99 貓咪觀察員</p>
+                  <button
+                    class="mt-4 w-full rounded-full bg-slate-900 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
+                    + 追蹤
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 文章資訊統計 -->
+            <div class="rounded-xl bg-white p-4 shadow-sm">
+              <h4 class="mb-3 text-sm font-bold text-slate-500">文章數據</h4>
+              <div class="space-y-2 text-sm text-slate-600">
+                <div class="flex justify-between">
+                  <span>閱讀數</span>
+                  <span class="font-mono">{{ articleDetail.viewcount }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>收藏數</span>
+                  <span class="font-mono">{{ articleDetail.bookmark }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>發表日期</span>
+                  <span class="font-mono text-xs">{{ articleDetail.create_at }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </div>

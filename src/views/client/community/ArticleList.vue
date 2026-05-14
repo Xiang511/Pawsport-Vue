@@ -29,7 +29,7 @@ const articleData = ref([
     id: 2,
     categoryid: 2,
     categoryname: '寵物知識',
-    title: '柴犬個性分析',
+    title: '柴犬個性分析—其實原本是狼!?',
     summary: '很多人說柴犬很固執，其實...',
     author: '柴大師',
     date: '2026-05-10',
@@ -39,7 +39,7 @@ const articleData = ref([
     id: 3,
     categoryid: 3,
     categoryname: '專業科普',
-    title: '犬貓鮮食推薦',
+    title: '犬貓鮮食推薦~!來自鮮味小姐自創研發品牌',
     summary: '市面上鮮食如此多種，到底該如何選擇...',
     author: '鮮味小姐',
     date: '2026-04-22',
@@ -95,18 +95,11 @@ const filteredArticles = computed(() => {
   <!-- 頁面最外層：只寫背景顏色 -->
   <div class="min-h-screen bg-[#FCF8F2]">
     <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-7xl px-4">
+    <div class="container mx-auto w-full max-w-6xl px-4">
       <!-- 左右分邊容器，flex -->
       <div class="flex flex-col gap-6 py-8 md:flex-row">
-        <!-- 左邊30% -->
-        <aside class="w-full md:w-[20%]">
-          <div class="rounded-lg bg-white p-4 shadow">
-            <h2 class="mb-4 font-bold">個人資料</h2>
-            <!-- 這裡可以放你的分類、標籤等 -->
-          </div>
-        </aside>
         <!-- 右邊70% -->
-        <main class="w-full md:w-[80%]">
+        <main class="w-full md:w-3/4">
           <div class="mb-8">
             <!-- 分類切換按鈕 -->
             <h1 class="mb-4 text-2xl text-[#433D3C]">分類</h1>
@@ -129,7 +122,7 @@ const filteredArticles = computed(() => {
           <div class="space-y-6">
             <h1 class="mb-4 text-2xl text-[#433D3C]">熱門文章</h1>
             <!-- 卡片列表 -->
-            <div class="article-list bg-olive-300">
+            <div class="article-list bg-sky-300">
               <ArticleCard
                 v-for="article in filteredArticles"
                 :key="article.id"
@@ -145,6 +138,14 @@ const filteredArticles = computed(() => {
             </div>
           </div>
         </main>
+
+        <!-- 左邊30% -->
+        <aside class="w-full md:w-1/4">
+          <div class="rounded-lg bg-white p-4 shadow">
+            <h2 class="mb-4 font-bold">個人資料</h2>
+            <!-- 這裡可以放你的分類、標籤等 -->
+          </div>
+        </aside>
       </div>
     </div>
   </div>

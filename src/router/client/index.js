@@ -45,7 +45,15 @@ export default [
         component: () => import('../../views/client/Community/ArticleDetail.vue'),
         meta: {
           title: '文章內容 | Petmily',
-          // plus:之後可以更新動態顯示文章標題
+          // note:之後可以更新動態顯示文章標題
+        },
+      },
+      {
+        path: '/mypage',
+        name: 'mypage',
+        component: () => import('../../views/client/Community/MyPage.vue'),
+        meta: {
+          title: '個人主頁 | Petmily',
         },
       },
     ],
