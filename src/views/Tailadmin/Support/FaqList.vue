@@ -178,7 +178,7 @@ const submitEdit = async () => {
   }
 }
 
-// 刪除
+// 軟刪除
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
 const deleteTargetId = ref(null) // 用來記要刪哪一筆
@@ -196,7 +196,7 @@ const submitDelete = async () => {
   isDeleting.value = true
   try {
     const response = await fetch(`https://localhost:7048/api/Support/Faq/${deleteTargetId.value}`, {
-      method: 'DELETE',
+      method: 'PATCH',
     })
 
     if (response.ok) {
