@@ -270,7 +270,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
                 <button
                   type="submit"
                   class="w-full rounded-2xl bg-orange-500 py-4 text-lg font-black text-white shadow-lg transition hover:bg-orange-600">
-                  確認送出審核 🚀
+                  確認送出審核
                 </button>
               </div>
             </form>

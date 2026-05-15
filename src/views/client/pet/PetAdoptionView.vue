@@ -122,7 +122,7 @@ onMounted(() => {
         <h1 class="text-4xl font-black text-gray-800">領養狗狗</h1>
 
         <router-link
-          to="/post-pet"
+          :to="{ name: 'pet-adoption-add' }"
           class="flex transform items-center gap-2 rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-orange-600">
           <span class="text-xl">🐾</span>
           我要刊登送養

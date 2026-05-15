@@ -21,16 +21,6 @@ export default [
           title: '調色盤',
         },
       },
-
-      // 在這裡添加更多前台路由
-      {
-        path: '/adopt',
-        name: 'pet-adoption',
-        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
-        meta: {
-          title: '領養狗狗 | Petmily',
-        },
-      },
       {
         path: '/create-article',
         name: 'create-article',
@@ -54,6 +44,22 @@ export default [
         meta: {
           title: '文章內容 | Petmily',
           // plus:之後可以更新動態顯示文章標題
+        },
+      },
+      {
+        path: '/adopt',
+        name: 'pet-adoption',
+        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
+        },
+      },
+      {
+        path: '/adopt/create',
+        name: 'pet-adoption-add',
+        component: () => import('@/views/client/pet/PostPetView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
         },
       },
     ],
@@ -93,14 +99,6 @@ export default [
         component: () => import('@/views/client/Game/LevelSelect.vue'),
         meta: {
           title: '選擇關卡 | Petmily',
-        },
-      },
-      {
-        path: '/adopt',
-        name: 'pet-adoption',
-        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
-        meta: {
-          title: '領養狗狗 | Petmily',
         },
       },
     ],
