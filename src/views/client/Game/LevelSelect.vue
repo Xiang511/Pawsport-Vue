@@ -192,7 +192,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     </div>
 
     <main class="map-view">
-      <button class="arrow-btn" @click="changeArea(-1)" :disabled="currentAreaIndex === 0">
+      <button class="arrow-btn" @click="playSFX('click');changeArea(-1)" :disabled="currentAreaIndex === 0">
         <ChevronLeft :size="100" />
       </button>
 
@@ -243,7 +243,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
 
       <button
         class="arrow-btn"
-        @click="changeArea(1)"
+        @click="playSFX('click'); changeArea(1)"
         :disabled="currentAreaIndex === areas.length - 1">
         <ChevronRight :size="100" />
       </button>
