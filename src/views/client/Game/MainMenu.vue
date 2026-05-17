@@ -1,12 +1,42 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
 import 'animate.css';
 import { useGameAudio } from '@/composables/useGameAudio'
 
-const { playSFX } = useGameAudio()
+const { 
+  playSFX, 
+  updateBGMVolume, 
+  updateSFXVolume, 
+  bgmVolume, 
+  sfxVolume 
+} = useGameAudio()
+
+// 控制主選單設定 Modal 的顯示
+const showSettingsModal = ref(false)
+// 定義滑桿專用變數 (0~100)
+const bgmSlider = ref(bgmVolume.value * 100)
+const sfxSlider = ref(sfxVolume.value * 100)
+// 監聽並同步全域音量
+watch(bgmSlider, (newVal) => updateBGMVolume(newVal))
+watch(sfxSlider, (newVal) => updateSFXVolume(newVal))
+
+// 點擊「遊戲設定」按鈕
+const openSettings = () => {
+  playSFX('click')
+  // 打開前再次同步最新音量值，避免數值與關卡內調整的不一致
+  bgmSlider.value = bgmVolume.value * 100
+  sfxSlider.value = sfxVolume.value * 100
+  showSettingsModal.value = true
+}
+
+// 關閉設定
+const closeSettings = () => {
+  playSFX('click')
+  showSettingsModal.value = false
+}
 
 const isProfileOpen = ref(false)
 const showBigSave = ref(false)
@@ -80,7 +110,7 @@ const levelSelect = () => {
           <span class="paw-icon"><PawPrint /></span>
           我的收藏
         </div>
-        <div class="nav-item" @click="playSFX('click');exitGame()">
+        <div class="nav-item" @click="playSFX('click');openSettings()">
           <span class="paw-icon"><PawPrint /></span>
           遊戲設定
         </div>
@@ -99,6 +129,45 @@ const levelSelect = () => {
       <div class="art-placeholder"></div>
     </div>
   </div>
+  <Transition name="fade">
+  <div v-if="showSettingsModal" class="audio-auth-mask">
+    <div class="audio-auth-card">
+      <h3 class="auth-title">遊戲音量設定</h3>
+      
+      <div class="audio-settings-body">
+        <div class="volume-control-row">
+          <span class="volume-label">背景音樂</span>
+          <input 
+            type="range" 
+            v-model="bgmSlider" 
+            min="0" 
+            max="100" 
+            class="volume-input-range" 
+            :style="{ '--value': bgmSlider + '%' }" 
+          />
+          <span class="volume-percentage">{{ Math.round(bgmSlider) }}%</span>
+        </div>
+
+        <div class="volume-control-row">
+          <span class="volume-label">遊戲音效</span>
+          <input 
+            type="range" 
+            v-model="sfxSlider" 
+            min="0" 
+            max="100" 
+            class="volume-input-range" 
+            :style="{ '--value': sfxSlider + '%' }" 
+          />
+          <span class="volume-percentage">{{ Math.round(sfxSlider) }}%</span>
+        </div>
+
+        <button class="auth-btn btn-save-settings" @click="closeSettings">
+          儲存並返回選單
+        </button>
+      </div>
+    </div>
+  </div>
+</Transition>
 </template>
 
 <style scoped>
@@ -362,4 +431,119 @@ const levelSelect = () => {
   100% { transform: scale(2); opacity: 0; }
 }
 
+
+/* --- 彈窗基礎遮罩與卡片 --- */
+.audio-auth-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(69, 58, 39, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  backdrop-filter: blur(4px);
+}
+
+.audio-auth-card {
+  background-color: #fcf4e5;
+  border: 4px solid #453a27;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 0 #453a27;
+}
+
+.auth-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #453a27;
+  margin-bottom: 20px;
+}
+
+.audio-settings-body {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.volume-control-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.volume-label, .volume-percentage {
+  color: #453a27;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.volume-percentage {
+  width: 45px;
+  text-align: right;
+}
+
+/* --- 這裡完全沿用你在 LevelSelect-1.vue 的滑桿魔法 --- */
+.volume-input-range {
+  flex: 1;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 14px;
+  border-radius: 10px;
+  /* 運用 HTML 傳進來的 --value 變數，動態切割漸層色 */
+  background: linear-gradient(to right, #453a27 0%, #453a27 var(--value), #e5dfd5 var(--value), #e5dfd5 100%);
+  outline: none;
+}
+
+/* 網頁滑桿的圓鈕（Thumb）樣式 */
+.volume-input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #453a27;
+  cursor: pointer;
+  border: 2px solid #fcf4e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.volume-input-range::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #453a27;
+  cursor: pointer;
+  border: 2px solid #fcf4e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 儲存按鈕（配合主選單粗框質感） */
+.btn-save-settings {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  background-color: #a8d5ba; /* 莫蘭迪綠 */
+  color: #453a27;
+  border: 3px solid #453a27;
+  border-radius: 12px;
+  box-shadow: 0 5px 0 #453a27;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  margin-top: 10px;
+}
+
+.btn-save-settings:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #453a27;
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.25s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

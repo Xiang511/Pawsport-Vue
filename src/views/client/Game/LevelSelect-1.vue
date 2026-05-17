@@ -15,8 +15,16 @@ import {
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 
-const { playSFX, updateBGMVolume, bgmVolume, sfxVolume, updateSFXVolume, pauseCountdown, 
-  resumeCountdown } = useGameAudio()
+const {
+  bgm,
+  playSFX,
+  updateBGMVolume,
+  bgmVolume,
+  sfxVolume,
+  updateSFXVolume,
+  pauseCountdown,
+  resumeCountdown,
+} = useGameAudio()
 const bgmSlider = ref(bgmVolume ? bgmVolume.value * 100 : 30)
 const sfxSlider = ref(sfxVolume ? sfxVolume.value * 100 : 50)
 
@@ -27,8 +35,8 @@ watch(sfxSlider, (newVal) => {
   updateSFXVolume(newVal)
 })
 const handlePauseToggle = () => {
-  playSFX('click');
-  isPaused.value = !isPaused.value;
+  playSFX('click')
+  isPaused.value = !isPaused.value
   if (!gameStarted.value) {
     if (isPaused.value) {
       pauseCountdown() // 暫停音效
@@ -48,6 +56,7 @@ const timeLeft = ref(10) // 每題 10 秒
 const showExplanation = ref(false)
 const userScore = ref(0)
 const timerInterval = ref(null)
+const countdownInterval = ref(null)
 const isUserCorrect = ref(false)
 const stars = ref([])
 const wrongEffects = ref([])
@@ -146,30 +155,23 @@ const startTimer = () => {
 // --- 開場倒數邏輯 ---
 const runStartCountdown = () => {
   // 1. 一開始就播放完整的三秒倒數音效
-  playSFX('countdown');
+  playSFX('countdown')
 
-  const cd = setInterval(() => {
+  // 👈 修正：將 cd 改為 countdownInterval.value
+  countdownInterval.value = setInterval(() => {
     if (!isPaused.value) {
-      // 如果還沒到 0，就繼續扣數字
       if (startCountdown.value > 1) {
-        startCountdown.value--;
-      } 
-      // 當數字變成 1 之後的下一秒，顯示 GO!
-      else if (startCountdown.value === 1) {
-        startCountdown.value = 'START!';
-      } 
-      // 當顯示為 GO! 之後的下一秒，正式開始遊戲
-      else {
-        clearInterval(cd);
-        gameStarted.value = true;
-        startTimer(); // 啟動你原本寫的精準計時器
+        startCountdown.value--
+      } else if (startCountdown.value === 1) {
+        startCountdown.value = 'START!'
+      } else {
+        clearInterval(countdownInterval.value)
+        gameStarted.value = true
+        startTimer()
       }
-    } else {
-      // 如果倒數時玩家按了暫停，這裡可以考慮要不要暫停音效
-      // 但通常開場倒數很快，不處理暫停音效也沒關係
     }
-  }, 1000);
-};
+  }, 1000)
+}
 
 // --- 答題處理 ---
 const handleAnswer = (choice, event) => {
@@ -276,8 +278,38 @@ const togglePause = () => {
 }
 
 const restartLevel = () => {
-  // 重新載入當前路由或重設資料
-  window.location.reload()
+  playSFX('click')
+
+  // 1. 【核心修正】徹底清除「答題計時器」與「開場倒數計時器」，防止多重計時器並存導致時間錯亂
+  if (timerInterval.value) clearInterval(timerInterval.value)
+  if (countdownInterval.value) clearInterval(countdownInterval.value)
+
+  // 2. 【核心修正】強行暫停倒數音效（避免舊局的 3-2-1 音效殘留與新局重疊）
+  if (typeof pauseCountdown === 'function') {
+    pauseCountdown()
+  }
+
+  // 3. 重置所有遊戲響應式變數回到開局狀態
+  gameStarted.value = false
+  startCountdown.value = 3 // 重新變回開場倒數 3 秒
+  currentQuestionIndex.value = 0
+  timeLeft.value = 10
+  showExplanation.value = false
+  userScore.value = 0
+  isUserCorrect.value = false
+  stars.value = []
+  wrongEffects.value = []
+
+  // 4. 關閉暫停視窗
+  isPaused.value = false
+
+  // 5. 重要：重新啟動開場 3、2、1 的倒數邏輯（這裡會重新觸發乾淨的倒數音效）
+  runStartCountdown()
+
+  // 6. 安全續命：確保 BGM 繼續播放
+  if (bgm && bgm.paused && isAudioAuthorized) {
+    bgm.play().catch((err) => console.log('BGM 續命受阻:', err))
+  }
 }
 
 const exitLevel = () => {
@@ -296,8 +328,7 @@ const exitLevel = () => {
 
 <template>
   <div class="game-page">
-    <button
-      class="pause-btn-trigger" @click="handlePauseToggle">
+    <button class="pause-btn-trigger" @click="handlePauseToggle">
       <component :is="isPaused ? Play : Pause" :size="32" />
     </button>
 
@@ -368,13 +399,25 @@ const exitLevel = () => {
             <div class="audio-settings">
               <div class="volume-control">
                 <span class="label">背景音樂</span>
-                <input type="range" v-model="bgmSlider" min="0" max="100" class="volume-slider" />
+                <input
+                  type="range"
+                  v-model="bgmSlider"
+                  min="0"
+                  max="100"
+                  class="volume-input-range"
+                  :style="{ '--value': bgmSlider + '%' }" />
                 <span class="val-num">{{ Math.round(bgmSlider) }}%</span>
               </div>
 
               <div class="volume-control">
                 <span class="label">遊戲音效</span>
-                <input type="range" v-model="sfxSlider" min="0" max="100" class="volume-slider" />
+                <input
+                  type="range"
+                  v-model="sfxSlider"
+                  min="0"
+                  max="100"
+                  class="volume-input-range"
+                  :style="{ '--value': sfxSlider + '%' }" />
                 <span class="val-num">{{ Math.round(sfxSlider) }}%</span>
               </div>
             </div>
@@ -611,6 +654,49 @@ const exitLevel = () => {
   cursor: pointer;
   height: 8px;
   border-radius: 4px;
+}
+
+/* --- 調整關卡頁面的滑桿外觀，與主選單完全同步 --- */
+.volume-input-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px; /* 與 MainMenu 一致的厚度 */
+  border-radius: 10px;
+  /* 關鍵修正：運用傳進來的 --value 變數，動態切割「深咖啡色」與「偏白灰米色」 */
+  background: linear-gradient(
+    to right,
+    #453a27 0%,
+    #453a27 var(--value),
+    #e5dfd5 var(--value),
+    #e5dfd5 100%
+  );
+  outline: none;
+}
+
+/* Chrome / Safari / Edge 的圓鈕樣式 */
+.volume-input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px; /* 與 MainMenu 一致的尺寸 */
+  height: 24px;
+  border-radius: 50%;
+  background: #453a27; /* 招牌深咖啡色 */
+  cursor: pointer;
+  border: 2px solid #fcf4e5; /* 奶油米色細邊框 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Firefox 的圓鈕樣式 */
+.volume-input-range::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #453a27;
+  cursor: pointer;
+  border: 2px solid #fcf4e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* 過渡動畫 */
