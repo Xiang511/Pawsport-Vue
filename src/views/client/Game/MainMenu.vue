@@ -85,7 +85,7 @@ const levelSelect = () => {
   </div>
   <div class="main-menu-container">
     <div class="user-profile-trigger animate__animated animate__jackInTheBox" @click="playSFX('click'); openProfile()">
-      <span class="player-name">玩家名稱：DevUser_01</span>
+      <span class="player-name">玩家名稱：DevUser_01</span><span class="user-profile-tail"></span>
     </div>
 
     <div v-if="showBigSave" class="big-save-overlay">
@@ -104,23 +104,23 @@ const levelSelect = () => {
       <nav class="nav-list animate__animated animate__jackInTheBox">
         <div class="nav-item" @click="playSFX('click');levelSelect()">
           <span class="paw-icon"><PawPrint /></span>
-          選擇關卡
+          選擇關卡<span class="nav-item-tail"></span>
         </div>
         <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
-          我的收藏
+          我的收藏<span class="nav-item-tail"></span>
         </div>
         <div class="nav-item" @click="playSFX('click');openSettings()">
           <span class="paw-icon"><PawPrint /></span>
-          遊戲設定
+          遊戲設定<span class="nav-item-tail"></span>
         </div>
         <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
-          造型商店
+          造型商店<span class="nav-item-tail"></span>
         </div>
         <div class="nav-item" @click="playSFX('click');exitGame()">
           <span class="paw-icon"><PawPrint /></span>
-          離開遊戲
+          離開遊戲<span class="nav-item-tail"></span>
         </div>
       </nav>
     </div>
@@ -202,33 +202,162 @@ const levelSelect = () => {
   user-select: none;
 }
 
+/* ===================================================
+   👤 玩家檔案按鈕：基礎狀態（完美對齊關卡按鈕樣式）
+   =================================================== */
+/* ===================================================
+   👤 玩家檔案按鈕：完全對齊 nav-item 靈魂手感版（向左滑動）
+   =================================================== */
 .user-profile-trigger {
+  /* 完好保留你原本的絕對定位，釘在右上角不動 */
   position: absolute;
   top: 40px;
   right: 60px;
-
-  /* 模仿儲存按鈕的視覺風格 */
-  background-color: #453a27;
-  color: #fcf4e5;
-  padding: 10px 25px;
-  border-radius: 50px; /* 大圓角矩形 */
+  
+  /* 完好保留原本外框與基礎樣式 */
+  background-color: #fcf4e5; 
+  color: #453a27;
+  padding: 12px 30px; /* 對齊 nav-item padding */
+  border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-
-  /* 增加一點點陰影與縮放動畫 */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 10;
-  border: 2px solid transparent;
+  border: 4px solid #453a27;
+  
+  /* 💡 預設初始陰影：6px */
+  box-shadow: 0 6px 0 #453a27;
+  
+  /* 💡 關鍵 1：固定底部支點，讓垂直縮放彈跳時有踩在地面上的扎實感 */
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.user-profile-trigger::before {
+  display: none !important; /* 確保 before 清空不干擾 */
+}
+
+/* ===================================================
+   🐾 貓耳朵：緊貼天花板（完美繼承頂部震動，不陷落）
+   =================================================== */
+.user-profile-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: 100%; 
+  left: 25px; /* 對齊 nav-item 耳朵左邊距 */
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 16px solid #453a27;
+  filter: drop-shadow(75px 0 0 #453a27); 
+  
+  opacity: 0;
+  transform: translateY(6px) scale(0);
+  /* 💡 關鍵 2：耳朵支點鎖在底部，完美繼承按鈕頂部的壓扁動態 */
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: -1;
+}
+
+/* ===================================================
+   🐈 貓尾巴：此處利用獨立標籤控制，若 HTML 中未加則維持此設定
+   =================================================== */
+.user-profile-tail {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -32px; 
+  width: 35px;
+  height: 50px;
+  border-right: 5px solid #453a27;
+  border-bottom: 5px solid #453a27;
+  border-radius: 0 0 25px 0; 
+  opacity: 0;
+  transform: scale(0) rotate(-30deg);
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: -1;
+}
+
+/* ===================================================
+   ✨ Hover 互動：改為【向左位移 40px】+ 純垂直 Q 彈放大
+   =================================================== */
 .user-profile-trigger:hover {
-  background-color: #fcc86d;
+  background-color: #fcf4e5; /* 對齊 nav-item 移入變米色 */
   color: #453a27;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  
+  /* 💡 核心變形：
+      - translateX(-40px): 滿足你想要的改為【往左滑動】40px！
+      - translateY(-4px): 稍微飄浮起來
+      - scaleY(1.08): 只有垂直方向拉長，產生啵一聲的彈跳感
+      - scaleX(1): 水平方向絕對不變形 */
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 0 #453a27 !important;
+  z-index: 99;
+}
+
+/* Hover 時 —— 耳朵與獨立尾巴完美彈出 */
+.user-profile-trigger:hover::after {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.user-profile-trigger:hover .user-profile-tail {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  animation: profileTailWag 1.4s ease-in-out infinite alternate;
+}
+
+/* ===================================================
+   💥 Active 點擊互動：維持向左位移 + 壓扁 + 解決陰影閃爍
+   =================================================== */
+.user-profile-trigger:active {
+  /* 💡 點擊時，維持在左邊（translateX(-40px)），垂直壓扁到 0.88，陰影縮短到 2px */
+  transform: translateY(4px) scaleY(0.88) scaleX(1) !important;
+  box-shadow: 0 2px 0 #453a27 !important;
+  
+  /* 對齊 nav-item 點擊時的極速壓扁體感 */
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 💡 耳朵在按鈕壓扁時，同步進行微幅壓扁，絕不閃爍與下陷 */
+.user-profile-trigger:active::after {
+  opacity: 1;
+  transform: translateY(0) scaleY(0.85) scaleX(1); 
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-profile-trigger:active .user-profile-tail {
+  opacity: 1;
+  transform: scale(0.95) translateY(2px);
+transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ===================================================
+   🐈 貓尾巴擺動動畫
+   =================================================== */
+@keyframes profileTailWag {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(18deg); }
 }
 
 .player-name {
@@ -250,7 +379,6 @@ const levelSelect = () => {
   font-size: 7.5rem;
   font-weight: 900;
   margin-bottom: 30px;
-  margin-left: 2rem;
   -webkit-text-stroke: 4px #453a27;
   paint-order: stroke fill;
   text-shadow: 
@@ -266,64 +394,159 @@ const levelSelect = () => {
   flex-direction: column;
 }
 
+/* --- 純平移融合版：主選單選項（Nav Item） --- */
 .nav-item {
   display: flex;
   align-items: center;
   font-size: 1.8rem;
-  margin: 10px 0; /* 稍微增加間距讓背景更明顯 */
+  margin: 18px 0;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   color: #453a27;
-  opacity: 0.9;
   position: relative;
-  padding: 10px 25px; /* 增加內邊距，給背景矩形呼吸空間 */
-  width: fit-content; /* 讓背景寬度跟著文字走 */
-  z-index: 1; /* 確保文字在背景之上 */
-}
+  padding: 12px 30px;
+  width: fit-content; 
+  z-index: 1; 
 
-.nav-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #453a27;
-  border-radius: 15px; /* 圓角矩形 */
-  z-index: -1; /* 放在文字下面 */
+  background-color: #fcf4e5;
+  border: 4px solid #453a27;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #453a27;
 
-  /* 初始動畫狀態：縮小並透明 */
-  transform: scaleX(0.8);
-  opacity: 0;
+  /* 💡 關鍵 1：固定底部支點，讓垂直縮放彈跳時有踩在地面上的扎實感 */
+  transform-origin: bottom;
+  
+  /* 帶有強烈彈性的果凍曲線 */
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.nav-item::before {
+  display: none !important;
+}
+
+/* ===================================================
+   🐾 貓耳朵：緊貼天花板
+   =================================================== */
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 100%; 
+  left: 25px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 16px solid #453a27;
+  filter: drop-shadow(75px 0 0 #453a27); 
+  
+  opacity: 0;
+  transform: translateY(6px) scale(0);
+  /* 💡 關鍵 2：耳朵的支點也鎖在底部，這樣它會完美繼承按鈕頂部的震動，絕不陷進去 */
+  transform-origin: bottom center;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: -1;
+}
+
+/* ===================================================
+   🐈 貓尾巴
+   =================================================== */
+.nav-item-tail {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -32px; 
+  width: 35px;
+  height: 50px;
+  border-right: 5px solid #453a27;
+  border-bottom: 5px solid #453a27;
+  border-radius: 0 0 25px 0; 
+  opacity: 0;
+  transform: scale(0) rotate(-30deg);
+  transform-origin: left bottom;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: -1;
+}
+
+/* ===================================================
+   ✨ Hover 互動：右移 40px + 【純垂直】高頻率 Q 彈晃動
+   =================================================== */
 .nav-item:hover {
-  color: #fcf4e5; /* 移入時文字變米色，與背景形成對比 */
-  transform: translateX(40px) scale(1.1); /* 稍微縮小位移距離，避免視覺太突兀 */
-  opacity: 1;
+  background-color: #fcf4e5;
+  color: #453a27;
+  
+  /* 💡 核心融合：
+     - translateX(40px): 滿足你想要的大幅往右滑動
+     - translateY(-4px): 稍微飄浮起來
+     - scaleY(1.08): 只有垂直方向拉長，產生啵一聲的彈跳感！
+     - scaleX(1): 【核心修正】水平方向維持 1，絕對不往左右擠扁或變形！ */
+  transform: translateX(40px) translateY(-4px) scaleY(1.08) scaleX(1);
+  
+  box-shadow: 0 10px 0 #453a27;
+  z-index: 99;
 }
 
-.nav-item:hover::before {
+/* Hover 時 —— 耳朵彈出 */
+.nav-item:hover::after {
   opacity: 1;
-  transform: scaleX(1); /* 橫向展開效果 */
+  transform: translateY(0) scale(1);
 }
 
+/* Hover 時 —— 尾巴彈出搖擺 */
+.nav-item:hover .nav-item-tail {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  animation: menuTailWag 1.4s ease-in-out infinite alternate;
+}
+
+/* 貓爪變色放大 */
 .nav-item:hover .paw-icon {
   color: #fcc86d;
   opacity: 1;
-  transform: scale(1.2) rotate(-10deg);
+  transform: scale(1.2) rotate(-12deg); 
 }
 
+/* ===================================================
+   💥 Active 點擊互動：整體下沉 + 耳朵精確微壓
+   =================================================== */
+.nav-item:active {
+  /* 💡 點擊時，按鈕寬度不變形（scaleX(1)），但垂直壓扁到 0.88，營造極強點擊打擊感 */
+  transform: translateX(40px) translateY(4px) scaleY(0.88) scaleX(1);
+  box-shadow: 0 2px 0 #453a27;
+  transition: all 0.05s ease;
+}
+
+/* 💡 因為按鈕用了 scaleY 壓扁，且耳朵的定位鎖在頂部天花板，
+   現在耳朵只要同步進行微幅壓扁 scaleY(0.85)，
+   視覺上就會呈現完美的「跟著按鈕一起往下壓低、微微收起耳朵」的精緻動態，完全不穿幫！ */
+.nav-item:active::after {
+  opacity: 1;
+  transform: translateY(0) scaleY(0.85) scaleX(1); 
+  transition: all 0.05s ease;
+}
+
+.nav-item:active .nav-item-tail {
+  opacity: 1;
+  transform: scale(0.95) translateY(2px);
+  transition: all 0.05s ease;
+}
+
+/* ===================================================
+   🐾 貓爪 Icon
+   =================================================== */
 .paw-icon {
-  color: #453a27; /* 預設改為咖啡色 */
+  color: #453a27; 
   margin-right: 15px;
   display: flex;
   align-items: center;
-  opacity: 0.6;
-  transform: scale(0.8);
-  transition: all 0.3s ease-out;
+  opacity: 0.6; 
+  transform: scale(0.8); 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+@keyframes menuTailWag {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(18deg); }
+}
+
 
 .character-art {
   flex: 1;
@@ -529,7 +752,7 @@ const levelSelect = () => {
   padding: 12px;
   font-size: 1.2rem;
   font-weight: 800;
-  background-color: #a8d5ba; /* 莫蘭迪綠 */
+  background-color: #fcc86d;
   color: #453a27;
   border: 3px solid #453a27;
   border-radius: 12px;
