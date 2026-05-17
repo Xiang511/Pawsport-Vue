@@ -62,6 +62,22 @@ export default [
           title: '領養狗狗 | Petmily',
         },
       },
+      {
+        path: '/healthpassport',
+        name: 'pet-health-passport',
+        component: () => import('@/views/client/pet/PetPassportView.vue'),
+        meta: {
+          title: '健康護照 | Petmily',
+        },
+      },
+      {
+        path: '/healthpassport/addpet',
+        name: 'pet-health-passport-add',
+        component: () => import('@/views/client/pet/PassportAddPetView.vue'),
+        meta: {
+          title: '新增寵物 | Petmily',
+        },
+      },
     ],
   },
   {
