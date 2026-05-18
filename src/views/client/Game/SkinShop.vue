@@ -26,14 +26,37 @@ const activeTab = ref('cats')
 
 // 💡 造型基礎資料（已換成 imgUrl 路徑結構）
 const dbSkins = ref([
-  { id: 1, name: '經典三花貓', imgUrl: '/images/avatar/cat_calico.png', price: 300, isOwned: true },
-  { id: 2, name: '厚實英短貓', imgUrl: '/images/avatar/cat_bsh.png', price: 170, isOwned: false },
-  { id: 3, name: '優雅布偶貓', imgUrl: '/images/avatar/cat_ragdoll.png', price: 170, isOwned: false },
-  { id: 4, name: '神祕黑貓', imgUrl: '/images/avatar/cat_black.png', price: 250, isOwned: false },
-  { id: 5, name: '偵探小禮帽', imgUrl: '/images/avatar/hat_detective.png', price: 120, isOwned: false },
-  { id: 6, name: '愛心紅領結', imgUrl: '/images/avatar/tie_heart.png', price: 90, isOwned: true },
-  { id: 7, name: '陽光午後客廳', imgUrl: '/images/bg_livingroom.png', price: 500, isOwned: false }
+  { id: 1, name: '經典三花貓', imgUrl: '/images/avatar/cat_calico.png', price: 300, isOwned: true, description: '最經典的元氣三花貓！據說能帶來好運與滿滿的朝氣。' },
+  { id: 2, name: '厚實英短貓', imgUrl: '/images/avatar/cat_bsh.png', price: 170, isOwned: false, description: '擁有一對肥嘟嘟的腮幫子，軟綿綿的手感讓人一揉就停不下來。' },
+  { id: 3, name: '優雅布偶貓', imgUrl: '/images/avatar/cat_ragdoll.png', price: 170, isOwned: false, description: '貓界的小仙女，優雅的長毛與湛藍的雙眼，高貴氣質滿點。' },
+  { id: 4, name: '神祕黑貓', imgUrl: '/images/avatar/cat_black.png', price: 250, isOwned: false, description: '像黑夜精靈一樣神祕，金黃色的眼睛彷彿看穿了你藏零食的地方。' },
+  { id: 5, name: '偵探小禮帽', imgUrl: '/images/avatar/hat_detective.png', price: 120, isOwned: false, description: '戴上它，感覺自己瞬間偵探魂上身！喵爾摩斯在此。' },
+  { id: 6, name: '愛心紅領結', imgUrl: '/images/avatar/tie_heart.png', price: 90, isOwned: true, description: '精緻的紅領結，中間點綴著小愛心，適合在特別的日子裡裝扮。' },
+  { id: 7, name: '陽光午後客廳', imgUrl: '/images/bg_livingroom.png', price: 500, isOwned: false, description: '陽光穿透窗簾灑在木地板上，空氣中瀰漫著溫暖而慵懶的氣息。' }
 ])
+
+const hoverData = ref(null) // 儲存目前懸停的造型資料，為 null 時不顯示
+const tooltipPos = ref({ x: 0, y: 0 }) // 儲存提示框的 xy 座標
+// 顯示提示框並即時跟隨滑鼠
+const showTooltip = (event, item) => {
+  hoverData.value = item
+  // 加上適當的偏移量（例如滑鼠右下方各 15px），避免提示框擋住滑鼠指標
+  tooltipPos.value = {
+    x: event.clientX + 15,
+    y: event.clientY + 15
+  }
+}
+// 滑鼠在卡片內移動時，持續更新位置
+const moveTooltip = (event) => {
+  tooltipPos.value = {
+    x: event.clientX + 15,
+    y: event.clientY + 15
+  }
+}
+// 滑鼠離開卡片，隱藏提示框
+const hideTooltip = () => {
+  hoverData.value = null
+}
 
 const currentEquippedId = ref(1)
 const previewSkin = ref({ ...dbSkins.value.find(s => s.id === currentEquippedId.value) })
@@ -153,11 +176,14 @@ const goBack = () => {
 
         <div class="items-scroll-grid">
           <div 
-            v-for="item in filteredSkins" 
-            :key="item.id"
-            :class="['product-card', { 'is-selected': previewSkin.id === item.id }]"
-            @click="playSFX('click');selectSkin(item)"
-          >
+  v-for="item in filteredSkins" 
+  :key="item.id"
+  :class="['product-card', { 'is-selected': previewSkin.id === item.id }]"
+  @click="playSFX('click'); selectSkin(item)"
+  @mouseenter="showTooltip($event, item)" 
+  @mousemove="moveTooltip($event)"
+  @mouseleave="hideTooltip"
+>
             <div class="product-title">{{ item.name }}</div>
             
             <div class="product-img-box">
@@ -172,6 +198,14 @@ const goBack = () => {
           </div>
         </div>
       </div>
+    </div>
+    <div 
+      v-if="hoverData" 
+      class="custom-tooltip"
+      :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
+    >
+      <div class="tooltip-title">{{ hoverData.name }}</div>
+      <div class="tooltip-body">{{ hoverData.description }}</div>
     </div>
 
     <Transition name="modal-fade">
@@ -304,6 +338,7 @@ const goBack = () => {
 .shop-main-content {
   flex: 1;
   display: flex;
+  align-items: stretch;
   gap: 40px;
   height: calc(100% - 80px);
 }
@@ -321,7 +356,7 @@ const goBack = () => {
   border: 5px solid #453a27;
   border-radius: 35px;
   box-shadow: 0 8px 0 #453a27;
-  height: 95%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -396,14 +431,14 @@ const goBack = () => {
 
 .category-tabs {
   display: flex;
-  gap: 12px;
+  gap: 5px;
   margin-bottom: -5px;
   z-index: 2;
 }
 
 .tab-item {
   background: #ffffff;
-  border: 4px solid #453a27;
+  border: 5px solid #453a27;
   border-bottom: none;
   border-radius: 15px 15px 0 0;
   padding: 10px 25px;
@@ -693,4 +728,39 @@ const goBack = () => {
 .items-scroll-grid::-webkit-scrollbar { width: 10px; }
 .items-scroll-grid::-webkit-scrollbar-track { background: #fdfbf7; border-radius: 10px; }
 .items-scroll-grid::-webkit-scrollbar-thumb { background: #ecdcb9; border: 3px solid #ffffff; border-radius: 10px; }
+
+/* ===================================================
+   浮動提示框（Tooltip）專屬手繪風樣式
+   =================================================== */
+.custom-tooltip {
+  position: fixed; /* 使用 fixed 固定定位，依據瀏覽器視窗座標跟隨 */
+  z-index: 9999; /* 確保它高於貨架與卡片，但低於全畫面 Modal 即可 */
+  max-width: 240px;
+  background-color: #fffdf9; /* 溫暖的乳白色 */
+  border: 4px solid #453a27; /* 經典手繪粗邊框 */
+  border-radius: 16px;       /* 圓潤感圓角 */
+  box-shadow: 4px 4px 0px #453a27; /* 可愛的小黑影 */
+  padding: 12px 16px;
+  pointer-events: none; /* 🌟 關鍵：讓提示框不干涉滑鼠穿透，避免滑鼠抖動閃爍 */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 提示框造型名稱 */
+.tooltip-title {
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: #e4987e; /* 使用你專案中的主橘色，引人注目 */
+  border-bottom: 2px dashed #ecdcb9; /* 可愛虛線分隔線 */
+  padding-bottom: 4px;
+}
+
+/* 提示框詳細描述文字 */
+.tooltip-body {
+  font-size: 0.9rem;
+  color: #7a6e5d; /* 溫柔的 Morandi 灰褐色 */
+  line-height: 1.4;
+  word-break: break-all;
+}
 </style>
