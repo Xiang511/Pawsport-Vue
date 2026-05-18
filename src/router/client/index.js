@@ -103,6 +103,14 @@ export default [
           title: '造型商店 | Petmily',
         },
       },
+      {
+        path: 'inventory',
+        name: 'client-inventory',
+        component: () => import('@/views/client/Game/Inventory.vue'),
+        meta: {
+          title: '我的收藏 | Petmily',
+        },
+      },
     ],
   },
 ]
