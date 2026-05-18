@@ -68,8 +68,9 @@ const handleSubmit = async () => {
               <div class="mb-5 sm:mb-8">
                 <h1
                   class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
-                  Sign In
+                  Login
                 </h1>
+                <span class="text-sm text-gray-400">請輸入您的帳號密碼以繼續使用</span>
               </div>
               <div>
                 <form @submit.prevent="handleSubmit">
