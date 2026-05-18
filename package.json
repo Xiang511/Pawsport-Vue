@@ -29,6 +29,7 @@
     "jsvectormap": "^1.6.0",
     "lucide-vue-next": "^0.474.0",
     "pinia": "^3.0.4",
+    "quill": "^2.0.3",
     "swiper": "^11.2.1",
     "tailwindcss": "^4.2.4",
     "vue": "^3.5.32",
