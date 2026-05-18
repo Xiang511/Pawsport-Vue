@@ -15,6 +15,7 @@ import {
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 import LevelResultModal from '@/components/Pawsport/LevelResultModal.vue' 
+import axios from 'axios'
 
 const isResultOpen = ref(false) // 專門控制獨立結算組件的開啟
 
@@ -65,70 +66,42 @@ const stars = ref([])
 const wrongEffects = ref([])
 
 // --- 題目資料 ---
-const questions = ref([
-  {
-    text: '領養寵物前，應該先評估自己的經濟能力是否能負擔醫療與伙食費。',
-    answer: true,
-    explanation:
-      '養育寵物除了基本伙食，還有每年的疫苗、健檢以及突發的醫療費用，穩定的經濟能力是負責表現的第一步。',
-  },
-  {
-    text: '貓咪是獨立的動物，所以領養後不需要每天花時間陪伴或玩耍。',
-    answer: false,
-    explanation:
-      '貓咪雖然相對獨立，但仍需要人類的陪伴、互動與遊戲來維持心理健康，長期忽視會導致焦慮或行為問題。',
-  },
-  {
-    text: '在台灣領養犬隻後，法律規定必須辦理寵物登記並植入晶片。',
-    answer: true,
-    explanation:
-      '根據《動物保護法》，飼主應為寵物辦理登記並植入晶片，這也是遺失時找回寵物的重要依據。',
-  },
-  {
-    text: '為了保持環境整潔，領養貓咪後應該立即進行去爪手術（Declawing）。',
-    answer: false,
-    explanation:
-      '去爪手術實際上是截斷腳趾節骨，會對貓咪造成極大痛苦並影響其平衡與行為，這在許多國家被視為虐待行為。',
-  },
-  {
-    text: '領養幼犬、幼貓比領養成犬、成貓更好，因為牠們比較乖巧且不需要訓練。',
-    answer: false,
-    explanation:
-      '幼年動物通常充滿活力且需要大量社會化訓練與耐心；而成犬、成貓性格多已穩定，對新手飼主來說有時是更好的選擇。',
-  },
-  {
-    text: '家中的巧克力、洋蔥、葡萄等食物對貓狗來說是具危險性的毒素。',
-    answer: true,
-    explanation:
-      '許多人類美食對寵物是有毒的，例如巧克力中的可可鹼、洋蔥中的硫化物都會導致嚴重的中毒甚至死亡。',
-  },
-  {
-    text: '領養寵物是一輩子的承諾，不應因為搬家、結婚或生子等人生變動而輕易棄養。',
-    answer: true,
-    explanation:
-      '寵物是家人，在做任何人生重大決定時，都應將寵物的安置一併納入考慮，確保牠們的生活不受影響。',
-  },
-  {
-    text: '只要有準時餵食，寵物並不需要每年的預防針或健康檢查。',
-    answer: false,
-    explanation:
-      '預防針能預防重大傳染病（如狂犬病、核心疫苗），定期檢查看似花錢，實則能及早發現潛在疾病，節省長遠醫療開銷。',
-  },
-  {
-    text: '領養前應確認家中的窗戶或陽台是否已做好防護措施，以防寵物墜樓。',
-    answer: true,
-    explanation:
-      '特別是貓咪容易被窗外的昆蟲吸引而發生墜樓意外（高樓症候群），充足的防護網是保護牠們生命的基本條件。',
-  },
-  {
-    text: '如果領養的寵物生病了，可以自行餵食人類的成藥（如普拿疼）來緩解症狀。',
-    answer: false,
-    explanation:
-      '人類藥物的成分與劑量對寵物極其危險，例如普拿疼會導致貓狗急性肝腎衰竭，生病務必諮詢專業獸醫師。',
-  },
-])
+const questions = ref([])
+const loading = ref(true)
+const fetchGameQuestions = async () => {
+  try {
+    loading.value = true
+    
+    // 📡 連接後端 7048 Port 網址，抓取「認養須知」分類題目
+    const response = await axios.get('https://localhost:7048/api/Questions/game-level', {
+      params: { category: '認養須知' }
+    })
+    
+    if (response.data.success) {
+      questions.value = response.data.data
+      console.log('PawsPort 題庫連線成功！已載入 10 題隨機問答題：', questions.value)
+    }
+  } catch (error) {
+    console.error('從後端撈取遊戲題目時發生錯誤:', error)
+  } finally {
+    // 關鍵修正：拿到資料後，先關閉載入鎖，再利用 nextTick 確保網頁渲染完後，才開始播放音效跟倒數
+    if (questions.value && questions.value.length > 0) {
+      loading.value = false // 1. 解開載入遮罩，讓 template 渲染遊戲主容器
+      
+      await nextTick()      // 2. 確保 Vue 已經將畫面畫在瀏覽器上
+      
+      runStartCountdown()   // 3. 畫面出來了，正式啟動 3、2、1 倒數動畫與音效
+    } else {
+      loading.value = false // 若沒抓到題目，關閉載入以顯示「目前沒有題目」的防禦畫面
+    }
+  }
+}
 
-const currentQuestion = computed(() => questions.value[currentQuestionIndex.value])
+
+const currentQuestion = computed(() => {
+  if (!questions.value || questions.value.length === 0) return null
+  return questions.value[currentQuestionIndex.value]
+})
 
 // --- 計時器邏輯 ---
 const startTimer = () => {
@@ -178,10 +151,10 @@ const runStartCountdown = () => {
 
 // --- 答題處理 ---
 const handleAnswer = (choice, event) => {
-  if (showExplanation.value) return
+  if (showExplanation.value || !currentQuestion.value) return
   clearInterval(timerInterval.value)
-
-  const correct = choice === currentQuestion.value.answer
+const backendCorrectAnswer = currentQuestion.value.answers === 1
+  const correct = choice === backendCorrectAnswer
   isUserCorrect.value = correct
   if (correct) {
     playSFX('success') // 播放成功音效 (對應你 useGameAudio 裡的 key)
@@ -301,7 +274,7 @@ const handleNextLevel = () => {
 }
 
 onMounted(() => {
-  runStartCountdown()
+  fetchGameQuestions()
 })
 
 onUnmounted(() => {
@@ -363,7 +336,7 @@ const exitLevel = () => {
 
 <template>
   <div class="game-page">
-    <button class="pause-btn-trigger" @click="handlePauseToggle">
+    <button v-if="!loading && questions.length > 0" class="pause-btn-trigger" @click="handlePauseToggle">
       <component :is="isPaused ? Play : Pause" :size="32" />
     </button>
 
@@ -461,60 +434,83 @@ const exitLevel = () => {
       </div>
     </Transition>
 
-    <div v-if="!gameStarted" class="overlay">
-      <div class="countdown-number">{{ startCountdown }}</div>
-      <p v-if="isPaused" class="pause-text">遊戲暫停中</p>
+    <div v-if="loading" class="overlay">
+      <div class="countdown-number loading-text">載入題庫中...</div>
+      <p class="pause-text loading-subtext">正在連接 PawsPort 雲端資料庫</p>
     </div>
 
-    <div v-if="gameStarted" class="game-container">
-      <div class="game-header">
-        <h2 class="question-title">第 {{ currentQuestionIndex + 1 }} 題</h2>
-        <div class="timer-bar">
-          <div class="timer-progress" :style="{ width: (timeLeft / 10) * 100 + '%' }"></div>
-          <span class="timer-text">{{ timeLeft }}s</span>
-        </div>
+    <div v-else-if="questions.length === 0" class="overlay">
+      <div class="countdown-number empty-title">目前沒有題目</div>
+      <p class="pause-text empty-desc">
+        請先確認後端 API 正常運行，並確認後台已建立「認養須知」分類的問答題喔！
+      </p>
+      <button class="next-btn return-btn" @click="exitLevel">
+        返回大廳
+      </button>
+    </div>
+
+    <div v-else class="game-container">
+      
+      <div v-if="!gameStarted" class="overlay">
+        <div class="countdown-number">{{ startCountdown }}</div>
+        <p v-if="isPaused" class="pause-text">遊戲暫停中</p>
       </div>
 
-      <div class="main-card">
-        <div class="question-body">
-          <p>{{ currentQuestion.text }}</p>
-        </div>
-
-        <div v-if="!showExplanation" class="action-buttons">
-          <button class="answer-btn circle-btn" @click="handleAnswer(true, $event)">
-            <Circle :size="70" stroke-width="4" />
-          </button>
-
-          <button class="answer-btn cross-btn" @click="handleAnswer(false, $event)">
-            <X :size="80" stroke-width="4" />
-          </button>
-        </div>
-
-        <div v-else class="explanation-box" :class="isUserCorrect ? 'bg-correct' : 'bg-wrong'">
-          <div class="result-label">
-            {{ isUserCorrect ? '回答正確！' : '回答錯誤...' }}
+      <div v-if="gameStarted" class="quiz-content-wrapper">
+        <div class="game-header">
+          <h3 class="category-badge">
+            {{ currentQuestion.gameName }}
+          </h3>
+          <h2 class="question-title">第 {{ currentQuestionIndex + 1 }} / 10 題</h2>
+          <div class="timer-bar">
+            <div class="timer-progress" :style="{ width: (timeLeft / 10) * 100 + '%' }"></div>
+            <span class="timer-text">{{ timeLeft }}s</span>
           </div>
-          <p class="explanation-text">{{ currentQuestion.explanation }}</p>
-          <button
-            class="next-btn"
-            @click="
-              playSFX('click');
-              nextQuestion()
-            ">
-            下一題
-            <ChevronRight />
-          </button>
+        </div>
+
+        <div class="main-card">
+          <div class="question-body">
+            <p>{{ currentQuestion.questions }}</p>
+          </div>
+
+          <div v-if="!showExplanation" class="action-buttons">
+            <button class="answer-btn circle-btn" @click="handleAnswer(true, $event)">
+              <Circle :size="70" stroke-width="4" />
+            </button>
+
+            <button class="answer-btn cross-btn" @click="handleAnswer(false, $event)">
+              <X :size="80" stroke-width="4" />
+            </button>
+          </div>
+
+          <div v-else class="explanation-box" :class="isUserCorrect ? 'bg-correct' : 'bg-wrong'">
+            <div class="result-label">
+              {{ isUserCorrect ? '回答正確！' : '回答錯誤...' }}
+            </div>
+            <p class="explanation-text">{{ currentQuestion.answersDetail }}</p>
+            <button
+              class="next-btn"
+              @click="
+                playSFX('click');
+                nextQuestion()
+              ">
+              下一題
+              <ChevronRight />
+            </button>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
+
   <LevelResultModal 
-      :isOpen="isResultOpen" 
-      :score="userScore" 
-      @retry="handleRetry"
-      @continue="handleContinue"
-      @nextLevel="handleNextLevel"
-    />
+    :isOpen="isResultOpen" 
+    :score="userScore" 
+    @retry="handleRetry"
+    @continue="handleContinue"
+    @nextLevel="handleNextLevel"
+  />
 </template>
 
 <style scoped>
@@ -1061,6 +1057,54 @@ const exitLevel = () => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* --- 遊戲載入與空狀態的抽離樣式 --- */
+.loading-text {
+  font-size: 3rem;
+}
+
+.loading-subtext {
+  margin-top: 10px;
+}
+
+.empty-title {
+  font-size: 2.5rem;
+  color: #f2a6a6; /* 莫蘭迪紅 */
+}
+
+.empty-desc {
+  margin-top: 10px;
+  max-width: 80%;
+  text-align: center;
+}
+
+.return-btn {
+  float: none !important;
+  margin-top: 25px;
+  background: #453a27 !important;
+  color: #fff !important;
+}
+
+/* --- 核心作答區排版抽離 --- */
+.quiz-content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* --- 頂部動物分類標籤標題 --- */
+.category-badge {
+  font-size: 1.4rem;
+  background: #453a27; /* 專案主色調深咖啡 */
+  color: #fff;
+  padding: 4px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
+  font-weight: 700;
 }
 </style>
 <style>
