@@ -2,10 +2,6 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import axios from 'axios'
 
-// 假設這是你已有的組件與工具
-// import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
-// import { formatDate } from '@/utils/format';
-
 // 1. 狀態定義
 const loading = ref(true)
 const rawPets = ref([]) // 存放 API 回傳的原始資料
@@ -89,41 +85,39 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <section class="relative overflow-hidden bg-black text-white">
-      <div class="container mx-auto flex flex-col items-center md:flex-row">
+  <div class="min-h-screen bg-[#F7F3F1] pb-20">
+    <!-- Banner 區塊，調整為主題色系 -->
+    <section class="relative overflow-hidden bg-[#9C6D6D] text-white">
+      <div class="mx-auto max-w-6xl flex flex-col items-center md:flex-row px-4">
         <div class="z-10 w-full p-8 md:w-1/2 md:p-16">
           <h2 class="mb-4 text-3xl font-bold md:text-5xl">
             我們幫你一起養！
             <br />
             狗狗領養津貼上路
           </h2>
-          <p class="mb-8 leading-relaxed text-gray-300">
+          <p class="mb-8 leading-relaxed text-gray-100">
             經過預備學校社會化的狗狗，更能融入人類家庭。
             <br />
             現在領養還有見面禮—價值近一萬一千元的大禮包！
           </p>
           <button
-            class="rounded-full bg-orange-500 px-8 py-3 font-bold text-white transition hover:bg-orange-600">
+            class="rounded-full bg-white px-8 py-3 font-bold text-[#9C6D6D] transition hover:bg-gray-100">
             我要領養
           </button>
         </div>
         <div class="relative h-64 w-full md:h-[500px] md:w-1/2">
-          <!-- <img
-            src="/images/banner/dog-hero.jpg"
-            alt="Hero"
-            class="absolute inset-0 h-full w-full object-cover opacity-80" /> -->
+          <!-- 可以放置背景圖 -->
         </div>
       </div>
     </section>
 
-    <main class="container mx-auto px-4 py-12">
+    <main class="mx-auto max-w-6xl px-4 py-12">
       <div class="mb-10 flex flex-col items-center justify-between gap-4 md:flex-row">
         <h1 class="text-4xl font-black text-gray-800">領養狗狗</h1>
 
         <router-link
           :to="{ name: 'pet-adoption-add' }"
-          class="flex transform items-center gap-2 rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-orange-600">
+          class="flex transform items-center gap-2 rounded-full bg-[#9C6D6D] px-8 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-[#855a5a]">
           <span class="text-xl">🐾</span>
           我要刊登送養
         </router-link>
@@ -132,12 +126,12 @@ onMounted(() => {
       <div class="mb-12 flex flex-wrap justify-center gap-4">
         <button
           class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md">
-          <span class="text-orange-500">🏠</span>
+          <span class="text-[#9C6D6D]">🏠</span>
           為什麼要領養巴克幫？
         </button>
         <button
           class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md">
-          <span class="text-orange-500">❓</span>
+          <span class="text-[#9C6D6D]">❓</span>
           領養流程
         </button>
       </div>
@@ -151,7 +145,7 @@ onMounted(() => {
                 v-model="filters.search"
                 type="text"
                 placeholder="輸入狗狗名字..."
-                class="w-full rounded-full border-gray-200 px-4 py-2 focus:border-orange-500 focus:ring-orange-500" />
+                class="w-full rounded-full border-gray-200 px-4 py-2 focus:border-[#9C6D6D] focus:ring-[#9C6D6D]" />
             </div>
           </div>
 
@@ -163,7 +157,7 @@ onMounted(() => {
                   @click="filters.gender = 'male'"
                   :class="
                     filters.gender === 'male'
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-[#9C6D6D] text-white'
                       : 'bg-gray-100 text-gray-600'
                   "
                   class="rounded-full px-4 py-2 text-sm transition">
@@ -173,7 +167,7 @@ onMounted(() => {
                   @click="filters.gender = 'female'"
                   :class="
                     filters.gender === 'female'
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-[#9C6D6D] text-white'
                       : 'bg-gray-100 text-gray-600'
                   "
                   class="rounded-full px-4 py-2 text-sm transition">
@@ -187,7 +181,7 @@ onMounted(() => {
                 年齡
                 <small class="font-normal text-gray-400">(歲)</small>
               </h5>
-              <select v-model="filters.ageRange" class="w-full rounded-lg border-gray-200 text-sm">
+              <select v-model="filters.ageRange" class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
                 <option value="">全部年齡</option>
                 <option value="0,1">幼犬 (0-1)</option>
                 <option value="1,3">青少年 (1-3)</option>
@@ -201,7 +195,7 @@ onMounted(() => {
                 體型
                 <small class="font-normal text-gray-400">(kg)</small>
               </h5>
-              <select v-model="filters.sizeRange" class="w-full rounded-lg border-gray-200 text-sm">
+              <select v-model="filters.sizeRange" class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
                 <option value="">全部體型</option>
                 <option value="0,12">小型犬 (under 12)</option>
                 <option value="12,25">中型犬 (12-25)</option>
@@ -219,7 +213,7 @@ onMounted(() => {
                 type="checkbox"
                 v-model="filters.goodWith"
                 value="kids"
-                class="mr-2 rounded text-orange-500" />
+                class="mr-2 rounded text-[#9C6D6D] focus:ring-[#9C6D6D]" />
               小孩
             </label>
             <label class="inline-flex items-center text-sm">
@@ -227,20 +221,20 @@ onMounted(() => {
                 type="checkbox"
                 v-model="filters.goodWith"
                 value="dogs"
-                class="mr-2 rounded text-orange-500" />
+                class="mr-2 rounded text-[#9C6D6D] focus:ring-[#9C6D6D]" />
               其他狗狗
             </label>
           </div>
           <button
             @click="resetFilters"
-            class="text-sm text-gray-400 transition hover:text-orange-500">
+            class="text-sm text-gray-400 transition hover:text-[#9C6D6D]">
             🔄 重置篩選條件
           </button>
         </div>
       </div>
 
       <div v-if="loading" class="flex justify-center py-20">
-        <div class="h-12 w-12 animate-spin rounded-full border-b-2 border-orange-500"></div>
+        <div class="h-12 w-12 animate-spin rounded-full border-b-2 border-[#9C6D6D]"></div>
       </div>
 
       <div v-else class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
@@ -264,7 +258,7 @@ onMounted(() => {
 
           <div class="p-6">
             <div
-              class="mb-2 inline-block rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-600">
+              class="mb-2 inline-block rounded-full bg-[#FBF9F8] px-3 py-1 text-xs font-bold text-[#9C6D6D]">
               {{ pet.nickname || '精選夥伴' }}
             </div>
             <h3 class="mb-1 text-xl font-bold text-gray-800">{{ pet.name }}</h3>
@@ -285,7 +279,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 可以在這裡加入細微的漸層或特殊動畫 */
 .aspect-square {
   aspect-ratio: 1 / 1;
 }
