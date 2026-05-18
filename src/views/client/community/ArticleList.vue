@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 // 自己做的卡片樣式
-import ArticleCard from '@/components/Client/ArticleCard.vue'
+import Article_ListCard from '@/components/Client/Article_ListCard.vue'
 import Article_PopularCard from '@/components/Client/Article_PopularCard.vue'
 
 //===假資料===
@@ -111,7 +111,9 @@ const filteredArticles = computed(() => {
         <main class="flex w-full flex-col gap-8 md:w-3/4">
           <!-- 熱門文章區 -->
           <div>
-            <h1 class="mb-4 text-2xl font-medium text-[#433D3C]">熱門文章</h1>
+            <h1 class="border-b border-stone-300 pb-4 text-2xl font-medium text-[#433D3C]">
+              熱門文章
+            </h1>
             <div class="flex gap-4 py-4">
               <!-- 卡片 -->
               <Article_PopularCard />
@@ -144,7 +146,7 @@ const filteredArticles = computed(() => {
             <div class="flex flex-col gap-4">
               <!-- 卡片 -->
               <div class="article-list flex flex-col">
-                <ArticleCard
+                <Article_ListCard
                   v-for="article in filteredArticles"
                   :key="article.id"
                   :title="article.title"
