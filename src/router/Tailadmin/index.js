@@ -3,10 +3,10 @@ export default [
   {
     path: '/',
     name: 'admin-home',
-    redirect: '/signin',
+    redirect: '/dashboard/login',
   },
   {
-    path: '/signin',
+    path: '/dashboard/login',
     name: 'admin-signin',
     component: () => import('@/views/Tailadmin/Auth/Signin.vue'),
     meta: {

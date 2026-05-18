@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 import adminRoutes from './Tailadmin'
 import clientRoutes from './client'
@@ -18,11 +19,23 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
   // 設置頁面標題
   if (to.meta.title) {
     document.title = to.meta.title
   }
-  next()
+
+  // 需要認證的路由檢查
+  const publicRoutes = ['/dashboard/login', '/signup', '/']
+  const requiresAuth = !publicRoutes.includes(to.path) && to.path.startsWith('/dashboard')
+
+  if (requiresAuth && !authStore.isLoggedIn) {
+    // 如果需要認證但未登入，跳轉到登入頁
+    next('/dashboard/login')
+  } else {
+    next()
+  }
 })
 
 export default router
