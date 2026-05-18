@@ -8,7 +8,7 @@ const handleSave = () => {
 
 <template>
   <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#FCF8F2]">
+  <div class="min-h-screen bg-[#f9f6f4] pt-6">
     <!-- 內容區：最大1280px -->
     <div class="container mx-auto w-full max-w-6xl px-4">
       <!-- 左右分邊容器，flex -->

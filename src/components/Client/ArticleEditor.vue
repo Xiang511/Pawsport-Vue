@@ -3,36 +3,20 @@ import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 // 自己做的按鈕樣式
 import Article_BaseButton from './Article_BaseButton.vue'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
 
 //控制Quill的響應式變數
 const editorRef = ref(null)
 //存放new Quill()後產生的物件實體
 let quillInstance = null
 
-// 動態載入 Quill CDN
-// 使用appendchild模擬加入<head>區塊中的效果
-const loadQuill = () => {
-  return new Promise((resolve) => {
-    // 1. 載入 CSS
-    const link = document.createElement('link')
-    link.href = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css'
-    link.rel = 'stylesheet'
-    document.head.appendChild(link)
-
-    // 2. 載入 JS
-    const script = document.createElement('script')
-    script.src = 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js'
-    //onload觸發才算完成
-    script.onload = () => resolve(window.Quill)
-    //若載入失敗
-    script.onerror = () => reject(new Error('Quill 載入失敗'))
-    document.head.appendChild(script)
-  })
-}
-
 //頁面必須等quill載入
 onMounted(async () => {
-  const Quill = await loadQuill()
+  if (!editorRef.value) {
+    console.error('無法找到編輯器容器元素')
+    return
+  }
 
   // 初始化編輯器 // 確保拿到 Quill 之後才執行初始化
   quillInstance = new Quill(editorRef.value, {
