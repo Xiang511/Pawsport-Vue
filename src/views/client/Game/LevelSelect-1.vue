@@ -14,6 +14,9 @@ import {
 } from 'lucide-vue-next'
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
+import LevelResultModal from '@/components/Pawsport/LevelResultModal.vue' 
+
+const isResultOpen = ref(false) // 專門控制獨立結算組件的開啟
 
 const {
   bgm,
@@ -260,9 +263,41 @@ const nextQuestion = () => {
     startTimer()
     isUserCorrect.value = false
   } else {
-    alert(`遊戲結束！您的得分：${userScore.value} / ${questions.value.length}`)
-    router.push({ name: 'LevelSelect' })
+    // --- 🌟 10 題全部答完了，觸發獨立結算視窗！ ---
+    
+    // 💡 註解或刪除原本的 if (timer) clearInterval(timer)，改用 try-catch 包裹
+    try {
+      // 如果你的計時器變數叫其他名字，可以在這裡安全地清除它，就算失敗也不會卡死程式
+      if (typeof timer !== 'undefined') {
+        clearInterval(timer)
+      }
+    } catch (e) {
+      console.log('計時器清除跳過')
+    }
+
+    // 🎯 核心：強制直接打開獨立結算視窗！
+    isResultOpen.value = true 
   }
+}
+
+// 💡 點擊「再次挑戰」時由主頁面執行的重置方法
+const handleRetry = () => {
+  isResultOpen.value = false
+  currentQuestionIndex.value = 0
+  userScore.value = 0
+  timeLeft.value = 10
+  showExplanation.value = false
+  startTimer()
+}
+
+// 💡 點擊「繼續探索」時返回選單
+const handleContinue = () => {
+  router.push({ name: 'client-levelselect' })
+}
+
+const handleNextLevel = () => {
+  // 假設你的第二關路由名稱叫 LevelSelect2 或 Level2，請對齊你的 router 設定
+  router.push({ name: 'client-levelselect-2' }) 
 }
 
 onMounted(() => {
@@ -473,6 +508,13 @@ const exitLevel = () => {
       </div>
     </div>
   </div>
+  <LevelResultModal 
+      :isOpen="isResultOpen" 
+      :score="userScore" 
+      @retry="handleRetry"
+      @continue="handleContinue"
+      @nextLevel="handleNextLevel"
+    />
 </template>
 
 <style scoped>

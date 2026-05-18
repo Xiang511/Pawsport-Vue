@@ -70,15 +70,50 @@ const levels = ref([])
 const selectedLevel = ref(null)
 
 const generateLevelLayout = (startId) => {
+  // 1. 讀取目前的遊戲總進度
+  const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
+
   return Array.from({ length: 10 }, (_, i) => {
     const levelId = startId + i
+    
+    // 🎯 2. 讀取這關的真實星星數
+    const currentLevelData = progress[`level_${levelId}`]
+    const currentStars = (currentLevelData && typeof currentLevelData.stars !== 'undefined') 
+      ? currentLevelData.stars 
+      : 0
+
+    // 🎯 3. 核心鎖定邏輯：除了第 1 關以外，預設通通是鎖定的 (true)
+    let isLocked = true 
+
+    if (levelId === 1) {
+      // 🥇 第一關永遠解鎖
+      isLocked = false 
+    } 
+    else if (levelId === 2) {
+      // 🥈 第二關解鎖條件：第一關有星星紀錄，或者有被標記 level_2_unlocked
+      if (progress['level_2_unlocked'] === true) {
+    isLocked = false
+  } else {
+    isLocked = true
+  }
+    } 
+    else {
+      // 🥉 第三關（含）以後的關卡連鎖解鎖條件：前一關必須要有過關（星星）紀錄！
+      // 例如：只有當第二關有星星資料 progress['level_2'] 時，第三關才會變成 false (解鎖)
+      const prevLevelData = progress[`level_${levelId - 1}`]
+  if (prevLevelData && progress[`level_${levelId}_unlocked`]) {
+    isLocked = false
+  } else {
+    isLocked = true
+  }
+    }
+
     return {
       id: levelId,
-      stars: i < 3 ? 3 : 0,
-      locked: levelId > 5,
+      stars: currentStars,
+      locked: isLocked, // 🌟 這裡會套用上面嚴格分類後的 true/false
       x: layoutCoords[i].x,
       y: layoutCoords[i].y,
-      // 為每一關定義專屬的小圖路徑，例如 level-1.png, level-2.png...
       previewUrl: `/public/images/game/level-${levelId}.png`,
     }
   })
