@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
-
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+import axios from 'axios'
+import request from '@/api/axios'
 import {
   UserCircleIcon,
   ChevronDownIcon,
@@ -9,9 +12,11 @@ import {
   SettingsIcon,
   InfoCircleIcon,
 } from '@/components/Tailadmin/icons'
-
+const authStore = useAuthStore()
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null)
+
+const userInfo = authStore.userInfo
 
 const menuItems = [
   { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
@@ -27,9 +32,15 @@ const closeDropdown = () => {
   dropdownOpen.value = false
 }
 
-const signOut = () => {
-  // Implement sign out logic here
-  console.log('Signing out...')
+const signOut = async () => {
+  try {
+    const response = await request.post('/Auth/logout')
+    console.log('成功登出後端')
+    authStore.clearLoginInfo()
+    router.replace('/dashboard/login')
+  } catch (error) {
+    console.error('登出請求失敗:', error)
+  }
   closeDropdown()
 }
 
@@ -54,10 +65,10 @@ onUnmounted(() => {
       class="flex items-center text-gray-700 dark:text-gray-400"
       @click.prevent="toggleDropdown">
       <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-        <img src="/images/user/owner.jpg" alt="User" />
+        <img :src="userInfo?.photo" alt="User" />
       </span>
 
-      <span class="text-theme-sm mr-1 block font-medium">Musharof</span>
+      <span class="text-theme-sm mr-1 block font-medium">{{ userInfo?.name }}</span>
 
       <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
     </button>
@@ -66,15 +77,6 @@ onUnmounted(() => {
     <div
       v-if="dropdownOpen"
       class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800">
-      <div>
-        <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
-          Musharof Chowdhury
-        </span>
-        <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
-          randomuser@pimjo.com
-        </span>
-      </div>
-
       <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
         <li v-for="item in menuItems" :key="item.href">
           <router-link
