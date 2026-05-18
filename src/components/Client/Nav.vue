@@ -57,27 +57,27 @@
               <!-- 暫時新增的開發中頁面 -->
               <router-link
                 :to="{ name: 'home' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧首頁
               </router-link>
               <router-link
                 :to="{ name: 'article-list' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧貼文列表
               </router-link>
               <router-link
                 :to="{ name: 'article-detail' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧文章內容
               </router-link>
               <router-link
                 :to="{ name: 'create-article' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧新增貼文
               </router-link>
               <router-link
                 :to="{ name: 'mypage' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧個人主頁
               </router-link>
             </div>

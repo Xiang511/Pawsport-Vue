@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 // 自己做的卡片樣式
 import ArticleCard from '@/components/Client/ArticleCard.vue'
+import Article_PopularCard from '@/components/Client/Article_PopularCard.vue'
 
 //===假資料===
 
@@ -93,57 +94,109 @@ const filteredArticles = computed(() => {
 
 <template>
   <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#FCF8F2]">
+  <div class="min-h-screen bg-[#f9f6f4] pt-6">
     <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-6xl px-4">
+    <div class="container mx-auto w-full max-w-7xl px-4">
+      <!-- Banner -->
+      <div class="h-32 rounded-md bg-gray-200">
+        <!-- 大標題 -->
+        <div class="flex flex-col gap-4 p-4">
+          <h1 class="text-3xl font-bold text-[#433D3C]">社群專區</h1>
+          <p class="text-gray-600">歡迎來到我們的社群專區！在這裡，你可以分享你的經驗與知識。</p>
+        </div>
+      </div>
       <!-- 左右分邊容器，flex -->
       <div class="flex flex-col gap-6 py-8 md:flex-row">
         <!-- 右邊70% -->
-        <main class="w-full md:w-3/4">
-          <div class="mb-8">
-            <!-- 分類切換按鈕 -->
-            <h1 class="mb-4 text-2xl text-[#433D3C]">分類</h1>
-            <div class="mb-6 flex gap-4 border-b border-stone-700 pb-2">
-              <button
-                v-for="c in categories"
-                :key="c.categoryid"
-                @click="currentCategory = c.categoryid"
-                :class="[
-                  'rounded-full px-5 py-2 shadow-sm transition-all',
-                  currentCategory === c.categoryid
-                    ? 'bg-brand-success-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100',
-                ]">
-                {{ c.categoryname }}
-              </button>
+        <main class="flex w-full flex-col gap-8 md:w-3/4">
+          <!-- 熱門文章區 -->
+          <div>
+            <h1 class="mb-4 text-2xl font-medium text-[#433D3C]">熱門文章</h1>
+            <div class="flex gap-4 py-4">
+              <!-- 卡片 -->
+              <Article_PopularCard />
+              <Article_PopularCard />
             </div>
           </div>
 
-          <div class="space-y-6">
-            <h1 class="mb-4 text-2xl text-[#433D3C]">熱門文章</h1>
-            <!-- 卡片列表 -->
-            <div class="article-list bg-sky-300">
-              <ArticleCard
-                v-for="article in filteredArticles"
-                :key="article.id"
-                :title="article.title"
-                :image="article.image"
-                :summary="article.summary"
-                :author="article.author"
-                :date="article.date" />
-              <!-- 如果沒文章時的提示 -->
-              <p v-if="filteredArticles.length === 0" class="text-gray-400">
-                目前沒有相關分類的文章喔！
-              </p>
+          <!-- 分類瀏覽區 -->
+          <div>
+            <!-- 分類切換按鈕 -->
+            <div>
+              <h1 class="mb-4 text-2xl font-medium text-[#433D3C]">分類瀏覽</h1>
+              <div class="mb-6 flex gap-4 border-b border-stone-300 pb-4">
+                <button
+                  v-for="c in categories"
+                  :key="c.categoryid"
+                  @click="currentCategory = c.categoryid"
+                  :class="[
+                    'rounded-full px-5 py-2 shadow-sm transition-all',
+                    currentCategory === c.categoryid
+                      ? 'bg-brand-success-600 text-white'
+                      : 'bg-white text-gray-600 hover:bg-gray-100',
+                  ]">
+                  {{ c.categoryname }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 文章列表 -->
+            <div class="flex flex-col gap-4">
+              <!-- 卡片 -->
+              <div class="article-list flex flex-col">
+                <ArticleCard
+                  v-for="article in filteredArticles"
+                  :key="article.id"
+                  :title="article.title"
+                  :image="article.image"
+                  :summary="article.summary"
+                  :author="article.author"
+                  :date="article.date" />
+                <!-- 如果沒文章時的提示 -->
+                <p v-if="filteredArticles.length === 0" class="text-gray-400">
+                  目前沒有相關分類的文章喔！
+                </p>
+              </div>
             </div>
           </div>
         </main>
 
         <!-- 左邊30% -->
-        <aside class="w-full md:w-1/4">
-          <div class="rounded-lg bg-white p-4 shadow">
-            <h2 class="mb-4 font-bold">個人資料</h2>
-            <!-- 這裡可以放你的分類、標籤等 -->
+        <aside class="flex w-full flex-col gap-4 md:w-1/4">
+          <input
+            type="text"
+            placeholder="搜尋關鍵字..."
+            class="focus:ring-brand-success-400 rounded-md border border-stone-300 bg-white p-2 shadow-sm focus:ring-2 focus:outline-none" />
+          <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
+            <button
+              class="bg-brand-success-600 hover:bg-brand-success-700 w-fit rounded-full px-5 py-2 text-white shadow-sm">
+              新增貼文
+            </button>
+          </div>
+          <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
+            <div class="flex flex-col gap-2">
+              <h3>熱門標籤</h3>
+              <div class="flex flex-row flex-wrap gap-x-2 gap-y-2">
+                <button
+                  class="w-fit rounded-full bg-orange-50 px-3 py-1 text-sm whitespace-nowrap text-orange-600">
+                  # 鮮食
+                </button>
+                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
+                  # 寵物健康
+                </button>
+                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
+                  # 訓練技巧
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3>最近瀏覽</h3>
+              <ul class="flex list-disc flex-col gap-2 pl-5 text-sm text-gray-600">
+                <li>如何照顧幼貓？</li>
+                <li>柴犬個性分析—其實原本是狼!?</li>
+                <li>犬貓鮮食推薦~!來自鮮味小姐自創研發品牌</li>
+              </ul>
+            </div>
           </div>
         </aside>
       </div>
