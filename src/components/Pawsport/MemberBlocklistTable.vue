@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { useDataTable } from '@/composables/Tailadmin/useMemberDataTableLogic.js'
+import request from '@/api/axios'
 
 import { EditIcon, Trash2, X, UserRoundX, UserRound } from 'lucide-vue-next'
 import DataTablePagination from './DataTablePagination.vue'
@@ -47,7 +48,7 @@ const {
 async function GetAllBlocklistInfo() {
   isLoading.value = true
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Permissions/block/users')
+    const { data } = await request.get('/Permissions/block/users')
     const UserInfo = data.data
     UserInfo.forEach((i) => {
       blockList.push({
@@ -90,10 +91,7 @@ async function addBlockUser() {
       note: newBlockUser.note,
       status: newBlockUser.status,
     }
-    await axios.patch(
-      `https://localhost:7048/api/Permissions/block/users/${newBlockUser.userId}`,
-      data,
-    )
+    await request.patch(`/Permissions/block/users/${newBlockUser.userId}`, data)
 
     // 重新載入列表
     blockList.length = 0
@@ -114,7 +112,7 @@ async function saveProfile() {
       note: selectedUser.note,
       status: selectedUser.status,
     }
-    await axios.patch(`https://localhost:7048/api/Permissions/block/users/${id}`, data)
+    await request.patch(`/Permissions/block/users/${id}`, data)
     // 重新載入列表
     blockList.length = 0
     await GetAllBlocklistInfo()
@@ -139,7 +137,7 @@ async function ModifyBanStatus(user) {
         note: '',
         status: true,
       }
-      await axios.patch(`https://localhost:7048/api/Permissions/block/users/${id}`, data)
+      await request.patch(`/Permissions/block/users/${id}`, data)
       // 從列表中移除該用戶
       const index = blockList.findIndex((u) => u.userId === id)
       if (index !== -1) {

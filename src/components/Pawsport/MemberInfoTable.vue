@@ -2,7 +2,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { useDataTable } from '@/composables/Tailadmin/useMemberDataTableLogic.js'
-
+import request from '@/api/axios'
 import { EditIcon, Trash2, X } from 'lucide-vue-next'
 import DataTablePagination from './DataTablePagination.vue'
 import ProfileModal from './ProfileModal.vue'
@@ -48,7 +48,7 @@ const {
 async function GetAllMemberInfo() {
   isLoading.value = true
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Users')
+    const { data } = await request.get('/Users')
     const UserInfo = data.data
     UserInfo.forEach((i) => {
       userList.push({
@@ -85,7 +85,7 @@ function handleEdit(user) {
 async function handleDelete(userId) {
   if (confirm('確定要刪除此會員嗎？')) {
     try {
-      await axios.patch(`https://localhost:7048/api/Users/${userId}`)
+      await request.patch(`/Users/${userId}`)
       // 從列表中移除該用戶
       const index = userList.findIndex((u) => u.userId === userId)
       if (index !== -1) {
@@ -101,7 +101,7 @@ async function handleDelete(userId) {
 
 async function saveProfile() {
   try {
-    await axios.put(`https://localhost:7048/api/Users/${selectedUser.userId}`, selectedUser)
+    await request.put(`/Users/${selectedUser.userId}`, selectedUser)
     // 更新列表中的用戶資料
     const index = userList.findIndex((u) => u.userId === selectedUser.userId)
     if (index !== -1) {
