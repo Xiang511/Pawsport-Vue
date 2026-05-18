@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ChevronLeft, ChevronRight, Lock, Star, Home, Play } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 
 const { playSFX } = useGameAudio()
 
+const userPoints = ref(1200)
 const router = useRouter()
 const layoutCoords = [
   // 第一排：從左上往右下斜 (1~5 關)
@@ -171,10 +172,12 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     :style="{ backgroundImage: `url(${areas[currentAreaIndex].bgUrl})` }">
     <header class="game-header">
       <div class="nav-menu">
-        <button class="nav-btn" @click="playSFX('click'); goBack()">
-          <Home :size="30" />
-          <span>返回主選單</span>
+        <div class="header-left">
+        <button class="back-btn" @click="playSFX('click');goBack()">
+          <span class="arrow-icon">‹</span>
         </button>
+        <h1 class="level-title">選擇關卡</h1>
+      </div>
       </div>
       <div class="area-title">
         <h2>{{ areas[currentAreaIndex].name }}</h2>
@@ -182,7 +185,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
           Lv. {{ areas[currentAreaIndex].idRange[0] }} - {{ areas[currentAreaIndex].idRange[1] }}
         </p>
       </div>
-      <div class="currency-box">🪙 1,250</div>
+      <div class="currency-box">🪙 {{ userPoints }}</div>
     </header>
 
     <div v-if="showMenu" class="menu-dropdown">
@@ -655,31 +658,56 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   z-index: 101;
 }
 
-.nav-btn {
+.header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #fcf4e5;
-  color: #453a27;
+  gap: 20px;
+}
+
+.back-btn {
+  width: 55px;
+  height: 55px;
+  background-color: #ffffff;
   border: 4px solid #453a27;
-  border-radius: 15px;
-  padding: 10px 20px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  box-shadow: 0 4px 0 #453a27;
+  border-radius: 16px;
+  box-shadow: 0 5px 0 #453a27;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transform-origin: bottom !important;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.nav-btn:hover {
-  background: #fcc86d;
+.back-btn:hover {
+  background-color: #fcf4e5;
+  transform: translateY(-3px) scaleY(1.08) scaleX(1) !important;
+  box-shadow: 0 8px 0 #453a27 !important;
+}
+
+.back-btn:active {
+  transform: translateY(4px) scaleY(0.88) scaleX(1) !important;
+  box-shadow: 0 1px 0 #453a27 !important;
+  transition: all 0.05s ease !important;
+}
+
+.arrow-icon {
+  font-size: 2.5rem;
+  color: #453a27;
+  font-weight: bold;
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #453a27;
 }
 
-.nav-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #453a27;
+.level-title {
+  font-size: 2.2rem;
+  color: #453a27;
+  text-shadow:
+    -1px -1px 0 #fcf4e5,
+    1px -1px 0 #fcf4e5,
+    -1px 1px 0 #fcf4e5,
+    1px 1px 0 #fcf4e5;
+  margin: 0;
+  font-weight: bold;
 }
 
 .menu-dropdown {
