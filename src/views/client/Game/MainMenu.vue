@@ -77,6 +77,9 @@ const exitGame = () => {
 const levelSelect = () => {
   router.push({ name: 'client-levelselect' })
 }
+const skinShop = () => {
+  router.push({ name: 'client-skinshop' })
+}
 </script>
 
 <template>
@@ -114,7 +117,7 @@ const levelSelect = () => {
           <span class="paw-icon"><PawPrint /></span>
           遊戲設定<span class="nav-item-tail"></span>
         </div>
-        <div class="nav-item" @click="playSFX('click');exitGame()">
+        <div class="nav-item" @click="playSFX('click');skinShop()">
           <span class="paw-icon"><PawPrint /></span>
           造型商店<span class="nav-item-tail"></span>
         </div>

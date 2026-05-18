@@ -95,6 +95,14 @@ export default [
           title: '選擇關卡-1 | Petmily',
         },
       },
+      {
+        path: 'skinshop',
+        name: 'client-skinshop',
+        component: () => import('@/views/client/Game/SkinShop.vue'),
+        meta: {
+          title: '造型商店 | Petmily',
+        },
+      },
     ],
   },
 ]
