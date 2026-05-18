@@ -78,6 +78,38 @@ export default [
           title: '新增寵物 | Petmily',
         },
       },
+      {
+        path: '/healthpassport/edit/:id',
+        name: 'pet-health-passport-edit',
+        component: () => import('@/views/client/pet/PassportEditView.vue'),
+        meta: {
+          title: '編輯寵物資料 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport',
+        name: 'missing-report',
+        component: () => import('@/views/client/pet/MissingPetView.vue'),
+        meta: {
+          title: '遺失協尋 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport/create',
+        name: 'missing-report-create',
+        component: () => import('@/views/client/pet/PostMissingPetView.vue'),
+        meta: {
+          title: '刊登遺失協尋 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport/:id',
+        name: 'missing-report-detail',
+        component: () => import('@/views/client/pet/MissingPetDetailView.vue'),
+        meta: {
+          title: '遺失協尋詳情 | Petmily',
+        },
+      },
     ],
   },
   {
