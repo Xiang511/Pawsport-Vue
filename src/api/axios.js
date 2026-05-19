@@ -33,18 +33,46 @@ service.interceptors.response.use(
     return response
   },
   (error) => {
-    console.log(' 請求失敗:', error.config?.url, error.response?.status)
+    console.log('❌ 請求失敗:', error.config?.url, error.response?.status)
 
-    // 💡 當後端因為 Cookie 過期或無效，踢回 401 Unauthorized 時
+    // 💡 處理 401 Unauthorized - 未認證，跳轉到登入頁
     if (error.response && error.response.status === 401) {
       const authStore = useAuthStore()
       const currentPath = window.location.pathname
 
-      // 避免在登入頁重複跳轉
-      if (currentPath !== '/dashboard/login') {
-        authStore.clearLoginInfo()
+      // 清除登入資訊
+      authStore.clearLoginInfo()
 
-        router.push('/dashboard/login')
+      // 根據當前路徑判斷跳轉到前台或後台登入頁
+      if (currentPath.startsWith('/dashboard')) {
+        // 後台路徑，跳到後台登入頁
+        if (currentPath !== '/dashboard/login') {
+          console.log(' 401 未認證，跳轉到後台登入頁')
+          router.push('/dashboard/login')
+        }
+      } else {
+        // 前台路徑，跳到前台登入頁
+        if (currentPath !== '/login') {
+          console.log(' 401 未認證，跳轉到前台登入頁')
+          router.push('/login')
+        }
+      }
+    }
+
+    // 💡 處理 403 Forbidden - 已認證但權限不足，跳轉到權限不足頁面
+    if (error.response && error.response.status === 403) {
+      const currentPath = window.location.pathname
+
+      // 根據當前路徑判斷跳轉到前台或後台權限不足頁面
+      if (currentPath.startsWith('/dashboard')) {
+        if (currentPath !== '/dashboard/error-403') {
+          console.log(' 403 權限不足，跳轉到權限不足頁面')
+          router.push('/dashboard/error-403')
+        }
+      } else {
+        // 前台暫時跳到首頁（可以之後創建前台的 403 頁面）
+        console.log(' 403 權限不足')
+        router.push('/')
       }
     }
     return Promise.reject(error)
