@@ -74,7 +74,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 py-12">
+  <div class="min-h-screen bg-[#F7F3F1] py-12">
     <div class="container mx-auto max-w-6xl px-4">
       <div class="mb-12 flex justify-center">
         <div class="flex w-full max-w-2xl items-center">
@@ -82,7 +82,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
             :class="[
               'flex-1 border-b-4 py-4 text-center',
               currentStep >= 1
-                ? 'border-orange-500 text-orange-600'
+                ? 'border-[#9C6D6D] text-[#9C6D6D]'
                 : 'border-gray-200 text-gray-400',
             ]">
             <span class="font-bold">1. 填寫資訊</span>
@@ -91,7 +91,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
             :class="[
               'flex-1 border-b-4 py-4 text-center',
               currentStep >= 2
-                ? 'border-orange-500 text-orange-600'
+                ? 'border-[#9C6D6D] text-[#9C6D6D]'
                 : 'border-gray-200 text-gray-400',
             ]">
             <span class="font-bold">2. 等待審核</span>
@@ -100,7 +100,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
             :class="[
               'flex-1 border-b-4 py-4 text-center',
               currentStep >= 3
-                ? 'border-orange-500 text-orange-600'
+                ? 'border-[#9C6D6D] text-[#9C6D6D]'
                 : 'border-gray-200 text-gray-400',
             ]">
             <span class="font-bold">3. 刊登成功</span>
@@ -111,7 +111,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
       <div class="flex flex-col gap-8 lg:flex-row">
         <div class="lg:w-2/3">
           <div class="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <div class="bg-orange-500 px-8 py-4">
+            <div class="bg-[#9C6D6D] px-8 py-4">
               <h2 class="flex items-center gap-2 text-xl font-bold text-white">📋 送養資訊填寫</h2>
             </div>
 
@@ -123,7 +123,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
                     v-model="form.name"
                     type="text"
                     required
-                    class="w-full rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500" />
+                    class="w-full rounded-xl border-gray-200 focus:border-[#9C6D6D] focus:ring-[#9C6D6D]" />
                 </div>
                 <div>
                   <label class="mb-2 block text-sm font-bold text-gray-700">品種 *</label>
@@ -132,7 +132,7 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
                     type="text"
                     placeholder="如：柴犬"
                     required
-                    class="w-full rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500" />
+                    class="w-full rounded-xl border-gray-200 focus:border-[#9C6D6D] focus:ring-[#9C6D6D]" />
                 </div>
               </div>
 
@@ -262,14 +262,14 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
                     v-model="form.agreeTerms"
                     type="checkbox"
                     id="agree"
-                    class="rounded border-gray-300 text-orange-500" />
+                    class="rounded border-gray-300 text-[#9C6D6D]" />
                   <label for="agree" class="text-sm font-bold text-gray-600">
                     我已詳閱且同意刊登條款
                   </label>
                 </div>
                 <button
                   type="submit"
-                  class="w-full rounded-2xl bg-orange-500 py-4 text-lg font-black text-white shadow-lg transition hover:bg-orange-600">
+                  class="w-full rounded-2xl bg-[#9C6D6D] py-4 text-lg font-black text-white shadow-lg transition hover:bg-[#855a5a]">
                   確認送出審核
                 </button>
               </div>
@@ -280,13 +280,13 @@ const counties = ['台北市', '新北市', '桃園市', '台中市', '高雄市
         <div class="space-y-6 lg:w-1/3">
           <div class="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
             <h3 class="mb-6 flex items-center gap-2 text-xl font-black text-gray-800">
-              <span class="text-2xl text-orange-500">⚠️</span>
+              <span class="text-2xl text-[#9C6D6D]">⚠️</span>
               刊登須知
             </h3>
             <div class="space-y-4 text-sm leading-relaxed text-gray-600">
               <p>
                 1. 為了保障動物福利，所有刊登資訊均需經過工作人員審核，時間約
-                <span class="font-bold text-orange-600">1-3 個工作天</span>
+                <span class="font-bold text-[#9C6D6D]">1-3 個工作天</span>
                 。
               </p>
               <p>
