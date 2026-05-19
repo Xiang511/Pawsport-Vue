@@ -4,11 +4,16 @@ import { useRouter } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
+import axios from 'axios'
 
 const { playSFX } = useGameAudio()
 
-const userPoints = ref(1200)
+const userPoints = ref(0)
 const router = useRouter()
+
+// 用來暫存後端撈回來的資料
+const apiGameHistory = ref([])
+
 const layoutCoords = [
   // 第一排：從左上往右下斜 (1~5 關)
   { x: 0, y: 0 },
@@ -66,52 +71,94 @@ const areas = ref([
 ])
 
 const currentAreaIndex = ref(0)
-const levels = ref([])
+const levels = ref([
+  { id: 1, name: '認養須知', isLocked: false },
+  { id: 2, name: '狗狗百科', isLocked: true },
+  { id: 3, name: '貓貓百科', isLocked: true },
+  { id: 4, name: '鳥類百科', isLocked: true },
+  { id: 5, name: '小動物百科', isLocked: true },
+  { id: 6, name: '水族與爬蟲', isLocked: true },
+
+])
+const levelCategoryMap = {
+  1: '認養須知',
+  2: '狗狗百科', 
+  3: '貓貓百科', 
+  4: '鳥類百科',
+  5: '小動物百科',
+  6: '水族與爬蟲',
+}
 const selectedLevel = ref(null)
 
 const generateLevelLayout = (startId) => {
-  // 1. 讀取目前的遊戲總進度
+  // 1. 讀取舊有本地遊戲進度（留作聯網失敗的備用防線）
   const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
 
   return Array.from({ length: 10 }, (_, i) => {
     const levelId = startId + i
     
-    // 🎯 2. 讀取這關的真實星星數
-    const currentLevelData = progress[`level_${levelId}`]
-    const currentStars = (currentLevelData && typeof currentLevelData.stars !== 'undefined') 
-      ? currentLevelData.stars 
-      : 0
+    // 🎯 2. 星星數邏輯：優先讀取後端資料庫歷史，如果沒有再看本地
+    let currentStars = 0
+    const serverRecord = apiGameHistory.value.find(h => h.gameId === levelId)
+    
+    if (serverRecord) {
+      // ✅ 修正：根據 receivedReward 推斷星星數
+      if (serverRecord.receivedReward === true) {
+        currentStars = 3  // 全對
+      } else if (serverRecord.stageClear === true) {
+        currentStars = 2  // 至少 6 題
+      } else {
+        currentStars = 0  // 未通過
+      }
+    } else {
+      const currentLevelData = progress[`level_${levelId}`]
+      currentStars = (currentLevelData && typeof currentLevelData.stars !== 'undefined') ? currentLevelData.stars : 0
+    }
 
-    // 🎯 3. 核心鎖定邏輯：除了第 1 關以外，預設通通是鎖定的 (true)
+    // 🎯 3. 嚴格鎖定邏輯
     let isLocked = true 
 
-    if (levelId === 1) {
-      // 🥇 第一關永遠解鎖
-      isLocked = false 
-    } 
-    else if (levelId === 2) {
-      // 🥈 第二關解鎖條件：第一關有星星紀錄，或者有被標記 level_2_unlocked
-      if (progress['level_2_unlocked'] === true) {
-    isLocked = false
-  } else {
-    isLocked = true
-  }
-    } 
-    else {
-      // 🥉 第三關（含）以後的關卡連鎖解鎖條件：前一關必須要有過關（星星）紀錄！
-      // 例如：只有當第二關有星星資料 progress['level_2'] 時，第三關才會變成 false (解鎖)
-      const prevLevelData = progress[`level_${levelId - 1}`]
-  if (prevLevelData && progress[`level_${levelId}_unlocked`]) {
-    isLocked = false
-  } else {
-    isLocked = true
-  }
+    if (levelId === startId) {
+      // 🥇 每個區域的第一關預設解鎖（或是整個遊戲的第一關 Id === 1 永遠解鎖）
+      if (levelId === 1) {
+        isLocked = false
+      } else {
+        // 如果是其他大區的第一關（如 11 關、21 關），看前一關（10關、20關）有沒有通關
+        const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
+        if (prevLevelRecord && prevLevelRecord.stageClear === true) {
+          isLocked = false
+        }
+      }
+    } else {
+      // 🌐 【後端進度比對線】：嚴格的卡關條件判定
+      if (apiGameHistory.value && apiGameHistory.value.length > 0) {
+        // 條件 A：如果前一關在資料庫裡有紀錄，而且「必須通關成功」(stageClear === true)
+        const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
+        const isPrevCleared = prevLevelRecord && prevLevelRecord.stageClear === true
+
+        // 條件 B：這關本身在資料庫裡，已經是有通過的狀態
+        const thisLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId)
+        const isThisCleared = thisLevelRecord && thisLevelRecord.stageClear === true
+
+        // 只有前一關通過了，或者這關本身就是已通關狀態，才解鎖鎖頭
+        if (isPrevCleared || isThisCleared) {
+          isLocked = false
+        }
+      } else {
+        // 💾 【離線本地防線】
+        if (levelId === 2) {
+          if (progress['level_2_unlocked'] === true) isLocked = false
+        } else {
+          const prevLevelData = progress[`level_${levelId - 1}`]
+          if (prevLevelData && progress[`level_${levelId}_unlocked`]) isLocked = false
+        }
+      }
     }
 
     return {
       id: levelId,
       stars: currentStars,
-      locked: isLocked, // 🌟 這裡會套用上面嚴格分類後的 true/false
+      locked: isLocked, 
       x: layoutCoords[i].x,
       y: layoutCoords[i].y,
       previewUrl: `/public/images/game/level-${levelId}.png`,
@@ -121,11 +168,44 @@ const generateLevelLayout = (startId) => {
 
 // 3. 切換區域時更新關卡資料
 const updateAreaContent = async () => {
+  // 🚀 【新增】在渲染畫面前，先去後端把 PlayerId = 1 的點數和進度拿回來
+  try {
+    // A. 撈取通關歷史紀錄
+    const historyRes = await axios.get('https://localhost:7048/api/Player/1/game-history')
+    if (historyRes.data && historyRes.data.success) {
+      apiGameHistory.value = historyRes.data.data
+    }
+
+    // B. 精準撈取玩家列表並尋找 PlayerId = 1 
+    const playerRes = await axios.get('https://localhost:7048/api/Player')
+    if (playerRes.data && playerRes.data.success) {
+      // 🔍 關鍵修正：對應後端分頁結構，playerRes.data.data.data 才是玩家陣列
+      const actualList = playerRes.data.data.data
+      
+      if (Array.isArray(actualList)) {
+        const me = actualList.find(p => p.playerId === 1)
+        if (me) {
+          userPoints.value = me.currentPoint ?? 0
+          console.log('✅ [API 同步成功] 找到測試帳號，實時點數為：', userPoints.value)
+        } else {
+          console.warn('⚠️ 找不到 playerId 為 1 的測試帳號')
+        }
+      }
+    }
+  } catch (error) {
+    console.error('❌ 後端連線失敗，切換為本地安全模式:', error)
+    // 斷網時的備用防禦點數，避免顯示 0 嚇到玩家
+    if (userPoints.value === 0) userPoints.value = 1200 
+  }
+
+  // 渲染地圖數據
   const startId = areas.value[currentAreaIndex.value].idRange[0]
   levels.value = generateLevelLayout(startId)
   selectedLevel.value = levels.value[0]
 
+  // 確保 Vue 把 HTML 按鈕生出來，再執行 Anime.js
   await nextTick()
+  
   const levelListPanel = document.querySelector('.level-list-panel')
   if (levelListPanel) {
     animate(levelListPanel, {
@@ -135,7 +215,7 @@ const updateAreaContent = async () => {
       easing: 'easeOutQuad',
     })
   }
-  // 加上判斷避免 DOM 還沒渲染時 animejs 報錯
+  
   const items = document.querySelectorAll('.level-card-item')
   if (items.length > 0) {
     animate('.level-card-item', {
@@ -146,7 +226,7 @@ const updateAreaContent = async () => {
       easing: 'easeOutBack',
     })
   }
-  // 虛線漸入動畫
+
   const pathSvg = document.querySelector('.path-svg')
   if (pathSvg) {
     animate(pathSvg, {
@@ -156,7 +236,6 @@ const updateAreaContent = async () => {
     })
   }
 
-  // 資訊卡漸入動畫
   const infoCard = document.querySelector('.info-card')
   if (infoCard) {
     animate(infoCard, {
@@ -182,18 +261,20 @@ const changeArea = (dir) => {
 
 const startGame = () => {
   if (selectedLevel.value && !selectedLevel.value.locked) {
-    const targetRouteName = `client-levelselect-${selectedLevel.value.id}`
+    const levelId = selectedLevel.value.id
+    
+    // 根據目前的關卡 ID，抓出對應的分類名稱
+    const categoryName = levelCategoryMap[levelId] || '認養須知'
 
-    // 使用 router.hasRoute 檢查路由表中是否有這個名稱
-    if (router.hasRoute(targetRouteName)) {
-      router.push({ name: targetRouteName }).catch((err) => {
-        console.error('導航失敗:', err)
-      })
-    } else {
-      // 如果路由表中找不到對應名稱，就跳出提示
-      console.warn(`找不到路由: ${targetRouteName}`)
-      alert(`關卡 ${selectedLevel.value.id} 製作中，敬請期待後續更新！`)
-    }
+    console.log(`【PETMILY導航】準備進入第 ${levelId} 關，分類為：【${categoryName}】`)
+
+    // 導向我們在 index.js 設好的全能動態路由 'client-gameplay'
+    router.push({
+      name: 'client-gameplay',         // 通用遊戲頁路由名稱
+      params: { category: categoryName } // 將分類中文作為網址參數傳過去！
+    }).catch((err) => {
+      console.error('遊戲導航失敗:', err)
+    })
   }
 }
 
@@ -267,7 +348,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
             <div class="info-image-box">
               <img :key="selectedLevel?.id" :src="selectedLevel?.previewUrl" alt="關卡預覽" />
             </div>
-            <p class="info-description">{{ areas[currentAreaIndex].desc }}</p>
+            <p class="info-description">{{ selectedLevel?.id === 1 ? '學習如何照顧新家人，點擊開始進入「認養須知」問答！' : areas[currentAreaIndex].desc }}</p>
             <button
               class="start-game-btn"
               @click="playSFX('click'); startGame()"
