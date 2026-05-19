@@ -1,9 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 
-//
 const props = defineProps({
-  // 按鈕類型：primary (提交), draft (草稿)
+  // 按鈕類型：primary (發佈), draft (草稿)
   type: {
     type: String,
     default: 'primary',
@@ -14,7 +13,8 @@ const props = defineProps({
     default: false,
   },
 })
-// 當按鈕被點擊時，子元件會向父元件發出一個click信號
+
+// 當按鈕被點擊時，向父組件發出 click 信號
 defineEmits(['click'])
 
 // 根據傳入的 type 與 disabled 狀態，動態計算對應的 Tailwind 樣式
@@ -49,5 +49,3 @@ const buttonClass = computed(() => {
     <slot />
   </button>
 </template>
-
-<style scoped></style>
