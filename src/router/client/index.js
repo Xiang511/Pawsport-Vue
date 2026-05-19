@@ -21,12 +21,10 @@ export default [
           title: '調色盤',
         },
       },
-
-      // 在這裡添加更多前台路由
       {
         path: '/create-article',
         name: 'create-article',
-        component: () => import('../../views/client/Community/CreateArticle.vue'),
+        component: () => import('../../views/client/community/CreateArticle.vue'),
         meta: {
           title: '新增貼文 | Petmily',
         },
@@ -34,7 +32,7 @@ export default [
       {
         path: '/article-list',
         name: 'article-list',
-        component: () => import('../../views/client/Community/ArticleList.vue'),
+        component: () => import('../../views/client/community/ArticleList.vue'),
         meta: {
           title: '貼文列表 | Petmily',
         },
@@ -42,7 +40,7 @@ export default [
       {
         path: '/article-detail',
         name: 'article-detail',
-        component: () => import('../../views/client/Community/ArticleDetail.vue'),
+        component: () => import('../../views/client/community/ArticleDetail.vue'),
         meta: {
           title: '文章內容 | Petmily',
           // note:之後可以更新動態顯示文章標題
@@ -54,6 +52,70 @@ export default [
         component: () => import('../../views/client/Community/MyPage.vue'),
         meta: {
           title: '個人主頁 | Petmily',
+        },
+      },
+      {
+        path: '/adopt',
+        name: 'pet-adoption',
+        component: () => import('@/views/client/pet/PetAdoptionView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
+        },
+      },
+      {
+        path: '/adopt/create',
+        name: 'pet-adoption-add',
+        component: () => import('@/views/client/pet/PostPetView.vue'),
+        meta: {
+          title: '領養狗狗 | Petmily',
+        },
+      },
+      {
+        path: '/healthpassport',
+        name: 'pet-health-passport',
+        component: () => import('@/views/client/pet/PetPassportView.vue'),
+        meta: {
+          title: '健康護照 | Petmily',
+        },
+      },
+      {
+        path: '/healthpassport/addpet',
+        name: 'pet-health-passport-add',
+        component: () => import('@/views/client/pet/PassportAddPetView.vue'),
+        meta: {
+          title: '新增寵物 | Petmily',
+        },
+      },
+      {
+        path: '/healthpassport/edit/:id',
+        name: 'pet-health-passport-edit',
+        component: () => import('@/views/client/pet/PassportEditView.vue'),
+        meta: {
+          title: '編輯寵物資料 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport',
+        name: 'missing-report',
+        component: () => import('@/views/client/pet/MissingPetView.vue'),
+        meta: {
+          title: '遺失協尋 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport/create',
+        name: 'missing-report-create',
+        component: () => import('@/views/client/pet/PostMissingPetView.vue'),
+        meta: {
+          title: '刊登遺失協尋 | Petmily',
+        },
+      },
+      {
+        path: '/missingreport/:id',
+        name: 'missing-report-detail',
+        component: () => import('@/views/client/pet/MissingPetDetailView.vue'),
+        meta: {
+          title: '遺失協尋詳情 | Petmily',
         },
       },
     ],
