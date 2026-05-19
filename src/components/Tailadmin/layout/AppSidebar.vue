@@ -85,7 +85,7 @@ const menuGroups = [
         icon: PieChartIcon,
         name: '系統設定',
         subItems: [
-          { name: 'Line Chart', path: '/dashboard/line-chart', pro: false },
+          { name: '登入活動', path: '/dashboard/log-activity', pro: false },
           { name: 'Bar Chart', path: '/dashboard/bar-chart', pro: false },
         ],
       },

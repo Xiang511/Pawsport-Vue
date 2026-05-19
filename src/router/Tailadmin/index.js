@@ -59,6 +59,15 @@ export default [
         },
       },
       {
+        path: 'log-activity',
+        name: 'admin-logactivity',
+        component: () => import('@/views/Tailadmin/Member/LogActivity.vue'),
+        meta: {
+          title: '登入活動 | PawsPort',
+        },
+      },
+
+      {
         path: 'questions',
         name: 'admin-questionlist',
         component: () => import('@/views/Tailadmin/Game/QuestionList.vue'),
