@@ -17,15 +17,32 @@ const props = defineProps({
 // 當按鈕被點擊時，子元件會向父元件發出一個click信號
 defineEmits(['click'])
 
-// 根據傳入的 type 返回對應的 CSS Class
-// 計算：btn-上面props傳入的type值，轉換成字串
-const typeClass = computed(() => `btn-${props.type}`)
+// 根據傳入的 type 與 disabled 狀態，動態計算對應的 Tailwind 樣式
+const buttonClass = computed(() => {
+  // 1. 如果是禁用狀態，直接套用禁用樣式（不論是 primary 還是 draft）
+  if (props.disabled) {
+    return 'bg-gray-200 text-gray-400 cursor-not-allowed'
+  }
+
+  // 2. 正常狀態下，根據 type 切換對應的 Tailwind 樣式與 Hover 效果
+  switch (props.type) {
+    case 'draft':
+      return 'bg-gray-100 text-[#747bbd] hover:bg-gray-200'
+    case 'primary':
+    default:
+      return 'bg-[#3367d6] text-white font-bold hover:bg-[#2852b3]'
+  }
+})
 </script>
 
 <template>
+  <!-- 
+    基礎樣式（對應 .base-button）：
+    px-5 py-2.5 (內邊距) | rounded-full (圓角20px/膠囊狀) | text-sm (14px) | transition-all duration-300 (動態過渡) 
+  -->
   <button
-    class="base-button"
-    :class="[typeClass, { 'is-disabled': disabled }]"
+    class="rounded-full px-5 py-2.5 text-sm transition-all duration-300 select-none"
+    :class="buttonClass"
     :disabled="disabled"
     @click="$emit('click', $event)">
     <!-- 使用 slot 讓按鈕文字可以靈活定義 -->
@@ -33,32 +50,4 @@ const typeClass = computed(() => `btn-${props.type}`)
   </button>
 </template>
 
-<style scoped>
-/* 基礎樣式：無邊框，圓角20px */
-.base-button {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-/* 提交按鈕樣式：藍底粗白字 */
-.btn-primary {
-  background: #3367d6;
-  color: white;
-  font-weight: bold;
-}
-/* 草稿按鈕樣式：淺色底灰字 */
-.btn-draft {
-  background: #f5f5f5;
-  color: #747bbd;
-}
-/* 禁用狀態：淺灰底灰字，禁止游標 */
-.base-button:disabled,
-.is-disabled {
-  background: #e0e0e0;
-  color: #aaa;
-  cursor: not-allowed;
-}
-</style>
+<style scoped></style>

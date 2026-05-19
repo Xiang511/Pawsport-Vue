@@ -48,6 +48,8 @@ onMounted(() => {
 //接住貼文內容的變數
 const post = reactive({
   title: '',
+  mainCategory: '',
+  subCategory: '',
   content: '',
   tag: '',
 })
@@ -101,11 +103,12 @@ const onSubmit = () => {
       <div class="flex flex-col gap-3 sm:flex-row">
         <!-- 大分類 -->
         <div class="w-full sm:w-1/2">
+          <!-- 大分類 select -->
           <select
             v-model="post.mainCategory"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 outline-none">
-            <option value="" disabled selected>請選擇大分類</option>
-            <!-- 這裡改用 props.categories 跑迴圈 -->
+            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500 outline-none focus:bg-white"
+            :class="{ 'text-gray-800': post.mainCategory }">
+            <option value="" disabled hidden>請選擇分類</option>
             <option v-for="(subs, main) in props.categories" :key="main" :value="main">
               {{ main }}
             </option>
@@ -115,10 +118,13 @@ const onSubmit = () => {
         <div class="w-full sm:w-1/2">
           <select
             v-model="post.subCategory"
-            :disabled="!post.mainCategory"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 outline-none disabled:opacity-50">
-            <option value="" disabled selected>
-              {{ post.mainCategory ? '請選擇小分類' : '請先選擇大分類' }}
+            :disabled="!post.mainCategory || currentSubCategories.length === 0"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500 outline-none focus:bg-white disabled:opacity-50"
+            :class="{ 'text-gray-800': post.subCategory }">
+            <option value="" disabled hidden>
+              <template v-if="!post.mainCategory">請先選擇大分類</template>
+              <template v-else-if="currentSubCategories.length === 0">無子分類（免選）</template>
+              <template v-else>請選擇小分類</template>
             </option>
             <option v-for="sub in currentSubCategories" :key="sub" :value="sub">
               {{ sub }}
@@ -162,8 +168,15 @@ const onSubmit = () => {
     </div>
     <!-- 底部按鈕 -->
     <div class="mt-5 flex justify-end gap-2.5">
-      <Article_BaseButton type="draft" @click="handleSaveDraft">儲存草稿</Article_BaseButton>
-      <Article_BaseButton type="primary" :disabled="!post.title" @click="handleSubmit">
+      <Article_BaseButton type="draft" @click="onSaveDraft">儲存草稿</Article_BaseButton>
+      <Article_BaseButton
+        type="primary"
+        :disabled="
+          !post.title ||
+          !post.mainCategory ||
+          (currentSubCategories.length > 0 && !post.subCategory)
+        "
+        @click="onSubmit">
         發佈貼文
       </Article_BaseButton>
     </div>
