@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { Plus, Edit, Trash2, X } from 'lucide-vue-next'
+import { Plus, Edit, Trash2, X, HelpCircle } from 'lucide-vue-next'
 
 const faqData = ref([])
 const currentPage = ref(1)
@@ -215,12 +215,30 @@ const submitDelete = async () => {
     deleteTargetId.value = null
   }
 }
+
+// 時間格式轉換
+const formatDate = (dateStr) => {
+  // 如果沒時間或是預設空值，就顯示-
+  if (!dateStr || dateStr.startsWith('0001')) return '-'
+
+  const d = new Date(dateStr)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`
+}
 </script>
 
 <template>
   <div class="p-6">
     <div class="mb-6 flex items-center justify-between">
-      <h2 class="text-2xl font-bold text-black">常見問題管理</h2>
+      <h2 class="flex items-center gap-2 text-2xl font-bold text-black">
+        <HelpCircle class="text-brand-info-500 h-6 w-6" />
+        常見問題管理
+      </h2>
       <button
         @click="openCreateModal"
         class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95"
@@ -234,12 +252,12 @@ const submitDelete = async () => {
         <table class="w-full table-auto">
           <thead>
             <tr class="bg-gray-300 text-center">
-              <th class="px-4 py-4 font-medium text-gray-700">NO.</th>
-              <th class="px-4 py-4 font-medium text-gray-700">類型</th>
-              <th class="max-w-64 px-4 py-4 font-medium text-gray-700">問題</th>
-              <th class="px-4 py-4 font-medium text-gray-700">建立日期</th>
-              <th class="px-4 py-4 text-center font-medium text-gray-700">狀態</th>
-              <th class="px-4 py-4 text-center font-medium text-gray-700">操作</th>
+              <th class="px-4 py-4 font-bold text-gray-700">NO.</th>
+              <th class="px-4 py-4 font-bold text-gray-700">類型</th>
+              <th class="max-w-64 px-4 py-4 font-bold text-gray-700">問題</th>
+              <th class="px-4 py-4 font-bold text-gray-700">建立日期</th>
+              <th class="px-4 py-4 text-center font-bold text-gray-700">狀態</th>
+              <th class="px-4 py-4 text-center font-bold text-gray-700">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -247,12 +265,12 @@ const submitDelete = async () => {
               v-for="(item, index) in faqData"
               :key="item.faqid"
               class="border-b border-gray-100 transition hover:bg-gray-200">
-              <td class="px-4 py-3">{{ (currentPage - 1) * 10 + index + 1 }}</td>
-              <td class="px-4 py-3">{{ item.questionType }}</td>
-              <td class="max-w-64 truncate px-4 py-3" :title="item.question">
+              <td class="px-4 py-3 text-center">{{ (currentPage - 1) * 10 + index + 1 }}</td>
+              <td class="px-4 py-3 text-center">{{ item.questionType }}</td>
+              <td class="max-w-64 truncate px-4 py-3 text-center" :title="item.question">
                 {{ item.question }}
               </td>
-              <td class="px-4 py-3">{{ item.createAt }}</td>
+              <td class="px-4 py-3 text-center">{{ formatDate(item.createAt) }}</td>
 
               <td class="px-4 py-3 text-center">
                 <span
@@ -313,7 +331,7 @@ const submitDelete = async () => {
   <!-- 新增 -->
   <div
     v-if="showCreateModal"
-    class="bg-opacity-50 bg-brand-success-950 fixed inset-0 z-[9999] flex items-center justify-center px-4">
+    class="bg-opacity-50 bg-brand-success-950 fixed inset-0 z-9999 flex items-center justify-center px-4">
     <div class="mx-auto w-full max-w-2xl rounded-lg bg-white shadow-lg">
       <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div>
@@ -396,108 +414,106 @@ const submitDelete = async () => {
   </div>
 
   <!-- 修改 -->
-  <div
-    v-if="showEditModal"
-    class="bg-opacity-50 fixed inset-0 z-[9999] mt-7 flex items-center justify-center bg-gray-900 px-4">
-    <div class="mx-auto w-full max-w-2xl rounded-lg bg-white shadow-lg">
-      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-        <div>
-          <h3 class="text-xl font-bold text-gray-800">修改項目</h3>
-          <p class="mt-2 text-sm text-gray-500">
-            ※請修改常見問題內容
-            <span class="text-red-500">* 必填 *</span>
-          </p>
-        </div>
-        <button @click="showEditModal = false" class="text-gray-400 hover:text-gray-600">
-          <X class="h-6 w-6" />
-        </button>
+  v-if="showEditModal" class="bg-opacity-50 fixed inset-0 z-9999 mt-7 flex items-center
+  justify-center bg-gray-900 px-4">
+  <div class="mx-auto w-full max-w-2xl rounded-lg bg-white shadow-lg">
+    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">修改項目</h3>
+        <p class="mt-2 text-sm text-gray-500">
+          ※請修改常見問題內容
+          <span class="text-red-500">* 必填 *</span>
+        </p>
+      </div>
+      <button @click="showEditModal = false" class="text-gray-400 hover:text-gray-600">
+        <X class="h-6 w-6" />
+      </button>
+    </div>
+
+    <div class="space-y-4 p-6">
+      <div>
+        <label class="mb-2 block text-sm font-medium text-gray-700">
+          類型
+          <span class="text-red-500">*</span>
+        </label>
+        <select
+          v-model="currentEditFaq.questionType"
+          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
+          <option value="帳號問題">帳號問題</option>
+          <option value="領養諮詢">領養諮詢</option>
+          <option value="互動遊戲">互動遊戲</option>
+          <option value="健康護照">健康護照</option>
+        </select>
       </div>
 
-      <div class="space-y-4 p-6">
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">
-            類型
-            <span class="text-red-500">*</span>
-          </label>
-          <select
-            v-model="currentEditFaq.questionType"
-            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
-            <option value="帳號問題">帳號問題</option>
-            <option value="領養諮詢">領養諮詢</option>
-            <option value="互動遊戲">互動遊戲</option>
-            <option value="健康護照">健康護照</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">
-            問題
-            <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            v-model="currentEditFaq.question"
-            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">
-            回答
-            <span class="text-red-500">*</span>
-          </label>
-          <textarea
-            v-model="currentEditFaq.answer"
-            rows="4"
-            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
-        </div>
-
-        <div class="h-2"></div>
-
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">備註</label>
-          <textarea
-            v-model="currentEditFaq.note"
-            rows="2"
-            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">
-            發佈狀態
-            <span class="text-red-500">*</span>
-          </label>
-          <select
-            v-model="currentEditFaq.status"
-            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
-            <option value="待發佈">待發佈</option>
-            <option value="已發佈">已發佈</option>
-            <option value="已下架">已下架</option>
-          </select>
-        </div>
+      <div>
+        <label class="mb-2 block text-sm font-medium text-gray-700">
+          問題
+          <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          v-model="currentEditFaq.question"
+          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
       </div>
 
-      <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4">
-        <button
-          @click="showEditModal = false"
-          class="bg-brand-error-500 hover:bg-brand-error-600 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95">
-          取消修改並返回
-        </button>
-
-        <button
-          @click="submitEdit"
-          :disabled="isEditing"
-          class="bg-brand-info-500 hover:bg-brand-info-600 flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95 disabled:opacity-50">
-          <span v-if="isEditing">處理中...</span>
-          <span v-else>確認修改</span>
-        </button>
+      <div>
+        <label class="mb-2 block text-sm font-medium text-gray-700">
+          回答
+          <span class="text-red-500">*</span>
+        </label>
+        <textarea
+          v-model="currentEditFaq.answer"
+          rows="4"
+          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
       </div>
+
+      <div class="h-2"></div>
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-gray-700">備註</label>
+        <textarea
+          v-model="currentEditFaq.note"
+          rows="2"
+          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-gray-700">
+          發佈狀態
+          <span class="text-red-500">*</span>
+        </label>
+        <select
+          v-model="currentEditFaq.status"
+          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
+          <option value="待發佈">待發佈</option>
+          <option value="已發佈">已發佈</option>
+          <option value="已下架">已下架</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4">
+      <button
+        @click="showEditModal = false"
+        class="bg-brand-error-500 hover:bg-brand-error-600 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95">
+        取消修改並返回
+      </button>
+
+      <button
+        @click="submitEdit"
+        :disabled="isEditing"
+        class="bg-brand-info-500 hover:bg-brand-info-600 flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95 disabled:opacity-50">
+        <span v-if="isEditing">處理中...</span>
+        <span v-else>確認修改</span>
+      </button>
     </div>
   </div>
 
   <!-- 刪除 -->
   <div
     v-if="showDeleteModal"
-    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4">
+    class="bg-opacity-50 fixed inset-0 z-9999 flex items-center justify-center bg-black px-4">
     <div class="mx-auto w-full max-w-md overflow-hidden rounded-lg bg-white shadow-lg">
       <div class="p-6 text-center">
         <div
