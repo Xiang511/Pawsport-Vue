@@ -71,12 +71,30 @@ watch(
 
 // 封裝要外傳的完整資料包
 const getFormData = () => {
+  let finalTags = []
+
+  if (Array.isArray(post.tag)) {
+    // 未來：如果是標籤選擇器（已經是陣列），直接用
+    finalTags = post.tag
+  } else if (typeof post.tag === 'string' && post.tag.trim() !== '') {
+    // 現在：如果是手動輸入字串（例如 "#貓咪 #飼料"）
+    finalTags = post.tag
+      .replace(/#/g, ' ') // 把所有 # 換成空格，這樣 "#貓咪" 就變成 "貓咪"
+      .split(' ') // 用空格切開成陣列
+      .map((t) => t.trim()) // 去除前後空白
+      .filter((t) => t !== '') // 濾掉空字串
+  }
+
   return {
     title: post.title,
-    mainCategory: post.mainCategory,
-    subCategory: post.subCategory,
-    tag: post.tag,
+    categoryId: Number(post.categoryId),
     content: quillInstance ? quillInstance.root.innerHTML : '',
+    tagNames: finalTags, //這裡送出的是 ["貓咪", "飼料"]
+
+    userId: '', // 後端會自己補
+    eventStartDate: null,
+    eventEndDate: null,
+    eventLocation: null,
   }
 }
 
@@ -126,8 +144,8 @@ const onSubmit = () => {
               <template v-else-if="currentSubCategories.length === 0">無子分類（免選）</template>
               <template v-else>請選擇小分類</template>
             </option>
-            <option v-for="sub in currentSubCategories" :key="sub" :value="sub">
-              {{ sub }}
+            <option v-for="sub in currentSubCategories" :key="sub.id" :value="sub.id">
+              {{ sub.name }}
             </option>
           </select>
         </div>

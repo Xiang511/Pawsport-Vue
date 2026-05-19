@@ -7,37 +7,41 @@ const API_BASE_URL = 'https://localhost:7048/api'
 const categoriesData = ref({})
 const isLoading = ref(false)
 
-// // 假資料
-// // === 分類連動的資料結構 ===
-// const categoriesData = {
-//   寵物專區: ['貓', '狗', '鳥類', '鼠兔', '其他水族爬蟲'],
-//   美食天地: ['台灣小吃', '日韓料理', '歐美西餐', '甜點下午茶', '咖啡蔬食'],
-//   科技生活: ['手機3C', '電腦組裝', '軟體開發', 'AI應用', '智慧家居'],
-//   旅遊札記: ['國內旅遊', '日本自助', '歐洲行程', '住宿推薦', '必買伴手禮'],
-// }
-
 //把資料轉換成需要的格式
 const transformCategories = (apiData) => {
+  // 先找出所有「大分類」
   const result = {}
-
+  // 在 result 物件裡建立空籃子
   apiData.forEach((item) => {
-    const parent = item.parentCategoryName
-    const child = item.categoryName
+    // 判斷方式：如果 parentId 是 null，或者沒有 parentCategoryName，它就是大分類
+    if (
+      item.parentId === null ||
+      !item.parentCategoryName ||
+      item.parentCategoryName.trim() === ''
+    ) {
+      // 用大分類名稱當作 Key，建立一個空陣列準備裝子分類
+      if (!result[item.categoryName]) {
+        result[item.categoryName] = []
+      }
+    }
+  })
 
-    if (!parent || parent.trim() === '') {
-      // 情況 A：如果沒有父分類，代表它自己就是大分類（例如：站務公告）
-      // 我們給它一個預設的虛擬大分類，或者直接以它為 Key 放入空陣列
-      if (!result[child]) {
-        result[child] = [] // 它既是大分類，底下目前沒有小分類
+  // 把「小分類」塞進對應的大分類籃子裡
+  apiData.forEach((item) => {
+    const parentName = item.parentCategoryName
+
+    // 如果它有父分類名稱，代表它是小分類
+    if (parentName && parentName.trim() !== '') {
+      // 確保大分類的籃子存在（防呆）
+      if (!result[parentName]) {
+        result[parentName] = []
       }
-    } else {
-      // 情況 B：有父分類（例如：parent="寵物專區", child="貓"）
-      // 如果這個大分類還沒被建立，先初始化一個空陣列
-      if (!result[parent]) {
-        result[parent] = []
-      }
-      // 把小分類塞進去
-      result[parent].push(child)
+
+      // 把小分類的 ID 和名稱打包成物件，丟進大分類的陣列裡
+      result[parentName].push({
+        id: item.categoryId, //  對齊後端回傳的 categoryId
+        name: item.categoryName, // 小分類名稱
+      })
     }
   })
 
