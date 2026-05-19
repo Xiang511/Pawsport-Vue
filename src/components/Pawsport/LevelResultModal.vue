@@ -1,6 +1,7 @@
 <script setup>
 import { computed, watch, nextTick } from 'vue'
-import {animate} from 'animejs' // 💡 使用安全的路徑引入包
+import {animate} from 'animejs'
+import axios from 'axios'
 
 // 接收外部傳進來的參數
 const props = defineProps({
@@ -32,58 +33,107 @@ const isVictory = computed(() => {
   return props.score >= 6
 })
 
-// 修改後的儲存與解鎖核心邏輯
-const saveProgressAndUnlock = () => {
-  try {
-    const progress = JSON.parse(localStorage.getItem('game_progress') || '{}') //
-    
-    const currentLevelId = props.levelId // 👈 拿到目前的關卡 ID
-    
-    // 🎯 1. 動態更新當前關卡的最高星星數
-    const oldStars = progress[`level_${currentLevelId}`]?.stars || 0 //
-    progress[`level_${currentLevelId}`] = {
-      stars: Math.max(oldStars, stars.value) 
-    }
-    
-    // 🎯 2. 只有當真正勝利時，才去開啟「下一關」的綠燈進度
-    if (isVictory.value) { //
-      const nextLevelId = currentLevelId + 1
-      progress[`level_${nextLevelId}_unlocked`] = true
-      
-      // 順便相容你們原本大廳第二關特別寫的判斷條件
-      if (nextLevelId === 2) {
-        progress['level_2_unlocked'] = true
-      }
-    }
+// 🚀 核心優化：當結算視窗打開時，自動發送結果給後端 API 儲存
+watch(
+  () => props.isOpen,
+  async (newVal) => {
+    if (newVal === true) {
+      // 🎯 執行後端聯網儲存與解鎖
+      try {
+        const submitData = {
+          PlayerId: 1,                // 統一使用測試帳號 PlayerId = 1
+          GameId: props.levelId,       // 目前關卡 ID
+          IsVictory: isVictory.value,  // 是否通過 (score >= 6)
+          BonusPoints: bonusPoints.value // 答對 10 題給 10 點，其餘 0 點
+        }
 
-    localStorage.setItem('game_progress', JSON.stringify(progress)) //
-    console.log(`【PawsPort 系統進度動態儲存】第 ${currentLevelId} 關紀錄成功！`, progress)
-  } catch (e) {
-    console.error("進度儲存失敗:", e) //
+        console.log('🚀 [API 傳送] 正在同步關卡進度至後端...', submitData)
+
+        const res = await axios.post('https://localhost:7048/api/Player/save-game-result', submitData)
+        
+        if (res.data && res.data.success) {
+          console.log('🎉 [API 成功] 後端已成功記錄進度，資料庫與點數已更新！')
+        }
+        
+      } catch (error) {
+        console.error('❌ [API 失敗] 傳送遊戲結果失敗，後端服務可能未啟動或報錯：', error)
+      }
+
+      // 💾 離線本地防線（保留作為備用）
+      saveProgressAndUnlockLocalStorage()
+
+      // 🎬 播放彈窗動畫
+      await nextTick()
+      playModalAnimations()
+    }
   }
+)
+
+// 修改後的儲存與解鎖核心邏輯
+const saveProgressAndUnlockLocalStorage = () => {
+  const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
+  const currentLevelKey = `level_${props.levelId}`
+  
+  // 更新當前關卡最高星星
+  const oldStars = progress[currentLevelKey]?.stars || 0
+  if (stars.value > oldStars) {
+    progress[currentLevelKey] = {
+      Score: props.score,
+      Stars: stars.value,
+      Cleared: isVictory.value
+    }
+  }
+  
+  // 滿足勝利條件，解鎖下一關的本地防線
+  if (isVictory.value) {
+    progress[`level_${props.levelId + 1}_unlocked`] = true
+  }
+  
+  localStorage.setItem('game_progress', JSON.stringify(progress))
 }
 
-// 🎬 5. 監聽彈窗打開時，播放動畫與處理進度
-watch(() => props.isOpen, (newVal) => {
-  if (newVal) {
-      saveProgressAndUnlock()
-    // 星星蹦跳特效
-    nextTick(() => {
-      try {
-        animate({
-          targets: '.result-star-icon.is-active',
-          scale: [0, 1.4, 1],
-          rotate: '1turn',
-          delay: animate.stagger(250), // 精緻的依序延遲發射
-          duration: 800,
-          easing: 'outElastic(1, .6)'
-        })
-      } catch (err) {
-        console.warn("星星動畫播放受阻:", err)
-      }
-    })
-  }
-})
+// 🎬 結算彈窗 Anime.js 動畫控制
+const playModalAnimations = () => {
+  animate('.result-modal-overlay', {
+    opacity: [0, 1],
+    duration: 300,
+    easing: 'linear'
+  })
+
+  animate('.result-modal-content', {
+    Scale: [0.4, 1],
+    Opacity: [0, 1],
+    Duration: 500,
+    Easing: 'easeOutBack'
+  })
+
+  // 星星依序彈出
+  animate('.result-star-icon', {
+    Scale: [0, 1.3, 1],
+    Rotate: [0, 15, 0],
+    Delay: (el, i) => 400 + i * 200,
+    Duration: 600,
+    Easing: 'easeOutBack'
+  })
+
+  // 數據面板由下往上滑入
+  animate('.result-stats', {
+    TranslateY: [40, 0],
+    Opacity: [0, 1],
+    Delay: 1000,
+    Duration: 500,
+    Easing: 'easeOutQuad'
+  })
+
+  // 按鈕淡入
+  animate('.result-footer', {
+    Opacity: [0, 1],
+    Delay: 1300,
+    Duration: 400,
+    Easing: 'linear'
+  })
+}
+
 </script>
 
 <template>
