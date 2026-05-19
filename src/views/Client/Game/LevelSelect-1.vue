@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import {
   X,
   Circle,
@@ -14,23 +14,10 @@ import {
 } from 'lucide-vue-next'
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
-import LevelResultModal from '@/components/Pawsport/LevelResultModal.vue' 
+import LevelResultModal from '@/components/Client/LevelResultModal.vue' 
 import axios from 'axios'
 
-
-const router = useRouter()
-const route = useRoute()
 const isResultOpen = ref(false) // 專門控制獨立結算組件的開啟
-const currentLevelId = computed(() => {
-  const cat = route.params.category
-  if (cat === '認養須知') return 1
-  if (cat === '狗狗百科') return 2
-  if (cat === '貓貓百科') return 3
-  if (cat === '鳥類百科') return 4
-  if (cat === '小動物百科') return 5
-  if (cat === '水族與爬蟲') return 6
-  return 1 // 萬一都沒對到，預設安全牌回第 1 關
-})
 
 const {
   bgm,
@@ -51,48 +38,6 @@ watch(bgmSlider, (newVal) => {
 watch(sfxSlider, (newVal) => {
   updateSFXVolume(newVal)
 })
-// 監聽網址參數，當玩家在大廳換關卡、或在遊戲內點擊「下一關」時
-watch(
-  () => route.params.category,
-  async (newCategory) => {
-    if (newCategory) {
-      console.log(`【PawsPort 換關卡偵測】網址變更為：${newCategory}，正在進行大掃除...`)
-      
-      // 1. 優先最高規格清除所有計時器（防止 null 讀取 flags 報錯）
-      if (timerInterval.value) {
-        clearInterval(timerInterval.value)
-        timerInterval.value = null
-      }
-      if (countdownInterval.value) {
-        clearInterval(countdownInterval.value)
-        countdownInterval.value = null
-      }
-
-      // 2. 強行暫停背景正在跑的開場倒數音效，防止殘留
-      if (typeof pauseCountdown === 'function') {
-        pauseCountdown()
-      }
-
-      // 3. 所有響應式狀態安全重置
-      gameStarted.value = false
-      isPaused.value = false
-      currentQuestionIndex.value = 0
-      timeLeft.value = 10
-      showExplanation.value = false
-      userScore.value = 0            // 星星與分數徹底歸零
-      isUserCorrect.value = false
-      stars.value = []               // 清空特效
-      wrongEffects.value = []
-      startCountdown.value = 3       // 重新變回 3 秒
-      isResultOpen.value = false     // 關閉前一關的結算視窗
-
-      // 4. 確保一切都乾淨了，才進資料庫撈下一關的 10 題
-      await fetchGameQuestions()
-    }
-  },
-  { immediate: false }
-)
-
 const handlePauseToggle = () => {
   playSFX('click')
   isPaused.value = !isPaused.value
@@ -104,6 +49,7 @@ const handlePauseToggle = () => {
     }
   }
 }
+const router = useRouter()
 
 // --- 遊戲狀態管理 ---
 const gameStarted = ref(false)
@@ -126,33 +72,27 @@ const fetchGameQuestions = async () => {
   try {
     loading.value = true
     
-    // 先抓出 Vue 路由到底有沒有成功拿到網址參數
-    console.log('【除錯資訊】當前路由物件的 params：', route.params)
-    
-    // 解碼網址列的參數（防止手動輸入中文變成 %E8%AA%8D... 導致後端看不懂）
-    const rawCategory = route.params.category || '認養須知'
-    const currentCategory = decodeURIComponent(rawCategory)
-    
-    console.log('【除錯資訊】準備丟給後端的分類名稱：', currentCategory)
-    
-    // 發送請求
+    // 📡 連接後端 7048 Port 網址，抓取「認養須知」分類題目
     const response = await axios.get('https://localhost:7048/api/Questions/game-level', {
-      params: { category: currentCategory }
+      params: { category: '認養須知' }
     })
     
     if (response.data.success) {
       questions.value = response.data.data
-      console.log(`PawsPort 題庫連線成功！已動態載入【${currentCategory}】問答。`, questions.value)
+      console.log('PawsPort 題庫連線成功！已載入 10 題隨機問答題：', questions.value)
     }
   } catch (error) {
     console.error('從後端撈取遊戲題目時發生錯誤:', error)
   } finally {
+    // 關鍵修正：拿到資料後，先關閉載入鎖，再利用 nextTick 確保網頁渲染完後，才開始播放音效跟倒數
     if (questions.value && questions.value.length > 0) {
-      loading.value = false 
-      await nextTick()      
-      runStartCountdown()   
+      loading.value = false // 1. 解開載入遮罩，讓 template 渲染遊戲主容器
+      
+      await nextTick()      // 2. 確保 Vue 已經將畫面畫在瀏覽器上
+      
+      runStartCountdown()   // 3. 畫面出來了，正式啟動 3、2、1 倒數動畫與音效
     } else {
-      loading.value = false 
+      loading.value = false // 若沒抓到題目，關閉載入以顯示「目前沒有題目」的防禦畫面
     }
   }
 }
@@ -193,6 +133,7 @@ const runStartCountdown = () => {
   // 1. 一開始就播放完整的三秒倒數音效
   playSFX('countdown')
 
+  // 👈 修正：將 cd 改為 countdownInterval.value
   countdownInterval.value = setInterval(() => {
     if (!isPaused.value) {
       if (startCountdown.value > 1) {
@@ -212,16 +153,14 @@ const runStartCountdown = () => {
 const handleAnswer = (choice, event) => {
   if (showExplanation.value || !currentQuestion.value) return
   clearInterval(timerInterval.value)
-  const backendCorrectAnswer = currentQuestion.value.answers === 1
+const backendCorrectAnswer = currentQuestion.value.answers === 1
   const correct = choice === backendCorrectAnswer
   isUserCorrect.value = correct
   if (correct) {
     playSFX('success') // 播放成功音效 (對應你 useGameAudio 裡的 key)
     userScore.value++
-    console.log('✅ 答對！目前分數：', userScore.value)
   } else {
     playSFX('fail') // 播放失敗音效 (對應你 useGameAudio 裡的 key)
-    console.log('❌ 答錯！目前分數：', userScore.value)
   }
   createStars(event, correct)
   showExplanation.value = true
@@ -297,12 +236,19 @@ const nextQuestion = () => {
     startTimer()
     isUserCorrect.value = false
   } else {
-    // --- 🌟 10 題全部答完了，安全關閉計時器，觸發獨立結算視窗！ ---
-    if (timerInterval.value) {
-      clearInterval(timerInterval.value)
-      timerInterval.value = null
-    }
+    // --- 🌟 10 題全部答完了，觸發獨立結算視窗！ ---
     
+    // 💡 註解或刪除原本的 if (timer) clearInterval(timer)，改用 try-catch 包裹
+    try {
+      // 如果你的計時器變數叫其他名字，可以在這裡安全地清除它，就算失敗也不會卡死程式
+      if (typeof timer !== 'undefined') {
+        clearInterval(timer)
+      }
+    } catch (e) {
+      console.log('計時器清除跳過')
+    }
+
+    // 🎯 核心：強制直接打開獨立結算視窗！
     isResultOpen.value = true 
   }
 }
@@ -319,23 +265,12 @@ const handleRetry = () => {
 
 // 💡 點擊「繼續探索」時返回選單
 const handleContinue = () => {
-  router.push({ name: 'client-levelselect' })
+  router.push({ name: 'Client-levelselect' })
 }
 
 const handleNextLevel = () => {
-  playSFX('click')
-  isResultOpen.value = false // 先關閉目前的結算彈窗
-
-  const currentCat = route.params.category
-
-  // 🎯 根據當前關卡，決定「下一關」要送他去哪裡
-  if (currentCat === '認養須知') {
-    router.push({ name: 'client-gameplay', params: { category: '狗狗百科' } })
-  } else if (currentCat === '狗狗百科') {
-    router.push({ name: 'client-gameplay', params: { category: '貓貓百科' } })
-  } else {
-    router.push({ name: 'client-levelselect' })
-  }
+  // 假設你的第二關路由名稱叫 LevelSelect2 或 Level2，請對齊你的 router 設定
+  router.push({ name: 'Client-levelselect-2' }) 
 }
 
 onMounted(() => {
@@ -343,15 +278,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  console.log('PETMILY正在銷毀遊戲頁面，清除所有殘留計時器...')
-  if (timerInterval.value) {
-    clearInterval(timerInterval.value)
-    timerInterval.value = null
-  }
-  if (countdownInterval.value) {
-    clearInterval(countdownInterval.value)
-    countdownInterval.value = null
-  }
+  clearInterval(timerInterval.value)
 })
 
 const togglePause = () => {
@@ -403,7 +330,7 @@ const exitLevel = () => {
   wrongEffects.value = []
 
   // 3. 執行跳轉
-  router.push({ name: 'client-levelselect' })
+  router.push({ name: 'Client-levelselect' })
 }
 </script>
 
@@ -580,7 +507,6 @@ const exitLevel = () => {
   <LevelResultModal 
     :isOpen="isResultOpen" 
     :score="userScore" 
-    :level-id="currentLevelId"
     @retry="handleRetry"
     @continue="handleContinue"
     @nextLevel="handleNextLevel"

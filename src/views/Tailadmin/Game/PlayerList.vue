@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
-import SearchBar from '@/components/Pawsport/SearchBar.vue'
+import SearchBar from '@/components/Tailadmin/Game/SearchBar.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 // 初始化

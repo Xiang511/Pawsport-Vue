@@ -2,8 +2,8 @@
 import { ref } from 'vue'
 
 import PageBreadcrumb from '@/components/Tailadmin/common/PageBreadcrumb.vue'
-import MemberMetrics from '@/components/Pawsport/MemberMetrics.vue'
-import MemberInfoTable from '@/components/Pawsport/MemberInfoTable.vue'
+import MemberMetrics from '@/components/Tailadmin/Member/MemberMetrics.vue'
+import MemberInfoTable from '@/components/Tailadmin/Member/MemberInfoTable.vue'
 
 const currentPageTitle = ref('基本資料')
 </script>

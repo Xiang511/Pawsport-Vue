@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 import PageBreadcrumb from '@/components/Tailadmin/common/PageBreadcrumb.vue'
-import MemberPermissionTable from '@/components/Pawsport/MemberPermissionTable.vue'
+import MemberPermissionTable from '@/components/Tailadmin/Member/MemberPermissionTable.vue'
 
 const currentPageTitle = ref('權限管理')
 </script>

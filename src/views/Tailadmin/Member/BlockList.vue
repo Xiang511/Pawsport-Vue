@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 import PageBreadcrumb from '@/components/Tailadmin/common/PageBreadcrumb.vue'
-import MemberBlocklistTable from '@/components/Pawsport/MemberBlocklistTable.vue'
+import MemberBlocklistTable from '@/components/Tailadmin/Member/MemberBlocklistTable.vue'
 
 const currentPageTitle = ref('違規名單')
 </script>

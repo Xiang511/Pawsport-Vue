@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import PageBreadcrumb from '@/components/Pawsport/PageBreadcrumb.vue'
+import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 const router = useRouter()

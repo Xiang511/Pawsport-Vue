@@ -1,14 +1,14 @@
 <script setup>
 import { computed, watch, nextTick } from 'vue'
-import {animate} from 'animejs'
+import { animate } from 'animejs'
 import axios from 'axios'
 
 // 接收外部傳進來的參數
 const props = defineProps({
-  isOpen: { type: Boolean, default: false }, 
+  isOpen: { type: Boolean, default: false },
   score: { type: Number, default: 0 },
   // 新增：接收目前是第幾關的 ID (預設為 1)
-  levelId: { type: Number, default: 1 } 
+  levelId: { type: Number, default: 1 },
 })
 
 // 定義事件，用來通知父分頁「再試一次」或「離開」
@@ -41,20 +41,22 @@ watch(
       // 🎯 執行後端聯網儲存與解鎖
       try {
         const submitData = {
-          PlayerId: 1,                // 統一使用測試帳號 PlayerId = 1
-          GameId: props.levelId,       // 目前關卡 ID
-          IsVictory: isVictory.value,  // 是否通過 (score >= 6)
-          BonusPoints: bonusPoints.value // 答對 10 題給 10 點，其餘 0 點
+          PlayerId: 1, // 統一使用測試帳號 PlayerId = 1
+          GameId: props.levelId, // 目前關卡 ID
+          IsVictory: isVictory.value, // 是否通過 (score >= 6)
+          BonusPoints: bonusPoints.value, // 答對 10 題給 10 點，其餘 0 點
         }
 
         console.log('🚀 [API 傳送] 正在同步關卡進度至後端...', submitData)
 
-        const res = await axios.post('https://localhost:7048/api/Player/save-game-result', submitData)
-        
+        const res = await axios.post(
+          'https://localhost:7048/api/Player/save-game-result',
+          submitData,
+        )
+
         if (res.data && res.data.success) {
           console.log('🎉 [API 成功] 後端已成功記錄進度，資料庫與點數已更新！')
         }
-        
       } catch (error) {
         console.error('❌ [API 失敗] 傳送遊戲結果失敗，後端服務可能未啟動或報錯：', error)
       }
@@ -66,29 +68,29 @@ watch(
       await nextTick()
       playModalAnimations()
     }
-  }
+  },
 )
 
 // 修改後的儲存與解鎖核心邏輯
 const saveProgressAndUnlockLocalStorage = () => {
   const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
   const currentLevelKey = `level_${props.levelId}`
-  
+
   // 更新當前關卡最高星星
   const oldStars = progress[currentLevelKey]?.stars || 0
   if (stars.value > oldStars) {
     progress[currentLevelKey] = {
       Score: props.score,
       Stars: stars.value,
-      Cleared: isVictory.value
+      Cleared: isVictory.value,
     }
   }
-  
+
   // 滿足勝利條件，解鎖下一關的本地防線
   if (isVictory.value) {
     progress[`level_${props.levelId + 1}_unlocked`] = true
   }
-  
+
   localStorage.setItem('game_progress', JSON.stringify(progress))
 }
 
@@ -97,14 +99,14 @@ const playModalAnimations = () => {
   animate('.result-modal-overlay', {
     opacity: [0, 1],
     duration: 300,
-    easing: 'linear'
+    easing: 'linear',
   })
 
   animate('.result-modal-content', {
     Scale: [0.4, 1],
     Opacity: [0, 1],
     Duration: 500,
-    Easing: 'easeOutBack'
+    Easing: 'easeOutBack',
   })
 
   // 星星依序彈出
@@ -113,7 +115,7 @@ const playModalAnimations = () => {
     Rotate: [0, 15, 0],
     Delay: (el, i) => 400 + i * 200,
     Duration: 600,
-    Easing: 'easeOutBack'
+    Easing: 'easeOutBack',
   })
 
   // 數據面板由下往上滑入
@@ -122,7 +124,7 @@ const playModalAnimations = () => {
     Opacity: [0, 1],
     Delay: 1000,
     Duration: 500,
-    Easing: 'easeOutQuad'
+    Easing: 'easeOutQuad',
   })
 
   // 按鈕淡入
@@ -130,17 +132,15 @@ const playModalAnimations = () => {
     Opacity: [0, 1],
     Delay: 1300,
     Duration: 400,
-    Easing: 'linear'
+    Easing: 'linear',
   })
 }
-
 </script>
 
 <template>
   <Transition name="modal-wrapper">
     <div v-if="isOpen" class="modal-overlay result-overlay">
       <div class="result-modal-content">
-        
         <div class="result-header">
           <h1 class="victory-title" :class="{ 'fail-title': !isVictory }">
             {{ isVictory ? 'VICTORY' : 'FAILED' }}
@@ -156,14 +156,14 @@ const playModalAnimations = () => {
 
           <div class="stars-row">
             <div v-for="i in 3" :key="i" class="star-container">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                stroke-width="2.5" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                stroke-width="2.5"
                 class="result-star-icon"
-                :class="{ 'is-active': i <= stars }"
-              >
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                :class="{ 'is-active': i <= stars }">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
             </div>
           </div>
@@ -183,29 +183,21 @@ const playModalAnimations = () => {
         <div class="result-footer">
           <template v-if="isVictory">
             <button class="footer-btn continue-btn" @click="$emit('nextLevel')">
-              前往下一關 <span class="arrow">›</span>
+              前往下一關
+              <span class="arrow">›</span>
             </button>
-            <button class="footer-btn back-btn" @click="$emit('continue')">
-              回關卡選擇
-            </button>
+            <button class="footer-btn back-btn" @click="$emit('continue')">回關卡選擇</button>
           </template>
 
           <template v-else>
-            <button class="footer-btn retry-btn" @click="$emit('retry')">
-              重新開始
-            </button>
-            <button class="footer-btn back-btn" @click="$emit('continue')">
-              回關卡選擇
-            </button>
+            <button class="footer-btn retry-btn" @click="$emit('retry')">重新開始</button>
+            <button class="footer-btn back-btn" @click="$emit('continue')">回關卡選擇</button>
           </template>
         </div>
-
       </div>
     </div>
   </Transition>
 </template>
-
-
 
 <style scoped>
 /* ===================================================
@@ -240,7 +232,7 @@ const playModalAnimations = () => {
   color: #453a27;
   letter-spacing: 6px;
   margin: 0;
-  text-shadow: 0 8px 0 rgba(0,0,0,0.05);
+  text-shadow: 0 8px 0 rgba(0, 0, 0, 0.05);
 }
 
 .fail-title {
@@ -299,7 +291,7 @@ const playModalAnimations = () => {
 }
 
 .result-star-icon.is-active {
-  fill: #fcc86d;  /* 你的招牌鵝黃色 */
+  fill: #fcc86d; /* 你的招牌鵝黃色 */
   stroke: #453a27; /* 經典粗邊框 */
 }
 
@@ -377,10 +369,12 @@ const playModalAnimations = () => {
 }
 
 /* 動態淡入 */
-.modal-wrapper-enter-active, .modal-wrapper-leave-active {
+.modal-wrapper-enter-active,
+.modal-wrapper-leave-active {
   transition: opacity 0.4s ease;
 }
-.modal-wrapper-enter-from, .modal-wrapper-leave-to {
+.modal-wrapper-enter-from,
+.modal-wrapper-leave-to {
   opacity: 0;
 }
 </style>

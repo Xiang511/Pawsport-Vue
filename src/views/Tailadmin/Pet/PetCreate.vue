@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import PageBreadcrumb from '@/components/Pawsport/PageBreadcrumb.vue'
+import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
 const currentPageTitle = ref('新增寵物資料')

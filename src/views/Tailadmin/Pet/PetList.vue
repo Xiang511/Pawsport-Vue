@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 // 1. 引入 axios
 import axios from 'axios'
-import PageBreadcrumb from '@/components/Pawsport/PageBreadcrumb.vue'
+import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
 // --- 狀態定義 ---

@@ -72,16 +72,16 @@ const handleClose = (type) => {
 
 const router = useRouter()
 const exitGame = () => {
-  router.push({ name: 'client-gameview' })
+  router.push({ name: 'Client-gameview' })
 }
 const levelSelect = () => {
-  router.push({ name: 'client-levelselect' })
+  router.push({ name: 'Client-levelselect' })
 }
 const skinShop = () => {
-  router.push({ name: 'client-skinshop' })
+  router.push({ name: 'Client-skinshop' })
 }
 const inventory = () => {
-  router.push({ name: 'client-inventory' })
+  router.push({ name: 'Client-inventory' })
 }
 </script>
 

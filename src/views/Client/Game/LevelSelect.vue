@@ -268,9 +268,9 @@ const startGame = () => {
 
     console.log(`【PETMILY導航】準備進入第 ${levelId} 關，分類為：【${categoryName}】`)
 
-    // 導向我們在 index.js 設好的全能動態路由 'client-gameplay'
+    // 導向我們在 index.js 設好的全能動態路由 'Client-gameplay'
     router.push({
-      name: 'client-gameplay',         // 通用遊戲頁路由名稱
+      name: 'Client-gameplay',         // 通用遊戲頁路由名稱
       params: { category: categoryName } // 將分類中文作為網址參數傳過去！
     }).catch((err) => {
       console.error('遊戲導航失敗:', err)
@@ -279,7 +279,7 @@ const startGame = () => {
 }
 
 onMounted(() => updateAreaContent())
-const goBack = () => router.push({ name: 'client-mainmenu' })
+const goBack = () => router.push({ name: 'Client-mainmenu' })
 </script>
 
 <template>

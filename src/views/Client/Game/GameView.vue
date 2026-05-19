@@ -63,7 +63,7 @@ onMounted(() => {
 
 const proceedToMenu = () => {
   // 點擊後跳轉到主選單路由
-  router.push({ name: 'client-mainmenu' })
+  router.push({ name: 'Client-mainmenu' })
 }
 
 // 返回 Petmily 官方首頁
