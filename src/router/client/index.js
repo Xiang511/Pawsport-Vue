@@ -26,7 +26,7 @@ export default [
       {
         path: '/create-article',
         name: 'create-article',
-        component: () => import('../../views/client/Community/CreateArticle.vue'),
+        component: () => import('../../views/client/community/CreateArticle.vue'),
         meta: {
           title: '新增貼文 | Petmily',
         },
@@ -34,7 +34,7 @@ export default [
       {
         path: '/article-list',
         name: 'article-list',
-        component: () => import('../../views/client/Community/ArticleList.vue'),
+        component: () => import('../../views/client/community/ArticleList.vue'),
         meta: {
           title: '貼文列表 | Petmily',
         },
@@ -42,7 +42,7 @@ export default [
       {
         path: '/article-detail',
         name: 'article-detail',
-        component: () => import('../../views/client/Community/ArticleDetail.vue'),
+        component: () => import('../../views/client/community/ArticleDetail.vue'),
         meta: {
           title: '文章內容 | Petmily',
           // plus:之後可以更新動態顯示文章標題
@@ -101,6 +101,44 @@ export default [
         component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
           title: '404 Page',
+        },
+      },
+    ],
+  },
+  {
+    path: '/login',
+    name: 'SigninLayout',
+    component: () => import('../../layouts/client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'client-login',
+        component: () => import('@/components/Client/Signin.vue'),
+        meta: {
+          title: '登入 | Petmily',
+        },
+      },
+    ],
+  },
+  {
+    path: '/user',
+    name: 'UserLayout',
+    component: () => import('../../layouts/client/Basic.vue'),
+    children: [
+      {
+        path: '',
+        name: 'client-user-error',
+        component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
+        meta: {
+          title: '404 Page',
+        },
+      },
+      {
+        path: 'profile',
+        name: 'client-profile',
+        component: () => import('@/components/Client/Profile.vue'),
+        meta: {
+          title: '會員中心 | Petmily',
         },
       },
     ],
