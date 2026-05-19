@@ -88,7 +88,7 @@ onMounted(() => {
   <div class="min-h-screen bg-[#F7F3F1] pb-20">
     <!-- Banner 區塊，調整為主題色系 -->
     <section class="relative overflow-hidden bg-[#9C6D6D] text-white">
-      <div class="mx-auto max-w-6xl flex flex-col items-center md:flex-row px-4">
+      <div class="mx-auto flex max-w-6xl flex-col items-center px-4 md:flex-row">
         <div class="z-10 w-full p-8 md:w-1/2 md:p-16">
           <h2 class="mb-4 text-3xl font-bold md:text-5xl">
             我們幫你一起養！
@@ -127,7 +127,7 @@ onMounted(() => {
         <button
           class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md">
           <span class="text-[#9C6D6D]">🏠</span>
-          為什麼要領養巴克幫？
+          為什麼要領養Petmily？
         </button>
         <button
           class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md">
@@ -181,7 +181,9 @@ onMounted(() => {
                 年齡
                 <small class="font-normal text-gray-400">(歲)</small>
               </h5>
-              <select v-model="filters.ageRange" class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
+              <select
+                v-model="filters.ageRange"
+                class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
                 <option value="">全部年齡</option>
                 <option value="0,1">幼犬 (0-1)</option>
                 <option value="1,3">青少年 (1-3)</option>
@@ -195,7 +197,9 @@ onMounted(() => {
                 體型
                 <small class="font-normal text-gray-400">(kg)</small>
               </h5>
-              <select v-model="filters.sizeRange" class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
+              <select
+                v-model="filters.sizeRange"
+                class="w-full rounded-lg border-gray-200 text-sm focus:border-[#9C6D6D] focus:ring-[#9C6D6D]">
                 <option value="">全部體型</option>
                 <option value="0,12">小型犬 (under 12)</option>
                 <option value="12,25">中型犬 (12-25)</option>
