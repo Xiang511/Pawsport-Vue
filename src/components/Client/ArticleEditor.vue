@@ -1,10 +1,22 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import axios from 'axios'
-// 自己做的按鈕樣式
-import Article_BaseButton from './Article_BaseButton.vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+// Quill
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
+// 自己做的按鈕樣式
+import Article_BaseButton from './Article_BaseButton.vue'
+
+// 定義從父組件傳進來的 props
+const props = defineProps({
+  categories: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
+})
+
+// 定義要傳回給父組件的事件
+const emit = defineEmits(['publish', 'save-draft'])
 
 //控制Quill的響應式變數
 const editorRef = ref(null)
@@ -12,12 +24,8 @@ const editorRef = ref(null)
 let quillInstance = null
 
 //頁面必須等quill載入
-onMounted(async () => {
-  if (!editorRef.value) {
-    console.error('無法找到編輯器容器元素')
-    return
-  }
-
+onMounted(() => {
+  if (!editorRef.value) return
   // 初始化編輯器 // 確保拿到 Quill 之後才執行初始化
   quillInstance = new Quill(editorRef.value, {
     theme: 'snow',
@@ -44,52 +52,116 @@ const post = reactive({
   tag: '',
 })
 
-// ==函式==
-// 儲存為草稿
-const handleSaveDraft = () => {
-  // 取得 HTML 內容送給 API
-  const htmlContent = quillInstance.root.innerHTML
-  console.log('準備送往 C# API 的內容：', htmlContent)
-  // axios.post('/api/Article', { content: htmlContent, ... });
+const currentSubCategories = ref([])
+
+// 監聽大分類（資料來源改用 props.categories）
+watch(
+  () => post.mainCategory,
+  (newMain) => {
+    if (newMain) {
+      currentSubCategories.value = props.categories[newMain] || []
+    } else {
+      currentSubCategories.value = []
+    }
+    post.subCategory = ''
+  },
+)
+
+// 封裝要外傳的完整資料包
+const getFormData = () => {
+  return {
+    title: post.title,
+    mainCategory: post.mainCategory,
+    subCategory: post.subCategory,
+    tag: post.tag,
+    content: quillInstance ? quillInstance.root.innerHTML : '',
+  }
 }
-//發布文章
-const handleSubmit = () => {
-  // 取得 HTML 內容送給 API
-  const htmlContent = quillInstance.root.innerHTML
-  console.log('準備送往 C# API 的內容：', htmlContent)
-  // axios.post('/api/Article', { content: htmlContent, ... });
+
+// 點擊按鈕時，不自己發 API，而是透過 emit 丟給 View
+const onSaveDraft = () => {
+  emit('save-draft', getFormData())
+}
+
+const onSubmit = () => {
+  emit('publish', getFormData())
 }
 </script>
 
 <template>
-  <div class="post-container">
+  <div class="mx-auto my-5 max-w-3xl font-sans text-gray-800">
     <!-- 頂部功能 -->
-    <div class="post-header">
-      <span class="main-title">建立貼文</span>
+    <div class="mb-4 flex items-center justify-between">
+      <span class="text-2xl font-bold">建立貼文</span>
       <Article_BaseButton type="draft">草稿匣</Article_BaseButton>
     </div>
     <!-- 主要發文區塊 (包覆標題與編輯器) -->
-    <div class="editor-card">
-      <div>分類選取區</div>
+    <div class="rounded-2xl border border-gray-200 bg-white p-4">
+      <div class="mb-2 text-sm font-medium text-gray-500">分類選取*</div>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <!-- 大分類 -->
+        <div class="w-full sm:w-1/2">
+          <select
+            v-model="post.mainCategory"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 outline-none">
+            <option value="" disabled selected>請選擇大分類</option>
+            <!-- 這裡改用 props.categories 跑迴圈 -->
+            <option v-for="(subs, main) in props.categories" :key="main" :value="main">
+              {{ main }}
+            </option>
+          </select>
+        </div>
+        <!-- 小分類 -->
+        <div class="w-full sm:w-1/2">
+          <select
+            v-model="post.subCategory"
+            :disabled="!post.mainCategory"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 outline-none disabled:opacity-50">
+            <option value="" disabled selected>
+              {{ post.mainCategory ? '請選擇小分類' : '請先選擇大分類' }}
+            </option>
+            <option v-for="sub in currentSubCategories" :key="sub" :value="sub">
+              {{ sub }}
+            </option>
+          </select>
+        </div>
+      </div>
+
       <!-- 標題輸入框 -->
       <!-- note:這裡之後加上require的動態顯示 -->
-      <div class="title-section">
-        <input type="text" v-model="post.title" placeholder="標題*" maxlength="100" />
-        <span class="char-count">{{ post.title.length }}/100</span>
+      <div class="relative mt-2 mb-2">
+        <input
+          type="text"
+          v-model="post.title"
+          placeholder="標題*"
+          maxlength="100"
+          class="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 pr-16 text-lg transition-colors outline-none focus:border-gray-300" />
+        <!-- 右側字數統計定位 -->
+        <span class="absolute top-1/2 right-4 -translate-y-1/2 text-sm text-gray-400">
+          {{ post.title.length }}/100
+        </span>
       </div>
       <!-- Quill 編輯器區塊 -->
-      <div class="quill-wrapper">
-        <div id="editor-container" ref="editorRef"></div>
+      <div class="mt-3 min-h-50 bg-white [&_.ql-editor]:text-base">
+        <div ref="editorRef" class="min-h-50"></div>
         <!-- note:之後可以加一個字數計數器(可能需要npm install Quill) -->
       </div>
+
       <!-- 標籤輸入框 -->
-      <div class="tag-section">
-        <input type="text" v-model="post.tag" placeholder="#標籤" maxlength="100" />
-        <span class="char-count">{{ post.tag.length }}/100</span>
+      <div class="relative mt-5 mb-2">
+        <input
+          type="text"
+          v-model="post.tag"
+          placeholder="#標籤"
+          maxlength="100"
+          class="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 pr-16 text-lg transition-colors outline-none focus:border-gray-300" />
+        <span class="absolute top-1/2 right-4 -translate-y-1/2 text-sm text-gray-400">
+          {{ post.tag.length }}/100
+        </span>
       </div>
     </div>
     <!-- 底部按鈕 -->
-    <div class="footer-actions">
+    <div class="mt-5 flex justify-end gap-2.5">
       <Article_BaseButton type="draft" @click="handleSaveDraft">儲存草稿</Article_BaseButton>
       <Article_BaseButton type="primary" :disabled="!post.title" @click="handleSubmit">
         發佈貼文
@@ -98,82 +170,4 @@ const handleSubmit = () => {
   </div>
 </template>
 
-<style scoped>
-.post-container {
-  max-width: 700px;
-  margin: 20px auto;
-  font-family: sans-serif;
-  color: #333;
-}
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.main-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-.status-text {
-  color: #888;
-  font-size: 14px;
-}
-.quill-wrapper {
-  margin-top: 10px;
-  background: white;
-  min-height: 200px;
-}
-/* Quill的外層容器高度 */
-#editor-container {
-  min-height: 200px;
-}
-/* 覆寫Quill字體大小設定 */
-:deep(.ql-editor) {
-  font-size: 16px;
-}
-
-/* 核心編輯卡片樣式 (對應 image_0ad233.png 的灰色圓角框) */
-.editor-card {
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 15px;
-  background-color: #fff;
-}
-
-.title-section {
-  position: relative;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.title-section input {
-  width: 100%;
-  padding: 12px 15px;
-  font-size: 18px;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  outline: none;
-  background: #f9f9f9;
-}
-.tag-section {
-  position: relative;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-.tag-section input {
-  width: 100%;
-  padding: 12px 15px;
-  font-size: 18px;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  outline: none;
-  background: #f9f9f9;
-}
-/* 底部按鈕 */
-.footer-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-</style>
+<style scoped></style>

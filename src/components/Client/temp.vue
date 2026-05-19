@@ -1,39 +1,135 @@
-<!-- 左邊圖片 -->
-    <div class="flex flex-col gap-2">
-      <div class="relative h-24 w-32 shrink-0 overflow-hidden rounded-md bg-gray-200">
-        <span
-          class="absolute top-2 left-2 rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-medium tracking-wider text-stone-600 shadow-sm">
-          分類
+<script setup>
+import { ref, reactive, onMounted, watch } from 'vue'
+import Article_BaseButton from './Article_BaseButton.vue'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
+
+// 定義從父組件傳進來的 props
+const props = defineProps({
+  categories: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
+})
+
+// 定義要傳回給父組件的事件
+const emit = defineEmits(['publish', 'save-draft'])
+
+const editorRef = ref(null)
+let quillInstance = null
+
+onMounted(() => {
+  if (!editorRef.value) return
+  quillInstance = new Quill(editorRef.value, {
+    theme: 'snow',
+    placeholder: '在此撰寫...',
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, 4, false] }],
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['image', 'link'],
+      ],
+    },
+  })
+})
+
+const post = reactive({
+  title: '',
+  mainCategory: '',
+  subCategory: '',
+  tag: '',
+})
+
+const currentSubCategories = ref([])
+
+// 監聽大分類（資料來源改用 props.categories）
+watch(
+  () => post.mainCategory,
+  (newMain) => {
+    if (newMain) {
+      currentSubCategories.value = props.categories[newMain] || []
+    } else {
+      currentSubCategories.value = []
+    }
+    post.subCategory = ''
+  },
+)
+
+// 封裝要外傳的完整資料包
+const getFormData = () => {
+  return {
+    title: post.title,
+    mainCategory: post.mainCategory,
+    subCategory: post.subCategory,
+    tag: post.tag,
+    content: quillInstance ? quillInstance.root.innerHTML : '',
+  }
+}
+
+// 點擊按鈕時，不自己發 API，而是透過 emit 丟給 View
+const onSaveDraft = () => {
+  emit('save-draft', getFormData())
+}
+
+const onSubmit = () => {
+  emit('publish', getFormData())
+}
+</script>
+
+<template>
+  <!-- 外層容器：對應 .post-container -->
+  <div class="mx-auto my-5 max-w-3xl font-sans text-gray-800">
+    <!-- 頂部功能：對應 .post-header -->
+    <div class="mb-4 flex items-center justify-between">
+      <span class="text-xl font-bold">建立貼文</span>
+      <Article_BaseButton type="draft">草稿匣</Article_BaseButton>
+    </div>
+
+    <!-- 主要發文區塊：對應 .editor-card -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-4">
+      <div class="mb-2 text-sm text-gray-500">分類選取區</div>
+
+      <!-- 標題輸入框：對應 .title-section -->
+      <div class="relative mt-2 mb-2">
+        <input
+          type="text"
+          v-model="post.title"
+          placeholder="標題*"
+          maxlength="100"
+          class="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 pr-16 text-lg transition-colors outline-none focus:border-gray-300" />
+        <!-- 右側字數統計定位 -->
+        <span class="absolute top-1/2 right-4 -translate-y-1/2 text-sm text-gray-400">
+          {{ post.title.length }}/100
         </span>
-        <img
-          src="https://placecats.com/500/500"
-          alt="熱門文章圖片"
-          class="h-full w-full object-cover" />
       </div>
-      <div class="flex items-center gap-1">
-        <Clock :size="14" :stroke-width="1.5" class="text-stone-400" />
-        <p class="text-[11px] text-stone-500">2026.05.11</p>
+
+      <!-- Quill 編輯器區塊：對應 .quill-wrapper 與 #editor-container -->
+      <div class="mt-3 min-h-[200px] bg-white [&_.ql-editor]:text-base">
+        <div ref="editorRef" class="min-h-[200px]"></div>
       </div>
-    </div>
-    <!-- 右邊內容 -->
-    <div class="flex min-w-0 flex-col gap-2">
-      <div class="border-b border-stone-300 pb-1">
-        <h3 class="line-clamp-1 text-base font-semibold text-[#433D3C]">熱門文章標題</h3>
-        <p class="text-xs text-stone-400">作者名稱</p>
-      </div>
-      <div class="text-sm leading-relaxed text-stone-500">
-        <p class="line-clamp-2">
-          熱門文章摘要熱門文章摘要熱門文章摘要熱門文章摘要熱門文章摘要熱門文章摘要熱門文章摘要
-        </p>
-      </div>
-      <div class="mt-auto flex gap-4">
-        <div class="flex items-center gap-1">
-          <Eye :size="14" :stroke-width="1.5" class="text-stone-400" />
-          <p class="text-[11px] text-stone-500">1,234</p>
-        </div>
-        <div class="flex items-center gap-1">
-          <Heart :size="14" :stroke-width="1.5" class="text-stone-400" />
-          <p class="text-[11px] text-stone-500">567</p>
-        </div>
+
+      <!-- 標籤輸入框：對應 .tag-section -->
+      <div class="relative mt-5 mb-2">
+        <input
+          type="text"
+          v-model="post.tag"
+          placeholder="#標籤"
+          maxlength="100"
+          class="w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 pr-16 text-lg transition-colors outline-none focus:border-gray-300" />
+        <span class="absolute top-1/2 right-4 -translate-y-1/2 text-sm text-gray-400">
+          {{ post.tag.length }}/100
+        </span>
       </div>
     </div>
+
+    <!-- 底部按鈕：對應 .footer-actions -->
+    <div class="mt-5 flex justify-end gap-2.5">
+      <Article_BaseButton type="draft" @click="handleSaveDraft">儲存草稿</Article_BaseButton>
+      <Article_BaseButton type="primary" :disabled="!post.title" @click="handleSubmit">
+        發佈貼文
+      </Article_BaseButton>
+    </div>
+  </div>
+</template>

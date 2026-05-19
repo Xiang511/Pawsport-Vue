@@ -1,8 +1,42 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import ArticleEditor from '@/components/Client/ArticleEditor.vue'
 
-const handleSave = () => {
-  //這裡應該要觸發儲存?
+// 假資料
+// === 分類連動的資料結構 ===
+const categoriesData = {
+  寵物專區: ['貓', '狗', '鳥類', '鼠兔', '其他水族爬蟲'],
+  美食天地: ['台灣小吃', '日韓料理', '歐美西餐', '甜點下午茶', '咖啡蔬食'],
+  科技生活: ['手機3C', '電腦組裝', '軟體開發', 'AI應用', '智慧家居'],
+  旅遊札記: ['國內旅遊', '日本自助', '歐洲行程', '住宿推薦', '必買伴手禮'],
+}
+
+// 模擬未來接 API 的狀況
+onMounted(async () => {
+  try {
+    // const res = await axios.get('/api/Categories')
+    // categoriesData.value = res.data
+  } catch (error) {
+    console.error('取得分類失敗', error)
+  }
+})
+
+// 2. 處理發佈：API 發送寫在這裡！
+const handlePublish = async (postData) => {
+  console.log('View 接收到組件傳來的資料，準備送往 C# API：', postData)
+  try {
+    // const res = await axios.post('/api/Article', postData)
+    // alert('發布成功！')
+  } catch (error) {
+    // alert('發布失敗')
+  }
+}
+
+// 3. 處理草稿
+const handleSaveDraft = (postData) => {
+  console.log('View 收到草稿儲存請求：', postData)
+  // axios.post('/api/Article/Draft', postData)
 }
 </script>
 
@@ -12,18 +46,13 @@ const handleSave = () => {
     <!-- 內容區：最大1280px -->
     <div class="container mx-auto w-full max-w-6xl px-4">
       <!-- 左右分邊容器，flex -->
-      <div class="flex flex-col gap-6 py-8 md:flex-row">
-        <div class="page-container">
-          <!-- 編輯器元件 -->
-          <ArticleEditor @save="handleSave" />
-        </div>
-        <!-- 左邊30% -->
-        <aside class="w-full md:w-1/4">
-          <div class="rounded-lg bg-white p-4 shadow">
-            <h2 class="mb-4 font-bold">個人資料</h2>
-            <!-- 這裡可以放你的分類、標籤等 -->
-          </div>
-        </aside>
+
+      <div class="page-container">
+        <!-- 編輯器元件 -->
+        <ArticleEditor
+          :categories="categoriesData"
+          @publish="handlePublish"
+          @save-draft="handleSaveDraft" />
       </div>
     </div>
   </div>

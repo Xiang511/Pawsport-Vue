@@ -65,7 +65,7 @@ const articleDetail = ref({
 
 <template>
   <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#FCF8F2] pb-12 text-slate-800">
+  <div class="min-h-screen bg-[#f9f6f4] pt-6 pb-12 text-slate-800">
     <!-- 頂部麵包屑 (巴哈常用) -->
     <nav class="container mx-auto max-w-6xl px-4 py-3 text-sm text-slate-500">
       首頁 > 論壇 > {{ articleDetail.categoryname }} > {{ articleDetail.title }}
