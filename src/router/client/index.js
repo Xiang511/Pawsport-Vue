@@ -88,11 +88,11 @@ export default [
         },
       },
       {
-        path: 'levelselect-1',
-        name: 'client-levelselect-1',
-        component: () => import('@/views/client/Game/LevelSelect-1.vue'),
+        path: 'gameplay/:category',
+        name: 'client-gameplay',
+        component: () => import('@/views/client/Game/GamePlay.vue'),
         meta: {
-          title: '選擇關卡-1 | Petmily',
+          title: '寵物問答挑戰 | Petmily',
         },
       },
       {

@@ -4,8 +4,10 @@ import {animate} from 'animejs' // 💡 使用安全的路徑引入包
 
 // 接收外部傳進來的參數
 const props = defineProps({
-  isOpen: { type: Boolean, default: false }, // 控制彈窗開關
-  score: { type: Number, default: 0 }        // 玩家答對的題數 (0 ~ 10)
+  isOpen: { type: Boolean, default: false }, 
+  score: { type: Number, default: 0 },
+  // 新增：接收目前是第幾關的 ID (預設為 1)
+  levelId: { type: Number, default: 1 } 
 })
 
 // 定義事件，用來通知父分頁「再試一次」或「離開」
@@ -30,30 +32,34 @@ const isVictory = computed(() => {
   return props.score >= 6
 })
 
-// 🔓 4. 當過關時，自動幫玩家寫入 localStorage 解鎖第二關 progress
-// 💡 修改後的儲存與解鎖核心邏輯
+// 修改後的儲存與解鎖核心邏輯
 const saveProgressAndUnlock = () => {
   try {
-    // 1. 讀取舊進度
-    const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
+    const progress = JSON.parse(localStorage.getItem('game_progress') || '{}') //
     
-    // 2. 👑 無論輸贏，都紀錄當前關卡（關卡 1）獲得的最高星星數！
-    // 加上 Math.max 可以確保如果玩家之前考過高分，不會不小心被低分蓋掉
-    const oldStars = progress['level_1']?.stars || 0
-    progress['level_1'] = {
-      stars: Math.max(oldStars, stars.value) // 🌟 存入算好的一顆星、兩顆星或三顆星
+    const currentLevelId = props.levelId // 👈 拿到目前的關卡 ID
+    
+    // 🎯 1. 動態更新當前關卡的最高星星數
+    const oldStars = progress[`level_${currentLevelId}`]?.stars || 0 //
+    progress[`level_${currentLevelId}`] = {
+      stars: Math.max(oldStars, stars.value) 
     }
     
-    // 3. 🔑 只有當真正勝利時，才去開啟第二關的綠燈進度
-    if (isVictory.value) {
-      progress['level_2_unlocked'] = true
+    // 🎯 2. 只有當真正勝利時，才去開啟「下一關」的綠燈進度
+    if (isVictory.value) { //
+      const nextLevelId = currentLevelId + 1
+      progress[`level_${nextLevelId}_unlocked`] = true
+      
+      // 順便相容你們原本大廳第二關特別寫的判斷條件
+      if (nextLevelId === 2) {
+        progress['level_2_unlocked'] = true
+      }
     }
 
-    // 4. 存回瀏覽器
-    localStorage.setItem('game_progress', JSON.stringify(progress))
-    console.log("進度動態儲存成功：", progress)
+    localStorage.setItem('game_progress', JSON.stringify(progress)) //
+    console.log(`【PawsPort 系統進度動態儲存】第 ${currentLevelId} 關紀錄成功！`, progress)
   } catch (e) {
-    console.error("進度儲存失敗:", e)
+    console.error("進度儲存失敗:", e) //
   }
 }
 
