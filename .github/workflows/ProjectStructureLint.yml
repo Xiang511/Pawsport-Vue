@@ -3,6 +3,9 @@ name: Project Structure Lint
 on:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   check-structure:
     runs-on: ubuntu-latest
