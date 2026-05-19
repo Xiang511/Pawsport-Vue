@@ -80,6 +80,11 @@
                 class="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-500">
                 🚧個人主頁
               </router-link>
+              <router-link
+                :to="{ name: 'client-gameview' }"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧遊戲
+              </router-link>
             </div>
           </div>
         </div>

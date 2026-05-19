@@ -24,7 +24,7 @@ export default [
       {
         path: '/create-article',
         name: 'create-article',
-        component: () => import('../../views/client/community/CreateArticle.vue'),
+        component: () => import('@/views/client/community/CreateArticle.vue'),
         meta: {
           title: '新增貼文 | Petmily',
         },
@@ -32,7 +32,7 @@ export default [
       {
         path: '/article-list',
         name: 'article-list',
-        component: () => import('../../views/client/community/ArticleList.vue'),
+        component: () => import('@/views/client/community/ArticleList.vue'),
         meta: {
           title: '貼文列表 | Petmily',
         },
@@ -40,7 +40,7 @@ export default [
       {
         path: '/article-detail',
         name: 'article-detail',
-        component: () => import('../../views/client/community/ArticleDetail.vue'),
+        component: () => import('@/views/client/community/ArticleDetail.vue'),
         meta: {
           title: '文章內容 | Petmily',
           // note:之後可以更新動態顯示文章標題
@@ -123,7 +123,7 @@ export default [
   {
     path: '/game',
     name: 'GameLayout',
-    component: () => import('../../layouts/client/GameLayout.vue'),
+    component: () => import('@/layouts/client/GameLayout.vue'),
     children: [
       {
         path: '',
@@ -155,6 +155,30 @@ export default [
         component: () => import('@/views/client/Game/LevelSelect.vue'),
         meta: {
           title: '選擇關卡 | Petmily',
+        },
+      },
+      {
+        path: 'gameplay/:category',
+        name: 'client-gameplay',
+        component: () => import('@/views/client/Game/GamePlay.vue'),
+        meta: {
+          title: '寵物問答挑戰 | Petmily',
+        },
+      },
+      {
+        path: 'skinshop',
+        name: 'client-skinshop',
+        component: () => import('@/views/client/Game/SkinShop.vue'),
+        meta: {
+          title: '造型商店 | Petmily',
+        },
+      },
+      {
+        path: 'inventory',
+        name: 'client-inventory',
+        component: () => import('@/views/client/Game/Inventory.vue'),
+        meta: {
+          title: '我的收藏 | Petmily',
         },
       },
     ],

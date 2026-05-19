@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { LucideCat, Save } from 'lucide-vue-next'
 import 'animate.css';
+import { useGameAudio } from '@/composables/useGameAudio'
+
+const { playSFX } = useGameAudio()
+
 const emit = defineEmits(['close']);
 const isVisible = ref(false);
 onMounted(() => {
@@ -105,7 +109,7 @@ const startClose = (type) => {
         </div>
       </div>
 
-      <button class="sticky-save-btn" @click="startClose('save')">
+      <button class="sticky-save-btn" @click="playSFX('click'); startClose('save')">
           <Save />儲存並返回
         </button>
     </div>

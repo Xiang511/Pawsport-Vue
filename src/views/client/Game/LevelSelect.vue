@@ -1,10 +1,19 @@
 <script setup>
 import { onMounted, ref, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ChevronLeft, ChevronRight, Lock, Star, Home, Play } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate } from 'animejs'
+import { useGameAudio } from '@/composables/useGameAudio'
+import axios from 'axios'
 
+const { playSFX } = useGameAudio()
+
+const userPoints = ref(0)
 const router = useRouter()
+
+// 用來暫存後端撈回來的資料
+const apiGameHistory = ref([])
+
 const layoutCoords = [
   // 第一排：從左上往右下斜 (1~5 關)
   { x: 0, y: 0 },
@@ -62,19 +71,96 @@ const areas = ref([
 ])
 
 const currentAreaIndex = ref(0)
-const levels = ref([])
+const levels = ref([
+  { id: 1, name: '認養須知', isLocked: false },
+  { id: 2, name: '狗狗百科', isLocked: true },
+  { id: 3, name: '貓貓百科', isLocked: true },
+  { id: 4, name: '鳥類百科', isLocked: true },
+  { id: 5, name: '小動物百科', isLocked: true },
+  { id: 6, name: '水族與爬蟲', isLocked: true },
+
+])
+const levelCategoryMap = {
+  1: '認養須知',
+  2: '狗狗百科', 
+  3: '貓貓百科', 
+  4: '鳥類百科',
+  5: '小動物百科',
+  6: '水族與爬蟲',
+}
 const selectedLevel = ref(null)
 
 const generateLevelLayout = (startId) => {
+  // 1. 讀取舊有本地遊戲進度（留作聯網失敗的備用防線）
+  const progress = JSON.parse(localStorage.getItem('game_progress') || '{}')
+
   return Array.from({ length: 10 }, (_, i) => {
     const levelId = startId + i
+    
+    // 🎯 2. 星星數邏輯：優先讀取後端資料庫歷史，如果沒有再看本地
+    let currentStars = 0
+    const serverRecord = apiGameHistory.value.find(h => h.gameId === levelId)
+    
+    if (serverRecord) {
+      // ✅ 修正：根據 receivedReward 推斷星星數
+      if (serverRecord.receivedReward === true) {
+        currentStars = 3  // 全對
+      } else if (serverRecord.stageClear === true) {
+        currentStars = 2  // 至少 6 題
+      } else {
+        currentStars = 0  // 未通過
+      }
+    } else {
+      const currentLevelData = progress[`level_${levelId}`]
+      currentStars = (currentLevelData && typeof currentLevelData.stars !== 'undefined') ? currentLevelData.stars : 0
+    }
+
+    // 🎯 3. 嚴格鎖定邏輯
+    let isLocked = true 
+
+    if (levelId === startId) {
+      // 🥇 每個區域的第一關預設解鎖（或是整個遊戲的第一關 Id === 1 永遠解鎖）
+      if (levelId === 1) {
+        isLocked = false
+      } else {
+        // 如果是其他大區的第一關（如 11 關、21 關），看前一關（10關、20關）有沒有通關
+        const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
+        if (prevLevelRecord && prevLevelRecord.stageClear === true) {
+          isLocked = false
+        }
+      }
+    } else {
+      // 🌐 【後端進度比對線】：嚴格的卡關條件判定
+      if (apiGameHistory.value && apiGameHistory.value.length > 0) {
+        // 條件 A：如果前一關在資料庫裡有紀錄，而且「必須通關成功」(stageClear === true)
+        const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
+        const isPrevCleared = prevLevelRecord && prevLevelRecord.stageClear === true
+
+        // 條件 B：這關本身在資料庫裡，已經是有通過的狀態
+        const thisLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId)
+        const isThisCleared = thisLevelRecord && thisLevelRecord.stageClear === true
+
+        // 只有前一關通過了，或者這關本身就是已通關狀態，才解鎖鎖頭
+        if (isPrevCleared || isThisCleared) {
+          isLocked = false
+        }
+      } else {
+        // 💾 【離線本地防線】
+        if (levelId === 2) {
+          if (progress['level_2_unlocked'] === true) isLocked = false
+        } else {
+          const prevLevelData = progress[`level_${levelId - 1}`]
+          if (prevLevelData && progress[`level_${levelId}_unlocked`]) isLocked = false
+        }
+      }
+    }
+
     return {
       id: levelId,
-      stars: i < 3 ? 3 : 0,
-      locked: levelId > 5,
+      stars: currentStars,
+      locked: isLocked, 
       x: layoutCoords[i].x,
       y: layoutCoords[i].y,
-      // 為每一關定義專屬的小圖路徑，例如 level-1.png, level-2.png...
       previewUrl: `/public/images/game/level-${levelId}.png`,
     }
   })
@@ -82,11 +168,44 @@ const generateLevelLayout = (startId) => {
 
 // 3. 切換區域時更新關卡資料
 const updateAreaContent = async () => {
+  // 🚀 【新增】在渲染畫面前，先去後端把 PlayerId = 1 的點數和進度拿回來
+  try {
+    // A. 撈取通關歷史紀錄
+    const historyRes = await axios.get('https://localhost:7048/api/Player/1/game-history')
+    if (historyRes.data && historyRes.data.success) {
+      apiGameHistory.value = historyRes.data.data
+    }
+
+    // B. 精準撈取玩家列表並尋找 PlayerId = 1 
+    const playerRes = await axios.get('https://localhost:7048/api/Player')
+    if (playerRes.data && playerRes.data.success) {
+      // 🔍 關鍵修正：對應後端分頁結構，playerRes.data.data.data 才是玩家陣列
+      const actualList = playerRes.data.data.data
+      
+      if (Array.isArray(actualList)) {
+        const me = actualList.find(p => p.playerId === 1)
+        if (me) {
+          userPoints.value = me.currentPoint ?? 0
+          console.log('✅ [API 同步成功] 找到測試帳號，實時點數為：', userPoints.value)
+        } else {
+          console.warn('⚠️ 找不到 playerId 為 1 的測試帳號')
+        }
+      }
+    }
+  } catch (error) {
+    console.error('❌ 後端連線失敗，切換為本地安全模式:', error)
+    // 斷網時的備用防禦點數，避免顯示 0 嚇到玩家
+    if (userPoints.value === 0) userPoints.value = 1200 
+  }
+
+  // 渲染地圖數據
   const startId = areas.value[currentAreaIndex.value].idRange[0]
   levels.value = generateLevelLayout(startId)
   selectedLevel.value = levels.value[0]
 
+  // 確保 Vue 把 HTML 按鈕生出來，再執行 Anime.js
   await nextTick()
+  
   const levelListPanel = document.querySelector('.level-list-panel')
   if (levelListPanel) {
     animate(levelListPanel, {
@@ -96,7 +215,7 @@ const updateAreaContent = async () => {
       easing: 'easeOutQuad',
     })
   }
-  // 加上判斷避免 DOM 還沒渲染時 animejs 報錯
+  
   const items = document.querySelectorAll('.level-card-item')
   if (items.length > 0) {
     animate('.level-card-item', {
@@ -107,7 +226,7 @@ const updateAreaContent = async () => {
       easing: 'easeOutBack',
     })
   }
-  // 虛線漸入動畫
+
   const pathSvg = document.querySelector('.path-svg')
   if (pathSvg) {
     animate(pathSvg, {
@@ -117,7 +236,6 @@ const updateAreaContent = async () => {
     })
   }
 
-  // 資訊卡漸入動畫
   const infoCard = document.querySelector('.info-card')
   if (infoCard) {
     animate(infoCard, {
@@ -142,26 +260,22 @@ const changeArea = (dir) => {
 }
 
 const startGame = () => {
-  if (selectedLevel.value) {
-    console.log(`前往第 ${selectedLevel.value.id} 關`)
-    // router.push({ name: 'game-play', params: { id: selectedLevel.value.id } })
+  if (selectedLevel.value && !selectedLevel.value.locked) {
+    const levelId = selectedLevel.value.id
+    
+    // 根據目前的關卡 ID，抓出對應的分類名稱
+    const categoryName = levelCategoryMap[levelId] || '認養須知'
+
+    console.log(`【PETMILY導航】準備進入第 ${levelId} 關，分類為：【${categoryName}】`)
+
+    // 導向我們在 index.js 設好的全能動態路由 'client-gameplay'
+    router.push({
+      name: 'client-gameplay',         // 通用遊戲頁路由名稱
+      params: { category: categoryName } // 將分類中文作為網址參數傳過去！
+    }).catch((err) => {
+      console.error('遊戲導航失敗:', err)
+    })
   }
-}
-
-const showMenu = ref(false)
-
-const toggleMenu = () => {
-  showMenu.value = !showMenu.value
-}
-
-const handleSettings = () => {
-  console.log('打開設定')
-  showMenu.value = false
-}
-
-const handleAbout = () => {
-  console.log('打開關於')
-  showMenu.value = false
 }
 
 onMounted(() => updateAreaContent())
@@ -174,9 +288,12 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
     :style="{ backgroundImage: `url(${areas[currentAreaIndex].bgUrl})` }">
     <header class="game-header">
       <div class="nav-menu">
-        <button class="nav-btn" @click="toggleMenu">
-          <Home />
+        <div class="header-left">
+        <button class="back-btn" @click="playSFX('click');goBack()">
+          <span class="arrow-icon">‹</span>
         </button>
+        <h1 class="level-title">選擇關卡</h1>
+      </div>
       </div>
       <div class="area-title">
         <h2>{{ areas[currentAreaIndex].name }}</h2>
@@ -184,17 +301,17 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
           Lv. {{ areas[currentAreaIndex].idRange[0] }} - {{ areas[currentAreaIndex].idRange[1] }}
         </p>
       </div>
-      <div class="currency-box">🪙 1,250</div>
+      <div class="currency-box">🪙 {{ userPoints }}</div>
     </header>
 
     <div v-if="showMenu" class="menu-dropdown">
-      <button class="menu-item" @click="goBack">返回主選單</button>
-      <button class="menu-item" @click="handleSettings">設定</button>
-      <button class="menu-item" @click="handleAbout">關於</button>
+      <button class="menu-item" @click="playSFX('click'); goBack()">返回主選單</button>
+      <button class="menu-item" @click="playSFX('click'); handleSettings()">設定</button>
+      <button class="menu-item" @click="playSFX('click'); handleAbout()">關於</button>
     </div>
 
     <main class="map-view">
-      <button class="arrow-btn" @click="changeArea(-1)" :disabled="currentAreaIndex === 0">
+      <button class="arrow-btn" @click="playSFX('click');changeArea(-1)" :disabled="currentAreaIndex === 0">
         <ChevronLeft :size="100" />
       </button>
 
@@ -209,9 +326,12 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
               v-for="lvl in levels"
               :key="lvl.id"
               class="level-card-item"
-              :class="{ 'is-active': selectedLevel?.id === lvl.id, 'is-locked': lvl.locked }"
+              :class="{
+                'is-active': selectedLevel?.id === lvl.id && !lvl.locked,
+                'is-locked': lvl.locked,
+              }"
               :style="{ left: lvl.x + '%', top: lvl.y + '%' }">
-              <div class="circle-spot-card" @click="selectLevel(lvl)">
+              <div class="circle-spot-card" @click="playSFX('click'); selectLevel(lvl)">
                 <span v-if="!lvl.locked" class="lvl-num">{{ lvl.id }}</span>
                 <Lock v-else :size="24" class="lock-icon" />
                 <div v-if="!lvl.locked" class="lvl-stars">
@@ -228,8 +348,11 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
             <div class="info-image-box">
               <img :key="selectedLevel?.id" :src="selectedLevel?.previewUrl" alt="關卡預覽" />
             </div>
-            <p class="info-description">{{ areas[currentAreaIndex].desc }}</p>
-            <button class="start-game-btn" @click="startGame">
+            <p class="info-description">{{ selectedLevel?.id === 1 ? '學習如何照顧新家人，點擊開始進入「認養須知」問答！' : areas[currentAreaIndex].desc }}</p>
+            <button
+              class="start-game-btn"
+              @click="playSFX('click'); startGame()"
+              :disabled="!selectedLevel || selectedLevel.locked">
               開始 (START)
               <Play :size="24" fill="currentColor" />
             </button>
@@ -239,7 +362,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
 
       <button
         class="arrow-btn"
-        @click="changeArea(1)"
+        @click="playSFX('click'); changeArea(1)"
         :disabled="currentAreaIndex === areas.length - 1">
         <ChevronRight :size="100" />
       </button>
@@ -296,10 +419,27 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   z-index: 5;
 }
 
-.level-card-item.is-active .circle-spot-card {
+.level-card-item.is-active .circle-spot-card,
+.level-card-item.is-active .circle-spot-card:hover {
+  background: #453a27 !important; /* 強制保持咖啡色背景 */
+  color: #fcf4e5 !important; /* 強制保持米色文字 */
   border-color: #fcc86d;
-  background: #fcf4e5;
-  transform: scale(1.1);
+  animation: pulse 1.2s infinite ease-in-out;
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+.level-card-item.is-active .circle-spot-card,
+.level-card-item:not(.is-locked) .circle-spot-card:hover {
+  background: #453a27 !important; /* 切換為咖啡色背景 */
+  color: #fcf4e5 !important; /* 切換為米色文字 */
+  border-color: #fcc86d;
+  transform: translateY(-5px); /* 懸停或選定時微浮 */
+}
+.level-card-item:not(.is-locked) .circle-spot-card:active {
+  transform: translateY(4px) scale(0.95); /* 往下壓並稍微縮小 */
+  box-shadow: 0 2px 0 #453a27; /* 陰影變短 */
+  transition: all 0.05s ease;
 }
 .circle-spot-card {
   width: 140px;
@@ -307,6 +447,7 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   background: #fcf4e5;
   border-radius: 50%;
   border: 5px solid #453a27;
+  color: #453a27;
   box-shadow: 0 6px 0 #453a27;
   display: flex;
   flex-direction: column; /* 讓內容上下排列 */
@@ -315,17 +456,11 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   position: relative;
   gap: 2px; /* 數字與星星之間的間距 */
   cursor: pointer;
-  transition:
-    border-color 0.3s,
-    background 0.3s,
-    box-shadow 0.3s;
+  transition: all 0.2s ease;
 }
 .circle-spot-card:hover:not(.is-locked *) {
-  /* 結合原本的位移與動畫 */
-  animation: pulse 1.2s infinite ease-in-out;
-  /* 稍微偏移讓陰影更有立體感 */
-  transform: translateY(-5px);
-  z-index: 10;
+  background: #fcebd0; /* 懸停時米色稍微加深 */
+  transform: translateY(-3px); /* 輕微浮起即可，不要 pulse */
 }
 .is-locked .circle-spot-card {
   background: #b5b5b5;
@@ -451,9 +586,23 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
 .lvl-num {
   font-size: 3rem;
   font-weight: 900;
-  color: #453a27;
+  color: inherit;
   line-height: 1.1;
   transform: translateY(-20px);
+  transition: color 0.3s;
+  z-index: 2;
+  position: relative;
+}
+
+.level-card-item.is-active .lvl-num {
+  color: #fcf4e5 !important; /* 使用 !important 確保覆蓋任何動畫中的預設顏色 */
+  transform: translateY(-20px); /* 保持數字在圓圈內較上方的位置 */
+}
+
+.level-card-item.is-active .lvl-stars svg:not(.active),
+.level-card-item:not(.is-locked) .circle-spot-card:hover .lvl-stars svg:not(.active) {
+  color: #fcf4e5;
+  opacity: 0.6;
 }
 
 /* 修改星星容器，使其與圓圈重合 */
@@ -479,6 +628,12 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
      2. rotate 控制在圓形上的角度
      3. translateY 控制距離圓心的距離（正值向下）
   */
+  color: #453a27; /* 星星的外框顏色 */
+  fill: none; /* 未獲取時不填滿 */
+  opacity: 1; /* 稍微降低透明度，讓它看起來像背景 */
+  transition:
+    color 0.3s ease,
+    fill 0.3s ease;
 }
 
 /* 設定三顆星星的角度與弧度 */
@@ -532,7 +687,30 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   transform: translateY(4px); /* 往下壓 */
   box-shadow: 0 4px 0 #453a27;
 }
+.start-game-btn:disabled {
+  background: #b5b5b5; /* 灰色背景 */
+  color: #666; /* 灰色文字 */
+  border-color: #666;
+  box-shadow: none; /* 移除陰影，看起來像是壓扁的 */
+  cursor: not-allowed; /* 滑鼠游標顯示不可點擊 */
+  transform: none; /* 取消懸停位移 */
+  opacity: 0.7;
+}
+.start-game-btn:hover:not(:disabled) {
+  background: #fcc86d;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 #453a27;
+}
+.start-game-btn:active:not(:disabled) {
+  /* 往下壓的位移：原本 -4px + 下壓 8px = 4px */
+  transform: translateY(4px);
 
+  /* 陰影縮短，模擬按下的感覺 */
+  box-shadow: 0 4px 0 #453a27;
+
+  /* 縮短點擊時的過渡時間，讓反應更即時 */
+  transition: all 0.05s ease;
+}
 .arrow-btn {
   width: 100px;
   height: 150px;
@@ -596,30 +774,56 @@ const goBack = () => router.push({ name: 'client-mainmenu' })
   z-index: 101;
 }
 
-.nav-btn {
-  width: 50px;
-  height: 50px;
-  background: #fcf4e5;
-  border: 4px solid #453a27;
-  border-radius: 15px;
-  color: #453a27;
+.header-left {
   display: flex;
   align-items: center;
+  gap: 20px;
+}
+
+.back-btn {
+  width: 55px;
+  height: 55px;
+  background-color: #ffffff;
+  border: 4px solid #453a27;
+  border-radius: 16px;
+  box-shadow: 0 5px 0 #453a27;
+  display: flex;
   justify-content: center;
-  box-shadow: 0 4px 0 #453a27;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transform-origin: bottom !important;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.nav-btn:hover {
-  background: #fcc86d;
+.back-btn:hover {
+  background-color: #fcf4e5;
+  transform: translateY(-3px) scaleY(1.08) scaleX(1) !important;
+  box-shadow: 0 8px 0 #453a27 !important;
+}
+
+.back-btn:active {
+  transform: translateY(4px) scaleY(0.88) scaleX(1) !important;
+  box-shadow: 0 1px 0 #453a27 !important;
+  transition: all 0.05s ease !important;
+}
+
+.arrow-icon {
+  font-size: 2.5rem;
+  color: #453a27;
+  font-weight: bold;
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #453a27;
 }
 
-.nav-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #453a27;
+.level-title {
+  font-size: 2.2rem;
+  color: #453a27;
+  text-shadow:
+    -1px -1px 0 #fcf4e5,
+    1px -1px 0 #fcf4e5,
+    -1px 1px 0 #fcf4e5,
+    1px 1px 0 #fcf4e5;
+  margin: 0;
+  font-weight: bold;
 }
 
 .menu-dropdown {
