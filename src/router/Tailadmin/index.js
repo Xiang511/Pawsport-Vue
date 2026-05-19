@@ -3,10 +3,10 @@ export default [
   {
     path: '/',
     name: 'admin-home',
-    redirect: '/signin',
+    redirect: '/dashboard/login',
   },
   {
-    path: '/signin',
+    path: '/dashboard/login',
     name: 'admin-signin',
     component: () => import('@/views/Tailadmin/Auth/Signin.vue'),
     meta: {
@@ -264,6 +264,14 @@ export default [
         component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
           title: '404 Page',
+        },
+      },
+      {
+        path: 'error-403',
+        name: 'admin-error-403',
+        component: () => import('@/views/Tailadmin/Errors/Forbidden.vue'),
+        meta: {
+          title: '403 權限不足',
         },
       },
       {

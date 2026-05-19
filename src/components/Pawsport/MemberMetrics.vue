@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-
+import request from '@/api/axios'
 const memberCount = ref(0)
 const memberMonthSignUp = ref(0)
 const verifyPercentage = ref(0)
@@ -11,7 +11,7 @@ const isLoading = ref(true)
 async function GetMemberSummary() {
   isLoading.value = true
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Users/Summary')
+    const { data } = await request.get('/Users/Summary')
     memberCount.value = data.data.memberCount
     memberMonthSignUp.value = data.data.memberMonthSignUp
     verifyPercentage.value = data.data.verifyPercentage + '%'

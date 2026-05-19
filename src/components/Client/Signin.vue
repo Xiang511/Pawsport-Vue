@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
 import request from '@/api/axios' // 使用配置好的 axios 實例
 import CommonGridShape from '@/components/Tailadmin/common/CommonGridShape.vue'
@@ -26,8 +26,8 @@ const handleSubmit = async () => {
 
     if (response.status === 200) {
       authStore.setLoginInfo(response.data.data.user)
-
-      router.replace('/dashboard')
+      console.log('登入成功，跳轉到 /user/profile')
+      router.replace('/user/profile')
     }
   } catch (error) {
     console.error('登入失敗:', error)
@@ -43,7 +43,7 @@ const handleSubmit = async () => {
         class="relative flex h-screen w-full flex-col justify-center lg:flex-row dark:bg-gray-900">
         <div class="flex w-full flex-1 flex-col lg:w-1/2">
           <div class="mx-auto w-full max-w-md pt-10">
-            <router-link
+            <!-- <router-link
               to="/"
               class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
               <svg
@@ -61,7 +61,7 @@ const handleSubmit = async () => {
                   stroke-linejoin="round" />
               </svg>
               返回首頁
-            </router-link>
+            </router-link> -->
           </div>
           <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
             <div>
@@ -236,7 +236,7 @@ const handleSubmit = async () => {
             </div>
           </div>
         </div>
-        <div
+        <!-- <div
           class="relative hidden h-full w-full items-center bg-[#FCF4E5] lg:grid lg:w-1/2 dark:bg-white/5">
           <div class="z-1 flex items-center justify-center">
             <common-grid-shape />
@@ -250,7 +250,7 @@ const handleSubmit = async () => {
               </p>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </FullScreenLayout>

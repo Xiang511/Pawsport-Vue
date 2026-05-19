@@ -118,6 +118,14 @@ export default [
           title: '遺失協尋詳情 | Petmily',
         },
       },
+      {
+        path: '/error-404',
+        name: 'client-error-404-basic',
+        component: () => import('../../views/Tailadmin/Errors/FourZeroFour.vue'),
+        meta: {
+          title: '404 找不到頁面 | Petmily',
+        },
+      },
     ],
   },
   {
@@ -179,6 +187,44 @@ export default [
         component: () => import('@/views/client/Game/Inventory.vue'),
         meta: {
           title: '我的收藏 | Petmily',
+        },
+      }
+    ],
+  },
+  {
+    path: '/login',
+    name: 'SigninLayout',
+    component: () => import('../../layouts/client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'client-login',
+        component: () => import('@/components/Client/Signin.vue'),
+        meta: {
+          title: '登入 | Petmily',
+        },
+      },
+    ],
+  },
+  {
+    path: '/user',
+    name: 'UserLayout',
+    component: () => import('../../layouts/client/Basic.vue'),
+    children: [
+      {
+        path: '',
+        name: 'client-user-error',
+        component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
+        meta: {
+          title: '404 Page',
+        },
+      },
+      {
+        path: 'profile',
+        name: 'client-profile',
+        component: () => import('@/components/Client/Profile.vue'),
+        meta: {
+          title: '會員中心 | Petmily',
         },
       },
     ],

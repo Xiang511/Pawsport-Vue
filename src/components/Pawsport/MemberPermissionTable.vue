@@ -2,7 +2,7 @@
 import { ref, onMounted, reactive, computed } from 'vue'
 import axios from 'axios'
 import { useDataTable } from '@/composables/Tailadmin/useMemberDataTableLogic.js'
-
+import request from '@/api/axios'
 import { EditIcon, Trash2, X, Plus } from 'lucide-vue-next'
 import DataTablePagination from './DataTablePagination.vue'
 import ProfileModal from './ProfileModal.vue'
@@ -129,7 +129,7 @@ function getSystemColor(systemId) {
 async function GetAllMemberPermission() {
   isLoading.value = true
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Permissions/users')
+    const { data } = await request.get('/Permissions/users')
     const UserInfo = data.data
     // 清空原有數據
     userList.splice(0, userList.length)
@@ -158,7 +158,7 @@ async function GetAllMemberPermission() {
 
 async function GetAllSystem() {
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Permissions/systems')
+    const { data } = await request.get('/Permissions/systems')
     const result = data.data?.systems || data.systems || []
     systemList.splice(0, systemList.length)
     result.forEach((i) => {
@@ -174,7 +174,7 @@ async function GetAllSystem() {
 
 async function GetAllRole() {
   try {
-    const { data } = await axios.get('https://localhost:7048/api/Permissions/roles')
+    const { data } = await request.get('/Permissions/roles')
     const result = data.data?.roles || data.roles || []
     roleList.splice(0, roleList.length)
     result.forEach((i) => {
@@ -207,7 +207,7 @@ function handleEdit(user) {
 async function handleDeletePermission(mappingId) {
   if (confirm('確定要刪除此權限嗎？')) {
     try {
-      await axios.delete(`https://localhost:7048/api/users/${mappingId}/roles`)
+      await request.delete(`/users/${mappingId}/roles`)
       // 從 selectedUser 的權限列表中移除
       const index = selectedUser.permissions.findIndex((p) => p.mappingId === mappingId)
       if (index !== -1) {
@@ -230,7 +230,7 @@ async function addNewPermission() {
   }
 
   try {
-    await axios.post(`https://localhost:7048/api/users/roles`, {
+    await request.post(`/users/roles`, {
       userId: selectedUser.userId,
       systemId: parseInt(newPermission.systemId),
       roleId: parseInt(newPermission.roleId),

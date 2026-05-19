@@ -30,6 +30,7 @@
     "lucide-vue-next": "^0.474.0",
     "pinia": "^3.0.4",
     "quill": "^2.0.3",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "swiper": "^11.2.1",
     "tailwindcss": "^4.2.4",
     "vue": "^3.5.32",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-vue": "^6.0.6",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
@@ -49,6 +51,7 @@
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "^0.7.3",
     "vite": "^8.0.8",
+    "vite-plugin-mkcert": "^2.0.0",
     "vite-plugin-vue-devtools": "^8.1.1"
   },
   "engines": {
