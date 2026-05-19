@@ -267,6 +267,14 @@ export default [
         },
       },
       {
+        path: 'error-403',
+        name: 'admin-error-403',
+        component: () => import('@/views/Tailadmin/Errors/Forbidden.vue'),
+        meta: {
+          title: '403 權限不足',
+        },
+      },
+      {
         path: 'line-chart',
         name: 'admin-line-chart',
         component: () => import('@/views/Tailadmin/Chart/LineChart/LineChart.vue'),

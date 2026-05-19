@@ -33,16 +33,47 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title
   }
 
-  // 需要認證的路由檢查
-  const publicRoutes = ['/dashboard/login', '/signup', '/']
-  const requiresAuth = !publicRoutes.includes(to.path) && to.path.startsWith('/dashboard')
-
-  if (requiresAuth && !authStore.isLoggedIn) {
-    // 如果需要認證但未登入，跳轉到登入頁
-    next('/dashboard/login')
-  } else {
-    next()
+  // 防止直接訪問錯誤頁面（403, 404）
+  const errorPages = ['/dashboard/error-403', '/dashboard/error-404', '/error-404']
+  if (errorPages.includes(to.path)) {
+    // 如果是直接訪問（from.path 為空或是起始頁）
+    if (!from.name || from.path === '/') {
+      console.log('禁止直接訪問錯誤頁面:', to.path)
+      if (to.path.startsWith('/dashboard')) {
+        next('/dashboard')
+      } else {
+        next('/')
+      }
+      return
+    }
   }
+
+  // 公開路由（不需要認證）
+  const publicRoutes = ['/dashboard/login', '/login', '/signup', '/', '/error-404']
+
+  // 後台路由檢查 - 所有 /dashboard 開頭的都需要登入
+  if (to.path.startsWith('/dashboard')) {
+    const isDashboardPublic =
+      publicRoutes.includes(to.path) || to.path.startsWith('/dashboard/error')
+    if (!isDashboardPublic && !authStore.isLoggedIn) {
+      // 後台需要認證但未登入，跳轉到後台登入頁
+      console.log('未登入，從', to.path, '跳轉到 /dashboard/login')
+      next('/dashboard/login')
+      return
+    }
+  }
+
+  // 前台需要認證的路由檢查 - 所有 /user 開頭的都需要登入
+  if (to.path.startsWith('/user')) {
+    if (!authStore.isLoggedIn) {
+      // 前台需要認證但未登入，跳轉到前台登入頁
+      console.log('未登入，從', to.path, '跳轉到 /login')
+      next('/login')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router
