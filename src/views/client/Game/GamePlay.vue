@@ -212,14 +212,16 @@ const runStartCountdown = () => {
 const handleAnswer = (choice, event) => {
   if (showExplanation.value || !currentQuestion.value) return
   clearInterval(timerInterval.value)
-const backendCorrectAnswer = currentQuestion.value.answers === 1
+  const backendCorrectAnswer = currentQuestion.value.answers === 1
   const correct = choice === backendCorrectAnswer
   isUserCorrect.value = correct
   if (correct) {
     playSFX('success') // 播放成功音效 (對應你 useGameAudio 裡的 key)
     userScore.value++
+    console.log('✅ 答對！目前分數：', userScore.value)
   } else {
     playSFX('fail') // 播放失敗音效 (對應你 useGameAudio 裡的 key)
+    console.log('❌ 答錯！目前分數：', userScore.value)
   }
   createStars(event, correct)
   showExplanation.value = true
