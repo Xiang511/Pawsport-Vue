@@ -49,7 +49,7 @@ export default [
       {
         path: '/mypage',
         name: 'mypage',
-        component: () => import('../../views/client/Community/MyPage.vue'),
+        component: () => import('@/views/client/community/MyPage.vue'),
         meta: {
           title: '個人主頁 | Petmily',
         },
@@ -121,7 +121,7 @@ export default [
       {
         path: '/error-404',
         name: 'client-error-404-basic',
-        component: () => import('../../views/Tailadmin/Errors/FourZeroFour.vue'),
+        component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
           title: '404 找不到頁面 | Petmily',
         },
@@ -194,7 +194,7 @@ export default [
   {
     path: '/login',
     name: 'SigninLayout',
-    component: () => import('../../layouts/client/SigninLayout.vue'),
+    component: () => import('@/layouts/client/SigninLayout.vue'),
     children: [
       {
         path: '',
@@ -209,7 +209,7 @@ export default [
   {
     path: '/user',
     name: 'UserLayout',
-    component: () => import('../../layouts/client/Basic.vue'),
+    component: () => import('@/layouts/client/Basic.vue'),
     children: [
       {
         path: '',
