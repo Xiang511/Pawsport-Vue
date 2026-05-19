@@ -6,22 +6,24 @@ import 'quill/dist/quill.snow.css'
 // 自己做的按鈕樣式
 import Article_BaseButton from './Article_BaseButton.vue'
 
-// 定義從父組件傳進來的 props
-const props = defineProps({
-  categories: {
-    type: Object,
-    required: true,
-    default: () => ({}),
-  },
-})
-
+const props = defineProps(['categories'])
 // 定義要傳回給父組件的事件
 const emit = defineEmits(['publish', 'save-draft'])
+// 接住貼文內容的變數
+const post = reactive({
+  title: '',
+  mainCategory: '',
+  categoryId: '',
+  content: '',
+  tag: '',
+})
 
 //控制Quill的響應式變數
 const editorRef = ref(null)
 //存放new Quill()後產生的物件實體
 let quillInstance = null
+
+const currentSubCategories = ref([])
 
 //頁面必須等quill載入
 onMounted(() => {
@@ -29,14 +31,13 @@ onMounted(() => {
   // 初始化編輯器 // 確保拿到 Quill 之後才執行初始化
   quillInstance = new Quill(editorRef.value, {
     theme: 'snow',
-    placeholder: '在此撰寫...',
     modules: {
       toolbar: [
         [{ header: [1, 2, 3, 4, false] }],
         [{ font: [] }],
         ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
-        [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
         [{ color: [] }, { background: [] }],
+        [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
         ['image', 'blockquote', 'link'],
         ['clean'],
@@ -44,30 +45,6 @@ onMounted(() => {
     },
   })
 })
-
-//接住貼文內容的變數
-const post = reactive({
-  title: '',
-  mainCategory: '',
-  subCategory: '',
-  content: '',
-  tag: '',
-})
-
-const currentSubCategories = ref([])
-
-// 監聽大分類（資料來源改用 props.categories）
-watch(
-  () => post.mainCategory,
-  (newMain) => {
-    if (newMain) {
-      currentSubCategories.value = props.categories[newMain] || []
-    } else {
-      currentSubCategories.value = []
-    }
-    post.subCategory = ''
-  },
-)
 
 // 封裝要外傳的完整資料包
 const getFormData = () => {
@@ -87,16 +64,33 @@ const getFormData = () => {
 
   return {
     title: post.title,
+    // 確保傳給後端的是數字數字
     categoryId: Number(post.categoryId),
+    // Quill 的 HTML 內文
     content: quillInstance ? quillInstance.root.innerHTML : '',
-    tagNames: finalTags, //這裡送出的是 ["貓咪", "飼料"]
+    // 傳送純文字陣列 ["貓咪", "飼料"]
+    tagNames: finalTags,
 
-    userId: '', // 後端會自己補
+    // 以下為後端需要的其他擴充欄位，前端先給預設
+    userId: '',
     eventStartDate: null,
     eventEndDate: null,
     eventLocation: null,
   }
 }
+
+// 監聽大分類（資料來源改用 props.categories）
+watch(
+  () => post.mainCategory,
+  (newMain) => {
+    if (newMain) {
+      currentSubCategories.value = props.categories[newMain] || []
+    } else {
+      currentSubCategories.value = []
+    }
+    post.categoryId = ''
+  },
+)
 
 // 點擊按鈕時，不自己發 API，而是透過 emit 丟給 View
 const onSaveDraft = () => {
@@ -104,6 +98,8 @@ const onSaveDraft = () => {
 }
 
 const onSubmit = () => {
+  if (!post.title.trim()) return alert('請填寫文章標題！')
+  if (!post.categoryId) return alert('請選擇文章分類！')
   emit('publish', getFormData())
 }
 </script>
@@ -135,10 +131,10 @@ const onSubmit = () => {
         <!-- 小分類 -->
         <div class="w-full sm:w-1/2">
           <select
-            v-model="post.subCategory"
+            v-model="post.categoryId"
             :disabled="!post.mainCategory || currentSubCategories.length === 0"
             class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500 outline-none focus:bg-white disabled:opacity-50"
-            :class="{ 'text-gray-800': post.subCategory }">
+            :class="{ 'text-gray-800': post.categoryId }">
             <option value="" disabled hidden>
               <template v-if="!post.mainCategory">請先選擇大分類</template>
               <template v-else-if="currentSubCategories.length === 0">無子分類（免選）</template>
@@ -166,7 +162,8 @@ const onSubmit = () => {
         </span>
       </div>
       <!-- Quill 編輯器區塊 -->
-      <div class="mt-3 min-h-50 bg-white [&_.ql-editor]:text-base">
+      <div
+        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
         <div ref="editorRef" class="min-h-50"></div>
         <!-- note:之後可以加一個字數計數器(可能需要npm install Quill) -->
       </div>
@@ -190,9 +187,9 @@ const onSubmit = () => {
       <Article_BaseButton
         type="primary"
         :disabled="
-          !post.title ||
+          !post.title.trim() ||
           !post.mainCategory ||
-          (currentSubCategories.length > 0 && !post.subCategory)
+          (currentSubCategories.length > 0 && !post.categoryId)
         "
         @click="onSubmit">
         發佈貼文

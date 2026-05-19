@@ -68,19 +68,43 @@ onMounted(async () => {
 // 2. 處理發佈：API 發送寫在這裡！
 const handlePublish = async (postData) => {
   try {
-    await axios.post(`${API_BASE_URL}/articles`, postData)
-    alert('🎉 文章發布成功！')
+    const payload = {
+      ...postData,
+      status: 1, // 1 代表直接發佈上架
+    }
+
+    console.log('前端準備送出的發佈 Payload:', payload)
+
+    // 💡 呼叫 C# 後端的 Post API
+    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+
+    if (response.status === 200 || response.status === 201) {
+      alert('🎉 文章發布成功！')
+      // router.push('/forum') // 成功後導頁
+    }
   } catch (error) {
-    alert('發布失敗')
+    console.error('發布文章失敗：', error)
+    alert(`發布失敗：${error.response?.data?.message || '網路連線異常'}`)
   }
 }
 
 // 3. 處理草稿
 const handleSaveDraft = async (postData) => {
   try {
-    await axios.post(`${API_BASE_URL}/articles/draft`, postData)
-    alert('🎉 草稿儲存成功！')
+    const payload = {
+      ...postData,
+      status: 0, // 0 代表儲存為草稿
+    }
+
+    console.log('前端準備送出的草稿 Payload:', payload)
+
+    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+
+    if (response.status === 200) {
+      alert('💾 草稿儲存成功！')
+    }
   } catch (error) {
+    console.error('儲存草稿失敗：', error)
     alert('儲存草稿失敗')
   }
 }
