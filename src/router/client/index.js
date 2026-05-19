@@ -48,6 +48,14 @@ export default [
           // plus:之後可以更新動態顯示文章標題
         },
       },
+      {
+        path: '/error-404',
+        name: 'client-error-404-basic',
+        component: () => import('../../views/Tailadmin/Errors/FourZeroFour.vue'),
+        meta: {
+          title: '404 找不到頁面 | Petmily',
+        },
+      },
     ],
   },
   {
@@ -85,6 +93,14 @@ export default [
         component: () => import('@/views/client/Game/LevelSelect.vue'),
         meta: {
           title: '選擇關卡 | Petmily',
+        },
+      },
+      {
+        path: 'error-404',
+        name: 'client-error-404',
+        component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
+        meta: {
+          title: '404 Page',
         },
       },
     ],

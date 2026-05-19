@@ -13,7 +13,14 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
-      redirect: '/dashboard/error-404',
+      redirect: (to) => {
+        // 如果是後台路徑，跳轉到後台 404
+        if (to.path.startsWith('/dashboard')) {
+          return '/dashboard/error-404'
+        }
+        // 前台路徑跳轉到首頁
+        return '/error-404'
+      },
     },
   ],
 })
