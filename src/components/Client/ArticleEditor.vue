@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
+import { ArrowLeft } from 'lucide-vue-next'
 // Quill
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -72,7 +73,7 @@ const getFormData = () => {
     tagNames: finalTags,
 
     // 以下為後端需要的其他擴充欄位，前端先給預設
-    userId: '',
+    userId: 1, // TODO: 從登入資訊取得真實 userId
     eventStartDate: null,
     eventEndDate: null,
     eventLocation: null,
@@ -108,8 +109,18 @@ const onSubmit = () => {
   <div class="mx-auto my-5 max-w-3xl font-sans text-gray-800">
     <!-- 頂部功能 -->
     <div class="mb-4 flex items-center justify-between">
-      <span class="text-2xl font-bold">建立貼文</span>
-      <Article_BaseButton type="draft">草稿匣</Article_BaseButton>
+      <!-- 💡 加上 flex、垂直置中與間距 -->
+      <div class="flex items-center gap-2">
+        <!-- 如果你想讓箭頭可以點擊回上一頁，可以加上 cursor-pointer 與 @click -->
+        <span class="cursor-pointer" @click="$router.back()">
+          <ArrowLeft />
+        </span>
+        <span class="text-2xl font-bold">建立貼文</span>
+      </div>
+
+      <div>
+        <Article_BaseButton type="draft">草稿匣</Article_BaseButton>
+      </div>
     </div>
     <!-- 主要發文區塊 (包覆標題與編輯器) -->
     <div class="rounded-2xl border border-gray-200 bg-white p-4">
