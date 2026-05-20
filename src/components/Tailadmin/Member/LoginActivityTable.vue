@@ -96,7 +96,7 @@ async function getAllLoginActivities() {
         status: 'success',
         timestamp: new Date(item.loginTime || item.timestamp || item.createdAt),
         userId: item.userId || item.userName || item.username || item.email || '未知使用者',
-        email: item.email || '',
+        name: item.userName || '',
         ipAddress: item.ipaddress || item.ipAddress || item.ip || '',
         userAgent: item.deviceInfo || item.userAgent || item.device || '',
         latitude: item.latitude || item.lat || null,
@@ -121,7 +121,7 @@ async function getAllLoginActivities() {
         status: 'failed',
         timestamp: new Date(item.loginTime || item.attemptTime || item.timestamp || item.createdAt),
         userId: item.userId || item.userName || item.username || item.email || '未知使用者',
-        email: item.email || '',
+        name: item.userName || '',
         ipAddress: item.ipaddress || item.ipAddress || item.ip || '',
         userAgent: device || deviceInfo,
         latitude: item.latitude || item.lat || null,
@@ -342,13 +342,10 @@ onMounted(() => {
               <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">狀態</p>
             </th>
             <th class="w-max px-2 py-3 text-left sm:px-4">
-              <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                使用者 ID
-                <span class="text-blue-500">(點擊查看位置)</span>
-              </p>
+              <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">使用者 ID</p>
             </th>
-            <th class="w-max px-2 py-3 text-left sm:px-4">
-              <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">信箱</p>
+            <th class="w-1/12 px-2 py-3 text-left sm:px-4">
+              <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">名稱</p>
             </th>
             <th class="w-max px-2 py-3 text-left sm:px-4">
               <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">IP 地址</p>
@@ -365,7 +362,7 @@ onMounted(() => {
             <th class="w-max px-2 py-3 text-left sm:px-4">
               <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">裝置/瀏覽器</p>
             </th>
-            <th class="w-max px-2 py-3 text-left sm:px-4">
+            <th class="w-1/6 px-2 py-3 text-left sm:px-4">
               <p class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">失敗原因</p>
             </th>
           </tr>
@@ -383,7 +380,7 @@ onMounted(() => {
               <td class="w-max px-2 py-4 text-left sm:px-4">
                 <div class="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
               </td>
-              <td class="w-max px-2 py-4 text-left sm:px-4">
+              <td class="w-1/12 px-2 py-4 text-left sm:px-4">
                 <div class="h-4 w-32 rounded bg-gray-200 dark:bg-gray-700"></div>
               </td>
               <td class="w-max px-2 py-4 text-left sm:px-4">
@@ -395,7 +392,7 @@ onMounted(() => {
               <td class="w-max px-2 py-4 text-left sm:px-4">
                 <div class="h-4 w-28 rounded bg-gray-200 dark:bg-gray-700"></div>
               </td>
-              <td class="w-max px-2 py-4 text-left sm:px-4">
+              <td class="w-1/6 px-2 py-4 text-left sm:px-4">
                 <div class="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700"></div>
               </td>
             </tr>
@@ -433,7 +430,7 @@ onMounted(() => {
               </td>
               <td class="w-max px-2 py-4 text-left sm:px-4">
                 <p class="text-theme-sm text-gray-500 dark:text-gray-400">
-                  {{ activity.email || '-' }}
+                  {{ activity.name || '-' }}
                 </p>
               </td>
               <td class="w-max px-2 py-4 text-left sm:px-4">
@@ -514,9 +511,9 @@ onMounted(() => {
         @click.self="closeModal">
         <div class="relative w-full max-w-4xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
           <!-- Modal Header -->
-          <div class="mb-6 flex items-center justify-between border-b pb-4 dark:border-gray-700">
-            <div class="flex items-center gap-3">
-              <MapPin class="text-blue-600 dark:text-blue-400" :size="24" />
+          <div class="flex items-center justify-between pb-4 dark:border-gray-700">
+            <div class="invisible flex items-center gap-3">
+              <MapPin class="text-blue-600 dark:text-blue-400" :size="50" />
               <h2 class="text-xl font-semibold text-gray-800 dark:text-white">登入位置資訊</h2>
             </div>
             <button
@@ -529,7 +526,7 @@ onMounted(() => {
           <!-- Content -->
           <div v-if="locationData && selectedActivity" class="space-y-6">
             <!-- Info Cards -->
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <!-- <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
                 <p class="mb-1 text-xs text-blue-600 dark:text-blue-400">使用者 ID</p>
                 <p class="font-semibold text-gray-800 dark:text-white">
@@ -554,7 +551,7 @@ onMounted(() => {
                   {{ locationData.country_name || '未知' }}
                 </p>
               </div>
-            </div>
+            </div> -->
 
             <!-- Additional Info -->
             <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
@@ -608,14 +605,14 @@ onMounted(() => {
                 v-if="locationData.isLocal"
                 class="mt-3 rounded bg-yellow-50 p-3 dark:bg-yellow-900/20">
                 <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                  ⚠️ 這是本地 IP 地址，顯示的是預設位置
+                  偵測到本地IP地址 採用預設位置顯示
                 </p>
               </div>
             </div>
 
             <!-- Map -->
             <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <div style="height: 400px; width: 100%">
+              <div class="map">
                 <l-map
                   :key="mapKey"
                   ref="map"
@@ -683,5 +680,9 @@ onMounted(() => {
 .modal-enter-from > div,
 .modal-leave-to > div {
   transform: scale(0.9);
+}
+.map {
+  height: 300px;
+  width: 100%;
 }
 </style>
