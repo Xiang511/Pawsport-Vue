@@ -1,0 +1,6 @@
+.*/
+node_modules/
+dist/
+report.txt
+# 如果有跑測試，也可以排除
+coverage/
