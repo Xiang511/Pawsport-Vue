@@ -1,10 +1,11 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
 import 'animate.css';
 import { useGameAudio } from '@/composables/useGameAudio'
+import axios from 'axios'
 
 const { 
   playSFX, 
@@ -14,6 +15,11 @@ const {
   sfxVolume 
 } = useGameAudio()
 
+// 玩家資料狀態
+const playerName = ref('玩家名稱')
+const playerData = ref(null)
+const isLoadingPlayer = ref(true)
+
 // 控制主選單設定 Modal 的顯示
 const showSettingsModal = ref(false)
 // 定義滑桿專用變數 (0~100)
@@ -22,6 +28,40 @@ const sfxSlider = ref(sfxVolume.value * 100)
 // 監聽並同步全域音量
 watch(bgmSlider, (newVal) => updateBGMVolume(newVal))
 watch(sfxSlider, (newVal) => updateSFXVolume(newVal))
+
+// 在組件掛載時獲取玩家資料
+onMounted(async () => {
+  await fetchPlayerData()
+})
+
+// 獲取玩家資料
+const fetchPlayerData = async () => {
+  try {
+    isLoadingPlayer.value = true
+    // 呼叫後端 API 獲取玩家列表
+    const response = await axios.get('https://localhost:7048/api/Player?page=1')
+    
+    if (response.data && response.data.success) {
+      const players = response.data.data.data
+      // 尋找 PlayerId = 1 的玩家
+      const targetPlayer = players.find(p => p.playerId === 1)
+      
+      if (targetPlayer) {
+        playerData.value = targetPlayer
+        playerName.value = targetPlayer.userName
+      } else {
+        playerName.value = '玩家'
+      }
+    } else {
+      playerName.value = '玩家'
+    }
+  } catch (error) {
+    console.error('獲取玩家資料失敗:', error)
+    playerName.value = '玩家'
+  } finally {
+    isLoadingPlayer.value = false
+  }
+}
 
 // 點擊「遊戲設定」按鈕
 const openSettings = () => {
@@ -52,6 +92,7 @@ const handleClose = (type) => {
   if (type === 'save') {
     playSFX('click');
     showBigSave.value = true;
+    fetchPlayerData();
     setTimeout(() => { isProfileOpen.value = false; }, 2000); 
     setTimeout(() => { showBigSave.value = false; }, 1800);
   } else {
@@ -91,7 +132,7 @@ const inventory = () => {
   </div>
   <div class="main-menu-container">
     <div class="user-profile-trigger animate__animated animate__jackInTheBox" @click="playSFX('click'); openProfile()">
-      <span class="player-name">玩家名稱：DevUser_01</span><span class="user-profile-tail"></span>
+      <span class="player-name">玩家名稱：{{ playerName }}</span><span class="user-profile-tail"></span>
     </div>
 
     <div v-if="showBigSave" class="big-save-overlay">
@@ -208,12 +249,7 @@ const inventory = () => {
   user-select: none;
 }
 
-/* ===================================================
-   👤 玩家檔案按鈕：基礎狀態（完美對齊關卡按鈕樣式）
-   =================================================== */
-/* ===================================================
-   👤 玩家檔案按鈕：完全對齊 nav-item 靈魂手感版（向左滑動）
-   =================================================== */
+/* 玩家檔案按鈕 */
 .user-profile-trigger {
   /* 完好保留你原本的絕對定位，釘在右上角不動 */
   position: absolute;
