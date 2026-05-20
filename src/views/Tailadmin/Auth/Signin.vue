@@ -1,16 +1,19 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
-import request from '@/api/axios' // 使用配置好的 axios 實例
+import request from '@/api/axios'
 import CommonGridShape from '@/components/Tailadmin/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/Tailadmin/layout/FullScreenLayout.vue'
 import router from '@/router'
-import { useAuthStore } from '@/stores/auth' // 1. 引入 store
+import { useAuthStore } from '@/stores/auth'
+import { googleTokenLogin } from 'vue3-google-login'
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
-const authStore = useAuthStore() // 2. 實例化 store
+const authStore = useAuthStore()
+const isGoogleLoading = ref(false)
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
@@ -22,16 +25,64 @@ const handleSubmit = async () => {
       password: password.value.trim(),
     })
 
-    console.log('Login response:', response.data)
-
     if (response.status === 200) {
       authStore.setLoginInfo(response.data.data.user)
-
       router.replace('/dashboard')
     }
   } catch (error) {
     console.error('登入失敗:', error)
     alert('登入失敗，請檢查帳號密碼')
+  }
+}
+
+/**
+ * Google 登入處理
+ */
+const handleGoogleLogin = async () => {
+  console.log('🔵 [Google Login] 開始執行...')
+  isGoogleLoading.value = true
+
+  try {
+    // 呼叫 googleTokenLogin 會取得 access_token
+    const response = await googleTokenLogin()
+    console.log('🟢 [Google Login] 收到 Google 回應', response)
+
+    // 如果後端其實是要 access_token，請跟後端對齊欄位名稱
+    // 這裡相容舊邏輯，優先抓取任何可能的 token 欄位
+    const token =
+      response.credential || response.id_token || response.idToken || response.access_token
+
+    if (!token) {
+      throw new Error('無法在回應中找到任何 Token 憑證')
+    }
+
+    // 發送給後端驗證（注意：確認後端要的是 idToken 還是 accessToken）
+    const backendResponse = await request.post('/Auth/google-login', {
+      idToken: token,
+    })
+
+    if (backendResponse.data.success) {
+      authStore.setLoginInfo(backendResponse.data.data.user)
+
+      if (backendResponse.data.data.token) {
+        localStorage.setItem('token', backendResponse.data.data.token)
+      }
+
+      router.replace('/dashboard')
+    } else {
+      throw new Error(backendResponse.data.message || '登入失敗')
+    }
+  } catch (error) {
+    console.error('🔴 [Google Login] 失敗:', error)
+    if (error.type === 'popup_closed' || error.message === 'popup_closed_by_user') {
+      console.log('ℹ️ [User] 使用者關閉了登入視窗')
+    } else if (error.response) {
+      alert(`Google 登入失敗: ${error.response.data?.message || '後端驗證錯誤'}`)
+    } else {
+      alert(`Google 登入失敗: ${error.message || '請稍後再試'}`)
+    }
+  } finally {
+    isGoogleLoading.value = false
   }
 }
 </script>
@@ -55,7 +106,7 @@ const handleSubmit = async () => {
                 fill="none">
                 <path
                   d="M12.7083 5L7.5 10.2083L12.7083 15.4167"
-                  stroke=""
+                  stroke="currentColor"
                   stroke-width="1.5"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
@@ -89,7 +140,7 @@ const handleSubmit = async () => {
                         id="email"
                         name="email"
                         placeholder="輸入您的電子郵件地址"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-success-500 focus:ring-brand-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                        class="focus:border-brand-success-500 focus:ring-brand-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                     </div>
                     <!-- Password -->
                     <div>
@@ -105,7 +156,7 @@ const handleSubmit = async () => {
                           :type="showPassword ? 'text' : 'password'"
                           id="password"
                           placeholder="輸入您的密碼"
-                          class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-success-500 focus:ring-brand-success-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                          class="focus:border-brand-success-500 focus:ring-brand-success-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                         <span
                           @click="togglePasswordVisibility"
                           class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
@@ -142,43 +193,41 @@ const handleSubmit = async () => {
                     </div>
                     <!-- Checkbox -->
                     <div class="flex items-center justify-between">
-                      <div>
-                        <label
-                          for="keepLoggedIn"
-                          class="flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400">
-                          <div class="relative">
-                            <input
-                              v-model="keepLoggedIn"
-                              type="checkbox"
-                              id="keepLoggedIn"
-                              class="sr-only" />
-                            <div
-                              :class="
-                                keepLoggedIn
-                                  ? 'border-brand-success-500 text-brand-success-900 bg-brand-success-500'
-                                  : 'border-gray-300 bg-transparent dark:border-gray-700'
-                              "
-                              class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]">
-                              <span :class="keepLoggedIn ? '' : 'opacity-0'">
-                                <svg
-                                  width="14"
-                                  height="14"
-                                  viewBox="0 0 14 14"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg">
-                                  <path
-                                    d="M11.6666 3.5L5.24992 9.91667L2.33325 7"
-                                    stroke="white"
-                                    stroke-width="1.94437"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                </svg>
-                              </span>
-                            </div>
+                      <label
+                        for="keepLoggedIn"
+                        class="flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400">
+                        <div class="relative">
+                          <input
+                            v-model="keepLoggedIn"
+                            type="checkbox"
+                            id="keepLoggedIn"
+                            class="sr-only" />
+                          <div
+                            :class="
+                              keepLoggedIn
+                                ? 'border-brand-success-500 text-brand-success-900 bg-brand-success-500'
+                                : 'border-gray-300 bg-transparent dark:border-gray-700'
+                            "
+                            class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]">
+                            <span :class="keepLoggedIn ? '' : 'opacity-0'">
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 14 14"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M11.6666 3.5L5.24992 9.91667L2.33325 7"
+                                  stroke="white"
+                                  stroke-width="1.94437"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round" />
+                              </svg>
+                            </span>
                           </div>
-                          保持登入
-                        </label>
-                      </div>
+                        </div>
+                        保持登入
+                      </label>
                       <router-link
                         to="/reset-password"
                         class="text-brand-success-500 hover:text-brand-success-800 dark:text-brand-400 text-sm">
@@ -186,15 +235,14 @@ const handleSubmit = async () => {
                       </router-link>
                     </div>
                     <!-- Button -->
-                    <div>
-                      <button
-                        type="submit"
-                        class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-800 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
-                        登入
-                      </button>
-                    </div>
+                    <button
+                      type="submit"
+                      class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-800 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
+                      登入
+                    </button>
                   </div>
                 </form>
+
                 <div class="relative py-3 sm:py-5">
                   <div class="absolute inset-0 flex items-center">
                     <div class="w-full border-t border-gray-200 dark:border-gray-800"></div>
@@ -208,8 +256,30 @@ const handleSubmit = async () => {
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
                   <button
-                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+                    @click="handleGoogleLogin"
+                    :disabled="isGoogleLoading"
+                    type="button"
+                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                     <svg
+                      v-if="isGoogleLoading"
+                      class="h-5 w-5 animate-spin"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24">
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg
+                      v-else
                       width="20"
                       height="20"
                       viewBox="0 0 20 20"
@@ -228,7 +298,7 @@ const handleSubmit = async () => {
                         d="M10.1789 4.63331C11.8554 4.63331 12.9864 5.34303 13.6312 5.93612L16.1511 3.525C14.6035 2.11528 12.5895 1.25 10.1789 1.25C6.68676 1.25 3.67088 3.21387 2.20264 6.07218L5.08953 8.26943C5.81381 6.15972 7.81776 4.63331 10.1789 4.63331Z"
                         fill="#EB4335" />
                     </svg>
-                    Google
+                    <span>{{ isGoogleLoading ? '登入中...' : 'Google' }}</span>
                   </button>
                 </div>
               </div>
@@ -240,8 +310,7 @@ const handleSubmit = async () => {
           <div class="z-1 flex items-center justify-center">
             <common-grid-shape />
             <div class="flex max-w-xs flex-col items-center">
-              <img width="{231}" height="{48}" src="/images/dashboard/loginpage.png" alt="Logo" />
-
+              <img width="231" height="48" src="/images/dashboard/loginpage.png" alt="Logo" />
               <p class="text-brand-success-950 text-center text-9xl font-bold dark:text-white/60">
                 Petmily
                 <br />
