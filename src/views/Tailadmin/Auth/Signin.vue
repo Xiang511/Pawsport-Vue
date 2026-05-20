@@ -188,7 +188,6 @@ const handleSubmit = async () => {
                     <!-- Button -->
                     <div>
                       <button
-                        @click="handleSubmit"
                         type="submit"
                         class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-800 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
                         登入
