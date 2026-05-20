@@ -1,78 +1,188 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameAudio } from '@/composables/useGameAudio'
+import axios from 'axios'
 
 const { playSFX } = useGameAudio()
 const router = useRouter()
 
-// 💡 玩家擁有的點數（純展示，無消費動畫）
-const userPoints = ref(1200)
+// 玩家資料
+const playerData = ref(null)
+const userPoints = ref(0)
+const isLoadingData = ref(true)
 
-const categories = ref([
-  { id: 'cats', name: '我的貓咪' },
-  { id: 'accessories', name: '我的配件' },
-  { id: 'backgrounds', name: '我的背景' }
-])
-const activeTab = ref('cats')
+// 造型資料
+const allSkins = ref([])
+const currentEquippedId = ref(null)
+const previewSkin = ref(null)
 
-const dbSkins = ref([
-  { id: 1, name: '經典三花貓', imgUrl: '/images/avatar/cat_calico.png', price: 300, isOwned: true, description: '最經典的元氣三花貓！據說能帶來好運與滿滿的朝氣。' },
-  { id: 2, name: '厚實英短貓', imgUrl: '/images/avatar/cat_bsh.png', price: 170, isOwned: false, description: '擁有一對肥嘟嘟的腮幫子，軟綿綿的手感讓人一揉就停不下來。' },
-  { id: 3, name: '優雅布偶貓', imgUrl: '/images/avatar/cat_ragdoll.png', price: 170, isOwned: false, description: '貓界的小仙女，優雅的長毛與湛藍的雙眼，高貴氣質滿點。' },
-  { id: 4, name: '神祕黑貓', imgUrl: '/images/avatar/cat_black.png', price: 250, isOwned: false, description: '像黑夜精靈一樣神祕，金黃色的眼睛彷彿看穿了你藏零食的地方。' },
-  { id: 5, name: '偵探小禮帽', imgUrl: '/images/avatar/hat_detective.png', price: 120, isOwned: false, description: '戴上它，感覺自己瞬間偵探魂上身！喵爾摩斯在此。' },
-  { id: 6, name: '愛心紅領結', imgUrl: '/images/avatar/tie_heart.png', price: 90, isOwned: true, description: '精緻的紅領結，中間點綴著小愛心，適合在特別的日子裡裝扮。' },
-  { id: 7, name: '陽光午後客廳', imgUrl: '/images/bg_livingroom.png', price: 500, isOwned: false, description: '陽光穿透窗簾灑在木地板上，空氣中瀰漫著溫暖而慵懶的氣息。' }
-])
-const hoverData = ref(null) // 儲存目前懸停的造型資料，為 null 時不顯示
-const tooltipPos = ref({ x: 0, y: 0 }) // 儲存提示框的 xy 座標
-// 顯示提示框並即時跟隨滑鼠
-const showTooltip = (event, item) => {
-  hoverData.value = item
-  // 加上適當的偏移量（例如滑鼠右下方各 15px），避免提示框擋住滑鼠指標
-  tooltipPos.value = {
-    x: event.ClientX + 15,
-    y: event.ClientY + 15
-  }
-}
-// 滑鼠在卡片內移動時，持續更新位置
-const moveTooltip = (event) => {
-  tooltipPos.value = {
-    x: event.ClientX + 15,
-    y: event.ClientY + 15
-  }
-}
-// 滑鼠離開卡片，隱藏提示框
-const hideTooltip = () => {
-  hoverData.value = null
-}
+// UI 狀態
+const showUnownedSkins = ref(false)
+const isLoadingUnownedSkins = ref(false)
 
-const currentEquippedId = ref(1)
-const previewSkin = ref({ ...dbSkins.value.find(s => s.id === currentEquippedId.value) })
+// Hover 提示
+const hoverData = ref(null)
+const tooltipPos = ref({ x: 0, y: 0 })
 
-// 統計總共擁有多少個收藏品
-const ownedCount = computed(() => dbSkins.value.filter(s => s.isOwned).length)
-
-// 篩選出已擁有的道具
-const filteredOwnedSkins = computed(() => {
-  return dbSkins.value.filter(skin => {
-    if (!skin.isOwned) return false
-    
-    if (activeTab.value === 'cats') return skin.id >= 1 && skin.id <= 4
-    if (activeTab.value === 'accessories') return skin.id >= 5 && skin.id <= 6
-    if (activeTab.value === 'backgrounds') return skin.id >= 7
-    return false
-  })
+onMounted(async () => {
+  await fetchData()
 })
 
-const selectSkin = (skin) => {
-  previewSkin.value = { ...skin }
+// 獲取所有資料
+const fetchData = async () => {
+  try {
+    isLoadingData.value = true
+    
+    // 1. 獲取玩家資料
+    const playerResponse = await axios.get('https://localhost:7048/api/Player?page=1')
+    if (playerResponse.data.success) {
+      const players = playerResponse.data.data.data
+      playerData.value = players.find(p => p.playerId === 1)
+      
+      if (playerData.value) {
+        userPoints.value = playerData.value.currentPoint
+        currentEquippedId.value = playerData.value.enabledSkinId
+      }
+    }
+
+    // 2. 獲取所有造型
+    const shopResponse = await axios.get('https://localhost:7048/api/Shop')
+    if (shopResponse.data.success) {
+      const shopSkins = shopResponse.data.data
+      
+      // 3. 合併資料
+      allSkins.value = shopSkins.map(skin => {
+        const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
+        return {
+          id: skin.skinId,
+          name: skin.skinName,
+          imgUrl: skin.skinImage,
+          price: skin.price,
+          isOwned: isOwned,
+          description: skin.description
+        }
+      })
+
+      // 4. 設置預覽造型為目前裝備的造型
+      const enabledSkin = playerData.value?.ownedSkins?.find(s => s.enable === true)
+      if (enabledSkin) {
+        // 找到對應的造型資訊
+        const matchingSkin = allSkins.value.find(s => s.id === enabledSkin.skinId)
+        if (matchingSkin) {
+          previewSkin.value = { ...matchingSkin }
+        }
+      } else {
+        // 如果沒有裝備的造型，顯示第一個已擁有的造型
+        const ownedSkinsArray = allSkins.value.filter(s => s.isOwned)
+        if (ownedSkinsArray.length > 0) {
+          previewSkin.value = { ...ownedSkinsArray[0] }
+        } else {
+          // 如果沒有已擁有的造型，顯示第一個未擁有的造型
+          const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
+          if (unownedSkinsArray.length > 0) {
+            previewSkin.value = { ...unownedSkinsArray[0] }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('獲取資料失敗:', error)
+  } finally {
+    isLoadingData.value = false
+  }
 }
 
-const equipSkin = (id) => {
-  currentEquippedId.value = id
+// 篩選未擁有的造型
+const unownedSkins = computed(() => {
+  return allSkins.value.filter(s => !s.isOwned)
+})
+
+// 篩選已擁有的造型
+const ownedSkins = computed(() => {
+  return allSkins.value.filter(s => s.isOwned)
+})
+
+// 已擁有造型數量
+const ownedCount = computed(() => allSkins.value.filter(s => s.isOwned).length)
+
+// 選擇造型
+const selectSkin = (skin) => {
+  previewSkin.value = { ...skin }
   playSFX('click')
+}
+
+// 切換未擁有造型的顯示（添加 Loading 狀態）
+const toggleUnownedSkins = async () => {
+  if (showUnownedSkins.value) {
+    // 取消勾選，直接隱藏
+    showUnownedSkins.value = false
+  } else {
+    // 勾選，顯示 Loading 進度
+    isLoadingUnownedSkins.value = true
+    playSFX('click')
+    
+    // 模擬異步操作（實際上只是渲染造型卡片，所以用 setTimeout 讓 UI 更新）
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    showUnownedSkins.value = true
+    isLoadingUnownedSkins.value = false
+  }
+}
+
+// 裝備造型（只有已擁有的造型才能裝備）
+const equipSkin = async (id) => {
+  try {
+    const response = await axios.put(
+      `https://localhost:7048/api/Player/1/equip-skin`,
+      { playerId: 1, skinId: id }
+    )
+
+    if (response.data.success) {
+      // 立即更新本地狀態
+      currentEquippedId.value = id
+      
+      // 更新預覽造型的狀態
+      if (previewSkin.value) {
+        previewSkin.value = { ...previewSkin.value }
+      }
+      
+      playSFX('click')
+      console.log('造型裝備成功')
+    }
+  } catch (error) {
+    console.error('裝備失敗:', error)
+    alert(error.response?.data?.message || '裝備失敗，請稍後重試')
+  }
+}
+
+// 前往購買（跳轉到商店並選中該造型）
+const goToBuySkin = (skin) => {
+  // 使用 router.push 跳轉到商店，並透過 query 參數傳遞要選中的造型 ID
+  router.push({
+    name: 'Client-skinshop',
+    query: { selectSkinId: skin.id }
+  })
+}
+
+// Hover 提示
+const showTooltip = (event, item) => {
+  hoverData.value = item
+  tooltipPos.value = {
+    x: event.clientX + 15,
+    y: event.clientY + 15
+  }
+}
+
+const moveTooltip = (event) => {
+  tooltipPos.value = {
+    x: event.clientX + 15,
+    y: event.clientY + 15
+  }
+}
+
+const hideTooltip = () => {
+  hoverData.value = null
 }
 
 const goBack = () => {
@@ -96,87 +206,155 @@ const goBack = () => {
       </div>
     </div>
 
-    <div class="shop-main-content">
-      
+    <div v-if="isLoadingData" class="loading-state">
+      <p>正在載入造型資料...</p>
+    </div>
+
+    <div v-else class="shop-main-content">
+      <!-- 左側：預覽面板 -->
       <div class="preview-panel">
         <div class="preview-card">
           <div class="preview-title-bar">目前更衣間</div>
           
           <div class="avatar-display-zone">
             <div class="avatar-mock">
-              <img v-if="previewSkin.imgUrl" :src="previewSkin.imgUrl" alt="preview" class="avatar-img-preview" />
-              <p class="skin-name-preview">{{ previewSkin.name }}</p>
-              <span v-if="previewSkin.id === currentEquippedId" class="equipped-tag">穿戴中</span>
+              <img v-if="previewSkin?.imgUrl" :src="previewSkin.imgUrl" alt="preview" class="avatar-img-preview" />
+              <p class="skin-name-preview">{{ previewSkin?.name }}</p>
+              <span v-if="previewSkin?.id === currentEquippedId" class="equipped-tag">穿戴中</span>
+              <span v-else-if="previewSkin?.isOwned" class="try-on-tag">已擁有</span>
               <span v-else class="try-on-tag">預覽中</span>
             </div>
           </div>
 
           <div class="action-zone">
-            <button v-if="previewSkin.id === currentEquippedId" class="shop-btn is-equipped" disabled>
+            <!-- 已擁有且已裝備 -->
+            <button 
+              v-if="previewSkin?.isOwned && previewSkin?.id === currentEquippedId" 
+              class="shop-btn is-equipped" 
+              disabled
+            >
               已裝備
             </button>
-            <button v-else @click="playSFX('click'); equipSkin(previewSkin.id)" class="shop-btn is-actionable">
+            <!-- 已擁有但未裝備 -->
+            <button 
+              v-else-if="previewSkin?.isOwned" 
+              @click="playSFX('click'); equipSkin(previewSkin.id)" 
+              class="shop-btn is-actionable"
+            >
               確認裝備
+            </button>
+            <!-- 未擁有 -->
+            <button 
+              v-else 
+              @click="playSFX('click'); goToBuySkin(previewSkin)" 
+              class="shop-btn is-actionable"
+            >
+              前往購買
             </button>
           </div>
         </div>
       </div>
 
+      <!-- 右側：造型列表面板 -->
       <div class="catalog-panel">
-        <div class="category-tabs">
-          <button 
-            v-for="tab in categories" 
-            :key="tab.id"
-            :class="['tab-item', { 'is-active': activeTab === tab.id }]"
-            @click="playSFX('click'); activeTab = tab.id"
-          >
-            {{ tab.name }}
-          </button>
-        </div>
-
-        <div class="items-scroll-grid">
-          <div v-if="filteredOwnedSkins.length === 0" class="empty-state">
-            <p>這裡目前空空如也...<br>快去商店逛逛吧！</p>
-          </div>
-
-          <div 
-  v-for="item in filteredOwnedSkins" 
-  :key="item.id"
-  :class="['product-card', { 'is-selected': previewSkin.id === item.id }]"
-  @click="playSFX('click'); selectSkin(item)"
-  @mouseenter="showTooltip($event, item)" 
-  @mousemove="moveTooltip($event)" 
-  @mouseleave="hideTooltip"
->
-            <div class="product-title">{{ item.name }}</div>
-            
-            <div class="product-img-box">
-              <img :src="item.imgUrl" alt="product" class="product-real-img" />
-              <div v-if="item.id === currentEquippedId" class="equipped-ribbon">Equipped</div>
+        <!-- 已擁有的造型區塊（預設展開） -->
+        <div class="skins-section">
+          <div class="section-title">已擁有的造型</div>
+          
+          <div class="items-grid">
+            <div v-if="ownedSkins.length === 0" class="empty-state">
+              <p>您還沒有擁有任何造型</p>
             </div>
 
-            <div class="status-tag">
-              <span v-if="item.id === currentEquippedId" class="text-active">使用中</span>
-              <span v-else class="text-idle">已收藏</span>
+            <div 
+              v-for="item in ownedSkins" 
+              :key="item.id"
+              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+              @click="playSFX('click'); selectSkin(item)"
+              @mouseenter="showTooltip($event, item)" 
+              @mousemove="moveTooltip($event)" 
+              @mouseleave="hideTooltip"
+            >
+              <div class="product-title">{{ item.name }}</div>
+              
+              <div class="product-img-box">
+                <img :src="item.imgUrl" alt="product" class="product-real-img" />
+                <div v-if="item.id === currentEquippedId" class="equipped-ribbon">Equipped</div>
+              </div>
+
+              <div class="status-tag">
+                <span v-if="item.id === currentEquippedId" class="text-active">使用中</span>
+                <span v-else class="text-idle">已收藏</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 未擁有的造型區塊（可折疊） -->
+        <div class="skins-section">
+          <div class="section-header">
+            <label class="checkbox-label">
+              <input 
+                :checked="showUnownedSkins"
+                :disabled="isLoadingUnownedSkins"
+                type="checkbox" 
+                class="checkbox-input"
+                @change="toggleUnownedSkins"
+              />
+              <span class="checkbox-text">顯示未擁有的造型</span>
+            </label>
+          </div>
+
+          <!-- Loading 進度條 -->
+          <div v-if="isLoadingUnownedSkins" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">正在載入未擁有的造型...</p>
+          </div>
+
+          <div v-else-if="showUnownedSkins" class="items-grid">
+            <div v-if="unownedSkins.length === 0" class="empty-state">
+              <p>您已擁有所有造型！</p>
+            </div>
+
+            <div 
+              v-for="item in unownedSkins" 
+              :key="item.id"
+              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+              @click="playSFX('click'); selectSkin(item)"
+              @mouseenter="showTooltip($event, item)" 
+              @mousemove="moveTooltip($event)" 
+              @mouseleave="hideTooltip"
+            >
+              <div class="product-title">{{ item.name }}</div>
+              
+              <div class="product-img-box">
+                <img :src="item.imgUrl" alt="product" class="product-real-img" />
+              </div>
+
+              <div class="status-tag">
+                <span class="text-unavailable">未擁有</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Hover 提示 -->
   <div 
-      v-if="hoverData" 
-      class="custom-tooltip"
-      :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
-    >
-      <div class="tooltip-title">{{ hoverData.name }}</div>
-      <div class="tooltip-body">{{ hoverData.description }}</div>
-    </div>
+    v-if="hoverData" 
+    class="custom-tooltip"
+    :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
+  >
+    <div class="tooltip-title">{{ hoverData.name }}</div>
+    <div class="tooltip-body">{{ hoverData.description }}</div>
+  </div>
 </template>
 
 <style scoped>
 /* ===================================================
-   🎨 核心樣式（維持你優雅的手繪 Morandi 風格）
+   🎨 核心樣式
    =================================================== */
 .shop-page-container {
   width: 100vw;
@@ -245,7 +423,7 @@ const goBack = () => {
   transform: translateY(-2px);
 }
 
-/* 💡 右側組合框：讓兩個資訊面板優雅排列 */
+/* 💡 右側組合框 */
 .header-right-group {
   display: flex;
   align-items: center;
@@ -266,7 +444,6 @@ const goBack = () => {
   gap: 8px; 
 }
 
-/* 背包框微調字體，與點數做視覺區隔 */
 .currency-box.is-bag {
   font-size: 1.1rem;
   font-weight: bold;
@@ -279,6 +456,15 @@ const goBack = () => {
   align-items: stretch;
   gap: 40px;
   height: calc(100% - 80px);
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2rem;
+  color: #453a27;
 }
 
 /* ===================================================
@@ -367,60 +553,135 @@ const goBack = () => {
   justify-content: center;
 }
 
+.shop-btn {
+  width: 85%;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 4px solid #453a27;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom;
+}
+
+.shop-btn.is-actionable {
+  background: #453a27;
+  color: #fcf4e5;
+}
+
+.shop-btn.is-actionable:hover {
+  transform: translateY(-3px) scaleY(1.08);
+  box-shadow: 0 8px 0 #453a27;
+}
+
+.shop-btn.is-actionable:active {
+  transform: translateY(4px) scaleY(0.88);
+  box-shadow: 0 2px 0 #453a27;
+}
+
+.shop-btn.is-equipped {
+  background: #e4987e;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* ===================================================
-   🛒 右側：貨架與卡片
+   🛒 右側：造型列表面板
    =================================================== */
 .catalog-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-.category-tabs {
-  display: flex;
-  gap: 5px;
-  margin-bottom: -5px;
-  z-index: 2;
+.catalog-panel::-webkit-scrollbar {
+  width: 8px;
 }
 
-.tab-item {
+.catalog-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.catalog-panel::-webkit-scrollbar-thumb {
+  background: #453a27;
+  border-radius: 4px;
+}
+
+/* ===================================================
+   📦 造型區塊
+   =================================================== */
+.skins-section {
   background: #ffffff;
   border: 5px solid #453a27;
-  border-bottom: none;
-  border-radius: 15px 15px 0 0;
-  padding: 10px 25px;
+  border-radius: 30px;
+  box-shadow: 0 8px 0 #453a27;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #453a27;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #453a27;
+}
+
+.section-header {
+  margin-bottom: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #453a27;
+}
+
+.checkbox-text {
   font-size: 1.1rem;
   font-weight: bold;
   color: #453a27;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.tab-item.is-active {
-  background: #ecdcb9;
-  padding-top: 14px;
-}
-
-.items-scroll-grid {
-  flex: 1;
-  background: #ffffff;
-  border: 5px solid #453a27;
-  border-radius: 0 30px 30px 30px;
-  box-shadow: 0 8px 0 #453a27;
-  padding: 35px;
+.items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  grid-auto-rows: minmax(210px, max-content);
-  gap: 25px;
-  overflow-y: auto;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
 }
 
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 1rem;
+}
+
+/* ===================================================
+   🎴 造型卡片
+   =================================================== */
 .product-card {
   background: #fdfbf7;
   border: 4px solid #453a27;
   border-radius: 20px;
-  padding: 15px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -443,16 +704,17 @@ const goBack = () => {
 }
 
 .product-title {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: bold;
   color: #453a27;
   text-align: center;
   margin-bottom: 8px;
+  line-height: 1.2;
 }
 
 .product-img-box {
   width: 100%;
-  height: 100px;
+  height: 80px;
   background: #ffffff;
   border: 3px solid #453a27;
   border-radius: 12px;
@@ -461,7 +723,7 @@ const goBack = () => {
   align-items: center;
   position: relative;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .product-real-img {
@@ -474,10 +736,10 @@ const goBack = () => {
   position: absolute;
   background: #e4987e;
   color: #ffffff;
-  border: 3px solid #453a27;
-  border-radius: 8px;
-  padding: 4px 12px;
-  font-size: 0.85rem;
+  border: 2px solid #453a27;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
   font-weight: bold;
   transform: rotate(-10deg);
 }
@@ -485,102 +747,49 @@ const goBack = () => {
 .status-tag {
   background: #ffffff;
   border: 3px solid #453a27;
-  border-radius: 15px;
-  padding: 4px 15px;
-  font-size: 0.9rem;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 0.85rem;
   font-weight: bold;
-}
-.text-active { color: #e4987e; }
-.text-idle { color: #7a6e5d; }
-
-/* 按鈕樣式 */
-.shop-btn {
-  width: 85%;
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border-radius: 20px;
-  border: 4px solid #453a27;
-  cursor: pointer;
-  transform-origin: bottom;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.shop-btn.is-actionable {
-  background-color: #ffffff;
-  color: #453a27;
-  box-shadow: 0 5px 0 #453a27;
-}
-.shop-btn.is-actionable:hover {
-  background-color: #fcf4e5;
-  transform: translateY(-3px) scaleY(1.05);
-  box-shadow: 0 8px 0 #453a27;
-}
-
-.shop-btn.is-equipped {
-  background-color: #ecdcb9;
-  color: #7a6e5d;
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.shop-btn:active:not(:disabled) {
-  transform: translateY(3px) scaleY(0.9) !important;
-  box-shadow: 0 2px 0 #453a27 !important;
-  transition: all 0.05s ease;
-}
-
-.empty-state {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
   text-align: center;
-  min-height: 200px;
-  color: #7a6e5d;
-  font-size: 1.2rem;
-  font-weight: bold;
-  line-height: 1.8;
 }
 
-/* 🌐 滾動條 */
-.items-scroll-grid::-webkit-scrollbar { width: 10px; }
-.items-scroll-grid::-webkit-scrollbar-track { background: #fdfbf7; border-radius: 10px; }
-.items-scroll-grid::-webkit-scrollbar-thumb { background: #ecdcb9; border: 3px solid #ffffff; border-radius: 10px; }
+.text-active {
+  color: #e4987e;
+}
+
+.text-idle {
+  color: #7a6e5d;
+}
+
+.text-unavailable {
+  color: #999;
+}
 
 /* ===================================================
-   浮動提示框（Tooltip）專屬手繪風樣式
+   💬 Hover 提示
    =================================================== */
 .custom-tooltip {
-  position: fixed; /* 使用 fixed 固定定位，依據瀏覽器視窗座標跟隨 */
-  z-index: 9999; /* 確保它高於貨架與卡片，但低於全畫面 Modal 即可 */
-  max-width: 240px;
-  background-color: #fffdf9; /* 溫暖的乳白色 */
-  border: 4px solid #453a27; /* 經典手繪粗邊框 */
-  border-radius: 16px;       /* 圓潤感圓角 */
-  box-shadow: 4px 4px 0px #453a27; /* 可愛的小黑影 */
+  position: fixed;
+  background: #453a27;
+  color: #fcf4e5;
   padding: 12px 16px;
-  pointer-events: none; /* 🌟 關鍵：讓提示框不干涉滑鼠穿透，避免滑鼠抖動閃爍 */
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* 提示框造型名稱 */
-.tooltip-title {
-  font-size: 1.05rem;
-  font-weight: bold;
-  color: #e4987e; /* 使用你專案中的主橘色，引人注目 */
-  border-bottom: 2px dashed #ecdcb9; /* 可愛虛線分隔線 */
-  padding-bottom: 4px;
-}
-
-/* 提示框詳細描述文字 */
-.tooltip-body {
+  border-radius: 12px;
   font-size: 0.9rem;
-  color: #7a6e5d; /* 溫柔的 Morandi 灰褐色 */
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 250px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.tooltip-body {
+  font-size: 0.85rem;
   line-height: 1.4;
-  word-break: break-all;
 }
 </style>
