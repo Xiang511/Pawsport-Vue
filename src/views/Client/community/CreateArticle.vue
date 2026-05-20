@@ -57,11 +57,11 @@ onMounted(async () => {
   isLoading.value = true
   try {
     const response = await axios.get(`${API_BASE_URL}/Category`)
-    console.log('C# 後端回傳的原始 response.data 是：', response.data)
+    //console.log('C# 後端回傳的原始 response.data 是：', response.data)
     // 先用 transformCategories 洗過
     categoriesData.value = transformCategories(response.data.data)
 
-    console.log('前端格式的分類資料：', categoriesData.value)
+    // console.log('前端格式的分類資料：', categoriesData.value)
   } catch (error) {
     console.error('取得分類失敗：', error)
     alert('無法載入分類選單')
@@ -86,17 +86,16 @@ const handlePublish = async (postData) => {
       articleId.value === 'undefined'
     ) {
       // 情況 A：從來沒存過草稿，直接發佈 (POST)
-      console.log('【發佈】全新貼文 POST Payload:', payload)
+      // console.log('【發佈】全新貼文 POST Payload:', payload)
       const response = await axios.post(`${API_BASE_URL}/Article`, payload)
 
-      // 取得新生成的文章 ID (請根據你後端實際回傳格式調整，例如 response.data.id 或 response.data.data.id)
-      finalId = response.data?.id || response.data?.data?.id || response.data?.data
+      // 取得新生成的文章 ID
+      finalId = response.data.data
     } else {
       // 情況 B：之前有存過草稿，現在決定正式發佈 (PUT)
-      console.log(`【發佈】現有草稿轉正式發佈 PUT /Article/${articleId.value} Payload:`, payload)
+      // console.log(`【發佈】現有草稿轉正式發佈 PUT /Article/${articleId.value} Payload:`, payload)
       await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
     }
-
     alert('文章發布成功！')
 
     // 利用 router 跳轉到文章詳細頁
@@ -125,18 +124,16 @@ const handleSaveDraft = async (postData) => {
       articleId.value === 'undefined'
     ) {
       // 情況 1：第一次儲存草稿 (POST)
-      console.log('【草稿】第一次儲存 POST Payload:', payload)
+      // console.log('【草稿】第一次儲存 POST Payload:', payload)
       const response = await axios.post(`${API_BASE_URL}/Article`, payload)
 
       if (response.status === 200 || response.status === 201) {
-        // 💡 關鍵：儲存成功後，把後端發給這篇文章的 ID 記下來
-        // 請確認你後端回傳的 ID 欄位階層（常見為 response.data.id 或 response.data.data.id）
-        console.log('後端回傳的原始資料：', response.data)
-        articleId.value = response.data.id || response.data.data?.id
-        const newId = response.data?.id || response.data?.data?.id || response.data?.data
+        // 後端回傳的 ID 欄位階層為response.data.data
+        // console.log('後端回傳的原始資料：', response.data)
+        const newId = response.data?.data
         if (newId) {
           articleId.value = newId
-          alert('💾 草稿首次儲存成功！您可留在本頁繼續修改。')
+          alert('草稿儲存成功！您可留在本頁繼續修改。')
         } else {
           console.error('儲存成功，但從 response 中找不到 id 欄位！請檢查 F12 的 Response 結構。')
           alert('草稿已儲存，但未能取得文章識別碼，下次儲存可能仍會新增貼文。')
@@ -149,13 +146,19 @@ const handleSaveDraft = async (postData) => {
       const response = await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
 
       if (response.status === 200 || response.status === 204) {
-        alert('💾 草稿已同步更新！')
+        alert('草稿已更新！')
       }
     }
   } catch (error) {
     console.error('儲存草稿失敗：', error)
     alert('儲存草稿失敗')
   }
+}
+
+// 清空 ID 的監聽函式
+const handleResetArticleId = () => {
+  articleId.value = null
+  console.log('【狀態切換】已成功清空文章 ID，現在進入「全新文章」模式。')
 }
 </script>
 
@@ -174,7 +177,8 @@ const handleSaveDraft = async (postData) => {
         <ArticleEditor
           :categories="categoriesData"
           @publish="handlePublish"
-          @save-draft="handleSaveDraft" />
+          @save-draft="handleSaveDraft"
+          @reset-id="handleResetArticleId" />
       </div>
     </div>
   </div>
