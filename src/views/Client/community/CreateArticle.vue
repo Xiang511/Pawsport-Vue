@@ -80,16 +80,19 @@ const handlePublish = async (postData) => {
 
     let finalId = articleId.value
 
-    if (articleId.value === null) {
+    if (
+      articleId.value === null ||
+      articleId.value === undefined ||
+      articleId.value === 'undefined'
+    ) {
       // 情況 A：從來沒存過草稿，直接發佈 (POST)
       console.log('【發佈】全新貼文 POST Payload:', payload)
       const response = await axios.post(`${API_BASE_URL}/Article`, payload)
 
       // 取得新生成的文章 ID (請根據你後端實際回傳格式調整，例如 response.data.id 或 response.data.data.id)
-      finalId = response.data.id || response.data.data?.id
+      finalId = response.data?.id || response.data?.data?.id || response.data?.data
     } else {
       // 情況 B：之前有存過草稿，現在決定正式發佈 (PUT)
-      payload.id = articleId.value // 有些後端會要求 body 內也要帶 id
       console.log(`【發佈】現有草稿轉正式發佈 PUT /Article/${articleId.value} Payload:`, payload)
       await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
     }
@@ -116,12 +119,38 @@ const handleSaveDraft = async (postData) => {
       status: 0, // 0 代表儲存為草稿
     }
 
-    console.log('前端準備送出的草稿 Payload:', payload)
+    if (
+      articleId.value === null ||
+      articleId.value === undefined ||
+      articleId.value === 'undefined'
+    ) {
+      // 情況 1：第一次儲存草稿 (POST)
+      console.log('【草稿】第一次儲存 POST Payload:', payload)
+      const response = await axios.post(`${API_BASE_URL}/Article`, payload)
 
-    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+      if (response.status === 200 || response.status === 201) {
+        // 💡 關鍵：儲存成功後，把後端發給這篇文章的 ID 記下來
+        // 請確認你後端回傳的 ID 欄位階層（常見為 response.data.id 或 response.data.data.id）
+        console.log('後端回傳的原始資料：', response.data)
+        articleId.value = response.data.id || response.data.data?.id
+        const newId = response.data?.id || response.data?.data?.id || response.data?.data
+        if (newId) {
+          articleId.value = newId
+          alert('💾 草稿首次儲存成功！您可留在本頁繼續修改。')
+        } else {
+          console.error('儲存成功，但從 response 中找不到 id 欄位！請檢查 F12 的 Response 結構。')
+          alert('草稿已儲存，但未能取得文章識別碼，下次儲存可能仍會新增貼文。')
+        }
+      }
+    } else {
+      // 情況 2：第二次以上儲存同一篇草稿 (PUT)
 
-    if (response.status === 200) {
-      alert('💾 草稿儲存成功！')
+      console.log(`【草稿】更新現有草稿 PUT /Article/${articleId.value} Payload:`, payload)
+      const response = await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
+
+      if (response.status === 200 || response.status === 204) {
+        alert('💾 草稿已同步更新！')
+      }
     }
   } catch (error) {
     console.error('儲存草稿失敗：', error)
