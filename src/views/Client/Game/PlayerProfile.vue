@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { LucideCat, Save, Edit2, X } from 'lucide-vue-next'
 import 'animate.css';
 import { useGameAudio } from '@/composables/useGameAudio'
@@ -97,11 +97,6 @@ const savePlayerName = async () => {
     isSavingName.value = true;
     nameSaveError.value = '';
 
-    // 呼叫後端 API 更新玩家名字
-    // 注意：根據 PlayerEditDTO 的結構，我們需要傳送 PlayerId, Point, SkinId, Enable
-    // 但後端的 UpdatePlayerAsync 只會更新 CurrentPoint 和 Enable 狀態
-    // 所以我們需要先檢查後端是否支援更新 UserName，如果不支援需要先修改後端
-
     // 暫時使用現有的 API，但需要確認後端是否支援 UserName 更新
     const updateData = {
       playerId: playerData.value.playerId,
@@ -171,14 +166,27 @@ const getProgressText = (maxGameId) => {
 // 獲取啟用的造型圖片
 const getEnabledSkinImage = () => {
   if (!playerData.value || !playerData.value.ownedSkins || playerData.value.ownedSkins.length === 0) {
-    return 'https://via.placeholder.com/150';
+    return null;
   }
   
   // 尋找 enable = true 的造型
   const enabledSkin = playerData.value.ownedSkins.find(skin => skin.enable === true);
   
-  // 如果有啟用的造型且有圖片路徑，則返回該路徑；否則返回預設圖片
-  return enabledSkin?.skinImage || 'https://via.placeholder.com/150';
+  // 如果有啟用的造型且有圖片路徑，則返回該路徑；否則返回 null
+  return enabledSkin?.skinImage || null;
+};
+
+// 獲取啟用的造型名稱
+const getEnabledSkinName = () => {
+  if (!playerData.value || !playerData.value.ownedSkins || playerData.value.ownedSkins.length === 0) {
+    return '未設定';
+  }
+  
+  // 尋找 enable = true 的造型
+  const enabledSkin = playerData.value.ownedSkins.find(skin => skin.enable === true);
+  
+  // 如果有啟用的造型，則返回名稱；否則返回未設定
+  return enabledSkin?.skinName || '未設定';
 };
 
 
@@ -258,24 +266,40 @@ const startClose = (type) => {
         </div>
 
         <div class="card-content">
+          <!-- 左側：頭像和點數 -->
           <div class="photo-section">
             <div class="photo-frame">
-              <div class="avatar-placeholder">
-                <img :src="getEnabledSkinImage()" alt="Avatar" />
+              <!-- 目前裝備的造型顯示區 -->
+              <div class="equipped-skin-container">
+                <!-- 如果有圖片，顯示圖片；否則顯示方塊 -->
+                <div v-if="getEnabledSkinImage()" class="avatar-placeholder with-image">
+                  <img :src="getEnabledSkinImage()" alt="Equipped Skin" />
+                </div>
+                <div v-else class="avatar-placeholder without-image">
+                  <div class="placeholder-box"></div>
+                </div>
+                
+                <!-- 造型名稱 -->
+                <div class="skin-name-display">
+                  <p class="skin-label">目前裝備造型：</p>
+                  <p class="skin-name">{{ getEnabledSkinName() }}</p>
+                </div>
               </div>
+              
               <div class="corner-tape top-left"></div>
               <div class="corner-tape bottom-right"></div>
             </div>
             <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint) }} 點</div>
           </div>
 
+          <!-- 右側：玩家資訊 -->
           <div class="info-section">
             <!-- 玩家名字編輯區 -->
             <div class="player-name-container">
               <div v-if="!isEditingName" class="player-name-display">
                 <h2 class="player-name">{{ playerData.userName }}</h2>
                 <button class="edit-name-btn" @click="playSFX('click'); startEditName()" title="編輯玩家名字">
-                  <Edit2 :size="20" />
+                  <Edit2 :size="30" />
                 </button>
               </div>
               
@@ -312,11 +336,8 @@ const startClose = (type) => {
               </div>
             </div>
             
+            <!-- 統計資訊 -->
             <div class="stats-container">
-              <div class="stat-row">
-                <span class="label">持有造型數量：</span>
-                <span class="value">{{ playerData.skinCount }} 件</span>
-              </div>
               <div class="stat-row">
                 <span class="label">最新遊玩進度：</span>
                 <span class="value">{{ getProgressText(playerData.maxGameId) }}</span>
@@ -325,10 +346,14 @@ const startClose = (type) => {
                 <span class="label">最後遊玩時間：</span>
                 <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
               </div>
+              <div class="stat-row">
+                <span class="label">持有造型數量：</span>
+                <span class="value">{{ playerData.skinCount }} 個</span>
+              </div>
             </div>
 
             <div class="decoration-dots">
-              <span v-for="i in 8" :key="i" class="dot">✦</span>
+              <span v-for="i in 12" :key="i" class="dot">✦</span>
             </div>
           </div>
         </div>
@@ -514,20 +539,19 @@ const startClose = (type) => {
 }
 
 .edit-name-btn {
-  background: none;
-  border: none;
+  background: #453A27;
   cursor: pointer;
-  color: #453A27;
+  color: #FCF4E5;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 30px;
   transition: all 0.3s ease;
 }
 
 .edit-name-btn:hover {
-  background-color: rgba(69, 58, 39, 0.1);
+  background-color: #fcc86d;
   transform: scale(1.1);
 }
 
