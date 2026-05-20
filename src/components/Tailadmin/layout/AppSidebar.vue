@@ -8,6 +8,7 @@ import {
   Gamepad2Icon,
   UsersRound,
   Dog,
+  Settings,
 } from 'lucide-vue-next'
 
 import {
@@ -26,11 +27,11 @@ const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar()
 
 const menuGroups = [
   {
-    title: 'Menu',
+    title: '選單',
     items: [
       {
         icon: UsersRound,
-        name: '會員管理',
+        name: '會員',
         subItems: [
           { name: '基本資料', path: '/dashboard/member' },
           { name: '違規名單', path: '/dashboard/Blocklist' },
@@ -39,7 +40,7 @@ const menuGroups = [
       },
       {
         icon: Dog,
-        name: '寵物管理',
+        name: '寵物',
         subItems: [
           { name: '寵物資訊一覽', path: '/dashboard/pet', pro: false },
           { name: '寵物健康護照', path: '/dashboard/passport', pro: false },
@@ -79,10 +80,10 @@ const menuGroups = [
     ],
   },
   {
-    title: 'Others',
+    title: '其他',
     items: [
       {
-        icon: PieChartIcon,
+        icon: Settings,
         name: '系統設定',
         subItems: [
           { name: '登入活動', path: '/dashboard/log-activity', pro: false },
@@ -145,7 +146,7 @@ const endTransition = (el) => {
     @mouseenter="!isExpanded && (isHovered = true)"
     @mouseleave="isHovered = false">
     <div :class="['flex py-8', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start']">
-      <router-link to="/">
+      <router-link to="/dashboard">
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="dark:hidden"
