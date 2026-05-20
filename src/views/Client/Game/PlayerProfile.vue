@@ -1,16 +1,187 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { LucideCat, Save } from 'lucide-vue-next'
+import { LucideCat, Save, Edit2, X } from 'lucide-vue-next'
 import 'animate.css';
 import { useGameAudio } from '@/composables/useGameAudio'
+import axios from 'axios'
 
 const { playSFX } = useGameAudio()
 
 const emit = defineEmits(['close']);
 const isVisible = ref(false);
-onMounted(() => {
+
+// 玩家資料狀態
+const playerData = ref(null)
+const isLoading = ref(true)
+const errorMessage = ref('')
+
+// 編輯狀態
+const isEditingName = ref(false)
+const editedName = ref('')
+const isSavingName = ref(false)
+const nameSaveError = ref('')
+
+// 關卡名稱對應表
+const levelCategoryMap = {
+  0: '尚未開始',
+  1: '認養須知',
+  2: '狗狗百科', 
+  3: '貓貓百科', 
+  4: '鳥類百科',
+  5: '小動物百科',
+  6: '水族與爬蟲',
+}
+
+onMounted(async () => {
   isVisible.value = true;
+  await fetchPlayerData();
 });
+
+// 獲取玩家資料
+const fetchPlayerData = async () => {
+  try {
+    isLoading.value = true;
+    // 呼叫後端 API 獲取玩家列表
+    const response = await axios.get('https://localhost:7048/api/Player?page=1');
+    
+    if (response.data && response.data.success) {
+      const players = response.data.data.data;
+      // 尋找 PlayerId = 1 的玩家
+      const targetPlayer = players.find(p => p.playerId === 1);
+      
+      if (targetPlayer) {
+        playerData.value = targetPlayer;
+      } else {
+        errorMessage.value = '找不到測試玩家資料 (PlayerId=1)';
+      }
+    } else {
+      errorMessage.value = '獲取資料失敗';
+    }
+  } catch (error) {
+    console.error('API 請求錯誤:', error);
+    errorMessage.value = '無法連接到伺服器';
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 開始編輯玩家名字
+const startEditName = () => {
+  editedName.value = playerData.value.userName;
+  isEditingName.value = true;
+  nameSaveError.value = '';
+};
+
+// 取消編輯
+const cancelEditName = () => {
+  isEditingName.value = false;
+  editedName.value = '';
+  nameSaveError.value = '';
+};
+
+// 儲存玩家名字
+const savePlayerName = async () => {
+  // 驗證名字不為空
+  if (!editedName.value.trim()) {
+    nameSaveError.value = '玩家名字不能為空';
+    return;
+  }
+
+  // 驗證名字長度
+  if (editedName.value.trim().length > 50) {
+    nameSaveError.value = '玩家名字不能超過 50 個字';
+    return;
+  }
+
+  try {
+    isSavingName.value = true;
+    nameSaveError.value = '';
+
+    // 呼叫後端 API 更新玩家名字
+    // 注意：根據 PlayerEditDTO 的結構，我們需要傳送 PlayerId, Point, SkinId, Enable
+    // 但後端的 UpdatePlayerAsync 只會更新 CurrentPoint 和 Enable 狀態
+    // 所以我們需要先檢查後端是否支援更新 UserName，如果不支援需要先修改後端
+
+    // 暫時使用現有的 API，但需要確認後端是否支援 UserName 更新
+    const updateData = {
+      playerId: playerData.value.playerId,
+      point: playerData.value.currentPoint,
+      skinId: playerData.value.enabledSkinId || 1,
+      enable: true,
+      userName: editedName.value.trim() // 新增此欄位，但需要後端支援
+    };
+
+    const response = await axios.put(
+      `https://localhost:7048/api/Player/${playerData.value.playerId}`,
+      updateData
+    );
+
+    if (response.data && response.data.success) {
+      // 更新本地資料
+      playerData.value.userName = editedName.value.trim();
+      isEditingName.value = false;
+      editedName.value = '';
+      
+      // 播放成功音效
+      playSFX('success');
+      
+      console.log('玩家名字更新成功');
+    } else {
+      nameSaveError.value = '更新失敗，請稍後重試';
+    }
+  } catch (error) {
+    console.error('更新玩家名字錯誤:', error);
+    nameSaveError.value = error.response?.data?.message || '無法連接到伺服器';
+  } finally {
+    isSavingName.value = false;
+  }
+};
+
+// 格式化日期 (YYYY/MM/DD)
+const formatDate = (dateString) => {
+  if (!dateString) return '未知';
+  const date = new Date(dateString);
+  return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+};
+
+// 格式化日期時間 (YYYY/MM/DD HH:mm)
+const formatDateTime = (dateString) => {
+  if (!dateString) return '尚未遊玩';
+  const date = new Date(dateString);
+  return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+};
+
+// 格式化點數 (加上千位數逗號)
+const formatPoints = (points) => {
+  if (points === undefined || points === null) return '0';
+  return points.toLocaleString('en-US');
+};
+
+// 獲取最新遊玩進度文字
+const getProgressText = (maxGameId) => {
+  if (!maxGameId) return '尚未開始';
+  
+  // 假設每 10 關為一個大區，這裡簡化處理，您可以根據實際邏輯調整
+  const areaId = Math.floor((maxGameId - 1) / 10) + 1;
+  const categoryName = levelCategoryMap[areaId] || `第 ${areaId} 章`;
+  
+  return `${categoryName} (第 ${maxGameId} 關)`;
+};
+
+// 獲取啟用的造型圖片
+const getEnabledSkinImage = () => {
+  if (!playerData.value || !playerData.value.ownedSkins || playerData.value.ownedSkins.length === 0) {
+    return 'https://via.placeholder.com/150';
+  }
+  
+  // 尋找 enable = true 的造型
+  const enabledSkin = playerData.value.ownedSkins.find(skin => skin.enable === true);
+  
+  // 如果有啟用的造型且有圖片路徑，則返回該路徑；否則返回預設圖片
+  return enabledSkin?.skinImage || 'https://via.placeholder.com/150';
+};
+
+
 // JavaScript 離開動畫
 const onLeave = (el, done) => {
   const animation = el.animate([
@@ -25,6 +196,7 @@ const onLeave = (el, done) => {
 
   animation.onfinish = done;
 };
+
 // 內部控制
 const startClose = (type) => {
   // 發送事件讓父組件知道現在是什麼類型的退出
@@ -68,46 +240,99 @@ const startClose = (type) => {
         </div>
       </div>
 
-      <div class="header-meta">
-        <p>建立時間: 2026/05/11</p>
-        <p>ID: 719007</p>
+      <!-- 載入中狀態 -->
+      <div v-if="isLoading" class="loading-state">
+        <p>正在讀取玩家資料...</p>
+      </div>
+      
+      <!-- 錯誤狀態 -->
+      <div v-else-if="errorMessage" class="error-state">
+        <p>{{ errorMessage }}</p>
       </div>
 
-      <div class="card-content">
-        <div class="photo-section">
-          <div class="photo-frame">
-            <div class="avatar-placeholder">
-              <img src="https://via.placeholder.com/150" alt="Avatar" />
-            </div>
-            <div class="corner-tape top-left"></div>
-            <div class="corner-tape bottom-right"></div>
-          </div>
-          <div class="rank-badge">現有點數：1,234 點</div>
+      <!-- 資料顯示區 -->
+      <template v-else-if="playerData">
+        <div class="header-meta">
+          <p>玩家建立時間: {{ formatDate(playerData.createTime) }}</p>
+          <p>玩家ID: P7328643539300{{ playerData.playerId }}</p>
         </div>
 
-        <div class="info-section">
-          <h2 class="player-name">DevUser_01</h2>
-          
-          <div class="stats-container">
-            <div class="stat-row">
-              <span class="label">持有造型數量：</span>
-              <span class="value">12 件</span>
+        <div class="card-content">
+          <div class="photo-section">
+            <div class="photo-frame">
+              <div class="avatar-placeholder">
+                <img :src="getEnabledSkinImage()" alt="Avatar" />
+              </div>
+              <div class="corner-tape top-left"></div>
+              <div class="corner-tape bottom-right"></div>
             </div>
-            <div class="stat-row">
-              <span class="label">最新遊玩進度：</span>
-              <span class="value">第一章：初遇寵物</span>
-            </div>
-            <div class="stat-row">
-              <span class="label">最後遊玩時間：</span>
-              <span class="value">2026/05/11 14:30</span>
-            </div>
+            <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint) }} 點</div>
           </div>
 
-          <div class="decoration-dots">
-            <span v-for="i in 8" :key="i" class="dot">✦</span>
+          <div class="info-section">
+            <!-- 玩家名字編輯區 -->
+            <div class="player-name-container">
+              <div v-if="!isEditingName" class="player-name-display">
+                <h2 class="player-name">{{ playerData.userName }}</h2>
+                <button class="edit-name-btn" @click="playSFX('click'); startEditName()" title="編輯玩家名字">
+                  <Edit2 :size="20" />
+                </button>
+              </div>
+              
+              <div v-else class="player-name-edit">
+                <input 
+                  v-model="editedName" 
+                  type="text" 
+                  class="name-input"
+                  placeholder="輸入新的玩家名字"
+                  maxlength="50"
+                  @keyup.enter="savePlayerName"
+                />
+                <div class="edit-buttons">
+                  <button 
+                    class="confirm-btn" 
+                    @click="savePlayerName"
+                    :disabled="isSavingName"
+                  >
+                    <Save :size="16" />
+                    {{ isSavingName ? '儲存中...' : '確認' }}
+                  </button>
+                  <button 
+                    class="cancel-btn" 
+                    @click="cancelEditName"
+                    :disabled="isSavingName"
+                  >
+                    <X :size="16" />
+                    取消
+                  </button>
+                </div>
+                <div v-if="nameSaveError" class="error-message">
+                  {{ nameSaveError }}
+                </div>
+              </div>
+            </div>
+            
+            <div class="stats-container">
+              <div class="stat-row">
+                <span class="label">持有造型數量：</span>
+                <span class="value">{{ playerData.skinCount }} 件</span>
+              </div>
+              <div class="stat-row">
+                <span class="label">最新遊玩進度：</span>
+                <span class="value">{{ getProgressText(playerData.maxGameId) }}</span>
+              </div>
+              <div class="stat-row">
+                <span class="label">最後遊玩時間：</span>
+                <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
+              </div>
+            </div>
+
+            <div class="decoration-dots">
+              <span v-for="i in 8" :key="i" class="dot">✦</span>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <button class="sticky-save-btn" @click="playSFX('click'); startClose('save')">
           <Save />儲存並返回
@@ -272,10 +497,122 @@ const startClose = (type) => {
 }
 
 /* 右側文字資訊 */
+.player-name-container {
+  margin-bottom: 35px;
+}
+
+.player-name-display {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .player-name {
   font-size: 3.2rem;
-  margin-bottom: 35px;
+  margin: 0;
   font-weight: 900;
+}
+
+.edit-name-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #453A27;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.edit-name-btn:hover {
+  background-color: rgba(69, 58, 39, 0.1);
+  transform: scale(1.1);
+}
+
+.edit-name-btn :deep(svg) {
+  stroke-width: 2.5px;
+}
+
+/* 編輯模式 */
+.player-name-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.name-input {
+  font-size: 2rem;
+  font-weight: 900;
+  padding: 12px 16px;
+  border: 2px solid #453A27;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #453A27;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: #fcc86d;
+  box-shadow: 0 0 0 3px rgba(252, 200, 109, 0.2);
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-btn, .cancel-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid #453A27;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.confirm-btn {
+  background-color: #453A27;
+  color: #FCF4E5;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #fcc86d;
+  color: #453A27;
+  transform: translateY(-2px);
+}
+
+.cancel-btn {
+  background-color: #FCF4E5;
+  color: #453A27;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: #e8dcc8;
+  transform: translateY(-2px);
+}
+
+.confirm-btn:disabled, .cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  background-color: rgba(211, 47, 47, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #d32f2f;
 }
 
 .stats-container {
@@ -346,6 +683,20 @@ const startClose = (type) => {
   /* 2. 套用持續晃動動畫，比貓咪的搖晃速度稍快，增加張力 */
   animation: save-wiggle 1.5s ease-in-out infinite;
   animation-delay: 0.1s; /* 在放大完成後稍稍延遲一點點開始，更有層次 */
+}
+
+/* 載入與錯誤狀態樣式 */
+.loading-state, .error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 1.5rem;
+  color: #453A27;
+}
+
+.error-state {
+  color: #d32f2f;
 }
 
 @keyframes cat-breath {
