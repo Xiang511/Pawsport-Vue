@@ -2,11 +2,14 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import ArticleEditor from '@/components/Client/ArticleEditor.vue'
-import { useRouter } from 'vue-router' // 處理跳轉
-import request from '@/api/axios' // 統一使用組員配置好的 axios 實例
-import { useAuthStore } from '@/stores/auth' // 引入權限 store
+import { useRouter } from 'vue-router'
+import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
+import { useArticleActions } from '@/composables/useArticleActions'
 
 const authStore = useAuthStore()
+const articleEditorRef = ref(null)
+const { draftsData, fetchDrafts, deleteDraft } = useArticleActions()
 
 // 初始化路由物件
 const router = useRouter()
@@ -120,25 +123,25 @@ const handleSaveDraft = async (postData) => {
       const response = await request.post('/Article', payload)
 
       if (response.status === 200 || response.status === 201) {
-        // 後端回傳的 ID 欄位階層為response.data.data
-        // console.log('後端回傳的原始資料：', response.data)
         const newId = response.data?.data
         if (newId) {
           articleId.value = newId
+          if (articleEditorRef.value) {
+            articleEditorRef.value.syncArticleId(newId)
+          }
           await fetchDrafts()
           alert('草稿儲存成功！您可留在本頁繼續修改。')
         } else {
-          console.error('儲存成功，但從 response 中找不到 id 欄位！請檢查 F12 的 Response 結構。')
-          alert('草稿已儲存，但未能取得文章識別碼，下次儲存可能仍會新增貼文。')
+          console.error('儲存成功，但從 response 中找不到 id 欄位。')
+          alert('草稿已儲存，但未能取得文章識別碼。')
         }
       }
     } else {
       // 情況 2：第二次以上儲存同一篇草稿 (PUT)
-
-      console.log(`【草稿】更新現有草稿 PUT /Article/${articleId.value} Payload:`, payload)
       const response = await request.put(`/Article/${articleId.value}`, payload)
 
       if (response.status === 200 || response.status === 204) {
+        await fetchDrafts()
         alert('草稿已更新！')
       }
     }
@@ -152,39 +155,6 @@ const handleSaveDraft = async (postData) => {
 const handleResetArticleId = () => {
   articleId.value = null
   console.log('【狀態切換】已成功清空文章 ID，現在進入「全新文章」模式。')
-}
-
-// 1. 儲存草稿清單的響應式陣列
-const draftsData = ref([])
-
-// 2. 串接 API 獲取所有草稿（範例）
-const fetchDrafts = async () => {
-  try {
-    // 從 Pinia 撈出目前登入者的 ID（看你們專案是叫 userId 還是 id）
-    const userId = authStore.userInfo?.userId
-
-    if (!userId) {
-      console.warn('找不到使用者 ID，無法載入草稿')
-      return
-    }
-
-    // 呼叫你的 Controller [HttpGet] API
-    // 網址會變成：/Article?status=0&userId=xxxx
-    const response = await request.get('/Article', {
-      params: {
-        Status: 0, // 0 代表草稿
-        UserId: userId, // 只撈出自己的
-        IsActive: true,
-      },
-    })
-
-    if (response.data && response.data.data) {
-      draftsData.value = response.data.data
-      console.log('成功撈取草稿清單：', draftsData.value)
-    }
-  } catch (error) {
-    console.error('撈取草稿失敗', error)
-  }
 }
 
 // 3. 處理「點擊草稿後載入」
@@ -211,18 +181,8 @@ const handleLoadDraft = async (id) => {
 
 // 4. 處理「刪除草稿」
 const handleDeleteDraft = async (id) => {
-  try {
-    // 呼叫後端刪除文章的 API
-    await request.delete(`/Article/${id}`)
-
-    alert('草稿已成功刪除')
-
-    // 💡 關鍵：刪除成功後，重新呼叫一次 fetchDrafts()，左邊或底下的草稿清單就會即時更新、少掉那一筆！
-    await fetchDrafts()
-  } catch (error) {
-    console.error('刪除草稿失敗', error)
-    alert('刪除草稿失敗')
-  }
+  const result = await deleteDraft(id) // Composable 會自己去刪除並刷清單
+  alert(result.message)
 }
 
 onMounted(async () => {
@@ -254,6 +214,7 @@ onMounted(async () => {
         </div>
         <!-- 編輯器元件 -->
         <ArticleEditor
+          ref="articleEditorRef"
           :categories="categoriesData"
           :drafts="draftsData"
           @publish="handlePublish"

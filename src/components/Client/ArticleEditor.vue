@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
-import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
+import { ArrowLeft, SquarePlus, Trash2 } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import Article_BaseButton from './Article_BaseButton.vue'
@@ -19,6 +19,7 @@ const currentSubCategories = ref([])
 
 const post = reactive({
   title: '',
+  articleId: null,
   mainCategory: '',
   categoryId: '',
   content: '',
@@ -149,7 +150,7 @@ const saveAndNew = () => {
 const discardAndNew = () => {
   clearEditorData()
   isNewArticleModalOpen.value = false
-  alert('✨ 已放棄變更，已開啟全新文章！')
+  alert('已放棄變更，已開啟全新文章！')
 }
 
 // 控制草稿匣彈窗開關
@@ -179,6 +180,14 @@ const truncateText = (text, length = 60) => {
   const cleanText = text.replace(/<[^>]*>/g, '')
   return cleanText.length > length ? cleanText.substring(0, length) + '...' : cleanText
 }
+
+const syncArticleId = (id) => {
+  post.articleId = id
+  console.log('已同步最新 ArticleId:', post.articleId)
+}
+defineExpose({
+  syncArticleId,
+})
 </script>
 
 <template>
@@ -258,7 +267,6 @@ const truncateText = (text, length = 60) => {
       <div
         class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
         <div ref="editorRef" class="[&_.ql-editor]:min-h-62.5 [&_.ql-editor]:cursor-text"></div>
-        <!-- note:之後可以加一個字數計數器(可能需要npm install Quill) -->
       </div>
 
       <!-- 標籤區 -->
@@ -365,7 +373,7 @@ const truncateText = (text, length = 60) => {
       </div>
 
       <!-- 草稿清單區 -->
-      <div class="max-h-[400px] divide-y divide-gray-100 overflow-y-auto">
+      <div class="max-h-100 divide-y divide-gray-100 overflow-y-auto">
         <!-- 沒草稿時的狀態 -->
         <div
           v-if="drafts.length === 0"
@@ -412,19 +420,9 @@ const truncateText = (text, length = 60) => {
 
           <!-- 右側：獨立刪除按鈕（阻止冒泡免得觸發點擊載入） -->
           <button
-            @click.stop="deleteDraftItem(draft.id)"
+            @click.stop="deleteDraftItem(draft.articleId)"
             class="rounded-xl p-2.5 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500">
-            <svg
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            <Trash2 class="h-5 w-5" />
           </button>
         </div>
       </div>
