@@ -1,8 +1,21 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { LucideTrainFront, Instagram, X, MenuIcon, Rss, Mail, Heart, LogIn } from 'lucide-vue-next'
+import {
+  LucideTrainFront,
+  Instagram,
+  X,
+  MenuIcon,
+  Rss,
+  Mail,
+  Heart,
+  LogIn,
+  User,
+} from 'lucide-vue-next'
 import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
 import SearchBarAlgolia from '@/components/Tailadmin/Game/SearchBarAlgolia.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
@@ -14,7 +27,8 @@ const toggleMenu = () => {
 }
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 150
+  // isScrolled.value = window.scrollY > 150
+  isScrolled.value = true
 }
 
 const handleMenuHover = (menu) => {
@@ -52,8 +66,8 @@ onUnmounted(() => {
         :class="isScrolled ? 'py-8' : 'py-14'">
         <div class="relative flex items-center justify-between gap-4">
           <div class="flex gap-4">
-            <Instagram class="inline text-black" size="24" />
-            <Mail class="inline text-black" size="24" />
+            <Instagram class="inline h-5 w-5 text-black md:h-8 md:w-8" />
+            <Mail class="inline h-5 w-5 text-black md:h-8 md:w-8" />
           </div>
           <div class="flex">
             <router-link
@@ -64,18 +78,24 @@ onUnmounted(() => {
           </div>
           <div class="relative flex cursor-pointer items-center gap-3">
             <SearchBarAlgolia class="rounded-full! border-none! bg-white" />
-            <router-link to="/login" cursor-pointer title="登入">
-              <log-in class="inline text-black" size="24" />
+            <router-link v-if="!authStore.isLoggedIn" to="/login" cursor-pointer title="登入">
+              <log-in class="inline h-5 w-5 text-black md:h-8 md:w-8" />
+            </router-link>
+            <router-link v-else to="/user/profile" cursor-pointer title="個人資料">
+              <User class="inline h-5 w-5 text-black md:h-8 md:w-8" />
             </router-link>
 
             <Transition name="menu-icon" mode="out-in">
               <MenuIcon
                 v-if="!isMenuOpen"
                 key="menu"
-                class="inline text-black"
-                size="24"
+                class="inline h-5 w-5 text-black md:h-8 md:w-8"
                 @click="toggleMenu" />
-              <X v-else key="close" class="inline text-black" size="24" @click="toggleMenu" />
+              <X
+                v-else
+                key="close"
+                class="inline h-5 w-5 text-black md:h-8 md:w-8"
+                @click="toggleMenu" />
             </Transition>
           </div>
         </div>
@@ -119,9 +139,12 @@ onUnmounted(() => {
             <div class="ml-3">
               <p class="mt-20 mb-3 text-sm font-bold tracking-widest">FOLLOW</p>
               <div class="flex gap-4">
-                <Instagram class="inline text-black duration-300 hover:opacity-40" size="24" />
-                <Mail class="inline text-black duration-300 hover:opacity-40" size="24" />
-                <Rss class="inline text-black duration-300 hover:opacity-40" size="24" />
+                <Instagram
+                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
+                <Mail
+                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
+                <Rss
+                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
               </div>
             </div>
 
