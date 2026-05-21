@@ -11,65 +11,36 @@ const playerStore = usePlayerStore()
 const emit = defineEmits(['close'])
 const isVisible = ref(false)
 
-// 🎯 修正 1：改為本地實體 ref 控制，配合 onMounted 強制更新，解決 computed 無法被赋值與點數不更新問題
-const playerData = ref(null)
-const isLoading = ref(true)
-const errorMessage = ref('')
+// 計算屬性：從 store 取得玩家資料
+const playerData = computed(() => playerStore.playerData)
+const isLoading = computed(() => playerStore.isLoading)
+const errorMessage = computed(() => playerStore.error)
 
-// 計算屬性：玩家的遊戲進度 (相容後端大小寫)
+// 計算屬性：玩家的遊戲進度
 const playerProgress = computed(() => {
   if (!playerData.value) return 0
-  return playerData.value.maxGameId || playerData.value.MaxGameId || 0
+  return playerData.value.maxGameId || 0
 })
-
-// 計算屬性：玩家的造型數量 (相容後端大小寫)
+// 計算屬性：玩家的造型數量
 const skinCountDisplay = computed(() => {
-  if (!playerData.value) return 0
-  const skins = playerData.value.ownedSkins || playerData.value.OwnedSkins || []
-  return skins.length
+  if (!playerData.value || !playerData.value.ownedSkins) return 0
+  return playerData.value.ownedSkins.length
 })
 
-// 🎯 修正 2：將所有造型與頭像邏輯整合進唯一的 currentEquippedSkin，移除 getEnabledSkinImage 等舊方法
+// 計算屬性：目前裝備的造型資訊
 const currentEquippedSkin = computed(() => {
-  const defaultSkin = {
-    skinId: 2,
-    skinName: '預設造型',
-    skinImage: '/images/game/default-avatar.png' // 💡 請確認你前端專案中的預設貓咪頭像路徑
+  if (!playerData.value || !playerData.value.ownedSkins) return null
+
+  const enabledSkinId = playerData.value.enabledSkinId
+  if (!enabledSkinId) {
+    return {
+      skinId: 2,
+      skinName: '預設造型',
+      skinImage: 'default-skin.png',
+    }
   }
 
-  if (!playerData.value) return defaultSkin
-
-  // 讀取目前裝備的 ID 與擁有造型清單 (相容大小寫)
-  const activeSkinId = playerData.value.enabledSkinId ?? playerData.value.EnabledSkinId
-  const ownedSkins = playerData.value.ownedSkins || playerData.value.OwnedSkins || []
-
-  if (ownedSkins.length === 0) return defaultSkin
-
-  // 1. 優先找符合 enabledSkinId 的造型
-  let equipped = ownedSkins.find((skin) => (skin.skinId ?? skin.SkinId) === activeSkinId)
-  
-  // 2. 降級方案：如果沒找到，找 enable == true 的
-  if (!equipped) {
-    equipped = ownedSkins.find((skin) => skin.enable === true || skin.Enable === true)
-  }
-
-  // 3. 再次降級：如果全空，直接拿第一個
-  if (!equipped && ownedSkins.length > 0) {
-    equipped = ownedSkins[0]
-  }
-
-  if (!equipped) return defaultSkin
-
-  // 🚀 網址拼接防呆：防止後端路徑缺少或重複
-  const rawImg = equipped.skinImage || equipped.SkinImage || ''
-  const finalName = equipped.skinName || equipped.SkinName || '未知造型'
-  const finalImg = rawImg.startsWith('http') ? rawImg : `https://localhost:7048${rawImg}`
-
-  return {
-    skinId: equipped.skinId ?? equipped.SkinId ?? 2,
-    skinName: finalName,
-    skinImage: rawImg ? finalImg : defaultSkin.skinImage
-  }
+  return playerData.value.ownedSkins.find((skin) => skin.skinId === enabledSkinId) || null
 })
 
 // 編輯狀態
@@ -89,7 +60,6 @@ const levelCategoryMap = {
   6: '水族與爬蟲',
 }
 
-// 🎯 修正 3：開啟彈窗組件時，強制戳一次 API 拿取最新資料，不使用舊快取
 onMounted(async () => {
   isVisible.value = true
   await fetchPlayerData()
@@ -99,31 +69,18 @@ onMounted(async () => {
 const fetchPlayerData = async () => {
   try {
     isLoading.value = true
-    errorMessage.value = ''
-    
     // 呼叫後端 API 獲取玩家列表
     const response = await request.get('https://localhost:7048/api/Player?page=1')
 
     if (response.data && response.data.success) {
-      const players = response.data.data?.data || response.data.data
-      
-      if (Array.isArray(players)) {
-        // 尋找 PlayerId = 1 的玩家
-        const targetPlayer = players.find((p) => (p.playerId || p.PlayerId) === 1)
+      const players = response.data.data.data
+      // 尋找 PlayerId = 1 的玩家
+      const targetPlayer = players.find((p) => p.playerId === 1)
 
-        if (targetPlayer) {
-          // 實體賦值成功！
-          playerData.value = targetPlayer
-          
-          // 順便把最新資料同步回 Pinia，讓外面大廳的點數也能同步更新
-          if (playerStore && playerStore.$patch) {
-            playerStore.$patch({ playerData: targetPlayer })
-          }
-        } else {
-          errorMessage.value = '找不到測試玩家資料 (PlayerId=1)'
-        }
+      if (targetPlayer) {
+        playerData.value = targetPlayer
       } else {
-        errorMessage.value = '回傳資料格式不正確'
+        errorMessage.value = '找不到測試玩家資料 (PlayerId=1)'
       }
     } else {
       errorMessage.value = '獲取資料失敗'
@@ -138,7 +95,7 @@ const fetchPlayerData = async () => {
 
 // 開始編輯玩家名字
 const startEditName = () => {
-  editedName.value = playerData.value?.userName || playerData.value?.UserName || ''
+  editedName.value = playerData.value.userName
   isEditingName.value = true
   nameSaveError.value = ''
 }
@@ -152,11 +109,13 @@ const cancelEditName = () => {
 
 // 儲存玩家名字
 const savePlayerName = async () => {
+  // 驗證名字不為空
   if (!editedName.value.trim()) {
     nameSaveError.value = '玩家名字不能為空'
     return
   }
 
+  // 驗證名字長度
   if (editedName.value.trim().length > 50) {
     nameSaveError.value = '玩家名字不能超過 50 個字'
     return
@@ -166,29 +125,29 @@ const savePlayerName = async () => {
     isSavingName.value = true
     nameSaveError.value = ''
 
-    const pId = playerData.value.playerId || playerData.value.PlayerId
-    const currentPt = playerData.value.currentPoint || playerData.value.CurrentPoint || 0
-    const currentSkId = playerData.value.enabledSkinId || playerData.value.EnabledSkinId || 1
-
+    // 暫時使用現有的 API，但需要確認後端是否支援 UserName 更新
     const updateData = {
-      playerId: pId,
-      point: currentPt,
-      skinId: currentSkId,
+      playerId: playerData.value.playerId,
+      point: playerData.value.currentPoint,
+      skinId: playerData.value.enabledSkinId || 1,
       enable: true,
-      userName: editedName.value.trim(),
+      userName: editedName.value.trim(), // 新增此欄位，但需要後端支援
     }
 
     const response = await request.put(
-      `https://localhost:7048/api/Player/${pId}`,
+      `https://localhost:7048/api/Player/${playerData.value.playerId}`,
       updateData,
     )
 
     if (response.data && response.data.success) {
-      // 🎯 修正 4：更新成功後重刷本地 API 確保畫面更新，並關閉編輯狀態
-      await fetchPlayerData()
+      // 更新本地資料
+      playerData.value.userName = editedName.value.trim()
       isEditingName.value = false
       editedName.value = ''
+
+      // 播放成功音效
       playSFX('success')
+
       console.log('玩家名字更新成功')
     } else {
       nameSaveError.value = '更新失敗，請稍後重試'
@@ -224,9 +183,46 @@ const formatPoints = (points) => {
 // 獲取最新遊玩進度文字
 const getProgressText = (maxGameId) => {
   if (!maxGameId) return '尚未開始'
+
+  // 假設每 10 關為一個大區，這裡簡化處理，您可以根據實際邏輯調整
   const areaId = Math.floor((maxGameId - 1) / 10) + 1
   const categoryName = levelCategoryMap[areaId] || `第 ${areaId} 章`
+
   return `${categoryName} (第 ${maxGameId} 關)`
+}
+
+// 獲取啟用的造型圖片
+const getEnabledSkinImage = () => {
+  if (!playerData.value || !playerData.value.ownedSkins) {
+    return null
+  }
+
+  // 先尋找 enable = true 的造型
+  const enabledSkin = playerData.value.ownedSkins.find((skin) => skin.enable === true)
+  if (enabledSkin?.skinImage) {
+    return `https://localhost:7048${enabledSkin.skinImage}`
+  }
+
+  // 如果沒有裝備的造型，預設顯示 SkinId=2 的造型
+  const defaultSkin = playerData.value.ownedSkins.find((skin) => skin.skinId === 2)
+  return defaultSkin?.skinImage ? `https://localhost:7048${defaultSkin.skinImage}` : null
+}
+
+// 獲取啟用的造型名稱
+const getEnabledSkinName = () => {
+  if (!playerData.value || !playerData.value.ownedSkins) {
+    return '未設定'
+  }
+
+  // 先尋找 enable = true 的造型
+  const enabledSkin = playerData.value.ownedSkins.find((skin) => skin.enable === true)
+  if (enabledSkin?.skinName) {
+    return enabledSkin.skinName
+  }
+
+  // 如果沒有裝備的造型，預設顯示 SkinId=2 的造型名稱
+  const defaultSkin = playerData.value.ownedSkins.find((skin) => skin.skinId === 2)
+  return defaultSkin?.skinName || '未設定'
 }
 
 // JavaScript 離開動畫
@@ -243,16 +239,22 @@ const onLeave = (el, done) => {
       fill: 'forwards',
     },
   )
+
   animation.onfinish = done
 }
 
+// 內部控制
 const startClose = (type) => {
+  // 發送事件讓父組件知道現在是什麼類型的退出
   emit('close', type)
+
   if (type === 'save') {
+    // 儲存：延遲一下再讓卡片彈走，給大圖示留表演時間
     setTimeout(() => {
       isVisible.value = false
     }, 1200)
   } else {
+    // 普通退出：立刻讓卡片彈走
     isVisible.value = false
   }
 }
@@ -283,48 +285,55 @@ const startClose = (type) => {
           </div>
         </div>
 
+        <!-- 載入中狀態 -->
         <div v-if="isLoading" class="loading-state">
           <p>正在讀取玩家資料...</p>
         </div>
 
+        <!-- 錯誤狀態 -->
         <div v-else-if="errorMessage" class="error-state">
           <p>{{ errorMessage }}</p>
         </div>
 
+        <!-- 資料顯示區 -->
         <template v-else-if="playerData">
           <div class="header-meta">
-            <p>玩家建立時間: {{ formatDate(playerData.createTime || playerData.CreateTime) }}</p>
-            <p>玩家ID: P7328643539300{{ playerData.playerId || playerData.PlayerId }}</p>
+            <p>玩家建立時間: {{ formatDate(playerData.createTime) }}</p>
+            <p>玩家ID: P7328643539300{{ playerData.playerId }}</p>
           </div>
 
           <div class="card-content">
+            <!-- 左側：頭像和點數 -->
             <div class="photo-section">
               <div class="photo-frame">
+                <!-- 目前裝備的造型顯示區 -->
                 <div class="equipped-skin-container">
-                  <div v-if="currentEquippedSkin.skinImage" class="avatar-placeholder with-image">
-                    <img :src="currentEquippedSkin.skinImage" alt="Equipped Skin" />
+                  <!-- 如果有圖片，顯示圖片；否則顯示方塊 -->
+                  <div v-if="getEnabledSkinImage()" class="avatar-placeholder with-image">
+                    <img :src="getEnabledSkinImage()" alt="Equipped Skin" />
                   </div>
                   <div v-else class="avatar-placeholder without-image">
                     <div class="placeholder-box"></div>
                   </div>
 
+                  <!-- 造型名稱 -->
                   <div class="skin-name-display">
-                    <p class="skin-label">目前裝備：{{ currentEquippedSkin.skinName }}</p>
+                    <p class="skin-label">目前裝備：{{ getEnabledSkinName() }}</p>
                   </div>
                 </div>
 
                 <div class="corner-tape top-left"></div>
                 <div class="corner-tape bottom-right"></div>
               </div>
-              <div class="rank-badge">
-                現有點數：{{ formatPoints(playerData.currentPoint || playerData.CurrentPoint) }} 點
-              </div>
+              <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint) }} 點</div>
             </div>
 
+            <!-- 右側：玩家資訊 -->
             <div class="info-section">
+              <!-- 玩家名字編輯區 -->
               <div class="player-name-container">
                 <div v-if="!isEditingName" class="player-name-display">
-                  <h2 class="player-name">{{ playerData.userName || playerData.UserName || '未設定名稱' }}</h2>
+                  <h2 class="player-name">{{ playerData.userName }}</h2>
                   <button
                     class="edit-name-btn"
                     @click="
@@ -355,22 +364,26 @@ const startClose = (type) => {
                       取消
                     </button>
                   </div>
+                  <div v-if="nameSaveError" class="error-message">
+                    {{ nameSaveError }}
+                  </div>
                 </div>
               </div>
 
+              <!-- 統計資訊 -->
               <div class="stats-container">
                 <div class="stat-row">
                   <span class="label">最新遊玩進度：</span>
-                  <span class="value">{{ getProgressText(playerData.maxGameId || playerData.MaxGameId) }}</span>
+                  <span class="value">{{ getProgressText(playerData.maxGameId) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">最後遊玩時間：</span>
-                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate || playerData.LastPlayedDate) }}</span>
+                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">擁有造型數量：</span>
                   <span class="value">
-                    {{ (playerData.ownedSkins || playerData.OwnedSkins)?.filter((s) => (s.skinId ?? s.SkinId) !== 1).length || 0 }} 個
+                    {{ playerData.ownedSkins?.filter((s) => s.skinId !== 1).length || 0 }} 個
                   </span>
                 </div>
               </div>
