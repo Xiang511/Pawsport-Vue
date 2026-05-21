@@ -103,12 +103,12 @@ const highlightMatch = (text, searchQuery) => {
       <input
         ref="searchInput"
         type="text"
-        placeholder="搜尋玩家名稱或 ID..."
+        placeholder="請輸入關鍵字"
         v-model="query"
         @keyup.enter="handleEnter"
         @focus="handleFocus"
         @blur="handleBlur"
-        class="dark:bg-dark-900 shadow-theme-xs focus:border-theme-info-300 focus:ring-brand-500/10 dark:focus:border-theme-info-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
+        class="dark:bg-dark-900 focus:border-theme-info-300 focus:ring-brand-500/10 dark:focus:border-theme-info-800 h-11 w-full rounded-full border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
 
       <!-- 清除按鈕 -->
       <button
