@@ -312,11 +312,10 @@ const goBack = () => {
               
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
-                <div v-if="item.id === currentEquippedId" class="equipped-ribbon">Equipped</div>
               </div>
 
               <div class="status-tag">
-                <span v-if="item.id === currentEquippedId" class="text-active">使用中</span>
+                <span v-if="item.id === currentEquippedId" class="text-active">穿戴中</span>
                 <span v-else class="text-idle">已擁有</span>
               </div>
             </div>
