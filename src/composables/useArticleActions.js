@@ -33,7 +33,7 @@ export function useArticleActions() {
     }
   }
 
-  // ===實作軟刪除===
+  // ===軟刪除===
   const deleteDraft = async (id) => {
     isActionLoading.value = true
     try {
@@ -50,11 +50,34 @@ export function useArticleActions() {
     }
   }
 
+  // 統一處理 POST / PUT 的請求發送
+  const saveOrUpdateArticle = async (currentId, postData, statusValue) => {
+    const payload = { ...postData, status: statusValue }
+    const isNew = !currentId || currentId === 'undefined' || currentId === 'null'
+
+    try {
+      if (isNew) {
+        // 全新文章：POST
+        const response = await request.post('/Article', payload)
+        // 回傳後端生成的新 ID
+        return { success: true, isNew: true, status: response.status, data: response.data?.data }
+      } else {
+        // 現有文章更新：PUT
+        const response = await request.put(`/Article/${currentId}`, payload)
+        return { success: true, isNew: false, status: response.status, data: currentId }
+      }
+    } catch (error) {
+      console.error('文章處理失敗:', error)
+      throw error // 丟給組件去處理 alert 錯誤訊息
+    }
+  }
+
   // 把外面的組件需要用到的狀態和函式吐出去
   return {
     draftsData,
     isActionLoading,
     fetchDrafts,
     deleteDraft,
+    saveOrUpdateArticle,
   }
 }
