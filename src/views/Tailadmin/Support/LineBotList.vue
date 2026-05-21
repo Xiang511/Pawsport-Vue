@@ -7,46 +7,55 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const isLoading = ref(false)
 
-// --- 讀取 API (假資料或準備好的 C# API) ---
+// 讀取API
 const loadLineMessages = async (page = 1) => {
   isLoading.value = true
   try {
-    // 之後替換成C#的LINE訊息記錄API
-    // const response = await fetch(`https://localhost:7048/api/Support/LineBot?page=${page}`)
+    const response = await fetch(`https://localhost:7048/api/LineBot?page=${page}`)
+    if (response.ok) {
+      const result = await response.json()
 
-    // 暫時用假資料模擬
-    setTimeout(() => {
-      lineMessages.value = [
-        {
-          messageId: 1,
-          userName: '王小明',
-          userId: 'U1234567890',
-          message: '請問領養狗狗需要帶什麼證件？',
-          createAt: '2026-05-13 10:00',
-          status: '未回覆',
-        },
-        {
-          messageId: 2,
-          userName: '陳大貓',
-          userId: 'U0987654321',
-          message: '我的健康護照APP一直閃退...',
-          createAt: '2026-05-12 15:30',
-          status: '已回覆',
-        },
-      ]
-      totalPages.value = 1
+      lineMessages.value =
+        result.data.items.map((item) => ({
+          messageId: item.id,
+          userName: `會員 ${item.userId}`,
+          userId: item.userId,
+          message: item.chatContent,
+          createAt: formatDate(item.chatDate),
+          status: item.status || '未回覆',
+        })) || []
+
+      totalPages.value = result.data.totalPages || 1
       currentPage.value = page
-      isLoading.value = false
-    }, 500)
+    }
   } catch (error) {
     console.error('取得 LINE 訊息失敗:', error)
+  } finally {
     isLoading.value = false
+  }
+}
+
+const changePage = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    currentPage.value = newPage
+    loadLineMessages(newPage)
   }
 }
 
 onMounted(() => {
   loadLineMessages(1)
 })
+
+const getStatusStyle = (status) => {
+  switch (status) {
+    case '已回覆':
+      return 'bg-brand-success-600 text-white'
+    case '未回覆':
+      return 'bg-brand-error-600 text-white'
+    default:
+      return 'bg-gray-100 text-gray-700'
+  }
+}
 
 const showReplyModal = ref(false)
 const isSubmitting = ref(false)
@@ -76,24 +85,41 @@ const submitReply = async () => {
 
   isSubmitting.value = true
   try {
-    // 這裡未來要改成呼叫C#的發送LINE訊息API
-    // const response = await fetch(`https://localhost:7048/api/Support/LineBot/Reply`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ userId: currentReply.userId, replyMessage: currentReply.replyText })
-    // })
+    // 呼叫C#的Reply API，網址帶上當前訊息的ID
+    const response = await fetch(
+      `https://localhost:7048/api/LineBot/${currentReply.messageId}/reply`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ replyText: currentReply.replyText }),
+      },
+    )
 
-    // 暫時模擬成功
-    setTimeout(() => {
+    if (response.ok) {
+      const result = await response.json()
       alert(`已成功發送 LINE 訊息給 ${currentReply.userName}！`)
       showReplyModal.value = false
-      loadLineMessages(currentPage.value)
-      isSubmitting.value = false
-    }, 800)
+      loadLineMessages()
+    } else {
+      alert('回覆發送失敗，請檢查後端狀態')
+    }
   } catch (error) {
     console.error('API 錯誤:', error)
+  } finally {
     isSubmitting.value = false
   }
+}
+
+// 格式化日期時間的輔助函式
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 </script>
 
@@ -111,6 +137,7 @@ const submitReply = async () => {
         <table class="w-full table-auto">
           <thead>
             <tr class="bg-gray-300 text-center">
+              <th class="w-20 px-3 py-4 font-bold text-gray-700">NO.</th>
               <th class="px-4 py-4 font-bold text-gray-700">收到時間</th>
               <th class="px-4 py-4 font-bold text-gray-700">LINE 暱稱</th>
               <th class="max-w-64 px-4 py-4 font-bold text-gray-700">訊息內容</th>
@@ -123,20 +150,19 @@ const submitReply = async () => {
               <td colspan="5" class="py-8 text-center text-gray-500">資料載入中...</td>
             </tr>
             <tr
-              v-for="item in lineMessages"
+              v-for="(item, index) in lineMessages"
               :key="item.messageId"
-              class="transition-colors hover:bg-gray-50">
+              class="text-center transition-colors hover:bg-gray-200">
+              <td class="px-3 py-4 text-center font-medium text-gray-700">
+                {{ (currentPage - 1) * 10 + index + 1 }}
+              </td>
               <td class="px-6 py-4">{{ item.createAt }}</td>
               <td class="px-6 py-4 font-medium text-gray-800">{{ item.userName }}</td>
               <td class="max-w-xs truncate px-6 py-4" :title="item.message">{{ item.message }}</td>
               <td class="px-6 py-4 text-center">
                 <span
-                  :class="
-                    item.status === '已回覆'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
-                  "
-                  class="rounded-full px-2 py-1 text-xs font-medium">
+                  :class="getStatusStyle(item.status)"
+                  class="rounded-full px-2 py-1 text-sm font-medium">
                   {{ item.status }}
                 </span>
               </td>
@@ -223,18 +249,15 @@ const submitReply = async () => {
         class="flex shrink-0 items-center justify-between rounded-b-lg border-t border-gray-200 bg-gray-50 px-6 py-4">
         <button
           @click="showReplyModal = false"
-          class="rounded-md border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-100 active:scale-95">
-          取消
+          class="bg-brand-error-500 hover:bg-brand-error-600 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95">
+          取消回覆
         </button>
         <button
           @click="submitReply"
           :disabled="isSubmitting"
           class="flex items-center gap-2 rounded-md bg-[#06C755] px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#05b04a] active:scale-95 disabled:opacity-50">
           <span v-if="isSubmitting">傳送中...</span>
-          <span v-else class="flex items-center gap-1">
-            <Send class="h-4 w-4" />
-            立即發送
-          </span>
+          <span v-else class="flex items-center gap-1">立即發送</span>
         </button>
       </div>
     </div>

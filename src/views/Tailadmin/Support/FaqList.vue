@@ -128,7 +128,7 @@ const currentEditFaq = reactive({
 })
 
 const openEditModal = (item) => {
-  currentEditFaq.faqid = item.faqid
+  currentEditFaq.faqId = item.faqid
   currentEditFaq.questionType = item.questionType
   currentEditFaq.question = item.question
   currentEditFaq.answer = item.answer || '' // 如果沒資料就塞空字串
@@ -414,99 +414,101 @@ const formatDate = (dateStr) => {
   </div>
 
   <!-- 修改 -->
-  v-if="showEditModal" class="bg-opacity-50 fixed inset-0 z-9999 mt-7 flex items-center
-  justify-center bg-gray-900 px-4">
-  <div class="mx-auto w-full max-w-2xl rounded-lg bg-white shadow-lg">
-    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-      <div>
-        <h3 class="text-xl font-bold text-gray-800">修改項目</h3>
-        <p class="mt-2 text-sm text-gray-500">
-          ※請修改常見問題內容
-          <span class="text-red-500">* 必填 *</span>
-        </p>
+  <div
+    v-if="showEditModal"
+    class="bg-opacity-50 fixed inset-0 z-9999 mt-7 flex items-center justify-center bg-gray-900 px-4">
+    <div
+      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
+      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">修改項目</h3>
+          <p class="mt-2 text-sm text-gray-500">
+            ※請修改常見問題內容
+            <span class="text-red-500">* 必填 *</span>
+          </p>
+        </div>
+        <button @click="showEditModal = false" class="text-gray-400 hover:text-gray-600">
+          <X class="h-6 w-6" />
+        </button>
       </div>
-      <button @click="showEditModal = false" class="text-gray-400 hover:text-gray-600">
-        <X class="h-6 w-6" />
-      </button>
-    </div>
+      <div class="space-y-4 p-6">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            類型
+            <span class="text-red-500">*</span>
+          </label>
+          <select
+            v-model="currentEditFaq.questionType"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
+            <option value="帳號問題">帳號問題</option>
+            <option value="領養諮詢">領養諮詢</option>
+            <option value="互動遊戲">互動遊戲</option>
+            <option value="健康護照">健康護照</option>
+          </select>
+        </div>
 
-    <div class="space-y-4 p-6">
-      <div>
-        <label class="mb-2 block text-sm font-medium text-gray-700">
-          類型
-          <span class="text-red-500">*</span>
-        </label>
-        <select
-          v-model="currentEditFaq.questionType"
-          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
-          <option value="帳號問題">帳號問題</option>
-          <option value="領養諮詢">領養諮詢</option>
-          <option value="互動遊戲">互動遊戲</option>
-          <option value="健康護照">健康護照</option>
-        </select>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            問題
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            v-model="currentEditFaq.question"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            回答
+            <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            v-model="currentEditFaq.answer"
+            rows="4"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
+        </div>
+
+        <div class="h-2"></div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">備註</label>
+          <textarea
+            v-model="currentEditFaq.note"
+            rows="2"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            發佈狀態
+            <span class="text-red-500">*</span>
+          </label>
+          <select
+            v-model="currentEditFaq.status"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
+            <option value="待發佈">待發佈</option>
+            <option value="已發佈">已發佈</option>
+            <option value="已下架">已下架</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label class="mb-2 block text-sm font-medium text-gray-700">
-          問題
-          <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          v-model="currentEditFaq.question"
-          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
+      <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4">
+        <button
+          @click="showEditModal = false"
+          class="bg-brand-error-500 hover:bg-brand-error-600 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95">
+          取消修改並返回
+        </button>
+
+        <button
+          @click="submitEdit"
+          :disabled="isEditing"
+          class="bg-brand-info-500 hover:bg-brand-info-600 flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95 disabled:opacity-50">
+          <span v-if="isEditing">處理中...</span>
+          <span v-else>確認修改</span>
+        </button>
       </div>
-
-      <div>
-        <label class="mb-2 block text-sm font-medium text-gray-700">
-          回答
-          <span class="text-red-500">*</span>
-        </label>
-        <textarea
-          v-model="currentEditFaq.answer"
-          rows="4"
-          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
-      </div>
-
-      <div class="h-2"></div>
-
-      <div>
-        <label class="mb-2 block text-sm font-medium text-gray-700">備註</label>
-        <textarea
-          v-model="currentEditFaq.note"
-          rows="2"
-          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none"></textarea>
-      </div>
-
-      <div>
-        <label class="mb-2 block text-sm font-medium text-gray-700">
-          發佈狀態
-          <span class="text-red-500">*</span>
-        </label>
-        <select
-          v-model="currentEditFaq.status"
-          class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none">
-          <option value="待發佈">待發佈</option>
-          <option value="已發佈">已發佈</option>
-          <option value="已下架">已下架</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4">
-      <button
-        @click="showEditModal = false"
-        class="bg-brand-error-500 hover:bg-brand-error-600 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95">
-        取消修改並返回
-      </button>
-
-      <button
-        @click="submitEdit"
-        :disabled="isEditing"
-        class="bg-brand-info-500 hover:bg-brand-info-600 flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium text-white transition-all active:scale-95 disabled:opacity-50">
-        <span v-if="isEditing">處理中...</span>
-        <span v-else>確認修改</span>
-      </button>
     </div>
   </div>
 

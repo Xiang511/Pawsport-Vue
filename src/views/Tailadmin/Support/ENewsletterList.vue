@@ -40,33 +40,33 @@ const formatDate = (dateStr) => {
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
-const getStatusClass = (status) => {
+const getStatusStyle = (status) => {
   switch (status) {
     case '已發送':
-      return 'bg-green-100 text-green-700'
+      return 'bg-brand-success-600 text-white'
     case '預約發送':
-      return 'bg-yellow-100 text-yellow-700'
+      return 'bg-brand-warning-400 text-yellow-900'
     case '草稿':
-      return 'bg-blue-100 text-blue-700'
+      return 'bg-brand-info-700 text-white'
     case '已下架':
-      return 'bg-red-100 text-red-700'
+      return 'bg-brand-error-600 text-white'
     default:
       return 'bg-gray-100 text-gray-700'
   }
 }
 
-const getCategoryClass = (category) => {
+const getCategoryStyle = (category) => {
   switch (category) {
     case '活動公告':
-      return 'bg-purple-100 text-purple-800 border border-purple-300'
+      return 'bg-purple-200 text-purple-800 border border-purple-500'
     case '認養資訊':
-      return 'bg-rose-100 text-rose-800 border border-rose-300'
+      return 'bg-rose-200 text-rose-800 border border-rose-500'
     case '飼養知識':
-      return 'bg-teal-100 text-teal-800 border border-teal-300'
+      return 'bg-teal-200 text-teal-800 border border-teal-500'
     case '遊戲挑戰':
-      return 'bg-amber-100 text-amber-800 border border-amber-300'
+      return 'bg-amber-200 text-amber-800 border border-amber-500'
     default:
-      return 'bg-gray-100 text-gray-800 border border-gray-300'
+      return 'bg-gray-200 text-gray-800 border border-gray-500'
   }
 }
 
@@ -291,7 +291,7 @@ const changePage = (newPage) => {
 
               <td class="px-6 py-4 text-center">
                 <span
-                  :class="getCategoryClass(item.category)"
+                  :class="getCategoryStyle(item.category)"
                   class="rounded px-2.5 py-1 text-sm font-medium shadow-sm">
                   {{ item.category || '-' }}
                 </span>
@@ -311,7 +311,7 @@ const changePage = (newPage) => {
 
               <td class="px-6 py-4 text-center">
                 <span
-                  :class="getStatusClass(item.status)"
+                  :class="getStatusStyle(item.status)"
                   class="rounded-full px-3 py-1 text-sm font-medium">
                   {{ item.status || '待發佈' }}
                 </span>

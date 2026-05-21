@@ -28,6 +28,16 @@ onMounted(() => {
   loadQaData(1)
 })
 
+const getStatusStyle = (status) => {
+  if (status === '追蹤中') {
+    return 'bg-brand-success-600 text-white'
+  } else if (status === '已結案') {
+    return 'bg-brand-error-600 text-white'
+  } else {
+    return 'bg-gray-400 text-white'
+  }
+}
+
 const changePage = (newPage) => {
   if (newPage >= 1 && newPage <= totalPages.value) {
     currentPage.value = newPage
@@ -133,9 +143,9 @@ const formatDate = (dateStr) => {
               <th class="px-3 py-4 font-bold text-gray-700">主訴</th>
               <th class="px-3 py-4 font-bold text-gray-700">處理客服</th>
               <th class="px-3 py-4 font-bold text-gray-700">發問時間</th>
-              <th class="px-3 py-4 font-bold text-gray-700">內部備註</th>
               <th class="px-3 py-4 font-bold text-gray-700">回覆時間</th>
               <th class="px-3 py-4 font-bold text-gray-700">滿意度</th>
+              <th class="px-3 py-4 font-bold text-gray-700">內部備註</th>
               <th class="px-3 py-4 font-bold text-gray-700">操作</th>
             </tr>
           </thead>
@@ -162,19 +172,15 @@ const formatDate = (dateStr) => {
               </td>
               <td class="px-3 py-4 text-center">{{ item.csname || '-' }}</td>
               <td class="px-3 py-4 text-center text-base">{{ formatDate(item.questionDate) }}</td>
+              <td class="px-3 py-4 text-center text-base">{{ formatDate(item.replyDate) }}</td>
+              <td class="px-3 py-4 text-center text-base">{{ item.score || '-' }}</td>
               <td class="px-3 py-4 text-center">
                 <span
-                  :class="
-                    item.note === '已結案'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-yellow-100 text-yellow-700'
-                  "
+                  :class="getStatusStyle(item.note)"
                   class="rounded-full px-2 py-1 text-sm font-medium">
                   {{ item.note || '未處理' }}
                 </span>
               </td>
-              <td class="px-3 py-4 text-center text-base">{{ formatDate(item.replyDate) }}</td>
-              <td class="px-3 py-4 text-center text-base">{{ item.score || '-' }}</td>
               <td class="px-6 py-4 text-center">
                 <button
                   @click="openReplyModal(item)"
