@@ -2,8 +2,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useGameAudio } from '@/composables/useGameAudio'
+import { usePlayerStore } from '@/stores/usePlayerStore'
 import { animate } from 'animejs'
-import axios from 'axios'
+import request from '@/api/axios'
+
 
 const { playSFX } = useGameAudio()
 const router = useRouter()
@@ -50,21 +52,31 @@ const fetchData = async () => {
   try {
     isLoadingData.value = true
     
-    // 1. 獲取玩家資料
-    const playerResponse = await axios.get('https://localhost:7048/api/Player?page=1')
+    // 【修改】從 store 取得動態 PlayerId
+    const playerStore = usePlayerStore()
+    const playerId = playerStore.playerId
+    
+    console.log('🎮 SkinShop - 取得 PlayerId:', playerId)
+    
+    if (!playerId) {
+      console.error('❌ PlayerId 不存在')
+      return
+    }
+    
+    // 1. 【修改】使用動態 PlayerId 獲取玩家資料
+    const playerResponse = await request.get(`https://localhost:7048/api/Player/${playerId}`)
     if (playerResponse.data.success) {
-      const players = playerResponse.data.data.data
-      playerData.value = players.find(p => p.playerId === 1)
+      playerData.value = playerResponse.data.data
       
       if (playerData.value) {
         userPoints.value = playerData.value.currentPoint
         animatedPoints.value.value = playerData.value.currentPoint
-        currentEquippedId.value = playerData.value.enabledSkinId
+        currentEquippedId.value = playerData.value.enabledSkinId || 2
       }
     }
 
     // 2. 獲取所有造型
-    const shopResponse = await axios.get('https://localhost:7048/api/Shop')
+    const shopResponse = await request.get('https://localhost:7048/api/Shop')
     if (shopResponse.data.success) {
       const shopSkins = shopResponse.data.data
       
@@ -156,7 +168,7 @@ const confirmBuySkin = async () => {
   if (!pendingSkin.value) return
 
   try {
-    const response = await axios.post(
+    const response = await request.post(
       `https://localhost:7048/api/Player/1/buy-skin`,
       { playerId: 1, skinId: pendingSkin.value.id }
     )
@@ -197,9 +209,13 @@ const confirmBuySkin = async () => {
 // 裝備造型（只有已擁有的造型才能裝備）
 const equipSkin = async (id) => {
   try {
-    const response = await axios.put(
-      `https://localhost:7048/api/Player/1/equip-skin`,
-      { playerId: 1, skinId: id }
+    // 【修改】從 store 取得動態 PlayerId
+    const playerStore = usePlayerStore()
+    const playerId = playerStore.playerId
+    
+    const response = await request.put(
+      `https://localhost:7048/api/Player/${playerId}/equip-skin`,
+      { playerId: playerId, skinId: id }
     )
 
     if (response.data.success) {
@@ -290,9 +306,6 @@ const goBack = () => {
             <div class="avatar-mock">
               <img v-if="previewSkin?.imgUrl" :src="previewSkin.imgUrl" alt="preview" class="avatar-img-preview" />
               <p class="skin-name-preview">{{ previewSkin?.name }}</p>
-              <span v-if="previewSkin?.id === currentEquippedId" class="equipped-tag">穿戴中</span>
-              <span v-else-if="previewSkin?.isOwned" class="try-on-tag">已擁有</span>
-              <span v-else class="try-on-tag">試穿中</span>
             </div>
           </div>
 
@@ -350,10 +363,6 @@ const goBack = () => {
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
               </div>
-
-              <div class="status-tag">
-                <span class="text-unavailable">未擁有</span>
-              </div>
             </div>
           </div>
         </div>
@@ -397,11 +406,6 @@ const goBack = () => {
               
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
-              </div>
-
-              <div class="status-tag">
-                <span v-if="item.id === currentEquippedId" class="text-active">穿戴中</span>
-                <span v-else class="text-idle">已擁有</span>
               </div>
             </div>
           </div>
@@ -584,8 +588,8 @@ const goBack = () => {
 }
 
 .avatar-img-preview {
-  width: 150px;
-  height: 150px;
+  width: 300px;
+  height: 300px;
   object-fit: contain;
   display: block;
   margin: 0 auto 15px;

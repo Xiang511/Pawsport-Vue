@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
-import axios from 'axios'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import request from '@/api/axios'
 
 const { playSFX } = useGameAudio()
 
@@ -145,7 +146,7 @@ const generateLevelLayout = (startId) => {
           isLocked = false
         }
       } else {
-        // 💾 【離線本地防線】
+        // 【離線本地防線】
         if (levelId === 2) {
           if (progress['level_2_unlocked'] === true) isLocked = false
         } else {
@@ -168,29 +169,32 @@ const generateLevelLayout = (startId) => {
 
 // 3. 切換區域時更新關卡資料
 const updateAreaContent = async () => {
-  // 🚀 【新增】在渲染畫面前，先去後端把 PlayerId = 1 的點數和進度拿回來
+  const playerStore = usePlayerStore()
+  
+  // 🚀 【修改】從 store 取得動態 PlayerId
+  const playerId = playerStore.playerId
+  
+  console.log('🎮 LevelSelect - 取得 PlayerId:', playerId)
+  
+  if (!playerId) {
+    console.error('❌ PlayerId 不存在')
+    return
+  }
+  
   try {
-    // A. 撈取通關歷史紀錄
-    const historyRes = await axios.get('https://localhost:7048/api/Player/1/game-history')
+    // A. 撲取通關歷史紀錄 - 【修改】使用動態 PlayerId
+    const historyRes = await request.get(`https://localhost:7048/api/Player/${playerId}/game-history`)
     if (historyRes.data && historyRes.data.success) {
       apiGameHistory.value = historyRes.data.data
+      console.log('✅ 通關歷史已加載:', apiGameHistory.value.length, '筆')
     }
 
-    // B. 精準撈取玩家列表並尋找 PlayerId = 1 
-    const playerRes = await axios.get('https://localhost:7048/api/Player')
+    // B. 精準撲取玩家資料 - 【修改】使用動態 PlayerId
+    const playerRes = await request.get(`https://localhost:7048/api/Player/${playerId}`)
     if (playerRes.data && playerRes.data.success) {
-      // 🔍 關鍵修正：對應後端分頁結構，playerRes.data.data.data 才是玩家陣列
-      const actualList = playerRes.data.data.data
-      
-      if (Array.isArray(actualList)) {
-        const me = actualList.find(p => p.playerId === 1)
-        if (me) {
-          userPoints.value = me.currentPoint ?? 0
-          console.log('✅ [API 同步成功] 找到測試帳號，實時點數為：', userPoints.value)
-        } else {
-          console.warn('⚠️ 找不到 playerId 為 1 的測試帳號')
-        }
-      }
+      const playerData = playerRes.data.data
+      userPoints.value = playerData.currentPoint ?? 0
+      console.log('✅ [玩家資料同步成功] PlayerId:', playerId, ', 實時點數為:', userPoints.value)
     }
   } catch (error) {
     console.error('❌ 後端連線失敗，切換為本地安全模式:', error)
@@ -205,6 +209,8 @@ const updateAreaContent = async () => {
 
   // 確保 Vue 把 HTML 按鈕生出來，再執行 Anime.js
   await nextTick()
+  
+  console.log('🎮 LevelSelect - 渲染完成')
   
   const levelListPanel = document.querySelector('.level-list-panel')
   if (levelListPanel) {
@@ -246,6 +252,8 @@ const updateAreaContent = async () => {
     })
   }
 }
+
+const playerStore = usePlayerStore()
 
 const selectLevel = (lvl) => {
   if (!lvl.locked) selectedLevel.value = lvl

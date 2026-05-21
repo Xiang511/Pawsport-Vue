@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/api/axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
 import SearchBar from '@/components/Tailadmin/Game/SearchBar.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
@@ -35,7 +35,7 @@ const saveChanges = async () => {
 
     console.log('修正後的發送資料:', payload)
 
-    const response = await axios.put(
+    const response = await request.put(
       `https://localhost:7048/api/Player/${payload.PlayerId}`,
       payload,
     )
@@ -79,7 +79,7 @@ const formatDate = (dateStr) => {
 const fetchPlayers = async () => {
   isLoading.value = true
   try {
-    const response = await axios.get('https://localhost:7048/api/Player')
+    const response = await request.get('https://localhost:7048/api/Player')
     console.log('API 回傳原始內容：', response.data)
     // response.data 是後端的 ApiResult
     // response.data.data 是你 Controller 裡 return Success 丟出來的匿名物件 { Data, CurrentPage, TotalCount }
@@ -107,7 +107,7 @@ const deletePlayer = async (playerId, userName) => {
   }
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/Player/${playerId}`)
+    const response = await request.delete(`https://localhost:7048/api/Player/${playerId}`)
 
     if (response.data.success) {
       alert(`玩家 ${displayName} 已成功刪除`)
@@ -138,7 +138,7 @@ const searchPlayers = async (keyword) => {
 
   isLoading.value = true
   try {
-    const response = await axios.get('https://localhost:7048/api/Player/search', {
+    const response = await request.get('https://localhost:7048/api/Player/search', {
       params: {
         query: keyword,
         page: 1,
@@ -183,7 +183,7 @@ const openRecordModal = async (player) => {
   playerRecords.value.pointLogs = []
 
   try {
-    const response = await axios.get(`https://localhost:7048/api/Player/${player.playerId}/logs`)
+    const response = await request.get(`https://localhost:7048/api/Player/${player.playerId}/logs`)
     if (response.data.success) {
       playerRecords.value = {
         playerName: player.userName,

@@ -2,7 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameAudio } from '@/composables/useGameAudio'
-import axios from 'axios'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import request from '@/api/axios'
+
 
 const { playSFX } = useGameAudio()
 const router = useRouter()
@@ -18,11 +20,11 @@ const currentEquippedId = ref(null)
 const previewSkin = ref(null)
 
 const defaultAvatar = {
-  id: 0, // 初始預設 ID 設為 0 
-  name: '經典肉墊頭像', // 預設名稱
-  imgUrl: '../../../public/images/game/DefaultAvatar.png',
+  id: 2, // 預設造型改為 SkinId=2
+  name: '', 
+  imgUrl: '',
   isOwned: true,
-  description: '這是陪你開啟冒險的初始經典頭像！'
+  description: ''
 }
 
 // 🎯 建立一個計算屬性：如果 previewSkin 沒被選中（為 null），自動退回顯示預設頭像
@@ -47,20 +49,30 @@ const fetchData = async () => {
   try {
     isLoadingData.value = true
     
-    // 1. 獲取玩家資料
-    const playerResponse = await axios.get('https://localhost:7048/api/Player?page=1')
+    // 【修改】從 store 取得動態 PlayerId
+    const playerStore = usePlayerStore()
+    const playerId = playerStore.playerId
+    
+    console.log('🎮 Inventory - 取得 PlayerId:', playerId)
+    
+    if (!playerId) {
+      console.error('❌ PlayerId 不存在')
+      return
+    }
+    
+    // 1. 【修改】使用動態 PlayerId 獲取玩家資料
+    const playerResponse = await request.get(`https://localhost:7048/api/Player/${playerId}`)
     if (playerResponse.data.success) {
-      const players = playerResponse.data.data.data
-      playerData.value = players.find(p => p.playerId === 1)
+      playerData.value = playerResponse.data.data
       
       if (playerData.value) {
         userPoints.value = playerData.value.currentPoint
-        currentEquippedId.value = playerData.value.enabledSkinId
+        currentEquippedId.value = playerData.value.enabledSkinId || 2
       }
     }
 
     // 2. 獲取所有造型
-    const shopResponse = await axios.get('https://localhost:7048/api/Shop')
+    const shopResponse = await request.get('https://localhost:7048/api/Shop')
     if (shopResponse.data.success) {
       const shopSkins = shopResponse.data.data
       
@@ -128,7 +140,7 @@ const fetchData = async () => {
 
 // 篩選未擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const unownedSkins = computed(() => {
-  return allSkins.value.filter(s => !s.isOwned && s.id !== 1)
+  return allSkins.value.filter(s => !s.isOwned && s.id !== 1 )
 })
 
 // 篩選已擁有的造型（排除 SkinId=1 的遊戲獎勵）
@@ -166,7 +178,7 @@ const toggleUnownedSkins = async () => {
 // 裝備造型（只有已擁有的造型才能裝備）
 const equipSkin = async (id) => {
   try {
-    const response = await axios.put(
+    const response = await request.put(
       `https://localhost:7048/api/Player/1/equip-skin`,
       { playerId: 1, skinId: id }
     )
@@ -253,9 +265,6 @@ const goBack = () => {
             <div class="avatar-mock">
               <img v-if="displaySkin?.imgUrl" :src="displaySkin.imgUrl" alt="preview" class="avatar-img-preview" />
               <p class="skin-name-preview">{{ displaySkin?.name }}</p>
-              <span v-if="displaySkin?.id === currentEquippedId || (currentEquippedId === null && displaySkin?.id === 0)" class="equipped-tag">穿戴中</span>
-              <span v-else-if="displaySkin?.isOwned" class="try-on-tag">已擁有</span>
-              <span v-else class="try-on-tag">預覽中</span>
             </div>
           </div>
 
@@ -313,11 +322,6 @@ const goBack = () => {
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
               </div>
-
-              <div class="status-tag">
-                <span v-if="item.id === currentEquippedId" class="text-active">穿戴中</span>
-                <span v-else class="text-idle">已擁有</span>
-              </div>
             </div>
           </div>
         </div>
@@ -360,10 +364,6 @@ const goBack = () => {
               
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
-              </div>
-
-              <div class="status-tag">
-                <span class="text-unavailable">未擁有</span>
               </div>
             </div>
           </div>
@@ -543,8 +543,8 @@ const goBack = () => {
 }
 
 .avatar-img-preview {
-  width: 150px;
-  height: 150px;
+  width: 300px;
+  height: 300px;
   object-fit: contain;
   display: block;
   margin: 0 auto 15px;
