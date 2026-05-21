@@ -1,18 +1,13 @@
 <script setup>
-import { Trash2 } from 'lucide-vue-next'
+import { Trash2, Inbox, X } from 'lucide-vue-next'
+import { useDateTime } from '@/composables/useDateTime'
 
 defineProps({
   modelValue: { type: Boolean, default: false },
   drafts: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['update:modelValue', 'select', 'delete'])
-
-// 簡單的文字截斷輔助函式
-const truncateText = (text, length = 60) => {
-  if (!text) return '無內文...'
-  const cleanText = text.replace(/<[^>]*>/g, '')
-  return cleanText.length > length ? cleanText.substring(0, length) + '...' : cleanText
-}
+const { formatLocalDate, timeAgo } = useDateTime()
 </script>
 
 <template>
@@ -32,14 +27,7 @@ const truncateText = (text, length = 60) => {
         <button
           @click="emit('update:modelValue', false)"
           class="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
-          <svg
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L16 6M6 6l12 12" />
-          </svg>
+          <X class="h-5 w-5 stroke-2" />
         </button>
       </div>
 
@@ -49,25 +37,16 @@ const truncateText = (text, length = 60) => {
         <div
           v-if="drafts.length === 0"
           class="flex flex-col items-center justify-center py-12 text-gray-400">
-          <svg
-            class="mb-2 h-12 w-12 stroke-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-          </svg>
+          <Inbox class="mb-2 h-12 w-12 stroke-1" />
           <p class="text-sm">目前沒有任何草稿</p>
         </div>
 
         <!-- 草稿卡片項目 -->
         <div
           v-for="draft in drafts"
-          :key="draft.id"
+          :key="draft.articleId"
           class="group flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-slate-50/80"
-          @click="emit('select', draft)">
+          @click="emit('select', draft.articleId)">
           <!-- 左側：內文資訊 -->
           <div class="min-w-0 flex-1 pr-4">
             <div class="mb-1 flex items-center space-x-2">
@@ -82,10 +61,12 @@ const truncateText = (text, length = 60) => {
               </span>
             </div>
             <p class="truncate text-sm text-gray-500">
-              {{ truncateText(draft.content) }}
+              {{ draft.summary || '無內文...' }}
             </p>
             <span class="mt-1 block text-xs text-gray-400">
-              最後修改：{{ draft.updatedAt || '剛剛' }}
+              最後修改：{{ formatLocalDate(draft.lastEditTime) }} ({{
+                timeAgo(draft.lastEditTime)
+              }})
             </span>
           </div>
 
