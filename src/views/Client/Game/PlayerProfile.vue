@@ -165,28 +165,36 @@ const getProgressText = (maxGameId) => {
 
 // 獲取啟用的造型圖片
 const getEnabledSkinImage = () => {
-  if (!playerData.value || !playerData.value.ownedSkins || playerData.value.ownedSkins.length === 0) {
+  if (!playerData.value || !playerData.value.ownedSkins) {
     return null;
   }
   
-  // 尋找 enable = true 的造型
+  // 先尋找 enable = true 的造型
   const enabledSkin = playerData.value.ownedSkins.find(skin => skin.enable === true);
+  if (enabledSkin?.skinImage) {
+    return `https://localhost:7048${enabledSkin.skinImage}`;
+  }
   
-  // 如果有啟用的造型且有圖片路徑，則返回該路徑；否則返回 null
-  return enabledSkin?.skinImage || null;
+  // 如果沒有裝備的造型，預設顯示 SkinId=2 的造型
+  const defaultSkin = playerData.value.ownedSkins.find(skin => skin.skinId === 2);
+  return defaultSkin?.skinImage ? `https://localhost:7048${defaultSkin.skinImage}` : null;
 };
 
 // 獲取啟用的造型名稱
 const getEnabledSkinName = () => {
-  if (!playerData.value || !playerData.value.ownedSkins || playerData.value.ownedSkins.length === 0) {
+  if (!playerData.value || !playerData.value.ownedSkins) {
     return '未設定';
   }
   
-  // 尋找 enable = true 的造型
+  // 先尋找 enable = true 的造型
   const enabledSkin = playerData.value.ownedSkins.find(skin => skin.enable === true);
+  if (enabledSkin?.skinName) {
+    return enabledSkin.skinName;
+  }
   
-  // 如果有啟用的造型，則返回名稱；否則返回未設定
-  return enabledSkin?.skinName || '未設定';
+  // 如果沒有裝備的造型，預設顯示 SkinId=2 的造型名稱
+  const defaultSkin = playerData.value.ownedSkins.find(skin => skin.skinId === 2);
+  return defaultSkin?.skinName || '未設定';
 };
 
 
@@ -281,8 +289,7 @@ const startClose = (type) => {
                 
                 <!-- 造型名稱 -->
                 <div class="skin-name-display">
-                  <p class="skin-label">目前裝備造型：</p>
-                  <p class="skin-name">{{ getEnabledSkinName() }}</p>
+                  <p class="skin-label">目前裝備：{{ getEnabledSkinName() }}</p>
                 </div>
               </div>
               
@@ -347,8 +354,8 @@ const startClose = (type) => {
                 <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
               </div>
               <div class="stat-row">
-                <span class="label">持有造型數量：</span>
-                <span class="value">{{ playerData.skinCount }} 個</span>
+                <span class="label">擁有造型數量：</span>
+                <span class="value">{{ (playerData.ownedSkins?.filter(s => s.skinId !== 1).length || 0) }} 個</span>
               </div>
             </div>
 
@@ -501,6 +508,12 @@ const startClose = (type) => {
   object-fit: cover;
 }
 
+.skin-name-display{
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 900;
+}
 /* 照片角落膠帶感裝飾 */
 .corner-tape {
   position: absolute;

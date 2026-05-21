@@ -17,6 +17,19 @@ const allSkins = ref([])
 const currentEquippedId = ref(null)
 const previewSkin = ref(null)
 
+const defaultAvatar = {
+  id: 0, // 初始預設 ID 設為 0 
+  name: '經典肉墊頭像', // 預設名稱
+  imgUrl: '../../../public/images/game/DefaultAvatar.png',
+  isOwned: true,
+  description: '這是陪你開啟冒險的初始經典頭像！'
+}
+
+// 🎯 建立一個計算屬性：如果 previewSkin 沒被選中（為 null），自動退回顯示預設頭像
+const displaySkin = computed(() => {
+  return previewSkin.value || defaultAvatar
+})
+
 // UI 狀態
 const showUnownedSkins = ref(false)
 const isLoadingUnownedSkins = ref(false)
@@ -53,16 +66,27 @@ const fetchData = async () => {
       
       // 3. 合併資料
       allSkins.value = shopSkins.map(skin => {
-        const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
-        return {
-          id: skin.skinId,
-          name: skin.skinName,
-          imgUrl: skin.skinImage,
-          price: skin.price,
-          isOwned: isOwned,
-          description: skin.description
-        }
-      })
+  const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
+  
+  // 確保圖片路徑包含完整的後端 URL
+  let imgUrl = skin.skinImage
+  if (imgUrl && !imgUrl.startsWith('http' )) {
+    // 如果是相對路徑，添加後端伺服器地址
+    imgUrl = `https://localhost:7048${imgUrl}?t=${Date.now( )}`
+  } else if (imgUrl) {
+    // 如果已經是完整 URL，只添加時間戳
+    imgUrl = `${imgUrl}?t=${Date.now()}`
+  }
+  
+  return {
+    id: skin.skinId,
+    name: skin.skinName,
+    imgUrl: imgUrl,
+    price: skin.price,
+    isOwned: isOwned,
+    description: skin.description
+  }
+})
 
       // 4. 設置預覽造型為目前裝備的造型
       const enabledSkin = playerData.value?.ownedSkins?.find(s => s.enable === true)
@@ -73,15 +97,24 @@ const fetchData = async () => {
           previewSkin.value = { ...matchingSkin }
         }
       } else {
-        // 如果沒有裝備的造型，顯示第一個已擁有的造型
-        const ownedSkinsArray = allSkins.value.filter(s => s.isOwned)
-        if (ownedSkinsArray.length > 0) {
-          previewSkin.value = { ...ownedSkinsArray[0] }
+        // 如果沒有裝備的造型，預設顯示 SkinId=2（預設造型）
+        const defaultSkin = allSkins.value.find(s => s.id === 2)
+        if (defaultSkin) {
+          previewSkin.value = { ...defaultSkin }
         } else {
-          // 如果沒有已擁有的造型，顯示第一個未擁有的造型
-          const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
-          if (unownedSkinsArray.length > 0) {
-            previewSkin.value = { ...unownedSkinsArray[0] }
+          // 如果 SkinId=2 不存在，顯示第一個已擁有的造型
+          const ownedSkinsArray = allSkins.value.filter(s => s.isOwned)
+          if (ownedSkinsArray.length > 0) {
+            previewSkin.value = { ...ownedSkinsArray[0] }
+          } else {
+            // 如果沒有已擁有的造型，顯示第一個未擁有的造型
+            const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
+            if (unownedSkinsArray.length > 0) {
+              previewSkin.value = { ...unownedSkinsArray[0] }
+            } else {
+              // 🎯 加上這個保險：如果連商店陣列都是空的，直接塗預設外觀
+              previewSkin.value = { ...defaultAvatar }
+            }
           }
         }
       }
@@ -93,18 +126,18 @@ const fetchData = async () => {
   }
 }
 
-// 篩選未擁有的造型
+// 篩選未擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const unownedSkins = computed(() => {
-  return allSkins.value.filter(s => !s.isOwned)
+  return allSkins.value.filter(s => !s.isOwned && s.id !== 1)
 })
 
-// 篩選已擁有的造型
+// 篩選已擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const ownedSkins = computed(() => {
-  return allSkins.value.filter(s => s.isOwned)
+  return allSkins.value.filter(s => s.isOwned && s.id !== 1)
 })
 
-// 已擁有造型數量
-const ownedCount = computed(() => allSkins.value.filter(s => s.isOwned).length)
+// 已擁有造型數量（排除 SkinId=1 的遊戲獎勵）
+const ownedCount = computed(() => allSkins.value.filter(s => s.isOwned && s.id !== 1).length)
 
 // 選擇造型
 const selectSkin = (skin) => {
@@ -202,7 +235,7 @@ const goBack = () => {
       
       <div class="header-right-group">
         <div class="currency-box">🪙 {{ userPoints }}</div>
-        <div class="currency-box is-bag">共持有 {{ ownedCount }} 個造型</div>
+        <div class="currency-box is-bag">共擁有 {{ ownedCount }} 個造型</div>
       </div>
     </div>
 
@@ -214,14 +247,14 @@ const goBack = () => {
       <!-- 左側：預覽面板 -->
       <div class="preview-panel">
         <div class="preview-card">
-          <div class="preview-title-bar">目前更衣間</div>
+          <div class="preview-title-bar">當前造型</div>
           
           <div class="avatar-display-zone">
             <div class="avatar-mock">
-              <img v-if="previewSkin?.imgUrl" :src="previewSkin.imgUrl" alt="preview" class="avatar-img-preview" />
-              <p class="skin-name-preview">{{ previewSkin?.name }}</p>
-              <span v-if="previewSkin?.id === currentEquippedId" class="equipped-tag">穿戴中</span>
-              <span v-else-if="previewSkin?.isOwned" class="try-on-tag">已擁有</span>
+              <img v-if="displaySkin?.imgUrl" :src="displaySkin.imgUrl" alt="preview" class="avatar-img-preview" />
+              <p class="skin-name-preview">{{ displaySkin?.name }}</p>
+              <span v-if="displaySkin?.id === currentEquippedId || (currentEquippedId === null && displaySkin?.id === 0)" class="equipped-tag">穿戴中</span>
+              <span v-else-if="displaySkin?.isOwned" class="try-on-tag">已擁有</span>
               <span v-else class="try-on-tag">預覽中</span>
             </div>
           </div>
@@ -229,7 +262,7 @@ const goBack = () => {
           <div class="action-zone">
             <!-- 已擁有且已裝備 -->
             <button 
-              v-if="previewSkin?.isOwned && previewSkin?.id === currentEquippedId" 
+              v-if="displaySkin?.isOwned && (displaySkin?.id === currentEquippedId || (currentEquippedId === null && displaySkin?.id === 0))"
               class="shop-btn is-equipped" 
               disabled
             >
@@ -237,8 +270,8 @@ const goBack = () => {
             </button>
             <!-- 已擁有但未裝備 -->
             <button 
-              v-else-if="previewSkin?.isOwned" 
-              @click="playSFX('click'); equipSkin(previewSkin.id)" 
+              v-else-if="displaySkin?.isOwned" 
+              @click="playSFX('click'); equipSkin(displaySkin.id)" 
               class="shop-btn is-actionable"
             >
               確認裝備
@@ -246,7 +279,7 @@ const goBack = () => {
             <!-- 未擁有 -->
             <button 
               v-else 
-              @click="playSFX('click'); goToBuySkin(previewSkin)" 
+              @click="playSFX('click'); goToBuySkin(displaySkin)" 
               class="shop-btn is-actionable"
             >
               前往購買
@@ -284,13 +317,12 @@ const goBack = () => {
 
               <div class="status-tag">
                 <span v-if="item.id === currentEquippedId" class="text-active">使用中</span>
-                <span v-else class="text-idle">已收藏</span>
+                <span v-else class="text-idle">已擁有</span>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- 未擁有的造型區塊（可折疊） -->
+        <!-- 未擁有的造型區塊-->
         <div class="skins-section">
           <div class="section-header">
             <label class="checkbox-label">
@@ -337,6 +369,7 @@ const goBack = () => {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>

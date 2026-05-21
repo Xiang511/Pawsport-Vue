@@ -70,16 +70,27 @@ const fetchData = async () => {
       
       // 3. 合併資料：為每個造型添加 isOwned 標誌
       allSkins.value = shopSkins.map(skin => {
-        const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
-        return {
-          id: skin.skinId,
-          name: skin.skinName,
-          imgUrl: skin.skinImage,
-          price: skin.price,
-          isOwned: isOwned,
-          description: skin.description
-        }
-      })
+  const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
+  
+  // 確保圖片路徑包含完整的後端 URL
+  let imgUrl = skin.skinImage
+  if (imgUrl && !imgUrl.startsWith('http' )) {
+    // 如果是相對路徑，添加後端伺服器地址
+    imgUrl = `https://localhost:7048${imgUrl}?t=${Date.now( )}`
+  } else if (imgUrl) {
+    // 如果已經是完整 URL，只添加時間戳
+    imgUrl = `${imgUrl}?t=${Date.now()}`
+  }
+  
+  return {
+    id: skin.skinId,
+    name: skin.skinName,
+    imgUrl: imgUrl,
+    price: skin.price,
+    isOwned: isOwned,
+    description: skin.description
+  }
+})
 
       // 4. 設置預覽造型為目前裝備的造型
       const enabledSkin = playerData.value?.ownedSkins?.find(s => s.enable === true)
@@ -90,12 +101,18 @@ const fetchData = async () => {
           previewSkin.value = { ...matchingSkin }
         }
       } else {
-        // 如果沒有裝備的造型，顯示第一個未擁有的造型
-        const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
-        if (unownedSkinsArray.length > 0) {
-          previewSkin.value = { ...unownedSkinsArray[0] }
-        } else if (allSkins.value.length > 0) {
-          previewSkin.value = { ...allSkins.value[0] }
+        // 如果沒有裝備的造型，預設顯示 SkinId=2（預設造型）
+        const defaultSkin = allSkins.value.find(s => s.id === 2)
+        if (defaultSkin) {
+          previewSkin.value = { ...defaultSkin }
+        } else {
+          // 如果 SkinId=2 不存在，顯示第一個未擁有的造型
+          const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
+          if (unownedSkinsArray.length > 0) {
+            previewSkin.value = { ...unownedSkinsArray[0] }
+          } else if (allSkins.value.length > 0) {
+            previewSkin.value = { ...allSkins.value[0] }
+          }
         }
       }
     }
@@ -106,14 +123,14 @@ const fetchData = async () => {
   }
 }
 
-// 篩選未擁有的造型
+// 篩選未擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const unownedSkins = computed(() => {
-  return allSkins.value.filter(s => !s.isOwned)
+  return allSkins.value.filter(s => !s.isOwned && s.id !== 1)
 })
 
-// 篩選已擁有的造型
+// 篩選已擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const ownedSkins = computed(() => {
-  return allSkins.value.filter(s => s.isOwned)
+  return allSkins.value.filter(s => s.isOwned && s.id !== 1)
 })
 
 // 選擇造型
@@ -267,7 +284,7 @@ const goBack = () => {
       <!-- 左側：預覽面板 -->
       <div class="preview-panel">
         <div class="preview-card">
-          <div class="preview-title-bar">試穿更衣間</div>
+          <div class="preview-title-bar">試穿造型</div>
           
           <div class="avatar-display-zone">
             <div class="avatar-mock">
@@ -380,13 +397,11 @@ const goBack = () => {
               
               <div class="product-img-box">
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
-                <div v-if="item.id === currentEquippedId" class="equipped-ribbon">Equipped</div>
-                <div v-else class="bought-ribbon">Bought</div>
               </div>
 
               <div class="status-tag">
                 <span v-if="item.id === currentEquippedId" class="text-active">穿戴中</span>
-                <span v-else class="text-idle">已收藏</span>
+                <span v-else class="text-idle">已擁有</span>
               </div>
             </div>
           </div>
