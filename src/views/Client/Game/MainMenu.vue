@@ -5,6 +5,7 @@ import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
 import 'animate.css';
 import { useGameAudio } from '@/composables/useGameAudio'
+import { usePlayerStore } from '@/stores/usePlayerStore'
 import axios from 'axios'
 
 const { 
@@ -15,6 +16,7 @@ const {
   sfxVolume 
 } = useGameAudio()
 
+const playerStore = usePlayerStore()
 // 玩家資料狀態
 const playerName = ref('玩家名稱')
 const playerData = ref(null)
@@ -38,25 +40,33 @@ onMounted(async () => {
 const fetchPlayerData = async () => {
   try {
     isLoadingPlayer.value = true
-    // 呼叫後端 API 獲取玩家列表
-    const response = await axios.get('https://localhost:7048/api/Player?page=1')
+    
+    // 【修改】從 store 取得 userId
+    const userId = playerStore.userId
+    
+    console.log('🎮 MainMenu - 取得 userId:', userId)
+    
+    if (!userId) {
+      console.log('❌ userId 不存在')
+      playerName.value = '玩家'
+      return
+    }
+    
+    // 【修改】使用 axios 呼叫 API（改為 axios 以支援 header 設定）
+    const response = await axios.get(`https://localhost:7048/api/users/${userId}/player-profile`)
+    
+    console.log('📡 API 回應:', response.data)
     
     if (response.data && response.data.success) {
-      const players = response.data.data.data
-      // 尋找 PlayerId = 1 的玩家
-      const targetPlayer = players.find(p => p.playerId === 1)
-      
-      if (targetPlayer) {
-        playerData.value = targetPlayer
-        playerName.value = targetPlayer.userName
-      } else {
-        playerName.value = '玩家'
-      }
+      playerData.value = response.data.data
+      playerName.value = response.data.data.userName || '玩家'
+      console.log('✅ 玩家名稱已更新:', playerName.value)
     } else {
+      console.log('⚠️ API 回應失敗:', response.data)
       playerName.value = '玩家'
     }
   } catch (error) {
-    console.error('獲取玩家資料失敗:', error)
+    console.error('❌ 獲取玩家資料失敗:', error)
     playerName.value = '玩家'
   } finally {
     isLoadingPlayer.value = false
@@ -97,7 +107,7 @@ const handleClose = (type) => {
     setTimeout(() => { showBigSave.value = false; }, 1800);
   } else {
     playSFX('click');
-    // 新增：普通退出的視覺回饋
+    // 普通退出的視覺回饋
     showCancelEffect.value = true;
     
     // 配合 PlayerProfile 彈走動畫 (0.8s)
