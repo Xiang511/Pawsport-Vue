@@ -19,11 +19,7 @@ const transformCategories = (apiData) => {
   // 在 result 物件裡建立空籃子
   apiData.forEach((item) => {
     // 判斷方式：如果 parentId 是 null，或者沒有 parentCategoryName，它就是大分類
-    if (
-      item.parentId === null ||
-      !item.parentCategoryName ||
-      item.parentCategoryName.trim() === ''
-    ) {
+    if (item.level === 0) {
       // 用大分類名稱當作 Key，建立一個空陣列準備裝子分類
       if (!result[item.categoryName]) {
         result[item.categoryName] = []
@@ -36,12 +32,7 @@ const transformCategories = (apiData) => {
     const parentName = item.parentCategoryName
 
     // 如果它有父分類名稱，代表它是小分類
-    if (parentName && parentName.trim() !== '') {
-      // 確保大分類的籃子存在（防呆）
-      if (!result[parentName]) {
-        result[parentName] = []
-      }
-
+    if (parentName && result[parentName] !== undefined) {
       // 把小分類的 ID 和名稱打包成物件，丟進大分類的陣列裡
       result[parentName].push({
         id: item.categoryId, //  對齊後端回傳的 categoryId
@@ -160,6 +151,49 @@ const handleResetArticleId = () => {
   articleId.value = null
   console.log('【狀態切換】已成功清空文章 ID，現在進入「全新文章」模式。')
 }
+
+// 1. 儲存草稿清單的響應式陣列
+const draftsData = ref([])
+
+// 2. 串接 API 獲取所有草稿（範例）
+const fetchDrafts = async () => {
+  try {
+    const response = await axios.get('https://localhost:7048/api/Article/drafts')
+    draftsData.value = response.data
+  } catch (error) {
+    console.error('撈取草稿失敗', error)
+  }
+}
+
+// 3. 處理「點擊草稿後載入」
+const handleLoadDraft = async (id) => {
+  try {
+    const response = await axios.get(`https://localhost:7048/api/Article/${id}`)
+    const draftDetail = response.data
+
+    // 💡 把拿到的資料，塞進你傳給子組件的編輯器資料物件(post)裡
+    // 例如：
+    // articleId.value = draftDetail.id
+    // currentPostData.title = draftDetail.title
+    // quillInstance.root.innerHTML = draftDetail.content ... 依此類推
+
+    console.log('草稿載入成功！')
+  } catch (error) {
+    alert('載入草稿失敗')
+  }
+}
+
+// 4. 處理「刪除草稿」
+const handleDeleteDraft = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7048/api/Article/${id}`)
+    // 重新刷一次草稿清單
+    await fetchDrafts()
+    alert('草稿已成功刪除')
+  } catch (error) {
+    alert('刪除草稿失敗')
+  }
+}
 </script>
 
 <template>
@@ -178,7 +212,9 @@ const handleResetArticleId = () => {
           :categories="categoriesData"
           @publish="handlePublish"
           @save-draft="handleSaveDraft"
-          @reset-id="handleResetArticleId" />
+          @reset-id="handleResetArticleId"
+          @load-draft="handleLoadDraft"
+          @delete-draft="handleDeleteDraft" />
       </div>
     </div>
   </div>
