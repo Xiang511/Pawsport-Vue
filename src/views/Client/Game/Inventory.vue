@@ -9,10 +9,17 @@ import request from '@/api/axios'
 const { playSFX } = useGameAudio()
 const router = useRouter()
 
+// 千位數格式化函數
+const formatNumber = (num) => {
+  if (num === null || num === undefined) return '0'
+  return Math.round(num).toLocaleString('en-US')
+}
+
 // 玩家資料
 const playerData = ref(null)
 const userPoints = ref(0)
 const isLoadingData = ref(true)
+
 
 // 造型資料
 const allSkins = ref([])
@@ -246,14 +253,15 @@ const goBack = () => {
       </div>
       
       <div class="header-right-group">
-        <div class="currency-box">🪙 {{ userPoints }}</div>
-        <div class="currency-box is-bag">共擁有 {{ ownedCount }} 個造型</div>
+        <div class="currency-box is-bag">🪙 {{ formatNumber(userPoints) }}</div>
+        <div class="currency-box is-bag">共擁有 {{ formatNumber(ownedCount) }} 個造型</div>
       </div>
     </div>
 
     <div v-if="isLoadingData" class="loading-state">
-      <p>正在載入造型資料...</p>
-    </div>
+  <div class="spinner-large"></div>
+  <p class="loading-text-big">整理收藏庫...</p>
+</div>
 
     <div v-else class="shop-main-content">
       <!-- 左側：預覽面板 -->
@@ -342,7 +350,7 @@ const goBack = () => {
 
           <!-- Loading 進度條 -->
           <div v-if="isLoadingUnownedSkins" class="loading-container">
-            <div class="loading-spinner"></div>
+            <div class="spinner-small"></div>
             <p class="loading-text">正在載入未擁有的造型...</p>
           </div>
 
@@ -488,15 +496,19 @@ const goBack = () => {
   align-items: stretch;
   gap: 40px;
   height: calc(100% - 80px);
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .loading-state {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   height: 100%;
   font-size: 1.2rem;
   color: #453a27;
+  position: relative;
 }
 
 /* ===================================================
@@ -823,5 +835,74 @@ const goBack = () => {
 .tooltip-body {
   font-size: 0.85rem;
   line-height: 1.4;
+}
+
+/* 大型 Spinner（頁面加載用） */
+.spinner-large {
+  width: 500px;
+  height: 500px;
+  border: 50px solid #e8dcc8;
+  border-top-color: #453a27;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 小型 Spinner（區塊加載用） */
+.spinner-small {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e8dcc8;
+  border-top-color: #453a27;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 旋轉動畫 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading 容器調整 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 30px;
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #453a27;
+  font-weight: 600;
+}
+
+.loading-text-big{
+  font-size: 2.8rem;
+  color: #453a27;
+  font-weight: 600;
+  position: absolute;
+}
+
+.pop-in-enter-active {
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pop-in-leave-active {
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) reverse;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

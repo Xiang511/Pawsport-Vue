@@ -16,6 +16,12 @@ const userPoints = ref(0)
 const animatedPoints = ref({ value: 0 })
 const displayPoints = computed(() => Math.round(animatedPoints.value.value))
 
+// 千位數格式化函數
+const formatNumber = (num) => {
+  if (num === null || num === undefined) return '0'
+  return Math.round(num).toLocaleString('en-US')
+}
+
 // 造型資料
 const allSkins = ref([])
 const isLoadingData = ref(true)
@@ -289,11 +295,12 @@ const goBack = () => {
         <h1 class="shop-title">造型商店</h1>
       </div>
       
-      <div class="currency-box">🪙 {{ displayPoints }}</div>
+      <div class="currency-box">🪙 {{ formatNumber(displayPoints) }}</div>
     </div>
 
     <div v-if="isLoadingData" class="loading-state">
-      <p>正在載入造型資料...</p>
+      <div class="spinner-large"></div>
+  <p class="loading-text-big">商店打掃中...</p>
     </div>
 
     <div v-else class="shop-main-content">
@@ -332,7 +339,7 @@ const goBack = () => {
               @click="playSFX('click'); openBuyModal(previewSkin)" 
               class="shop-btn is-actionable"
             >
-              購買 {{ previewSkin?.price }} 點
+              購買 {{ formatNumber(previewSkin?.price) }} 點
             </button>
           </div>
         </div>
@@ -384,7 +391,7 @@ const goBack = () => {
 
           <!-- Loading 進度條 -->
           <div v-if="isLoadingOwnedSkins" class="loading-container">
-            <div class="loading-spinner"></div>
+            <div class="spinner-small"></div>
             <p class="loading-text">正在載入已擁有的造型...</p>
           </div>
 
@@ -533,6 +540,7 @@ const goBack = () => {
   align-items: stretch;
   gap: 40px;
   height: calc(100% - 80px);
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .loading-state {
@@ -961,5 +969,74 @@ const goBack = () => {
 .tooltip-body {
   font-size: 0.85rem;
   line-height: 1.4;
+}
+
+/* 大型 Spinner（頁面加載用） */
+.spinner-large {
+  width: 500px;
+  height: 500px;
+  border: 50px solid #e8dcc8;
+  border-top-color: #453a27;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 小型 Spinner（區塊加載用） */
+.spinner-small {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e8dcc8;
+  border-top-color: #453a27;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 旋轉動畫 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading 容器調整 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 30px;
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #453a27;
+  font-weight: 600;
+}
+
+.loading-text-big{
+  font-size: 2.8rem;
+  color: #453a27;
+  font-weight: 600;
+  position: absolute;
+}
+
+.pop-in-enter-active {
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pop-in-leave-active {
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) reverse;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
