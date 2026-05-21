@@ -18,6 +18,10 @@ const isLoadingPlayer = ref(true)
 
 // 控制主選單設定 Modal 的顯示
 const showSettingsModal = ref(false)
+// 【新增】控制新玩家暱稱設定 Modal 的顯示
+const showNicknameModal = ref(false)
+const newNickname = ref('')
+const isSubmittingNickname = ref(false)
 // 定義滑桿專用變數 (0~100)
 const bgmSlider = ref(bgmVolume.value * 100)
 const sfxSlider = ref(sfxVolume.value * 100)
@@ -55,6 +59,11 @@ const fetchPlayerData = async () => {
       playerData.value = response.data.data
       playerName.value = response.data.data.userName || '玩家'
       console.log('✅ 玩家名稱已更新:', playerName.value)
+    // 【新增】檢查是否為新玩家（UserName 為空）
+      if (!response.data.data.userName || response.data.data.userName.trim() === '') {
+        console.log('🆕 檢測到新玩家，顯示暱稱設定 Modal')
+        showNicknameModal.value = true
+      }
     } else {
       console.log('⚠️ API 回應失敗:', response.data)
       playerName.value = '玩家'
@@ -131,6 +140,73 @@ const skinShop = () => {
 }
 const inventory = () => {
   router.push({ name: 'Client-inventory' })
+}
+
+// 【新增】提交新玩家暱稱
+const submitNickname = async () => {
+  try {
+    // 驗證暱稱
+    if (!newNickname.value || newNickname.value.trim() === '') {
+      alert('暱稱不能為空')
+      return
+    }
+
+    if (newNickname.value.length > 50) {
+      alert('暱稱不能超過 50 個字')
+      return
+    }
+
+    isSubmittingNickname.value = true
+
+    // 從 store 取得 playerId
+    const playerId = playerStore.playerId
+    if (!playerId) {
+      alert('無法取得玩家 ID')
+      return
+    }
+
+    console.log('📤 提交新暱稱:', newNickname.value, '| PlayerId:', playerId)
+
+    // 呼叫 PUT /api/Player/{playerId} 更新暱稱
+    const response = await request.put(
+      `https://localhost:7048/api/Player/${playerId}`,
+      {
+        playerId: playerId,
+        userName: newNickname.value.trim(),
+        point: playerData.value?.currentPoint || 0,
+        skinId: 0,
+        enable: false
+      }
+    )
+
+    console.log('📡 API 回應:', response.data)
+
+    if (response.data && response.data.success) {
+      console.log('✅ 暱稱設定成功')
+      // 更新本地狀態
+      playerName.value = newNickname.value.trim()
+      // 更新 Pinia store
+      playerStore.playerName = newNickname.value.trim()
+      // 關閉 Modal
+      showNicknameModal.value = false
+      newNickname.value = ''
+    } else {
+      console.log('⚠️ API 回應失敗:', response.data)
+      alert('暱稱設定失敗，請稍後重試')
+    }
+  } catch (error) {
+    console.error('❌ 提交暱稱失敗:', error)
+    alert('暱稱設定失敗，請稍後重試')
+  } finally {
+    isSubmittingNickname.value = false
+  }
+}
+
+// 【新增】關閉暱稱 Modal（不儲存）
+const closeNicknameModal = () => {
+  // 不允許關閉，必須設定暱稱才能繼續
+  // 可選：顯示提示訊息
+  console.log('⚠️ 新玩家必須設定暱稱才能繼續')
 }
 </script>
 
@@ -255,6 +331,35 @@ const inventory = () => {
       </div>
     </div>
   </Transition>
+
+  <!-- 【新增】新玩家暱稱設定 Modal -->
+  <Transition name="fade">
+    <div v-if="showNicknameModal" class="nickname-modal-mask">
+      <div class="nickname-modal-card">
+        <h3 class="nickname-modal-title">歡迎加入 PETMILY 🐾</h3>
+        <p class="nickname-modal-subtitle">請設定您的暱稱！</p>
+
+        <div class="nickname-input-group">
+          <input
+            v-model="newNickname"
+            type="text"
+            class="nickname-input"
+            placeholder="輸入暱稱（最多 50 個字）"
+            maxlength="50"
+            @keyup.enter="submitNickname" />
+          <span class="nickname-char-count">{{ newNickname.length }}/50</span>
+        </div>
+
+        <button
+          class="nickname-submit-btn"
+          @click="submitNickname"
+          :disabled="isSubmittingNickname">
+          {{ isSubmittingNickname ? '設定中...' : '確認暱稱' }}
+        </button>
+      </div>
+    </div>
+  </Transition>
+
 </template>
 
 <style scoped>
