@@ -4,6 +4,9 @@ import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import Article_BaseButton from './Article_BaseButton.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const emit = defineEmits(['publish', 'save-draft', 'reset-id', 'load-draft', 'delete-draft'])
 
@@ -72,7 +75,7 @@ const getFormData = () => {
     tagNames: finalTags,
 
     // 以下為後端需要的其他擴充欄位，前端先給預設
-    userId: 1, // TODO: 從登入資訊取得真實 userId
+    userId: authStore.userInfo?.userId || authStore.userInfo?.id, // TODO: 從登入資訊取得真實 userId
     eventStartDate: null,
     eventEndDate: null,
     eventLocation: null,

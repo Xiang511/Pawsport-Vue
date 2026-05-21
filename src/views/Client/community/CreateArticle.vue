@@ -3,6 +3,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import ArticleEditor from '@/components/Client/ArticleEditor.vue'
 import { useRouter } from 'vue-router' // 處理跳轉
+import request from '@/api/axios' // 統一使用組員配置好的 axios 實例
+import { useAuthStore } from '@/stores/auth' // 引入權限 store
+
+const authStore = useAuthStore()
 
 // 初始化路由物件
 const router = useRouter()
@@ -47,12 +51,9 @@ const transformCategories = (apiData) => {
 onMounted(async () => {
   isLoading.value = true
   try {
-    const response = await axios.get(`${API_BASE_URL}/Category`)
-    //console.log('C# 後端回傳的原始 response.data 是：', response.data)
+    const response = await request.get('/Category')
     // 先用 transformCategories 洗過
     categoriesData.value = transformCategories(response.data.data)
-
-    // console.log('前端格式的分類資料：', categoriesData.value)
   } catch (error) {
     console.error('取得分類失敗：', error)
     alert('無法載入分類選單')
@@ -78,14 +79,14 @@ const handlePublish = async (postData) => {
     ) {
       // 情況 A：從來沒存過草稿，直接發佈 (POST)
       // console.log('【發佈】全新貼文 POST Payload:', payload)
-      const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+      const response = await request.post('/Article', payload)
 
       // 取得新生成的文章 ID
       finalId = response.data.data
     } else {
       // 情況 B：之前有存過草稿，現在決定正式發佈 (PUT)
       // console.log(`【發佈】現有草稿轉正式發佈 PUT /Article/${articleId.value} Payload:`, payload)
-      await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
+      await request.put(`/Article/${articleId.value}`, payload)
     }
     alert('文章發布成功！')
 
@@ -116,7 +117,7 @@ const handleSaveDraft = async (postData) => {
     ) {
       // 情況 1：第一次儲存草稿 (POST)
       // console.log('【草稿】第一次儲存 POST Payload:', payload)
-      const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+      const response = await request.post('/Article', payload)
 
       if (response.status === 200 || response.status === 201) {
         // 後端回傳的 ID 欄位階層為response.data.data
@@ -124,6 +125,7 @@ const handleSaveDraft = async (postData) => {
         const newId = response.data?.data
         if (newId) {
           articleId.value = newId
+          await fetchDrafts()
           alert('草稿儲存成功！您可留在本頁繼續修改。')
         } else {
           console.error('儲存成功，但從 response 中找不到 id 欄位！請檢查 F12 的 Response 結構。')
@@ -134,7 +136,7 @@ const handleSaveDraft = async (postData) => {
       // 情況 2：第二次以上儲存同一篇草稿 (PUT)
 
       console.log(`【草稿】更新現有草稿 PUT /Article/${articleId.value} Payload:`, payload)
-      const response = await axios.put(`${API_BASE_URL}/Article/${articleId.value}`, payload)
+      const response = await request.put(`/Article/${articleId.value}`, payload)
 
       if (response.status === 200 || response.status === 204) {
         alert('草稿已更新！')
@@ -158,8 +160,28 @@ const draftsData = ref([])
 // 2. 串接 API 獲取所有草稿（範例）
 const fetchDrafts = async () => {
   try {
-    const response = await axios.get('https://localhost:7048/api/Article/drafts')
-    draftsData.value = response.data
+    // 從 Pinia 撈出目前登入者的 ID（看你們專案是叫 userId 還是 id）
+    const userId = authStore.userInfo?.userId
+
+    if (!userId) {
+      console.warn('找不到使用者 ID，無法載入草稿')
+      return
+    }
+
+    // 呼叫你的 Controller [HttpGet] API
+    // 網址會變成：/Article?status=0&userId=xxxx
+    const response = await request.get('/Article', {
+      params: {
+        Status: 0, // 0 代表草稿
+        UserId: userId, // 只撈出自己的
+        IsActive: true,
+      },
+    })
+
+    if (response.data && response.data.data) {
+      draftsData.value = response.data.data
+      console.log('成功撈取草稿清單：', draftsData.value)
+    }
   } catch (error) {
     console.error('撈取草稿失敗', error)
   }
@@ -168,16 +190,20 @@ const fetchDrafts = async () => {
 // 3. 處理「點擊草稿後載入」
 const handleLoadDraft = async (id) => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/Article/${id}`)
-    const draftDetail = response.data
+    // 這裡通常是去呼叫取得單一文章詳細資料的 API（例如：[HttpGet("{id}")]）
+    const response = await request.get(`/Article/${id}`)
 
-    // 💡 把拿到的資料，塞進你傳給子組件的編輯器資料物件(post)裡
-    // 例如：
-    // articleId.value = draftDetail.id
-    // currentPostData.title = draftDetail.title
-    // quillInstance.root.innerHTML = draftDetail.content ... 依此類推
+    // 一樣要注意組員包裝的 Success 格式，可能要寫 response.data.data
+    const draftDetail = response.data.data || response.data
 
-    console.log('草稿載入成功！')
+    // 💡 接下來把你拿到的詳細資料，塞進你目前表單的 Ref 變數裡
+    // 舉例（請換成你專案實際的變數名稱）：
+    // currentArticleId.value = draftDetail.articleId
+    // form.title = draftDetail.title
+    // form.categoryId = draftDetail.categoryId
+    // quillEditor.value.setHTML(draftDetail.content) // 如果是用富文本編輯器
+
+    console.log('草稿詳細資料載入成功！', draftDetail)
   } catch (error) {
     alert('載入草稿失敗')
   }
@@ -186,14 +212,33 @@ const handleLoadDraft = async (id) => {
 // 4. 處理「刪除草稿」
 const handleDeleteDraft = async (id) => {
   try {
-    await axios.delete(`https://localhost:7048/api/Article/${id}`)
-    // 重新刷一次草稿清單
-    await fetchDrafts()
+    // 呼叫後端刪除文章的 API
+    await request.delete(`/Article/${id}`)
+
     alert('草稿已成功刪除')
+
+    // 💡 關鍵：刪除成功後，重新呼叫一次 fetchDrafts()，左邊或底下的草稿清單就會即時更新、少掉那一筆！
+    await fetchDrafts()
   } catch (error) {
+    console.error('刪除草稿失敗', error)
     alert('刪除草稿失敗')
   }
 }
+
+onMounted(async () => {
+  isLoading.value = true
+  try {
+    const response = await request.get('/Category')
+    // 先用 transformCategories 洗過
+    categoriesData.value = transformCategories(response.data.data)
+  } catch (error) {
+    console.error('取得分類失敗：', error)
+    alert('無法載入分類選單')
+  } finally {
+    isLoading.value = false
+  }
+  fetchDrafts()
+})
 </script>
 
 <template>
@@ -210,6 +255,7 @@ const handleDeleteDraft = async (id) => {
         <!-- 編輯器元件 -->
         <ArticleEditor
           :categories="categoriesData"
+          :drafts="draftsData"
           @publish="handlePublish"
           @save-draft="handleSaveDraft"
           @reset-id="handleResetArticleId"
