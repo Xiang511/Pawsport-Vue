@@ -72,7 +72,7 @@ const toggleFaq = (id) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#fbf6ef] px-4 py-12 font-sans">
+  <div class="min-h-screen bg-[#FCF4E5] px-4 py-12 font-sans">
     <div class="mx-auto w-11/12 lg:w-[95%] xl:w-10/12">
       <SupportHeader />
 
@@ -122,7 +122,7 @@ const toggleFaq = (id) => {
             @click="toggleFaq(faq.faqid)"
             :class="[
               'flex w-full items-center justify-between px-6 py-5 text-left transition-colors',
-              openFaqId === faq.faqid ? 'bg-[#fcf7c6]' : 'bg-white hover:bg-[#fde6db]',
+              openFaqId === faq.faqid ? 'bg-[#FAE4AE]' : 'bg-white hover:bg-[#fceecc]',
             ]">
             <div class="flex items-center gap-3 pr-4">
               <HelpCircle class="h-6 w-6 shrink-0 text-[#7a6856]" />

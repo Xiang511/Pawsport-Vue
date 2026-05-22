@@ -32,7 +32,7 @@ const route = useRoute()
               ? 'scale-100' //當前頁
               : 'transition-transform group-hover:scale-110', //其他頁跳動
           ]" />
-        常見問答
+        常見問答 ｜ F A Q
       </router-link>
 
       <router-link
@@ -48,7 +48,7 @@ const route = useRoute()
             'h-6 w-6',
             route.name === 'Client-qa' ? 'scale-100' : 'transition-transform group-hover:scale-110',
           ]" />
-        聯絡我們
+        聯絡我們 ｜ Contact US
       </router-link>
 
       <router-link
@@ -66,7 +66,7 @@ const route = useRoute()
               ? 'scale-100'
               : 'transition-transform group-hover:scale-110',
           ]" />
-        寵物專欄
+        寵物專欄 ｜ E-Newsletter
       </router-link>
     </div>
   </div>

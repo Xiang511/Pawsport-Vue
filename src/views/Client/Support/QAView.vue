@@ -46,7 +46,7 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#fbf6ef] px-4 py-12 font-sans">
+  <div class="min-h-screen bg-[#FCF4E5] px-4 py-12 font-sans">
     <div class="mx-auto w-11/12 lg:w-[95%] xl:w-10/12">
       <SupportHeader />
 
@@ -54,13 +54,13 @@ const submitForm = async () => {
         class="mx-auto max-w-2xl overflow-hidden rounded-3xl border-2 border-[#e8dccb] bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-md sm:p-10">
         <form @submit.prevent="submitForm" class="space-y-7">
           <div>
-            <label class="mb-2 block font-bold text-[#7a6856]">
-              您想詢問的類型？
+            <label class="mb-3 block font-bold text-[#7a6856]">
+              您想詢問的類型：
               <span class="text-red-400">*</span>
             </label>
             <select
               v-model="form.questionType"
-              class="w-full rounded-xl border-2 border-[#e8dccb] bg-white px-4 py-3 text-[#7a6856] shadow-sm transition-all duration-300 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fcf7c6] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none">
+              class="w-full rounded-xl border-2 border-[#e8dccb] bg-[#fcf6ed] px-4 py-3 text-[#7a6856] shadow-sm transition-all duration-300 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fceecc] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none">
               <option value="帳號問題">帳號問題</option>
               <option value="領養諮詢">領養諮詢</option>
               <option value="互動遊戲">互動遊戲</option>
@@ -70,27 +70,27 @@ const submitForm = async () => {
           </div>
 
           <div>
-            <label class="mb-2 block font-bold text-[#7a6856]">
-              主旨重點
+            <label class="mb-3 block font-bold text-[#7a6856]">
+              詢問主旨：
               <span class="text-red-400">*</span>
             </label>
             <input
               v-model="form.chiefComplaint"
               type="text"
               placeholder="請用一句話簡述您的問題"
-              class="w-full rounded-xl border-2 border-[#e8dccb] bg-white px-4 py-3 text-gray-800 shadow-sm transition-all duration-300 placeholder:text-gray-400 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fcf7c6] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none" />
+              class="w-full rounded-xl border-2 border-[#e8dccb] bg-[#fcf6ed] px-4 py-3 text-gray-800 shadow-sm transition-all duration-300 placeholder:text-gray-400 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fceecc] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none" />
           </div>
 
           <div>
-            <label class="mb-2 block font-bold text-[#7a6856]">
-              詳細狀況描述
+            <label class="mb-3 block font-bold text-[#7a6856]">
+              詳細狀況描述：
               <span class="text-red-400">*</span>
             </label>
             <textarea
               v-model="form.chatContent"
               rows="5"
               placeholder="請盡可能詳細描述您遇到的狀況，以便我們能更快為您處理喔！"
-              class="w-full rounded-xl border-2 border-[#e8dccb] bg-white px-4 py-3 text-gray-800 shadow-sm transition-all duration-300 placeholder:text-gray-400 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fcf7c6] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none"></textarea>
+              class="w-full rounded-xl border-2 border-[#e8dccb] bg-[#fcf6ed] px-4 py-3 text-gray-800 shadow-sm transition-all duration-300 placeholder:text-gray-400 hover:border-[#d8ccbb] focus:border-[#755e44] focus:bg-[#fceecc] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none"></textarea>
           </div>
 
           <div class="pt-2 text-center">
