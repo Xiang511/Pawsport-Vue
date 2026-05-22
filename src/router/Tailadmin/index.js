@@ -29,9 +29,9 @@ export default [
       {
         path: '',
         name: 'admin-ecommerce',
-        component: () => import('@/views/Ecommerce.vue'),
+        component: () => import('@/views/Tailadmin/Member/MemberList.vue'),
         meta: {
-          title: 'eCommerce Dashboard',
+          title: '儀錶板 | PawsPort',
         },
       },
       {
@@ -58,6 +58,15 @@ export default [
           title: '權限管理 | PawsPort',
         },
       },
+      {
+        path: 'log-activity',
+        name: 'admin-logactivity',
+        component: () => import('@/views/Tailadmin/Member/LogActivity.vue'),
+        meta: {
+          title: '登入活動 | PawsPort',
+        },
+      },
+
       {
         path: 'questions',
         name: 'admin-questionlist',

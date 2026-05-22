@@ -8,7 +8,7 @@ import HeaderLogo from './header/HeaderLogo.vue'
 import NotificationMenu from './header/NotificationMenu.vue'
 import SearchBar from './header/SearchBar.vue'
 import UserMenu from './header/UserMenu.vue'
-
+import SearchBarMenu from '@/components/Tailadmin/layout/header/SearchBarMenu.vue'
 const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar()
 
 const handleToggle = () => {
@@ -93,7 +93,7 @@ const toggleApplicationMenu = () => {
               fill="currentColor" />
           </svg>
         </button>
-        <SearchBar />
+        <SearchBarMenu />
       </div>
 
       <div

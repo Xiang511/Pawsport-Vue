@@ -8,6 +8,8 @@ import {
   Gamepad2Icon,
   UsersRound,
   Dog,
+  Cat,
+  Settings,
 } from 'lucide-vue-next'
 
 import {
@@ -26,11 +28,11 @@ const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar()
 
 const menuGroups = [
   {
-    title: 'Menu',
+    title: '選單',
     items: [
       {
         icon: UsersRound,
-        name: '會員管理',
+        name: '會員',
         subItems: [
           { name: '基本資料', path: '/dashboard/member' },
           { name: '違規名單', path: '/dashboard/Blocklist' },
@@ -39,7 +41,7 @@ const menuGroups = [
       },
       {
         icon: Dog,
-        name: '寵物管理',
+        name: '寵物',
         subItems: [
           { name: '寵物資訊一覽', path: '/dashboard/pet', pro: false },
           { name: '寵物健康護照', path: '/dashboard/passport', pro: false },
@@ -79,13 +81,13 @@ const menuGroups = [
     ],
   },
   {
-    title: 'Others',
+    title: '其他',
     items: [
       {
-        icon: PieChartIcon,
+        icon: Settings,
         name: '系統設定',
         subItems: [
-          { name: 'Line Chart', path: '/dashboard/line-chart', pro: false },
+          { name: '登入活動', path: '/dashboard/log-activity', pro: false },
           { name: 'Bar Chart', path: '/dashboard/bar-chart', pro: false },
         ],
       },
@@ -145,22 +147,13 @@ const endTransition = (el) => {
     @mouseenter="!isExpanded && (isHovered = true)"
     @mouseleave="isHovered = false">
     <div :class="['flex py-8', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start']">
-      <router-link to="/">
-        <img
+      <router-link to="/dashboard" class="flex items-center">
+        <Cat class="icon h-6 w-6" />
+        <span
           v-if="isExpanded || isHovered || isMobileOpen"
-          class="dark:hidden"
-          src="/images/logo/logo.svg"
-          alt="Logo"
-          width="150"
-          height="40" />
-        <img
-          v-if="isExpanded || isHovered || isMobileOpen"
-          class="hidden dark:block"
-          src="/images/logo/logo-dark.svg"
-          alt="Logo"
-          width="150"
-          height="40" />
-        <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+          class="text-brand-success-950 ml-2 inline-block align-middle text-2xl font-bold">
+          Petmily
+        </span>
       </router-link>
     </div>
     <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
@@ -289,3 +282,9 @@ const endTransition = (el) => {
     </div>
   </aside>
 </template>
+<style scoped>
+.icon {
+  filter: brightness(0) invert(33%) sepia(8%) saturate(1476%) hue-rotate(76deg) brightness(97%)
+    contrast(85%);
+}
+</style>

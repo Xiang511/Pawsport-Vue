@@ -208,13 +208,19 @@ async function handleDeletePermission(mappingId) {
   if (confirm('確定要刪除此權限嗎？')) {
     try {
       await request.delete(`/users/${mappingId}/roles`)
-      // 從 selectedUser 的權限列表中移除
-      const index = selectedUser.permissions.findIndex((p) => p.mappingId === mappingId)
-      if (index !== -1) {
-        selectedUser.permissions.splice(index, 1)
-      }
+      
       // 重新載入數據
       await GetAllMemberPermission()
+      
+      // 更新 modal 中的權限列表
+      const updatedUser = groupedUsers.value.find((u) => u.userId === selectedUser.userId)
+      if (updatedUser) {
+        selectedUser.permissions = updatedUser.permissions.map((perm) => ({
+          ...perm,
+          updatedAt: perm.updatedAt instanceof Date ? perm.updatedAt : new Date(perm.updatedAt),
+        }))
+      }
+      
       alert('刪除成功')
     } catch (error) {
       console.error('刪除失敗:', error)
@@ -242,7 +248,10 @@ async function addNewPermission() {
     // 更新 modal 中的權限列表
     const updatedUser = groupedUsers.value.find((u) => u.userId === selectedUser.userId)
     if (updatedUser) {
-      selectedUser.permissions = JSON.parse(JSON.stringify(updatedUser.permissions))
+      selectedUser.permissions = updatedUser.permissions.map((perm) => ({
+        ...perm,
+        updatedAt: perm.updatedAt instanceof Date ? perm.updatedAt : new Date(perm.updatedAt),
+      }))
     }
 
     // 清空表單
