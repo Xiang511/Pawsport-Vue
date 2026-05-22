@@ -71,6 +71,14 @@ export default [
         },
       },
       {
+        path: '/adopt/:id',
+        name: 'pet-adoption-detail',
+        component: () => import('@/views/Client/pet/PetAdoptionDetailView.vue'),
+        meta: {
+          title: '狗狗檔案 | Petmily',
+        },
+      },
+      {
         path: '/healthpassport',
         name: 'pet-health-passport',
         component: () => import('@/views/Client/pet/PetPassportView.vue'),
