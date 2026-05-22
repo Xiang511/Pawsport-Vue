@@ -6,7 +6,7 @@ import FullScreenLayout from '@/components/Tailadmin/layout/FullScreenLayout.vue
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth' // 1. 引入 store
 import { googleTokenLogin } from 'vue3-google-login'
-
+import Live2DPet from './Live2DPet.vue'
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
@@ -345,6 +345,8 @@ const handleGoogleLogin = async () => {
             </div>
           </div>
         </div>
+        <Live2DPet />
+
         <!-- <div
           class="relative hidden h-full w-full items-center bg-[#FCF4E5] lg:grid lg:w-1/2 dark:bg-white/5">
           <div class="z-1 flex items-center justify-center">
