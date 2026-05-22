@@ -1,36 +1,40 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import request from '@/api/axios'
 import MedicalTab from '@/components/Client/MedicalTab.vue'
 import VaccineTab from '@/components/Client/VaccineTab.vue'
 import ImageTab from '@/components/Client/ImageTab.vue'
 import WeightTab from '@/components/Client/WeightTab.vue'
 import { useRouter } from 'vue-router'
 import { SquarePlus, SquarePen } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 const router = useRouter()
+
+const loading = ref(true)
 const pets = ref([])
 const activePetId = ref(null)
 const activeTab = ref('醫療史')
 const tabs = ['醫療史', '疫苗', '影像', '體重']
-const isLoading = ref(true)
 
-// 從後端 API 取得結構化護照資料
+const currentPet = computed(() => {
+  return pets.value.find((p) => p.id === activePetId.value) || null
+})
+
 const fetchPassports = async () => {
   try {
-    isLoading.value = true
-    const response = await request.get('/api/users/pet/passports')
-    if (response.data && response.data.data) {
-      pets.value = response.data.data
-      if (pets.value.length > 0) {
-        // 預設選取第一隻毛孩的護照
-        activePetId.value = pets.value[0].id
-      }
+    loading.value = true
+    const response = await request.get('https://localhost:7048/api/users/pet/passports')
+    const { success, data } = response.data
+    if (success && data && data.length > 0) {
+      pets.value = data
+      activePetId.value = data[0].id
+    } else {
+      pets.value = []
     }
   } catch (error) {
-    console.error('取得毛孩護照資料失敗:', error)
+    console.error('無法取得寵物健康護照資料:', error)
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 
@@ -38,14 +42,9 @@ onMounted(() => {
   fetchPassports()
 })
 
-// 當 activePetId 變更，自動動態計算當前選取物件
-const currentPet = computed(() => {
-  return pets.value.find((p) => p.id === activePetId.value) || null
-})
-
 const addNewPet = () => router.push({ name: 'pet-health-passport-add' })
-const goToEditPage = (passportId) => {
-  router.push({ name: 'pet-health-passport-edit', params: { id: passportId } })
+const goToEditPage = (PetId) => {
+  router.push({ name: 'pet-health-passport-edit', params: { id: PetId } })
 }
 </script>
 
@@ -63,7 +62,7 @@ const goToEditPage = (passportId) => {
         <SquarePlus />
       </button>
 
-      <div v-if="isLoading" class="py-20 text-center text-gray-500">資料同步加載中...</div>
+      <div v-if="loading" class="py-20 text-center text-gray-500">資料同步加載中...</div>
 
       <div v-else-if="pets.length === 0" class="rounded-3xl bg-white py-20 text-center shadow-sm">
         <p class="text-lg text-gray-400">目前尚無建檔的毛孩護照紀錄。</p>
@@ -83,7 +82,11 @@ const goToEditPage = (passportId) => {
                   @click="goToEditPage(currentPet.id)"
                   class="h-5 w-5 cursor-pointer text-gray-400 hover:text-[#9C6D6D]" />
               </h2>
-              <p class="text-sm text-gray-500">{{ currentPet.age }} ({{ currentPet.gender }})</p>
+              <p class="text-sm text-gray-500">
+                {{ currentPet.age }} ({{
+                  currentPet.gender === 1 ? '公' : currentPet.gender === 2 ? '母' : '未知'
+                }})
+              </p>
               <p
                 class="mt-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
                 {{ currentPet.isDesex ? '已絕育' : '未絕育' }} · 最新體重 {{ currentPet.weight }} KG
