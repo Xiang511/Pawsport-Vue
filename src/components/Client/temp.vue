@@ -1,51 +1,61 @@
+// 📄 CreateArticle.vue
 <script setup>
-import { computed } from 'vue'
+import axios from 'axios'
+import { ref } from 'vue'
+import ArticleEditor from '@/components/ArticleEditor.vue'
 
-const props = defineProps({
-  // 按鈕類型：primary (發佈), draft (草稿)
-  type: {
-    type: String,
-    default: 'primary',
-  },
-  // 按鈕是否被禁用
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-})
+const API_BASE_URL = 'https://localhost:7048/api'
 
-// 當按鈕被點擊時，向父組件發出 click 信號
-defineEmits(['click'])
+// 🚀 處理「發佈貼文」 (Status = 1)
+const handlePublish = async (postData) => {
+  try {
+    const payload = {
+      ...postData,
+      status: 1, // 1 代表直接發佈上架
+    }
 
-// 根據傳入的 type 與 disabled 狀態，動態計算對應的 Tailwind 樣式
-const buttonClass = computed(() => {
-  // 1. 如果是禁用狀態，直接套用禁用樣式（不論是 primary 還是 draft）
-  if (props.disabled) {
-    return 'bg-gray-200 text-gray-400 cursor-not-allowed'
+    console.log('前端準備送出的發佈 Payload:', payload)
+
+    // 💡 呼叫 C# 後端的 Post API
+    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+
+    if (response.status === 200 || response.status === 201) {
+      alert('🎉 文章發布成功！')
+      // router.push('/forum') // 成功後導頁
+    }
+  } catch (error) {
+    console.error('發布文章失敗：', error)
+    alert(`發布失敗：${error.response?.data?.message || '網路連線異常'}`)
   }
+}
 
-  // 2. 正常狀態下，根據 type 切換對應的 Tailwind 樣式與 Hover 效果
-  switch (props.type) {
-    case 'draft':
-      return 'bg-gray-100 text-[#747bbd] hover:bg-gray-200'
-    case 'primary':
-    default:
-      return 'bg-[#3367d6] text-white font-bold hover:bg-[#2852b3]'
+// 💾 處理「儲存草稿」 (Status = 0)
+const handleSaveDraft = async (postData) => {
+  try {
+    const payload = {
+      ...postData,
+      status: 0, // 0 代表儲存為草稿
+    }
+
+    console.log('前端準備送出的草稿 Payload:', payload)
+
+    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
+
+    if (response.status === 200) {
+      alert('💾 草稿儲存成功！')
+    }
+  } catch (error) {
+    console.error('儲存草稿失敗：', error)
+    alert('儲存草稿失敗')
   }
-})
+}
 </script>
 
 <template>
-  <!-- 
-    基礎樣式（對應 .base-button）：
-    px-5 py-2.5 (內邊距) | rounded-full (圓角20px/膠囊狀) | text-sm (14px) | transition-all duration-300 (動態過渡) 
-  -->
-  <button
-    class="rounded-full px-5 py-2.5 text-sm transition-all duration-300 select-none"
-    :class="buttonClass"
-    :disabled="disabled"
-    @click="$emit('click', $event)">
-    <!-- 使用 slot 讓按鈕文字可以靈活定義 -->
-    <slot />
-  </button>
+  <div>
+    <ArticleEditor
+      :categories="categoriesData"
+      @publish="handlePublish"
+      @save-draft="handleSaveDraft" />
+  </div>
 </template>

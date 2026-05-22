@@ -26,7 +26,7 @@ const handleSubmit = async () => {
 
     if (response.status === 200) {
       authStore.setLoginInfo(response.data.data.user)
-
+      console.log('【登入成功】使用者資訊已儲存到 Pinia store：', authStore.userInfo)
       router.replace('/dashboard')
     }
   } catch (error) {
