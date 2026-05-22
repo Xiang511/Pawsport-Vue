@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/api/axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
 import { EditIcon, Trash2 } from 'lucide-vue-next'
 
@@ -30,7 +30,7 @@ const newSkin = ref(getInitialSkinState())
 const fetchSkins = async () => {
   isLoading.value = true
   try {
-    const response = await axios.get('https://localhost:7048/api/Shop')
+    const response = await request.get('https://localhost:7048/api/Shop')
     if (response.data && response.data.success) {
       skins.value = response.data.data
     }
@@ -84,9 +84,9 @@ const saveSkin = async () => {
     }
 
     if (isEditMode.value) {
-      await axios.put(`https://localhost:7048/api/Shop/${editingId.value}`, payload)
+      await request.put(`https://localhost:7048/api/Shop/${editingId.value}`, payload)
     } else {
-      await axios.post('https://localhost:7048/api/Shop', payload)
+      await request.post('https://localhost:7048/api/Shop', payload)
     }
 
     alert('儲存成功')
@@ -104,7 +104,7 @@ const deleteSkin = async (id) => {
   if (!confirm('確定要從商店移除這個造型嗎？這可能影響玩家的持有紀錄！')) return
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/Shop/${id}`)
+    const response = await request.delete(`https://localhost:7048/api/Shop/${id}`)
     if (response.data && response.data.success) {
       alert('造型已成功刪除')
       await fetchSkins()

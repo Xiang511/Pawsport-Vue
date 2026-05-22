@@ -1,7 +1,9 @@
 <script setup>
 import { computed, watch, nextTick } from 'vue'
 import { animate } from 'animejs'
-import axios from 'axios'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import request from '@/api/axios'
+
 
 // 接收外部傳進來的參數
 const props = defineProps({
@@ -14,7 +16,7 @@ const props = defineProps({
 // 定義事件，用來通知父分頁「再試一次」或「離開」
 defineEmits(['retry', 'continue', 'nextLevel'])
 
-// 🌟 1. 星星規則計算
+//  1. 星星規則計算
 const stars = computed(() => {
   const currentScore = props.score
   if (currentScore === 10) return 3
@@ -23,25 +25,38 @@ const stars = computed(() => {
   return 0
 })
 
-// 🌟 2. 獎勵點數計算：全對才給 10 點
+//  2. 獎勵點數計算：全對才給 10 點
 const bonusPoints = computed(() => {
   return props.score === 10 ? 10 : 0
 })
 
-// 🌟 3. 勝敗判定：達到 6 題即勝利
+//  3. 勝敗判定：達到 6 題即勝利
 const isVictory = computed(() => {
   return props.score >= 6
 })
+
+const playerStore = usePlayerStore()
+const playerName = computed(() => playerStore.playerName || '玩家')
 
 // 🚀 核心優化：當結算視窗打開時，自動發送結果給後端 API 儲存
 watch(
   () => props.isOpen,
   async (newVal) => {
     if (newVal === true) {
-      // 🎯 執行後端聯網儲存與解鎖
+      // 🎯 執行後端联網儲存與解鎖
       try {
+        const playerStore = usePlayerStore()
+        const playerId = playerStore.playerId
+        
+        console.log('🎮 LevelResultModal - 取得 PlayerId:', playerId)
+        
+        if (!playerId) {
+          console.error('❌ PlayerId 不存在')
+          return
+        }
+        
         const submitData = {
-          PlayerId: 1, // 統一使用測試帳號 PlayerId = 1
+          PlayerId: playerId, // 【修改】使用動態 PlayerId
           GameId: props.levelId, // 目前關卡 ID
           IsVictory: isVictory.value, // 是否通過 (score >= 6)
           BonusPoints: bonusPoints.value, // 答對 10 題給 10 點，其餘 0 點
@@ -49,7 +64,7 @@ watch(
 
         console.log('🚀 [API 傳送] 正在同步關卡進度至後端...', submitData)
 
-        const res = await axios.post(
+        const res = await request.post(
           'https://localhost:7048/api/Player/save-game-result',
           submitData,
         )
@@ -145,15 +160,11 @@ const playModalAnimations = () => {
           <h1 class="victory-title" :class="{ 'fail-title': !isVictory }">
             {{ isVictory ? 'VICTORY' : 'FAILED' }}
           </h1>
-          <p class="user-name">Oka</p>
+          <p class="user-name">{{ playerName }}</p>
         </div>
 
         <div class="result-body">
-          <div class="character-preview">
-            <!-- <img src="/images/avatar/cat_calico.png" class="result-avatar" alt="avatar" /> -->
-            <div class="character-name-badge">Oka</div>
-          </div>
-
+          
           <div class="stars-row">
             <div v-for="i in 3" :key="i" class="star-container">
               <svg
@@ -200,9 +211,6 @@ const playModalAnimations = () => {
 </template>
 
 <style scoped>
-/* ===================================================
-   🏆 結算組件專屬樣式（徹底與主要關卡頁面隔離）
-   =================================================== */
 .modal-overlay.result-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -240,7 +248,7 @@ const playModalAnimations = () => {
 }
 
 .user-name {
-  font-size: 1.3rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #7a6e5d;
   margin: -5px 0 0 0;

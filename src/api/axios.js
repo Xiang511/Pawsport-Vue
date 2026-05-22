@@ -5,7 +5,7 @@ import router from '@/router'
 // 1. 建立一個 Axios 實例
 const service = axios.create({
   baseURL: '/api', // 使用相對路徑，透過 Vite 代理轉發到後端
-  timeout: 5000,
+  timeout: 15000,
   // 💡 關鍵：開啟此設定後，每次發送 API，瀏覽器都會自動把同網域的 HttpOnly Cookie 塞進請求中！
   withCredentials: true,
 })

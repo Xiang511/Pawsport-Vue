@@ -1,15 +1,30 @@
 <script setup>
-import { onMounted, ref, nextTick, computed } from 'vue'
+import { onMounted, ref, nextTick, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
-import { animate } from 'animejs'
+import { animate, stagger } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
-import axios from 'axios'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import request from '@/api/axios'
 
 const { playSFX } = useGameAudio()
 
 const userPoints = ref(0)
 const router = useRouter()
+
+// 千位數格式化函數
+const formatNumber = (num) => {
+  if (num === null || num === undefined) return '0'
+  return Math.round(num).toLocaleString('en-US')
+}
+// 【新增】Loading 狀態管理
+const isLoading = ref(false)
+const loadingProgress = ref(0)
+
+// 【新增】Loading 文字計算屬性
+const loadingText = computed(() => {
+  return '正在繪製地圖...'.split('')
+})
 
 // 用來暫存後端撈回來的資料
 const apiGameHistory = ref([])
@@ -145,7 +160,7 @@ const generateLevelLayout = (startId) => {
           isLocked = false
         }
       } else {
-        // 💾 【離線本地防線】
+        // 【離線本地防線】
         if (levelId === 2) {
           if (progress['level_2_unlocked'] === true) isLocked = false
         } else {
@@ -168,29 +183,35 @@ const generateLevelLayout = (startId) => {
 
 // 3. 切換區域時更新關卡資料
 const updateAreaContent = async () => {
-  // 🚀 【新增】在渲染畫面前，先去後端把 PlayerId = 1 的點數和進度拿回來
+  // 【新增】顯示 Loading 進度條
+  isLoading.value = true
+  loadingProgress.value = 0
+  const playerStore = usePlayerStore()
+  
+  // 🚀 【修改】從 store 取得動態 PlayerId
+  const playerId = playerStore.playerId
+  
+  console.log('🎮 LevelSelect - 取得 PlayerId:', playerId)
+  
+  if (!playerId) {
+    console.error('❌ PlayerId 不存在')
+    return
+  }
+  
   try {
-    // A. 撈取通關歷史紀錄
-    const historyRes = await axios.get('https://localhost:7048/api/Player/1/game-history')
+    // A. 撲取通關歷史紀錄 - 【修改】使用動態 PlayerId
+    const historyRes = await request.get(`https://localhost:7048/api/Player/${playerId}/game-history`)
     if (historyRes.data && historyRes.data.success) {
       apiGameHistory.value = historyRes.data.data
+      console.log('✅ 通關歷史已加載:', apiGameHistory.value.length, '筆')
     }
 
-    // B. 精準撈取玩家列表並尋找 PlayerId = 1 
-    const playerRes = await axios.get('https://localhost:7048/api/Player')
+    // B. 精準撲取玩家資料 - 【修改】使用動態 PlayerId
+    const playerRes = await request.get(`https://localhost:7048/api/Player/${playerId}`)
     if (playerRes.data && playerRes.data.success) {
-      // 🔍 關鍵修正：對應後端分頁結構，playerRes.data.data.data 才是玩家陣列
-      const actualList = playerRes.data.data.data
-      
-      if (Array.isArray(actualList)) {
-        const me = actualList.find(p => p.playerId === 1)
-        if (me) {
-          userPoints.value = me.currentPoint ?? 0
-          console.log('✅ [API 同步成功] 找到測試帳號，實時點數為：', userPoints.value)
-        } else {
-          console.warn('⚠️ 找不到 playerId 為 1 的測試帳號')
-        }
-      }
+      const playerData = playerRes.data.data
+      userPoints.value = playerData.currentPoint ?? 0
+      console.log('✅ [玩家資料同步成功] PlayerId:', playerId, ', 實時點數為:', userPoints.value)
     }
   } catch (error) {
     console.error('❌ 後端連線失敗，切換為本地安全模式:', error)
@@ -205,6 +226,8 @@ const updateAreaContent = async () => {
 
   // 確保 Vue 把 HTML 按鈕生出來，再執行 Anime.js
   await nextTick()
+  
+  console.log('🎮 LevelSelect - 渲染完成')
   
   const levelListPanel = document.querySelector('.level-list-panel')
   if (levelListPanel) {
@@ -245,7 +268,39 @@ const updateAreaContent = async () => {
       easing: 'easeOutQuad',
     })
   }
+  // 【新增】動畫完成後關閉 Loading
+  loadingProgress.value = 100
+  setTimeout(() => {
+    isLoading.value = false
+  }, 300)
 }
+
+// 【新增】監聽 isLoading 狀態，當顯示時觸發文字彈跳動畫
+watch(isLoading, (newVal) => {
+  if (newVal) {
+    // 等待 DOM 渲染完成，再執行動畫
+    nextTick(() => {
+      const loadingText = document.querySelector('.loading-text')
+      if (loadingText) {
+        animate(
+          '.loading-char',
+          {
+            y: [
+              { to: '-0.5rem', ease: 'out-expo', duration: 400 },
+              { to: 0, ease: 'out-bounce', duration: 600, delay: 60 },
+            ],
+          },
+          {
+            delay: stagger(30),
+          },
+        )
+      }
+    })
+  }
+})
+
+
+const playerStore = usePlayerStore()
 
 const selectLevel = (lvl) => {
   if (!lvl.locked) selectedLevel.value = lvl
@@ -283,6 +338,22 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 </script>
 
 <template>
+  <!-- 【新增】全螢幕 Loading 進度條 -->
+  <Transition name="fade">
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-container">
+        <div class="loading-text">
+          <span v-for="(char, index) in loadingText" :key="index + '-' + char" class="loading-char">
+            {{ char }}
+          </span>
+        </div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar" :style="{ width: loadingProgress + '%' }"></div>
+        </div>
+        <div class="progress-percentage">{{ Math.round(loadingProgress) }}%</div>
+      </div>
+    </div>
+  </Transition>
   <div
     class="level-select-page"
     :style="{ backgroundImage: `url(${areas[currentAreaIndex].bgUrl})` }">
@@ -301,7 +372,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
           Lv. {{ areas[currentAreaIndex].idRange[0] }} - {{ areas[currentAreaIndex].idRange[1] }}
         </p>
       </div>
-      <div class="currency-box">🪙 {{ userPoints }}</div>
+      <div class="currency-box">🪙 {{ formatNumber(userPoints) }}</div>
     </header>
 
     <div v-if="showMenu" class="menu-dropdown">
@@ -873,5 +944,98 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   100% {
     transform: scale(1);
   }
+}
+
+/* 【新增】全螢幕 Loading 進度條樣式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(69, 58, 39, 0.95), rgba(252, 200, 109, 0.1));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  backdrop-filter: blur(30px);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  /* background: #fcf4e5;
+  border: 6px solid #453a27;
+  border-radius: 40px;
+  padding: 60px 80px;
+  box-shadow: 0 12px 0 #453a27; */
+  max-width: 1500px;
+  width: 90%;
+  height:40%;
+  text-align: center;
+  position: absolute;
+}
+
+.loading-text {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #453a27;
+  letter-spacing: 2px;
+  text-align: center;
+  align-items: center;
+  display: flex
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  height: 30%;
+  background: #e5dfd5;
+  border: 10px solid #453a27;
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  align-items: center;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #fcc86d, #ffd699, #fcc86d);
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(252, 200, 109, 0.6);
+  border-radius: 12px;
+    text-align: center;
+  align-items: center;
+}
+
+.progress-percentage {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #453a27;
+  min-width: 60px;
+  text-align: center;
+  align-items: center;
+}
+
+@keyframes loadingBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

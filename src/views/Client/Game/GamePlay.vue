@@ -15,7 +15,9 @@ import {
 import { animate } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 import LevelResultModal from '@/components/Client/LevelResultModal.vue' 
-import axios from 'axios'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import request from '@/api/axios'
+
 
 
 const router = useRouter()
@@ -136,7 +138,7 @@ const fetchGameQuestions = async () => {
     console.log('【除錯資訊】準備丟給後端的分類名稱：', currentCategory)
     
     // 發送請求
-    const response = await axios.get('https://localhost:7048/api/Questions/game-level', {
+    const response = await request.get('https://localhost:7048/api/Questions/game-level', {
       params: { category: currentCategory }
     })
     

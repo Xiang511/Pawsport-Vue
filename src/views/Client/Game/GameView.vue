@@ -1,15 +1,26 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Home } from 'lucide-vue-next'
 import { animate, stagger } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
+import { usePlayerStore } from '@/stores/usePlayerStore'
+import { useAuthStore } from '@/stores/auth'
 
 const { playSFX, forcePlayBGM, updateBGMVolume, updateSFXVolume, hasPromptedAudio } = useGameAudio()
-// import 'animate.css';
+const playerStore = usePlayerStore()
+const authStore = useAuthStore()
+const router = useRouter()
 
 // 控制彈窗是否顯示
 const showAudioModal = ref(!hasPromptedAudio.value)
+
+// 初始化狀態
+const isInitializing = ref(true)
+const initError = ref('')
+
+// 計算屬性：檢查玩家是否已初始化
+const isPlayerReady = computed(() => playerStore.isPlayerLoaded)
 
 // 當玩家點擊「開啟音效」
 const enableAudio = () => {
@@ -30,9 +41,52 @@ const disableAudio = () => {
   // playSFX('click')
 }
 
-const router = useRouter()
+// 初始化玩家資料
+const initializePlayerFromAuth = async () => {
+  try {
+    isInitializing.value = true
+    initError.value = ''
+
+    // 從 auth store 取得 userId
+    const userId = authStore.userInfo?.userId
+
+    if (!userId) {
+      console.warn('⚠️ 未找到 UserId，請先登入')
+      initError.value = '未找到登入資訊，請返回首頁重新登入'
+      return false
+    }
+
+    console.log(`🔄 正在初始化玩家資料... UserId: ${userId}`)
+
+    // 呼叫 store 的初始化方法
+    const success = await playerStore.initializePlayer(userId)
+
+    if (success) {
+      console.log('✅ 玩家資料初始化成功')
+      // 自動顯示音效設定
+      showAudioModal.value = !hasPromptedAudio.value
+      return true
+    } else {
+      initError.value = playerStore.error || '無法初始化玩家資料'
+      console.error('❌ 玩家初始化失敗:', initError.value)
+      return false
+    }
+  } catch (error) {
+    console.error('❌ 初始化過程出錯:', error)
+    initError.value = '初始化過程出錯，請重試'
+    return false
+  } finally {
+    isInitializing.value = false
+  }
+}
+
+const router_instance = useRouter()
 const titleText = 'PETMILY'
-onMounted(() => {
+
+onMounted(async() => {
+  // 頁面加載時自動初始化玩家資料
+  await initializePlayerFromAuth()
+
   const playTitleAnimation = () => {
     animate(
       '.letter',
@@ -62,8 +116,15 @@ onMounted(() => {
 })
 
 const proceedToMenu = () => {
-  // 點擊後跳轉到主選單路由
-  router.push({ name: 'Client-mainmenu' })
+  if (isPlayerReady.value) {
+    router_instance.push({ name: 'Client-mainmenu' })
+  } else if (isInitializing.value) {
+    alert('正在初始化玩家資料，請稍候...')
+  } else if (initError.value) {
+    alert(initError.value)
+  } else {
+    alert('請先登入')
+  }
 }
 
 // 返回 Petmily 官方首頁
@@ -75,6 +136,20 @@ const backToWebHome = (event) => {
 </script>
 
 <template>
+  <!-- 初始化錯誤提示 -->
+  <Transition name="fade">
+    <div v-if="initError && !isInitializing" class="audio-auth-mask">
+      <div class="audio-auth-card">
+        <h3 class="auth-title">⚠️ 初始化失敗</h3>
+        <p class="auth-desc">{{ initError }}</p>
+
+        <div class="auth-btn-group">
+          <button class="auth-btn btn-cancel" @click="backToWebHome">返回首頁</button>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
   <Transition name="fade">
     <div v-if="showAudioModal" class="audio-auth-mask">
       <div class="audio-auth-card">
@@ -105,8 +180,11 @@ const backToWebHome = (event) => {
       <div class="logo-accent"></div>
     </div>
 
+    <!-- 根據初始化狀態顯示不同提示 -->
     <div class="press-hint">
-      <p>點 選 任 意 位 置 進 入 遊 戲</p>
+      <p v-if="isInitializing">正在初始化遊戲資料...</p>
+      <p v-else-if="isPlayerReady">點 選 任 意 位 置 進 入 遊 戲</p>
+      <p v-else>無法載入遊戲資料，請嘗試重新登入</p>
     </div>
 
     <div class="footer-info">

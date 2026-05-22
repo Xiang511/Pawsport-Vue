@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import axios from 'axios'
+import request from '@/api/axios'
 import Modal from '@/components/Tailadmin/ui/Modal.vue'
 import { EditIcon, Trash2 } from 'lucide-vue-next'
 
@@ -47,7 +47,7 @@ const filteredQuestions = computed(() => {
 const fetchQuestions = async () => {
   isLoading.value = true
   try {
-    const response = await axios.get('https://localhost:7048/api/Questions')
+    const response = await request.get('https://localhost:7048/api/Questions')
     if (response.data && response.data.success) {
       questions.value = response.data.data.questionContent
     } else {
@@ -134,7 +134,7 @@ const saveQuestion = async () => {
 
     if (isEditMode.value) {
       // 編輯模式：使用 PUT 請求
-      response = await axios.put(
+      response = await request.put(
         `https://localhost:7048/api/Questions/${editingId.value}`,
         payload,
         {
@@ -146,7 +146,7 @@ const saveQuestion = async () => {
     } else {
       // 新增模式：使用 POST 請求
       console.log(`新增模式 - 發送 POST 請求到: https://localhost:7048/api/Questions`)
-      response = await axios.post('https://localhost:7048/api/Questions', payload, {
+      response = await request.post('https://localhost:7048/api/Questions', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -197,7 +197,7 @@ const deleteQuestion = async (id) => {
 
   try {
     console.log(`刪除題目 ID: ${id}`)
-    const response = await axios.delete(`https://localhost:7048/api/Questions/${id}`, {
+    const response = await request.delete(`https://localhost:7048/api/Questions/${id}`, {
       headers: {
         'Content-Type': 'application/json',
       },
