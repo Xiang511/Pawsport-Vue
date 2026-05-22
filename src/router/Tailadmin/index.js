@@ -29,7 +29,7 @@ export default [
       {
         path: '',
         name: 'admin-ecommerce',
-        component: () => import('@/views/Ecommerce.vue'),
+        component: () => import('@/views/Tailadmin/Member/MemberList.vue'),
         meta: {
           title: '儀錶板 | PawsPort',
         },
