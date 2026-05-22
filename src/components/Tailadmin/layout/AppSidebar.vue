@@ -8,6 +8,7 @@ import {
   Gamepad2Icon,
   UsersRound,
   Dog,
+  Cat,
   Settings,
 } from 'lucide-vue-next'
 
@@ -146,22 +147,13 @@ const endTransition = (el) => {
     @mouseenter="!isExpanded && (isHovered = true)"
     @mouseleave="isHovered = false">
     <div :class="['flex py-8', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start']">
-      <router-link to="/dashboard">
-        <img
+      <router-link to="/dashboard" class="flex items-center">
+        <Cat class="icon h-6 w-6" />
+        <span
           v-if="isExpanded || isHovered || isMobileOpen"
-          class="dark:hidden"
-          src="/images/logo/logo.svg"
-          alt="Logo"
-          width="150"
-          height="40" />
-        <img
-          v-if="isExpanded || isHovered || isMobileOpen"
-          class="hidden dark:block"
-          src="/images/logo/logo-dark.svg"
-          alt="Logo"
-          width="150"
-          height="40" />
-        <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+          class="text-brand-success-950 ml-2 inline-block align-middle text-2xl font-bold">
+          Petmily
+        </span>
       </router-link>
     </div>
     <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
@@ -290,3 +282,9 @@ const endTransition = (el) => {
     </div>
   </aside>
 </template>
+<style scoped>
+.icon {
+  filter: brightness(0) invert(33%) sepia(8%) saturate(1476%) hue-rotate(76deg) brightness(97%)
+    contrast(85%);
+}
+</style>

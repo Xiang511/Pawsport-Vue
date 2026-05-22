@@ -31,7 +31,7 @@ export default [
         name: 'admin-ecommerce',
         component: () => import('@/views/Ecommerce.vue'),
         meta: {
-          title: 'eCommerce Dashboard',
+          title: '儀錶板 | PawsPort',
         },
       },
       {
