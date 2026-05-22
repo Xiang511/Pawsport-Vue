@@ -26,6 +26,11 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
+const closeMenu = () => {
+  isMenuOpen.value = false
+  hoveredMenu.value = null
+}
+
 const handleScroll = () => {
   // isScrolled.value = window.scrollY > 150
   isScrolled.value = true
@@ -111,11 +116,13 @@ onUnmounted(() => {
           <div class="mx-auto h-full w-[1286px] pt-[.5em] pl-3 md:pt-[72px]">
             <router-link
               to="/"
+              @click="closeMenu"
               class="menu-item fontmdxtrabold relative block py-7 text-center text-left text-xl font-bold tracking-widest md:text-3xl">
               Home
             </router-link>
             <router-link
               to="/"
+              @click="closeMenu"
               @mouseenter="handleMenuHover('pets')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -123,6 +130,7 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
+              @click="closeMenu"
               @mouseenter="handleMenuHover('games')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -130,6 +138,7 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
+              @click="closeMenu"
               @mouseenter="handleMenuHover('community')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -137,6 +146,7 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
+              @click="closeMenu"
               class="menu-item text-md relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
               Contact Us
             </router-link>
@@ -154,22 +164,14 @@ onUnmounted(() => {
 
             <div class="mt-8 ml-3">
               <router-link
+                @click="closeMenu"
                 class="mt-10 mb-3 block text-sm font-bold tracking-widest duration-300 hover:opacity-40">
                 SITEMAP
               </router-link>
               <router-link
+                @click="closeMenu"
                 class="mb-2 block text-sm font-bold tracking-widest duration-300 hover:opacity-40">
                 PRIVACY POLICY
-              </router-link>
-              <router-link
-                :to="{ name: 'Client-faq' }"
-                class="rounded-md bg-yellow-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
-                🚧客服中心
-              </router-link>
-              <router-link
-                :to="{ name: 'Client-login' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
-                🚧登入
               </router-link>
             </div>
             <Transition name="sidebar-panel">
@@ -183,24 +185,22 @@ onUnmounted(() => {
                     <h3 class="mb-6 text-2xl font-bold tracking-wider">Pet Categories</h3>
                     <div class="grid grid-cols-2 gap-4">
                       <router-link
-                        to="/"
-                        class="rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Dogs
+                        :to="{ name: 'pet-adoption' }"
+                        @click="closeMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        領養狗狗
                       </router-link>
                       <router-link
-                        to="/"
-                        class="rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Cats
+                        :to="{ name: 'pet-health-passport' }"
+                        @click="closeMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        寵物健康護照
                       </router-link>
                       <router-link
-                        to="/"
-                        class="rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Birds
-                      </router-link>
-                      <router-link
-                        to="/"
-                        class="rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Fish
+                        :to="{ name: 'missing-report' }"
+                        @click="closeMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        遺失協尋
                       </router-link>
                     </div>
                   </div>
@@ -209,16 +209,19 @@ onUnmounted(() => {
                     <div class="space-y-3">
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Pet Quiz
                       </router-link>
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Memory Game
                       </router-link>
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Puzzle
                       </router-link>
@@ -229,21 +232,25 @@ onUnmounted(() => {
                     <div class="space-y-3">
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Forums
                       </router-link>
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Events
                       </router-link>
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Pet Stories
                       </router-link>
                       <router-link
                         to="/"
+                        @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Q&A
                       </router-link>
