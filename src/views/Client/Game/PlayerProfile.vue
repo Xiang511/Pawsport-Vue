@@ -12,9 +12,11 @@ const emit = defineEmits(['close'])
 const isVisible = ref(false)
 
 // 計算屬性：從 store 取得玩家資料
-const playerData = computed(() => playerStore.playerData)
-const isLoading = computed(() => playerStore.isLoading)
-const errorMessage = computed(() => playerStore.error)
+const playerData = ref(null)
+const isLoading = ref(true)
+const errorMessage = ref('')
+
+const currentUserId = computed(() => playerStore.userId || localStorage.getItem('userId') || 1)
 
 // 計算屬性：玩家的遊戲進度
 const playerProgress = computed(() => {
@@ -23,8 +25,19 @@ const playerProgress = computed(() => {
 })
 // 計算屬性：玩家的造型數量
 const skinCountDisplay = computed(() => {
-  if (!playerData.value || !playerData.value.ownedSkins) return 0
-  return playerData.value.ownedSkins.length
+  // 1. 取得擁有的造型陣列 (同時相容後端回傳的 ownedSkins 或 OwnedSkins)
+  const ownedSkins = playerData.value?.ownedSkins || playerData.value?.OwnedSkins
+
+  if (!ownedSkins || !Array.isArray(ownedSkins)) return 0
+
+  // 2. 過濾掉 skinId 為 1 的造型 (使用 ?? 同時防呆大寫 SkinId)
+  const filteredSkins = ownedSkins.filter((skin) => {
+    const id = skin.skinId ?? skin.SkinId
+    return id !== 1
+  })
+
+  // 3. 回傳過濾後的實際造型數量
+  return filteredSkins.length
 })
 
 // 計算屬性：目前裝備的造型資訊
@@ -69,25 +82,30 @@ onMounted(async () => {
 const fetchPlayerData = async () => {
   try {
     isLoading.value = true
-    // 呼叫後端 API 獲取玩家列表
-    const response = await request.get('https://localhost:7048/api/Player?page=1')
+    errorMessage.value = ''
+    
+    const userId = currentUserId.value
+    console.log(`【前端發送請求】正在獲取 UserId: ${userId} 的玩家資料庫記錄...`)
+
+    // 使用你提供的新 API 端點
+    const response = await request.get(`https://localhost:7048/api/Users/${userId}/player-profile`)
+    
+    console.log('【後端回傳的原始資料】:', response.data)
 
     if (response.data && response.data.success) {
-      const players = response.data.data.data
-      // 尋找 PlayerId = 1 的玩家
-      const targetPlayer = players.find((p) => p.playerId === 1)
-
-      if (targetPlayer) {
-        playerData.value = targetPlayer
-      } else {
-        errorMessage.value = '找不到測試玩家資料 (PlayerId=1)'
+      // 成功獲取，直接塞給本地響應式變數
+      playerData.value = response.data.data
+      
+      // 同步回填給全域狀態機 Store 讓大廳點數即時更新
+      if (playerStore && playerStore.$patch) {
+        playerStore.$patch({ playerData: response.data.data })
       }
     } else {
-      errorMessage.value = '獲取資料失敗'
+      errorMessage.value = response.data?.message || '獲取玩家資料失敗'
     }
   } catch (error) {
     console.error('API 請求錯誤:', error)
-    errorMessage.value = '無法連接到伺服器'
+    errorMessage.value = '無法連接到伺服器，請確認後端 API 是否開啟'
   } finally {
     isLoading.value = false
   }
@@ -298,8 +316,7 @@ const startClose = (type) => {
         <!-- 資料顯示區 -->
         <template v-else-if="playerData">
           <div class="header-meta">
-            <p>玩家建立時間: {{ formatDate(playerData.createTime) }}</p>
-            <p>玩家ID: P7328643539300{{ playerData.playerId }}</p>
+            <p>玩家ID: P7328643539300{{ playerData.playerId || playerData.PlayerId }}</p>
           </div>
 
           <div class="card-content">
@@ -318,14 +335,14 @@ const startClose = (type) => {
 
                   <!-- 造型名稱 -->
                   <div class="skin-name-display">
-                    <p class="skin-label">目前裝備：{{ getEnabledSkinName() }}</p>
+                    <p class="skin-label">目前裝備：{{ currentEquippedSkin.skinName }}</p>
                   </div>
                 </div>
 
                 <div class="corner-tape top-left"></div>
                 <div class="corner-tape bottom-right"></div>
               </div>
-              <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint) }} 點</div>
+              <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint ?? playerData.CurrentPoint) }} 點</div>
             </div>
 
             <!-- 右側：玩家資訊 -->
@@ -333,7 +350,7 @@ const startClose = (type) => {
               <!-- 玩家名字編輯區 -->
               <div class="player-name-container">
                 <div v-if="!isEditingName" class="player-name-display">
-                  <h2 class="player-name">{{ playerData.userName }}</h2>
+                  <h2 class="player-name">{{ playerData.userName || playerData.UserName || '未設定名稱' }}</h2>
                   <button
                     class="edit-name-btn"
                     @click="
@@ -374,16 +391,16 @@ const startClose = (type) => {
               <div class="stats-container">
                 <div class="stat-row">
                   <span class="label">最新遊玩進度：</span>
-                  <span class="value">{{ getProgressText(playerData.maxGameId) }}</span>
+                  <span class="value">{{ getProgressText(playerProgress) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">最後遊玩時間：</span>
-                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
+                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate || playerData.LastPlayedDate) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">擁有造型數量：</span>
                   <span class="value">
-                    {{ playerData.ownedSkins?.filter((s) => s.skinId !== 1).length || 0 }} 個
+                    {{ skinCountDisplay }} 個
                   </span>
                 </div>
               </div>
