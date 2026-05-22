@@ -12,7 +12,7 @@ import {
   User,
 } from 'lucide-vue-next'
 import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
-import SearchBarAlgolia from '@/components/Tailadmin/Game/SearchBarAlgolia.vue'
+import SearchBarAlgolia from '@/components/Client/SearchBarAlgolia.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
