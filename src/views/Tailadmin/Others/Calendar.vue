@@ -164,7 +164,7 @@ const calendarOptions = reactive({
     </div>
 
     <!-- Modal -->
-    <ProfileModal v-if="isOpen" @close="closeModal = false">
+    <ProfileModal v-if="isOpen" @close="closeModal">
       <template #body>
         <div
           class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 lg:p-11 dark:bg-gray-900">

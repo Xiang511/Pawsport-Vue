@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
 
 // 1. 狀態定義
 const loading = ref(true)
@@ -19,12 +20,51 @@ const filters = reactive({
 // 2. API 請求
 const fetchPets = async () => {
   try {
+    useAuthStore().consoleLoginInfo() // 調試用：查看登入狀態
+    useAuthStore().userInfo // 調試用：查看登入狀態
+
     loading.value = true
     // 銜接你的 API 格式
-    const response = await axios.get('https://localhost:7048/api/Pet')
+    const response = await request.get('https://localhost:7048/api/users/pet/adoption')
     const { success, data } = response.data
     if (success) {
-      rawPets.value = data
+      rawPets.value = data.map((pet) => {
+        // 計算年齡
+        let age = 0
+        if (pet.birthDate) {
+          const birth = new Date(pet.birthDate)
+          const today = new Date()
+          age = today.getFullYear() - birth.getFullYear()
+          const m = today.getMonth() - birth.getMonth()
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--
+          }
+        }
+
+        // 將體型大小 (Size: 1, 2, 3) 轉換為模擬體重以搭配前端的篩選條件
+        let weight = 0
+        if (pet.size === 1) weight = 5
+        else if (pet.size === 2) weight = 15
+        else if (pet.size === 3) weight = 30
+
+        // 解析適合相處條件
+        const goodWith = pet.behavioralTraits
+          ? pet.behavioralTraits.split(',').map((t) => t.trim().toLowerCase())
+          : []
+
+        return {
+          id: pet.petId,
+          name: pet.name,
+          imageUrl: pet.photo,
+          nickname: pet.note,
+          gender: pet.gender === 1 ? 'male' : 'female',
+          age,
+          color: pet.coatColor,
+          weight,
+          goodWith,
+          createdDate: pet.createdAt,
+        }
+      })
     }
   } catch (error) {
     console.error('無法取得寵物資料:', error)
@@ -253,10 +293,11 @@ onMounted(() => {
               class="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
             <div
               class="bg-opacity-0 group-hover:bg-opacity-20 absolute inset-0 flex items-center justify-center bg-black transition-all">
-              <button
-                class="translate-y-4 transform rounded-full bg-white px-6 py-2 font-bold text-gray-800 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100">
+              <router-link
+                :to="{ name: 'pet-adoption-detail', params: { id: pet.id } }"
+                class="translate-y-4 transform rounded-full bg-white px-6 py-2 text-center font-bold text-gray-800 opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100 hover:bg-[#9C6D6D] hover:text-white">
                 狗狗檔案
-              </button>
+              </router-link>
             </div>
           </div>
 
