@@ -65,24 +65,28 @@ onUnmounted(() => {
         class="mx-auto w-[95%] transition-all duration-300"
         :class="isScrolled ? 'py-8' : 'py-14'">
         <div class="relative flex items-center justify-between gap-4">
-          <div class="flex gap-4">
-            <Instagram class="inline h-5 w-5 text-black md:h-8 md:w-8" />
-            <Mail class="inline h-5 w-5 text-black md:h-8 md:w-8" />
+          <div class="hidden gap-4 md:flex">
+            <Instagram
+              class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
+            <Mail
+              class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
           </div>
           <div class="flex">
             <router-link
               to="/"
-              class="absolute inset-0 -top-1.5 text-center text-4xl text-black sm:text-5xl md:-top-3 md:text-5xl lg:text-6xl">
-              Petmily
+              class="logo-group -top-1.5 flex text-center text-4xl text-black sm:text-5xl md:-top-3 md:text-5xl lg:text-5xl">
+              <img class="logo" src="/images/logo/LOGO-WHITE.svg" alt="" />
+              <h1 class="ml-3 inline-block font-bold text-[#445944]">PETMILY</h1>
             </router-link>
           </div>
-          <div class="relative flex cursor-pointer items-center gap-3">
-            <SearchBarAlgolia class="rounded-full! border-none! bg-white" />
+          <div class="relative flex cursor-pointer items-center justify-between gap-3 md:gap-1">
+            <SearchBarAlgolia />
+
             <router-link v-if="!authStore.isLoggedIn" to="/login" cursor-pointer title="登入">
-              <log-in class="inline h-5 w-5 text-black md:h-8 md:w-8" />
+              <log-in class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8" />
             </router-link>
             <router-link v-else to="/user/profile" cursor-pointer title="個人資料">
-              <User class="inline h-5 w-5 text-black md:h-8 md:w-8" />
+              <User class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8" />
             </router-link>
 
             <Transition name="menu-icon" mode="out-in">
@@ -140,11 +144,11 @@ onUnmounted(() => {
               <p class="mt-20 mb-3 text-sm font-bold tracking-widest">FOLLOW</p>
               <div class="flex gap-4">
                 <Instagram
-                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
+                  class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
                 <Mail
-                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
+                  class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
                 <Rss
-                  class="inline h-5 w-5 text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
+                  class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-6 md:w-6" />
               </div>
             </div>
 
@@ -246,6 +250,25 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@media screen and (min-width: 768px) {
+  .logo-group {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+.logo {
+  width: 60px;
+  height: auto;
+  display: inline-block;
+  vertical-align: middle;
+
+  /* 先強行轉為純黑，再精準過濾出 #445944 */
+  filter: brightness(0) invert(33%) sepia(8%) saturate(1476%) hue-rotate(76deg) brightness(97%)
+    contrast(85%);
+}
+
 /* 解決scroll時壓過nav問題 */
 nav {
   z-index: 1000 !important;

@@ -60,7 +60,7 @@ const highlightMatch = (text, searchQuery) => {
 </script>
 
 <template>
-  <div class="relative hidden lg:block">
+  <div class="relative hidden w-[60%]! rounded-full! border-none! bg-white lg:block">
     <div class="relative">
       <!-- 搜尋圖示 -->
       <div class="absolute top-1/2 left-4 -translate-y-1/2">
@@ -108,7 +108,7 @@ const highlightMatch = (text, searchQuery) => {
         @keyup.enter="handleEnter"
         @focus="handleFocus"
         @blur="handleBlur"
-        class="dark:bg-dark-900 focus:border-theme-info-300 focus:ring-brand-500/10 dark:focus:border-theme-info-800 h-11 w-full rounded-full border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
+        class="dark:bg-dark-900 dark:focus:border-theme-info-800 h-11 w-[100%]! w-full rounded-full border border-[#445944] bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:border-[#445944] focus:ring-1 focus:ring-[#445944] focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
 
       <!-- 清除按鈕 -->
       <button
