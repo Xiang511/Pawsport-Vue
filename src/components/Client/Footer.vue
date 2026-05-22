@@ -21,10 +21,12 @@ import { Dog } from 'lucide-vue-next'
         <span class="py-6 font-bold" href="#">社群 Community</span>
         <span class="py-3"><ChevronRight /></span>
       </a>
-      <a href="#" class="flex items-center justify-between border-b border-white/15">
+      <router-link
+        :to="{ name: 'Client-faq' }"
+        class="flex items-center justify-between border-b border-white/15">
         <span class="py-6 font-bold" href="#">客服 Support</span>
         <span class="py-3"><ChevronRight /></span>
-      </a>
+      </router-link>
     </div>
     <div class="mx-auto mt-8 flex w-11/12 justify-center">
       <div class="mx-auto inline-block">
@@ -66,7 +68,9 @@ import { Dog } from 'lucide-vue-next'
       <a href="#" class="block py-3 text-center text-sm">最新消息</a>
       <a href="#" class="block py-3 text-center text-sm">關於我們</a>
       <a href="#" class="block py-3 text-center text-sm">會員專區</a>
-      <a href="#" class="block py-3 text-center text-sm">聯絡我們</a>
+      <router-link :to="{ name: 'Client-faq' }" class="block py-3 text-center text-sm">
+        客服中心
+      </router-link>
     </div>
     <div class="py-8 text-center text-xs text-[#8a8a8a]">Copyright © 2026 Petmily.</div>
   </footer>
@@ -131,7 +135,11 @@ import { Dog } from 'lucide-vue-next'
               <a class="inline-block text-sm font-normal xl:text-lg">關於我們</a>
               <a class="inline-block text-sm font-normal xl:text-lg">會員專區</a>
               <a class="inline-block text-sm font-normal xl:text-lg">社群分享</a>
-              <a class="inline-block text-sm font-normal xl:text-lg">聯絡我們</a>
+              <router-link
+                :to="{ name: 'Client-faq' }"
+                class="inline-block cursor-pointer text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">
+                客服中心
+              </router-link>
             </div>
             <!-- search bar -->
             <div class="w-4/12">
@@ -180,12 +188,17 @@ import { Dog } from 'lucide-vue-next'
               </ul>
             </div>
             <div class="mt-6 w-1/4">
-              <span>- 種類</span>
+              <span class="font-bold text-white">- 客服中心</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-2">貓</li>
-                <li class="mt-2">狗</li>
-                <li class="mt-2">鳥</li>
-                <li class="mt-2">其他</li>
+                <li class="mt-2 transition-colors hover:text-white">
+                  <router-link :to="{ name: 'Client-faq' }">常見問答</router-link>
+                </li>
+                <li class="mt-2 transition-colors hover:text-white">
+                  <router-link :to="{ name: 'Client-qa' }">聯絡我們</router-link>
+                </li>
+                <li class="mt-2 transition-colors hover:text-white">
+                  <router-link :to="{ name: 'Client-enewsletter' }">寵物專欄</router-link>
+                </li>
               </ul>
             </div>
           </div>
