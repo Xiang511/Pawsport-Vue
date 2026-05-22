@@ -1,16 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import request from '@/api/axios' // 使用配置好的 axios 實例
 import CommonGridShape from '@/components/Tailadmin/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/Tailadmin/layout/FullScreenLayout.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth' // 1. 引入 store
+import { googleTokenLogin } from 'vue3-google-login'
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
 const authStore = useAuthStore() // 2. 實例化 store
+const isGoogleLoading = ref(false)
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
@@ -24,14 +27,98 @@ const handleSubmit = async () => {
 
     console.log('Login response:', response.data)
 
-    if (response.status === 200) {
+    if (response.status === 200 && response.data?.data?.user) {
+      // 設定登入資訊
       authStore.setLoginInfo(response.data.data.user)
+
+      // 等待 store 更新完成
+      await nextTick()
+
       console.log('登入成功，跳轉到 /user/profile')
-      router.replace('/user/profile')
+
+      // 使用 replace 並處理可能的錯誤
+      try {
+        await router.replace('/user/profile')
+      } catch (navError) {
+        // 如果路由跳轉失敗，使用硬跳轉
+        console.warn('路由跳轉失敗，使用硬跳轉', navError)
+        window.location.href = '/user/profile'
+      }
     }
   } catch (error) {
     console.error('登入失敗:', error)
     alert('登入失敗，請檢查帳號密碼')
+  }
+}
+
+/**
+ * Google 登入處理
+ */
+const handleGoogleLogin = async () => {
+  console.log('🔵 [Google Login] 開始執行...')
+  isGoogleLoading.value = true
+
+  try {
+    // 呼叫 googleTokenLogin 會取得 access_token
+    const response = await googleTokenLogin()
+    console.log('🟢 [Google Login] 收到 Google 回應', response)
+
+    // 如果後端其實是要 access_token，請跟後端對齊欄位名稱
+    // 這裡相容舊邏輯，優先抓取任何可能的 token 欄位
+    const token =
+      response.credential || response.id_token || response.idToken || response.access_token
+
+    if (!token) {
+      throw new Error('無法在回應中找到任何 Token 憑證')
+    }
+
+    // 發送給後端驗證（注意：確認後端要的是 idToken 還是 accessToken）
+    const backendResponse = await request.post('/Auth/google-login', {
+      idToken: token,
+    })
+
+    console.log('🟢 [Google Login] 後端回應:', backendResponse.data)
+
+    // 檢查多種可能的成功狀態
+    const isSuccess = backendResponse.data?.success || backendResponse.status === 200
+    const userData = backendResponse.data?.data?.user
+
+    if (isSuccess && userData) {
+      // 設定登入資訊
+      authStore.setLoginInfo(userData)
+
+      // 儲存 token（如果有）
+      if (backendResponse.data?.data?.token) {
+        localStorage.setItem('token', backendResponse.data.data.token)
+      }
+
+      // 等待 store 更新完成
+      await nextTick()
+
+      console.log('✅ Google 登入成功，準備跳轉')
+
+      // 使用 replace 並處理可能的錯誤
+      try {
+        await router.replace('/user/profile')
+      } catch (navError) {
+        // 如果路由跳轉失敗，使用硬跳轉
+        console.warn('路由跳轉失敗，使用硬跳轉', navError)
+        window.location.href = '/user/profile'
+      }
+    } else {
+      throw new Error(backendResponse.data?.message || '後端驗證失敗：未返回用戶資料')
+    }
+  } catch (error) {
+    console.error('🔴 [Google Login] 失敗:', error)
+    if (error.type === 'popup_closed' || error.message === 'popup_closed_by_user') {
+      console.log('ℹ️ [User] 使用者關閉了登入視窗')
+    } else if (error.response) {
+      alert(`Google 登入失敗: ${error.response.data?.message || '後端驗證錯誤'}`)
+    } else {
+      alert(`Google 登入失敗: ${error.message || '請稍後再試'}`)
+    }
+  } finally {
+    isGoogleLoading.value = false
   }
 }
 </script>
@@ -209,8 +296,30 @@ const handleSubmit = async () => {
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
                   <button
-                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+                    @click="handleGoogleLogin"
+                    :disabled="isGoogleLoading"
+                    type="button"
+                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                     <svg
+                      v-if="isGoogleLoading"
+                      class="h-5 w-5 animate-spin"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24">
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg
+                      v-else
                       width="20"
                       height="20"
                       viewBox="0 0 20 20"
@@ -229,7 +338,7 @@ const handleSubmit = async () => {
                         d="M10.1789 4.63331C11.8554 4.63331 12.9864 5.34303 13.6312 5.93612L16.1511 3.525C14.6035 2.11528 12.5895 1.25 10.1789 1.25C6.68676 1.25 3.67088 3.21387 2.20264 6.07218L5.08953 8.26943C5.81381 6.15972 7.81776 4.63331 10.1789 4.63331Z"
                         fill="#EB4335" />
                     </svg>
-                    Google
+                    <span>{{ isGoogleLoading ? '登入中...' : 'Google' }}</span>
                   </button>
                 </div>
               </div>
