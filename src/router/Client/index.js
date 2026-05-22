@@ -225,7 +225,7 @@ export default [
   },
   {
     path: '/login',
-    name: 'SigninLayout',
+    name: 'LoginLayout',
     component: () => import('@/layouts/Client/SigninLayout.vue'),
     children: [
       {
@@ -234,6 +234,21 @@ export default [
         component: () => import('@/components/Client/Signin.vue'),
         meta: {
           title: '登入 | Petmily',
+        },
+      },
+    ],
+  },
+  {
+    path: '/signup',
+    name: 'SignupLayout',
+    component: () => import('@/layouts/Client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Client-signup',
+        component: () => import('@/components/Client/SignUp.vue'),
+        meta: {
+          title: '註冊 | Petmily',
         },
       },
     ],

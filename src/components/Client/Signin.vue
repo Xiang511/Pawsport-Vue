@@ -340,6 +340,11 @@ const handleGoogleLogin = async () => {
                     </svg>
                     <span>{{ isGoogleLoading ? '登入中...' : 'Google' }}</span>
                   </button>
+                  <router-link
+                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
+                    :to="{ name: 'Client-signup' }">
+                    使用帳號註冊
+                  </router-link>
                 </div>
               </div>
             </div>
