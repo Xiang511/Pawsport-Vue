@@ -126,6 +126,30 @@ export default [
           title: '404 找不到頁面 | Petmily',
         },
       },
+      {
+        path: '/faq',
+        name: 'Client-faq',
+        component: () => import('@/views/Client/Support/FaqView.vue'),
+        meta: {
+          title: '常見問題 | Petmily',
+        },
+      },
+      {
+        path: '/qa',
+        name: 'Client-qa',
+        component: () => import('@/views/Client/Support/QAView.vue'),
+        meta: {
+          title: '聯絡我們 | Petmily',
+        },
+      },
+      {
+        path: '/enewsletter',
+        name: 'Client-enewsletter',
+        component: () => import('@/views/Client/Support/ENewsletterView.vue'),
+        meta: {
+          title: '電子報訂閱 | Petmily',
+        },
+      },
     ],
   },
   {
@@ -188,7 +212,7 @@ export default [
         meta: {
           title: '我的收藏 | Petmily',
         },
-      }
+      },
     ],
   },
   {

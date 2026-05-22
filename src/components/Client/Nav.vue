@@ -86,6 +86,11 @@
                 🚧遊戲
               </router-link>
               <router-link
+                :to="{ name: 'Client-faq' }"
+                class="rounded-md bg-yellow-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧客服中心
+              </router-link>
+              <router-link
                 :to="{ name: 'Client-login' }"
                 class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
                 🚧登入
