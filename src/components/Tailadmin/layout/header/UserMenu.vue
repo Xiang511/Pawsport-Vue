@@ -19,9 +19,9 @@ const dropdownRef = ref(null)
 const userInfo = authStore.userInfo
 
 const menuItems = [
-  { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
-  { href: '/chat', icon: SettingsIcon, text: 'Account settings' },
-  { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
+  // { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
+  // { href: '/chat', icon: SettingsIcon, text: 'Account settings' },
+  // { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
 ]
 
 const toggleDropdown = () => {
@@ -77,19 +77,19 @@ onUnmounted(() => {
     <div
       v-if="dropdownOpen"
       class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800">
-      <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+      <!-- <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
         <li v-for="item in menuItems" :key="item.href">
           <router-link
             :to="item.href"
             class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-            <!-- SVG icon would go here -->
+            
             <component
               :is="item.icon"
               class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300" />
             {{ item.text }}
           </router-link>
         </li>
-      </ul>
+      </ul> -->
       <router-link
         to="/dashboard/login"
         @click="signOut"
