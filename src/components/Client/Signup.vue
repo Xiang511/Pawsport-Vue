@@ -100,9 +100,13 @@ const handleSubmit = async () => {
         timer: 2000,
         showConfirmButton: false,
       })
-
-      // 跳轉到登入頁面
-      await router.replace('/login')
+      try {
+        // 跳轉到登入頁面
+        await router.replace('/login')
+      } catch (loginError) {
+        console.warn('路由跳轉失敗，使用硬跳轉', loginError)
+        window.location.href = '/login'
+      }
     }
   } catch (error) {
     console.error('註冊失敗:', error)
