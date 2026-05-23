@@ -84,7 +84,7 @@ onUnmounted(() => {
               <h1 class="ml-3 inline-block font-bold text-[#445944]">PETMILY</h1>
             </router-link>
           </div>
-          <div class="relative flex cursor-pointer items-center justify-between gap-3 md:gap-1">
+          <div class="relative flex items-center justify-between gap-3 md:gap-1">
             <SearchBarAlgolia />
 
             <router-link v-if="!authStore.isLoggedIn" to="/login" cursor-pointer title="登入">
@@ -98,12 +98,12 @@ onUnmounted(() => {
               <MenuIcon
                 v-if="!isMenuOpen"
                 key="menu"
-                class="inline h-5 w-5 text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
                 @click="toggleMenu" />
               <X
                 v-else
                 key="close"
-                class="inline h-5 w-5 text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
                 @click="toggleMenu" />
             </Transition>
           </div>
