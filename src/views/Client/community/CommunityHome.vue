@@ -101,16 +101,28 @@ const filteredArticles = computed(() => {
 <template>
   <!-- 頁面最外層：只寫背景顏色 -->
   <div class="min-h-screen bg-[#f9f6f4]">
-    <section class="relative overflow-hidden bg-[#9C6D6D] text-white">
-      <div class="mx-auto flex max-w-6xl flex-col items-center px-4 md:flex-row">
-        <div class="z-10 w-full p-8 md:w-1/2 md:p-16">
-          <h2 class="mb-4 text-3xl font-bold md:text-5xl">社群專區</h2>
-          <p class="mb-8 leading-relaxed text-gray-100">
+    <section
+      class="relative flex min-h-64 items-center overflow-hidden bg-[#9C6D6D] text-white md:min-h-125">
+      <!-- 1. 圖片作為絕對定位，直接鋪滿整個 section 的上下左右 -->
+      <div class="absolute inset-0 h-full w-full">
+        <img
+          src="@/assets/images/dogs-playing-together-stockcake.jpg"
+          alt="Petmily Community Banner"
+          class="h-full w-full object-cover object-[center_65%]" />
+        <!-- 💡 加上一層淡淡的黑色半透明遮罩，可以防止圖片太亮導致白字看不清楚 -->
+        <div class="absolute inset-0 bg-black/30"></div>
+      </div>
+
+      <!-- 2. 原本的內層容器，加上 z-10 讓它完全浮在背景圖片之上 -->
+      <div class="z-10 container mx-auto flex max-w-6xl flex-col items-start px-8 py-8 md:py-0">
+        <!-- 文字區塊，寬度可以自由調整（例如 md:w-2/3 或 max-w-xl），讓畫面更舒適 -->
+        <div class="w-full max-w-xl md:-mt-40">
+          <h2 class="mb-4 text-3xl font-bold drop-shadow-md md:text-5xl">社群專區</h2>
+          <p
+            p
+            class="line-clamp-1 text-sm leading-relaxed text-gray-100 drop-shadow-sm md:line-clamp-none md:text-lg">
             歡迎來到我們的社群專區！在這裡，你可以分享你的經驗與知識。
           </p>
-        </div>
-        <div class="relative h-64 w-full md:h-125 md:w-1/2">
-          <!-- 可以放置背景圖 -->
         </div>
       </div>
     </section>
