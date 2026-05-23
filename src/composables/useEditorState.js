@@ -1,4 +1,5 @@
 import { ref, reactive, watch } from 'vue'
+import axios from 'axios'
 
 export function useEditorState(emit, quillInstanceRef) {
   const isNewArticleModalOpen = ref(false)
@@ -61,7 +62,6 @@ export function useEditorState(emit, quillInstanceRef) {
       return []
     }
   }
-
   //因為內文在 Quill 實體裡，我們利用 Quill 的 text-change 事件或直接監聽實體
   watch(
     () => quillInstanceRef.value,
@@ -75,6 +75,48 @@ export function useEditorState(emit, quillInstanceRef) {
     },
   )
 
+  const imageHandler = () => {
+    // 1. 動態建立一個隱藏的 <input type="file">
+    const input = document.createElement('input')
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*') // 只允許圖片
+    input.click()
+
+    // 2. 當使用者選好圖片後觸發
+    input.onchange = async () => {
+      const file = input.files[0]
+      if (!file) return
+
+      // 3. 將圖片檔案包裝成 FormData 格式
+      const formData = new FormData()
+      formData.append('file', file) // 👈 這裡的 'file' 要對齊後端的 IFormFile file 參數名稱
+
+      try {
+        // 4. 發送請求到你剛剛寫好的後端 API
+        // ⚠️ 請根據你本機的後端埠號修改 (例如先前看到的 7048)
+        const response = await axios.post('https://localhost:7048/api/Image/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        // 5. 拿到後端回傳的完整網址 { url: "https://..." }
+        const imageUrl = response.data.url
+
+        // 6. 取得當前 Quill 的實體與光標位置，把 <img> 標籤插進去
+        const quill = quillInstanceRef.value // 確保這能拿到你的 Quill 實體
+        const range = quill.getSelection()
+
+        // 在當前游標位置插入圖片，並把游標往後移一格
+        quill.insertEmbed(range.index, 'image', imageUrl)
+        quill.setSelection(range.index + 1)
+      } catch (error) {
+        console.error('圖片上傳失敗:', error)
+        alert(error.response?.data?.message || '圖片上傳失敗，請稍後再試。')
+      }
+    }
+  }
+
   return {
     post,
     isNewArticleModalOpen,
@@ -83,5 +125,6 @@ export function useEditorState(emit, quillInstanceRef) {
     saveAndNew,
     discardAndNew,
     detectedTags,
+    imageHandler,
   }
 }

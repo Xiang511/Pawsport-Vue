@@ -1,12 +1,13 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
-import Article_BaseButton from './Article_BaseButton.vue'
-import { useAuthStore } from '@/stores/auth'
 
+import { useAuthStore } from '@/stores/auth'
 import { useEditorState } from '@/composables/useEditorState'
+
+import Article_BaseButton from './Article_BaseButton.vue'
 import NewArticleModal from './Article_NewArticleModal.vue'
 import DraftListModal from './Article_DraftListModal.vue'
 
@@ -31,6 +32,7 @@ const {
   saveAndNew,
   discardAndNew,
   detectedTags,
+  imageHandler,
 } = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
@@ -40,16 +42,23 @@ onMounted(() => {
   const quillInstance = new Quill(editorRef.value, {
     theme: 'snow',
     modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, 4, false] }],
-        [{ font: [] }],
-        ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
-        [{ color: [] }, { background: [] }],
-        [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
-        [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
-        ['image', 'blockquote', 'link'],
-        ['clean'],
-      ],
+      toolbar: {
+        // 1. 這裡放原本的按鈕清單陣列
+        container: [
+          [{ header: [1, 2, 3, 4, false] }],
+          [{ font: [] }],
+          ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
+          [{ color: [] }, { background: [] }],
+          [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
+          [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+          ['image', 'blockquote', 'link'],
+          ['clean'],
+        ],
+        // 2. 這裡放攔截事件
+        handlers: {
+          image: imageHandler, // 呼叫來自 useEditorState 的圖片上傳邏輯
+        },
+      },
     },
   })
   // 將實體提供給 Composable 之後做 clear 動作
