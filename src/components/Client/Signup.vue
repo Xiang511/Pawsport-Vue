@@ -7,6 +7,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { googleTokenLogin } from 'vue3-google-login'
 import Live2DPet from './Live2DPet.vue'
+import Swal from 'sweetalert2'
 
 const lastName = ref('')
 const email = ref('')
@@ -28,29 +29,59 @@ const toggleConfirmPasswordVisibility = () => {
 const handleSubmit = async () => {
   // 驗證表單
   if (!lastName.value.trim()) {
-    alert('請輸入名稱')
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入名稱',
+      text: '名稱欄位不能為空',
+    })
     return
   }
 
   if (!email.value.trim()) {
-    alert('請輸入電子郵件')
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入電子郵件',
+      text: '電子郵件欄位不能為空',
+    })
     return
   }
 
   if (!password.value.trim()) {
-    alert('請輸入密碼')
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入密碼',
+      text: '密碼欄位不能為空',
+    })
     return
   }
 
   if (password.value !== confirmPassword.value) {
-    alert('密碼與確認密碼不一致')
+    Swal.fire({
+      icon: 'error',
+      title: '密碼不一致',
+      text: '請確認兩次輸入的密碼相同',
+    })
     return
   }
 
   if (password.value.length < 6) {
-    alert('密碼長度至少需要 6 個字元')
+    Swal.fire({
+      icon: 'warning',
+      title: '密碼太短',
+      text: '密碼長度至少需要 6 個字元',
+    })
     return
   }
+
+  // 顯示加載提示
+  Swal.fire({
+    title: '註冊中...',
+    html: '請稍候',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    },
+  })
 
   try {
     const response = await request.post('/Auth/register', {
@@ -62,7 +93,13 @@ const handleSubmit = async () => {
     console.log('註冊回應:', response)
 
     if (response.status === 200 || response.status === 201) {
-      alert('註冊成功！請登入')
+      await Swal.fire({
+        icon: 'success',
+        title: '註冊成功！',
+        text: '正在跳轉到登入頁面...',
+        timer: 2000,
+        showConfirmButton: false,
+      })
 
       // 跳轉到登入頁面
       await router.replace('/login')
@@ -70,9 +107,17 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('註冊失敗:', error)
     if (error.response?.data?.message) {
-      alert(`註冊失敗: ${error.response.data.message}`)
+      Swal.fire({
+        icon: 'error',
+        title: '註冊失敗',
+        text: error.response.data.message,
+      })
     } else {
-      alert('註冊失敗，請稍後再試')
+      Swal.fire({
+        icon: 'error',
+        title: '註冊失敗',
+        text: '請稍後再試',
+      })
     }
   }
 }
@@ -85,6 +130,16 @@ const handleGoogleSignUp = async () => {
   isGoogleLoading.value = true
 
   try {
+    // 顯示加載提示
+    Swal.fire({
+      title: 'Google 註冊中...',
+      html: '請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
+
     const response = await googleTokenLogin()
     console.log('🟢 [Google SignUp] 收到 Google 回應', response)
 
@@ -116,6 +171,15 @@ const handleGoogleSignUp = async () => {
 
       console.log('✅ Google 註冊/登入成功，準備跳轉')
 
+      // 顯示成功訊息
+      await Swal.fire({
+        icon: 'success',
+        title: 'Google 註冊成功！',
+        text: '正在跳轉...',
+        timer: 1500,
+        showConfirmButton: false,
+      })
+
       try {
         await router.replace('/user/profile')
       } catch (navError) {
@@ -127,12 +191,22 @@ const handleGoogleSignUp = async () => {
     }
   } catch (error) {
     console.error('🔴 [Google SignUp] 失敗:', error)
+    Swal.close()
+
     if (error.type === 'popup_closed' || error.message === 'popup_closed_by_user') {
       console.log('ℹ️ [User] 使用者關閉了登入視窗')
     } else if (error.response) {
-      alert(`Google 註冊失敗: ${error.response.data?.message || '後端驗證錯誤'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 註冊失敗',
+        text: error.response.data?.message || '後端驗證錯誤',
+      })
     } else {
-      alert(`Google 註冊失敗: ${error.message || '請稍後再試'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 註冊失敗',
+        text: error.message || '請稍後再試',
+      })
     }
   } finally {
     isGoogleLoading.value = false

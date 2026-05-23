@@ -7,6 +7,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/auth' // 1. 引入 store
 import { googleTokenLogin } from 'vue3-google-login'
 import Live2DPet from './Live2DPet.vue'
+import Swal from 'sweetalert2'
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
@@ -19,6 +20,16 @@ const togglePasswordVisibility = () => {
 }
 
 const handleSubmit = async () => {
+  // 顯示加載提示
+  Swal.fire({
+    title: '登入中...',
+    html: '請稍候',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    },
+  })
+
   try {
     const response = await request.post('/Auth/login', {
       userEmail: email.value.trim(),
@@ -36,6 +47,24 @@ const handleSubmit = async () => {
 
       console.log('登入成功，跳轉到 /user/profile')
 
+      // 顯示成功訊息，強制等待2秒
+      Swal.fire({
+        icon: 'success',
+        title: '登入成功！',
+        text: '正在跳轉...',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
+
+      // 強制等待2000毫秒
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // 關閉 Swal
+      Swal.close()
+
       // 使用 replace 並處理可能的錯誤
       try {
         await router.replace('/user/profile')
@@ -47,7 +76,11 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('登入失敗:', error)
-    alert('登入失敗，請檢查帳號密碼')
+    Swal.fire({
+      icon: 'error',
+      title: '登入失敗',
+      text: '請檢查帳號密碼',
+    })
   }
 }
 
@@ -59,6 +92,16 @@ const handleGoogleLogin = async () => {
   isGoogleLoading.value = true
 
   try {
+    // 顯示加載提示
+    Swal.fire({
+      title: 'Google 登入中...',
+      html: '請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
+
     // 呼叫 googleTokenLogin 會取得 access_token
     const response = await googleTokenLogin()
     console.log('🟢 [Google Login] 收到 Google 回應', response)
@@ -97,6 +140,24 @@ const handleGoogleLogin = async () => {
 
       console.log('✅ Google 登入成功，準備跳轉')
 
+      // 顯示成功訊息，強制等待2秒
+      Swal.fire({
+        icon: 'success',
+        title: 'Google 登入成功！',
+        text: '正在跳轉...',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
+
+      // 強制等待2000毫秒
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // 關閉 Swal
+      Swal.close()
+
       // 使用 replace 並處理可能的錯誤
       try {
         await router.replace('/user/profile')
@@ -110,12 +171,22 @@ const handleGoogleLogin = async () => {
     }
   } catch (error) {
     console.error('🔴 [Google Login] 失敗:', error)
+    Swal.close()
+
     if (error.type === 'popup_closed' || error.message === 'popup_closed_by_user') {
       console.log('ℹ️ [User] 使用者關閉了登入視窗')
     } else if (error.response) {
-      alert(`Google 登入失敗: ${error.response.data?.message || '後端驗證錯誤'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 登入失敗',
+        text: error.response.data?.message || '後端驗證錯誤',
+      })
     } else {
-      alert(`Google 登入失敗: ${error.message || '請稍後再試'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 登入失敗',
+        text: error.message || '請稍後再試',
+      })
     }
   } finally {
     isGoogleLoading.value = false
