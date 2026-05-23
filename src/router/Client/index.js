@@ -246,24 +246,9 @@ export default [
       {
         path: '',
         name: 'Client-signup',
-        component: () => import('@/components/Client/SignUp.vue'),
+        component: () => import('@/components/Client/Signup.vue'),
         meta: {
           title: '註冊 | Petmily 寵物媒合平台',
-        },
-      },
-    ],
-  },
-  {
-    path: '/signup',
-    name: 'SignupLayout',
-    component: () => import('@/layouts/Client/SigninLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: 'Client-signup',
-        component: () => import('@/components/Client/SignUp.vue'),
-        meta: {
-          title: '註冊 | Petmily',
         },
       },
     ],
