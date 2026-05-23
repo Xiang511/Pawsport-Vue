@@ -1,35 +1,39 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
-import ArticleEditor from '@/components/Client/Article_ArticleEditor.vue'
 import request from '@/api/axios'
+import ArticleEditor from '@/components/Client/Article_ArticleEditor.vue'
+import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
 
 import { useArticleActions } from '@/composables/useArticleActions'
 import { useCategories } from '@/composables/useCategories'
 
+const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
+const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle } = useArticleActions()
+
 const router = useRouter()
 const articleEditorRef = ref(null)
 const articleId = ref(null)
-
-const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
-const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle } = useArticleActions()
+const toastRef = ref(null)
 
 // 發布貼文 (Status = 1)
 const handlePublish = async (postData) => {
   try {
     const result = await saveOrUpdateArticle(articleId.value, postData, 1)
-    alert('文章發布成功！')
+    toastRef.value?.trigger('文章發布成功！正在為您跳轉...')
 
     // 利用 router 跳轉到文章詳細頁
     if (result.data) {
-      router.push(`/article-detail/${result.data}`)
+      setTimeout(() => {
+        router.push(`/article-detail/${result.data}`)
+      }, 1000) // 稍微延遲 1 秒讓使用者看得到 Toast 成功訊息
     } else {
       router.push('/article-list') // 萬一拿不到 ID 的安全備案頁面
     }
   } catch (error) {
     console.error('發布文章失敗：', error)
-    alert(`發布失敗：${error.response?.data?.message || '網路連線異常'}`)
+    toastRef.value?.trigger(`發布失敗：${error.response?.data?.message || '網路連線異常'}`)
   }
 }
 
@@ -45,18 +49,17 @@ const handleSaveDraft = async (postData) => {
           articleEditorRef.value.syncArticleId(result.data)
         }
         await fetchDrafts() // 刷新草稿夾
-        alert('草稿儲存成功！您可留在本頁繼續修改。')
+        toastRef.value?.trigger('草稿儲存成功！您可留在本頁繼續修改。')
       }
     } else {
       await fetchDrafts()
-      alert('草稿已更新！')
+      toastRef.value?.trigger('草稿已更新！')
     }
   } catch (error) {
     console.error('儲存草稿失敗：', error)
-    alert('儲存草稿失敗')
+    toastRef.value?.trigger('儲存草稿失敗，請檢查網路連線')
   }
 }
-
 // 點擊草稿後載入詳細資料
 const handleLoadDraft = async (id) => {
   try {
@@ -72,14 +75,19 @@ const handleLoadDraft = async (id) => {
 
     console.log('草稿詳細資料載入成功！', draftDetail)
   } catch (error) {
-    alert('載入草稿失敗')
+    toastRef.value?.trigger('載入草稿失敗')
   }
 }
 
 // 刪除草稿
 const handleDeleteDraft = async (id) => {
-  const result = await deleteDraft(id)
-  alert(result.message)
+  try {
+    const result = await deleteDraft(id)
+    // 💡 8. 換掉 alert
+    toastRef.value?.trigger(result.message || '草稿刪除成功')
+  } catch (error) {
+    toastRef.value?.trigger('刪除草稿失敗')
+  }
 }
 
 // 重設ID狀態（切換到全新文章模式）
@@ -89,8 +97,15 @@ const handleResetArticleId = () => {
 }
 
 onMounted(async () => {
-  fetchCategories()
-  fetchDrafts()
+  try {
+    // 使用 Promise.all 讓兩個 API 同時發送，速度更快
+    await Promise.all([fetchCategories(), fetchDrafts()])
+  } catch (error) {
+    console.error('初始化資料失敗：', error)
+    console.log('目前的 toastRef 實體是：', toastRef.value)
+    await nextTick()
+    toastRef.value?.trigger('無法載入初始資料，請檢查後端連線')
+  }
 })
 </script>
 
@@ -117,6 +132,7 @@ onMounted(async () => {
           @delete-draft="handleDeleteDraft" />
       </div>
     </div>
+    <Article_ToastAlert ref="toastRef" />
   </div>
 </template>
 

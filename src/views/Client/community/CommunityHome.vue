@@ -100,17 +100,22 @@ const filteredArticles = computed(() => {
 
 <template>
   <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#f9f6f4] pt-6">
-    <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-7xl px-4">
-      <!-- Banner -->
-      <div class="h-32 rounded-md bg-gray-200">
-        <!-- 大標題 -->
-        <div class="flex flex-col gap-4 p-4">
-          <h1 class="text-3xl font-bold text-[#433D3C]">社群專區</h1>
-          <p class="text-gray-600">歡迎來到我們的社群專區！在這裡，你可以分享你的經驗與知識。</p>
+  <div class="min-h-screen bg-[#f9f6f4]">
+    <section class="relative overflow-hidden bg-[#9C6D6D] text-white">
+      <div class="mx-auto flex max-w-6xl flex-col items-center px-4 md:flex-row">
+        <div class="z-10 w-full p-8 md:w-1/2 md:p-16">
+          <h2 class="mb-4 text-3xl font-bold md:text-5xl">社群專區</h2>
+          <p class="mb-8 leading-relaxed text-gray-100">
+            歡迎來到我們的社群專區！在這裡，你可以分享你的經驗與知識。
+          </p>
+        </div>
+        <div class="relative h-64 w-full md:h-125 md:w-1/2">
+          <!-- 可以放置背景圖 -->
         </div>
       </div>
+    </section>
+    <!-- 內容區：最大1280px -->
+    <div class="container mx-auto w-full max-w-7xl px-4">
       <!-- 左右分邊容器，flex -->
       <div class="flex flex-col gap-6 py-8 md:flex-row">
         <!-- 右邊70% -->

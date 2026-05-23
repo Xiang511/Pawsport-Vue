@@ -10,8 +10,10 @@ import { useEditorState } from '@/composables/useEditorState'
 import Article_BaseButton from './Article_BaseButton.vue'
 import NewArticleModal from './Article_NewArticleModal.vue'
 import DraftListModal from './Article_DraftListModal.vue'
+import Article_ToastAlert from './Article_ToastAlert.vue'
 
 const authStore = useAuthStore()
+const toastRef = ref(null)
 const emit = defineEmits(['publish', 'save-draft', 'reset-id', 'load-draft', 'delete-draft'])
 
 // 接收來自父組件傳入的分類和草稿陣列資料
@@ -102,11 +104,11 @@ const onSaveDraft = () => {
 }
 
 const onSubmit = () => {
-  if (!post.title.trim()) return alert('請填寫文章標題！')
-  if (!post.mainCategory) return alert('請選擇文章大分類！')
+  if (!post.title.trim()) return toastRef.value?.trigger('請填寫文章標題！')
+  if (!post.mainCategory) return toastRef.value?.trigger('請選擇文章大分類！')
   // 如果目前的大分類「有小分類存在」，但使用者卻沒選，才需要彈出警告
   if (currentSubCategories.value.length > 0 && !post.categoryId) {
-    return alert('請選擇文章小分類！')
+    return toastRef.value?.trigger('請選擇文章小分類！')
   }
   emit('publish', getFormData())
 }
@@ -254,6 +256,8 @@ defineExpose({
         :drafts="props.drafts"
         @select="selectDraft"
         @delete="deleteDraftItem" />
+
+      <Article_ToastAlert ref="toastRef" />
     </div>
   </div>
 </template>
