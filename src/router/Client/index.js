@@ -30,11 +30,11 @@ export default [
         },
       },
       {
-        path: '/article-list',
-        name: 'article-list',
-        component: () => import('@/views/Client/community/ArticleList.vue'),
+        path: '/community-home',
+        name: 'community-home',
+        component: () => import('@/views/Client/community/CommunityHome.vue'),
         meta: {
-          title: '貼文列表 | Petmily',
+          title: '社群首頁 | Petmily',
         },
       },
       {

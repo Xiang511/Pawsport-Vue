@@ -231,28 +231,16 @@ onUnmounted(() => {
                     <h3 class="mb-6 text-2xl font-bold tracking-wider">Community</h3>
                     <div class="space-y-3">
                       <router-link
-                        to="/"
+                        :to="{ name: 'community-home' }"
                         @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Forums
+                        社群首頁
                       </router-link>
                       <router-link
-                        to="/"
+                        :to="{ name: 'create-article' }"
                         @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Events
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Pet Stories
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Q&A
+                        新增貼文
                       </router-link>
                     </div>
                   </div>
