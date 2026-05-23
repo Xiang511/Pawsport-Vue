@@ -24,8 +24,14 @@ const editorRef = ref(null)
 // 建立一個讓 Composable 能夠安全讀取到 quillInstance 的橋樑
 const quillWrapper = ref(null)
 
-const { post, isNewArticleModalOpen, isDraftListModalOpen, saveAndNew, discardAndNew } =
-  useEditorState(emit, quillWrapper)
+const {
+  post,
+  isNewArticleModalOpen,
+  isDraftListModalOpen,
+  saveAndNew,
+  discardAndNew,
+  detectedTags,
+} = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
 onMounted(() => {
@@ -52,17 +58,7 @@ onMounted(() => {
 
 // 封裝要外傳的完整資料包
 const getFormData = () => {
-  let finalTags = []
-  if (Array.isArray(post.tag)) {
-    finalTags = post.tag
-  } else if (typeof post.tag === 'string' && post.tag.trim() !== '') {
-    // 手動輸入字串（例如 "#貓咪 #飼料"）
-    finalTags = post.tag
-      .replace(/#/g, ' ') // 把所有 # 換成空格，這樣 "#貓咪" 就變成 "貓咪"
-      .split(' ') // 用空格切開成陣列
-      .map((t) => t.trim()) // 去除前後空白
-      .filter((t) => t !== '') // 濾掉空字串
-  }
+  let finalTags = [...detectedTags.value]
 
   return {
     title: post.title,
@@ -209,10 +205,18 @@ defineExpose({
       </div>
 
       <!-- 標籤區 -->
-      <div class="mt-5 mb-2 flex px-4">
+      <div class="mt-5 mb-2 flex min-h-9 flex-wrap items-center gap-2 px-4">
         <span
-          class="bg-brand-success-600 hover:bg-brand-success-700 w-fit rounded-full px-3 py-1 text-sm whitespace-nowrap text-white">
-          #標籤
+          v-for="(tag, index) in detectedTags"
+          :key="index"
+          class="bg-brand-success-600 hover:bg-brand-success-700 flex h-7 w-fit items-center justify-center rounded-full px-3 text-sm whitespace-nowrap text-white transition-all duration-200">
+          #{{ tag }}
+        </span>
+        <!-- 防呆提示（可選）：沒標籤時顯示淡色提示 -->
+        <span
+          v-if="detectedTags.length === 0"
+          class="self-center align-middle text-sm text-gray-400 italic">
+          在文章中輸入 #標籤 將自動顯示在此處
         </span>
       </div>
     </div>

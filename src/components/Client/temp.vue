@@ -1,61 +1,42 @@
-// 📄 CreateArticle.vue
+<!-- ArticleEditor.vue -->
 <script setup>
-import axios from 'axios'
-import { ref } from 'vue'
-import ArticleEditor from '@/components/ArticleEditor.vue'
+import { useEditorState } from '@/composables/useEditorState'
+import { useArticleAction } from '@/composables/useArticleAction'
 
-const API_BASE_URL = 'https://localhost:7048/api'
+// 1. 拿狀態
+const { title, articleContent, detectedTags, clearEditorData } = useEditorState()
 
-// 🚀 處理「發佈貼文」 (Status = 1)
-const handlePublish = async (postData) => {
-  try {
-    const payload = {
-      ...postData,
-      status: 1, // 1 代表直接發佈上架
-    }
+// 2. 拿動作
+const { publishArticle } = useArticleAction()
 
-    console.log('前端準備送出的發佈 Payload:', payload)
-
-    // 💡 呼叫 C# 後端的 Post API
-    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
-
-    if (response.status === 200 || response.status === 201) {
-      alert('🎉 文章發布成功！')
-      // router.push('/forum') // 成功後導頁
-    }
-  } catch (error) {
-    console.error('發布文章失敗：', error)
-    alert(`發布失敗：${error.response?.data?.message || '網路連線異常'}`)
+// 3. 發佈時，直接把 state 內洗好的 detectedTags 塞給 action
+const handlePublish = async () => {
+  const articleData = {
+    title: title.value,
+    content: articleContent.value,
+    tags: detectedTags.value // 👈 後端 API 的標籤清單直接從這裡拿！
   }
-}
-
-// 💾 處理「儲存草稿」 (Status = 0)
-const handleSaveDraft = async (postData) => {
-  try {
-    const payload = {
-      ...postData,
-      status: 0, // 0 代表儲存為草稿
-    }
-
-    console.log('前端準備送出的草稿 Payload:', payload)
-
-    const response = await axios.post(`${API_BASE_URL}/Article`, payload)
-
-    if (response.status === 200) {
-      alert('💾 草稿儲存成功！')
-    }
-  } catch (error) {
-    console.error('儲存草稿失敗：', error)
-    alert('儲存草稿失敗')
-  }
+  
+  await publishArticle(articleData)
+  clearEditorData()
 }
 </script>
 
-<template>
-  <div>
-    <ArticleEditor
-      :categories="categoriesData"
-      @publish="handlePublish"
-      @save-draft="handleSaveDraft" />
+<!-- 編輯器區塊下方 -->
+<div class="mt-4 min-h-[32px] px-2">
+  <!-- 當有解析到標籤時才顯示這個容器 -->
+  <div v-if="detectedTags.length > 0" class="flex flex-wrap gap-2">
+    
+    <!-- 💡 這裡會根據內文自動跑 v-for 生成標籤 -->
+    <span
+      v-for="(tag, index) in detectedTags"
+      :key="index"
+      class="inline-flex items-center rounded-full bg-emerald-600/10 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20 transition-all duration-200">
+      #{{ tag }}
+    </span>
+    
   </div>
-</template>
+  
+  <!-- 💡 防呆提示（可選）：如果沒有標籤，可以留空或顯示淡色提示 -->
+  <p v-else class="text-xs text-gray-400 italic">在內文中輸入 #標籤 將會自動同步至此...</p>
+</div>

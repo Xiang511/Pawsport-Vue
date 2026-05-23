@@ -1,8 +1,9 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
 export function useEditorState(emit, quillInstanceRef) {
   const isNewArticleModalOpen = ref(false)
   const isDraftListModalOpen = ref(false)
+  const detectedTags = ref([])
 
   const post = reactive({
     title: '',
@@ -19,6 +20,7 @@ export function useEditorState(emit, quillInstanceRef) {
     post.mainCategory = ''
     post.categoryId = ''
     post.tag = ''
+    detectedTags.value = []
     if (quillInstanceRef.value) {
       quillInstanceRef.value.setContents([])
     }
@@ -44,6 +46,35 @@ export function useEditorState(emit, quillInstanceRef) {
     alert('已放棄變更，已開啟全新文章！')
   }
 
+  const extractTags = (htmlContent) => {
+    if (!htmlContent) return []
+    try {
+      const doc = new DOMParser().parseFromString(htmlContent, 'text/html')
+      const pureText = doc.body.textContent || ''
+      const regex = /#([^#\s,、.]+)/g
+      const matches = pureText.match(regex)
+      if (!matches) return []
+
+      const cleanTags = matches.map((tag) => tag.replace('#', '').trim())
+      return [...new Set(cleanTags)].filter((tag) => tag.length > 0)
+    } catch (e) {
+      return []
+    }
+  }
+
+  //因為內文在 Quill 實體裡，我們利用 Quill 的 text-change 事件或直接監聽實體
+  watch(
+    () => quillInstanceRef.value,
+    (quill) => {
+      if (!quill) return
+
+      quill.on('text-change', () => {
+        const htmlContent = quill.root.innerHTML
+        detectedTags.value = extractTags(htmlContent)
+      })
+    },
+  )
+
   return {
     post,
     isNewArticleModalOpen,
@@ -51,5 +82,6 @@ export function useEditorState(emit, quillInstanceRef) {
     clearEditorData,
     saveAndNew,
     discardAndNew,
+    detectedTags,
   }
 }
