@@ -10,6 +10,7 @@ import {
   Heart,
   LogIn,
   User,
+  TwitterIcon,
 } from 'lucide-vue-next'
 import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
 import SearchBarAlgolia from '@/components/Client/SearchBarAlgolia.vue'
@@ -73,7 +74,7 @@ onUnmounted(() => {
           <div class="hidden gap-4 md:flex">
             <Instagram
               class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
-            <Mail
+            <TwitterIcon
               class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
           </div>
           <div class="flex">
@@ -117,13 +118,11 @@ onUnmounted(() => {
           <div class="mx-auto h-full w-[1286px] pt-[.5em] pl-3 md:pt-[72px]">
             <router-link
               to="/"
-              @click="closeMenu"
               class="menu-item fontmdxtrabold relative block py-7 text-center text-left text-xl font-bold tracking-widest md:text-3xl">
               Home
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('pets')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -131,7 +130,6 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('games')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -139,7 +137,6 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('community')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -147,9 +144,10 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
+              @mouseenter="handleMenuHover('support')"
+              @mouseleave="handleMenuLeave"
               class="menu-item text-md relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
-              Contact Us
+              Support
             </router-link>
             <div class="ml-3">
               <p class="mt-20 mb-3 text-sm font-bold tracking-widest">FOLLOW</p>
@@ -183,77 +181,76 @@ onUnmounted(() => {
                 class="pointer-events-auto absolute top-0 right-0 z-2 h-full w-[65%] bg-[#FEF8EA]">
                 <Transition name="menu-content" mode="out-in">
                   <div v-if="hoveredMenu === 'pets'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Pet Categories</h3>
-                    <div class="grid grid-cols-2 gap-4">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">寵物</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
                         :to="{ name: 'pet-adoption' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
                         領養狗狗
                       </router-link>
                       <router-link
                         :to="{ name: 'pet-health-passport' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        寵物健康護照
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        健康護照
                       </router-link>
                       <router-link
                         :to="{ name: 'missing-report' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
                         遺失協尋
                       </router-link>
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'games'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Games</h3>
-                    <div class="space-y-3">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">遊戲</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
-                        to="/"
+                        :to="{ name: 'Client-gameview' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Pet Quiz
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Memory Game
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Puzzle
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        寵物知識問答
                       </router-link>
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'community'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Community</h3>
-                    <div class="space-y-3">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">社群</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
-                        to="/"
+                        :to="{ name: 'community-home' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Forums
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-wider transition-all hover:shadow-md">
+                        社群首頁
                       </router-link>
                       <router-link
-                        to="/"
+                        :to="{ name: 'create-article' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Events
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        新增貼文
+                      </router-link>
+                    </div>
+                  </div>
+                  <div v-else-if="hoveredMenu === 'support'" class="p-10 md:pt-[100px]">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">支援</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
+                      <router-link
+                        :to="{ name: 'Client-faq' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        常見問題
                       </router-link>
                       <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Pet Stories
+                        :to="{ name: 'Client-qa' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        聯絡我們
                       </router-link>
                       <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Q&A
+                        :to="{ name: 'Client-enewsletter' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        電子報
                       </router-link>
                     </div>
                   </div>

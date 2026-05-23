@@ -10,7 +10,7 @@ export default [
         name: 'home',
         component: () => import('@/views/Client/HomeView.vue'),
         meta: {
-          title: '首頁 | Petmily ',
+          title: '首頁 | Petmily 寵物媒合平台 ',
         },
       },
       {
@@ -26,15 +26,15 @@ export default [
         name: 'create-article',
         component: () => import('@/views/Client/community/CreateArticle.vue'),
         meta: {
-          title: '新增貼文 | Petmily',
+          title: '新增貼文 | Petmily 寵物媒合平台',
         },
       },
       {
-        path: '/article-list',
-        name: 'article-list',
-        component: () => import('@/views/Client/community/ArticleList.vue'),
+        path: '/community-home',
+        name: 'community-home',
+        component: () => import('@/views/Client/community/CommunityHome.vue'),
         meta: {
-          title: '貼文列表 | Petmily',
+          title: '社群首頁 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -42,7 +42,7 @@ export default [
         name: 'article-detail',
         component: () => import('@/views/Client/community/ArticleDetail.vue'),
         meta: {
-          title: '文章內容 | Petmily',
+          title: '文章內容 | Petmily 寵物媒合平台',
           // note:之後可以更新動態顯示文章標題
         },
       },
@@ -51,7 +51,7 @@ export default [
         name: 'mypage',
         component: () => import('@/views/Client/community/MyPage.vue'),
         meta: {
-          title: '個人主頁 | Petmily',
+          title: '個人主頁 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -59,7 +59,7 @@ export default [
         name: 'pet-adoption',
         component: () => import('@/views/Client/pet/PetAdoptionView.vue'),
         meta: {
-          title: '領養狗狗 | Petmily',
+          title: '領養狗狗 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -67,7 +67,7 @@ export default [
         name: 'pet-adoption-add',
         component: () => import('@/views/Client/pet/PostPetView.vue'),
         meta: {
-          title: '領養狗狗 | Petmily',
+          title: '領養狗狗 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -75,7 +75,7 @@ export default [
         name: 'pet-adoption-detail',
         component: () => import('@/views/Client/pet/PetAdoptionDetailView.vue'),
         meta: {
-          title: '狗狗檔案 | Petmily',
+          title: '狗狗檔案 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -83,7 +83,7 @@ export default [
         name: 'pet-health-passport',
         component: () => import('@/views/Client/pet/PetPassportView.vue'),
         meta: {
-          title: '健康護照 | Petmily',
+          title: '健康護照 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -91,7 +91,7 @@ export default [
         name: 'pet-health-passport-add',
         component: () => import('@/views/Client/pet/PassportAddPetView.vue'),
         meta: {
-          title: '新增寵物 | Petmily',
+          title: '新增寵物 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -99,7 +99,7 @@ export default [
         name: 'pet-health-passport-edit',
         component: () => import('@/views/Client/pet/PassportEditView.vue'),
         meta: {
-          title: '編輯寵物資料 | Petmily',
+          title: '編輯寵物資料 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -107,7 +107,7 @@ export default [
         name: 'missing-report',
         component: () => import('@/views/Client/pet/MissingPetView.vue'),
         meta: {
-          title: '遺失協尋 | Petmily',
+          title: '遺失協尋 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -115,7 +115,7 @@ export default [
         name: 'missing-report-create',
         component: () => import('@/views/Client/pet/PostMissingPetView.vue'),
         meta: {
-          title: '刊登遺失協尋 | Petmily',
+          title: '刊登遺失協尋 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -123,7 +123,7 @@ export default [
         name: 'missing-report-detail',
         component: () => import('@/views/Client/pet/MissingPetDetailView.vue'),
         meta: {
-          title: '遺失協尋詳情 | Petmily',
+          title: '遺失協尋詳情 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -131,7 +131,7 @@ export default [
         name: 'Client-error-404-basic',
         component: () => import('@/views/Tailadmin/Errors/FourZeroFour.vue'),
         meta: {
-          title: '404 找不到頁面 | Petmily',
+          title: '404 找不到頁面 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -139,7 +139,7 @@ export default [
         name: 'Client-faq',
         component: () => import('@/views/Client/Support/FaqView.vue'),
         meta: {
-          title: '常見問題 | Petmily',
+          title: '常見問題 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -147,7 +147,7 @@ export default [
         name: 'Client-qa',
         component: () => import('@/views/Client/Support/QAView.vue'),
         meta: {
-          title: '聯絡我們 | Petmily',
+          title: '聯絡我們 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -155,7 +155,7 @@ export default [
         name: 'Client-enewsletter',
         component: () => import('@/views/Client/Support/ENewsletterView.vue'),
         meta: {
-          title: '電子報訂閱 | Petmily',
+          title: '電子報訂閱 | Petmily 寵物媒合平台',
         },
       },
     ],
@@ -170,7 +170,7 @@ export default [
         name: 'Client-gameview',
         component: () => import('@/views/Client/Game/GameView.vue'),
         meta: {
-          title: '遊戲 | Petmily',
+          title: '遊戲 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -178,7 +178,7 @@ export default [
         name: 'Client-mainmenu',
         component: () => import('@/views/Client/Game/MainMenu.vue'),
         meta: {
-          title: '遊戲主選單 | Petmily',
+          title: '遊戲主選單 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -186,7 +186,7 @@ export default [
         name: 'Client-playerprofile',
         component: () => import('@/views/Client/Game/PlayerProfile.vue'),
         meta: {
-          title: '玩家資料 | Petmily',
+          title: '玩家資料 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -194,7 +194,7 @@ export default [
         name: 'Client-levelselect',
         component: () => import('@/views/Client/Game/LevelSelect.vue'),
         meta: {
-          title: '選擇關卡 | Petmily',
+          title: '選擇關卡 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -202,7 +202,7 @@ export default [
         name: 'Client-gameplay',
         component: () => import('@/views/Client/Game/GamePlay.vue'),
         meta: {
-          title: '寵物問答挑戰 | Petmily',
+          title: '寵物問答挑戰 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -210,7 +210,7 @@ export default [
         name: 'Client-skinshop',
         component: () => import('@/views/Client/Game/SkinShop.vue'),
         meta: {
-          title: '造型商店 | Petmily',
+          title: '造型商店 | Petmily 寵物媒合平台',
         },
       },
       {
@@ -218,7 +218,7 @@ export default [
         name: 'Client-inventory',
         component: () => import('@/views/Client/Game/Inventory.vue'),
         meta: {
-          title: '我的收藏 | Petmily',
+          title: '我的收藏 | Petmily 寵物媒合平台',
         },
       },
     ],
@@ -233,7 +233,22 @@ export default [
         name: 'Client-login',
         component: () => import('@/components/Client/Signin.vue'),
         meta: {
-          title: '登入 | Petmily',
+          title: '登入 | Petmily 寵物媒合平台',
+        },
+      },
+    ],
+  },
+  {
+    path: '/signup',
+    name: 'SignupLayout',
+    component: () => import('@/layouts/Client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Client-signup',
+        component: () => import('@/components/Client/SignUp.vue'),
+        meta: {
+          title: '註冊 | Petmily 寵物媒合平台',
         },
       },
     ],
@@ -271,7 +286,7 @@ export default [
         name: 'Client-profile',
         component: () => import('@/components/Client/Profile.vue'),
         meta: {
-          title: '會員中心 | Petmily',
+          title: '會員中心 | Petmily 寵物媒合平台',
         },
       },
     ],
