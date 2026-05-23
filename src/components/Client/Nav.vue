@@ -79,6 +79,7 @@ onUnmounted(() => {
           <div class="flex">
             <router-link
               to="/"
+              @click="toggleMenu"
               class="logo-group -top-1.5 flex text-center text-4xl text-black sm:text-5xl md:-top-3 md:text-5xl lg:text-5xl">
               <img class="logo" src="/images/logo/LOGO-WHITE.svg" alt="" />
               <h1 class="ml-3 inline-block font-bold text-[#445944]">PETMILY</h1>
