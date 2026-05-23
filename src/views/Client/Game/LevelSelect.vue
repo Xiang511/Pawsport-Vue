@@ -580,7 +580,16 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 
 .level-list-panel {
   flex: 1.6;
-  background: #fcf4e5;
+  background-color: #f6ebe0; 
+  
+  /* 🎯 點矩陣魔法：利用極小的圓形與錯位 */
+  background-image: 
+    radial-gradient(#e5d5c5 10%, transparent 11%),
+    radial-gradient(#e5d5c5 10%, transparent 11%);
+  
+  /* 讓圓點變得極小（僅 3px），且彼此間距 24px，非常內斂 */
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
   border: 6px solid #453a27;
   box-shadow: 0 6px 0 #453a27;
   border-radius: 50px;
@@ -721,7 +730,16 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 }
 .info-card {
   height: 100%;
-  background: #fcf4e5;
+  background-color: #f6ebe0; 
+  
+  /* 🎯 點矩陣魔法：利用極小的圓形與錯位 */
+  background-image: 
+    radial-gradient(#e5d5c5 10%, transparent 11%),
+    radial-gradient(#e5d5c5 10%, transparent 11%);
+  
+  /* 讓圓點變得極小（僅 3px），且彼此間距 24px，非常內斂 */
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
   border: 5px solid #453a27;
   box-shadow: 0 6px 0 #453a27; /* 增加厚實感 */
   border-radius: 40px;
@@ -957,12 +975,6 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   align-items: center;
   gap: 8px; /* 圖標和文字之間的間距 */
   transition: all 0.2s ease; /* 平滑過渡 */
-}
-
-.currency-box:hover {
-  background: #fcc86d; /* 懸停時變色 */
-  transform: translateY(-2px); /* 向上浮起 */
-  box-shadow: 0 8px 0 #453a27;
 }
 
 .nav-menu {

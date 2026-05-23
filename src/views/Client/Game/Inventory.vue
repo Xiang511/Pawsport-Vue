@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useGameAudio } from '@/composables/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
+import { Eye, EyeOff } from 'lucide-vue-next'
 
 
 const { playSFX } = useGameAudio()
@@ -253,8 +254,21 @@ const goBack = () => {
       </div>
       
       <div class="header-right-group">
-        <div class="currency-box is-bag">🪙 {{ formatNumber(userPoints) }}</div>
-        <div class="currency-box is-bag">共擁有 {{ formatNumber(ownedCount) }} 個造型</div>
+        <button 
+              type="button"
+              :disabled="isLoadingUnownedSkins"
+              :class="['checkbox-label', { 'is-active': showUnownedSkins }]"
+              @click="toggleUnownedSkins"
+            >
+            <span class="icon-wrapper">
+                <Eye v-if="showUnownedSkins" :size="18" stroke-width="2.5" />
+                <EyeOff v-else :size="18" stroke-width="2.5" />
+              </span>
+              <span class="checkbox-text">
+                {{ showUnownedSkins ? '隱藏未擁有造型' : '顯示未擁有造型' }}
+              </span>
+          </button>
+        <div class="currency-box">🪙 {{ formatNumber(userPoints) }}</div>
       </div>
     </div>
 
@@ -273,6 +287,11 @@ const goBack = () => {
             <div class="avatar-mock">
               <img v-if="displaySkin?.imgUrl" :src="displaySkin.imgUrl" alt="preview" class="avatar-img-preview" />
               <p class="skin-name-preview">{{ displaySkin?.name }}</p>
+              <div class="preview-desc-box" v-if="previewSkin">
+                <p class="preview-desc-text">
+                  {{ previewSkin?.description || '這個造型還沒有詳細描述唷！' }}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -307,77 +326,71 @@ const goBack = () => {
 
       <!-- 右側：造型列表面板 -->
       <div class="catalog-panel">
-        <!-- 已擁有的造型區塊（預設展開） -->
-        <div class="skins-section">
-          <div class="section-title">已擁有的造型</div>
-          
-          <div class="items-grid">
-            <div v-if="ownedSkins.length === 0" class="empty-state">
-              <p>您還沒有擁有任何造型</p>
-            </div>
-
-            <div 
-              v-for="item in ownedSkins" 
-              :key="item.id"
-              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
-              @click="playSFX('click'); selectSkin(item)"
-              @mouseenter="showTooltip($event, item)" 
-              @mousemove="moveTooltip($event)" 
-              @mouseleave="hideTooltip"
-            >
-              <div class="product-title">{{ item.name }}</div>
-              
-              <div class="product-img-box">
-                <img :src="item.imgUrl" alt="product" class="product-real-img" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- 未擁有的造型區塊-->
-        <div class="skins-section">
-          <div class="section-header">
-            <label class="checkbox-label">
-              <input 
-                :checked="showUnownedSkins"
-                :disabled="isLoadingUnownedSkins"
-                type="checkbox" 
-                class="checkbox-input"
-                @change="toggleUnownedSkins"
-              />
-              <span class="checkbox-text">顯示未擁有的造型</span>
-            </label>
-          </div>
-
-          <!-- Loading 進度條 -->
-          <div v-if="isLoadingUnownedSkins" class="loading-container">
-            <div class="spinner-small"></div>
-            <p class="loading-text">正在載入未擁有的造型...</p>
-          </div>
-
-          <div v-else-if="showUnownedSkins" class="items-grid">
-            <div v-if="unownedSkins.length === 0" class="empty-state">
-              <p>您已擁有所有造型！</p>
-            </div>
-
-            <div 
-              v-for="item in unownedSkins" 
-              :key="item.id"
-              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
-              @click="playSFX('click'); selectSkin(item)"
-              @mouseenter="showTooltip($event, item)" 
-              @mousemove="moveTooltip($event)" 
-              @mouseleave="hideTooltip"
-            >
-              <div class="product-title">{{ item.name }}</div>
-              
-              <div class="product-img-box">
-                <img :src="item.imgUrl" alt="product" class="product-real-img" />
-              </div>
-            </div>
-          </div>
-        </div>
-
+  
+  <div class="skins-section ">
+    <div class="section-top-header">
+      <div class="section-title ">已擁有的造型</div>
+      
+      
+    </div>
+    
+    <div class="items-grid">
+      <div v-if="ownedSkins.length === 0" class="empty-state">
+        <p>您還沒有擁有任何造型</p>
       </div>
+
+      <div 
+        v-for="item in ownedSkins" 
+        :key="item.id"
+        :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+        @click="playSFX('click'); selectSkin(item)"
+        @mouseenter="showTooltip($event, item)" 
+        @mousemove="moveTooltip($event)" 
+        @mouseleave="hideTooltip"
+      >
+        <div class="product-title">{{ item.name }}</div>
+        
+        <div class="product-img-box">
+          <img :src="item.imgUrl" alt="product" class="product-real-img" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showUnownedSkins || isLoadingUnownedSkins" class="skins-section">
+    <div class="section-top-header">
+    <div class="section-title">尚未擁有的造型</div>
+  </div>
+
+    <div v-if="isLoadingUnownedSkins" class="loading-container">
+      <div class="spinner-small"></div>
+      <p class="loading-text">正在載入未擁有的造型...</p>
+    </div>
+
+    <div v-else class="items-grid">
+      <div v-if="unownedSkins.length === 0" class="empty-state">
+        <p>您已擁有所有造型！</p>
+      </div>
+
+      <div 
+        v-for="item in unownedSkins" 
+        :key="item.id"
+        :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+        @click="playSFX('click'); selectSkin(item)"
+        @mouseenter="showTooltip($event, item)" 
+        @mousemove="moveTooltip($event)" 
+        @mouseleave="hideTooltip"
+      >
+        <div class="product-title">{{ item.name }}</div>
+        
+        <div class="product-img-box">
+          <img :src="item.imgUrl" alt="product" class="product-real-img" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
     </div>
   </div>
 
@@ -397,15 +410,21 @@ const goBack = () => {
    🎨 核心樣式
    =================================================== */
 .shop-page-container {
-  width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  /* 🎯 基礎低飽和度 Morandi 溫暖底色 */
+  background-color: #f7ede2; 
+  
+  /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
+  background-image: 
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
+  
+  /* 調整格子的大小（數字越小格子越密） */
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
+  
+  padding: 24px;
   box-sizing: border-box;
-  padding: 30px 50px;
-  background-color: #fcf4e5;
-  font-family: system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 .shop-header {
@@ -413,6 +432,7 @@ const goBack = () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
+  
 }
 
 .header-left {
@@ -471,7 +491,7 @@ const goBack = () => {
 }
 
 .currency-box {
-  background: #ffffff; 
+  background: #fcf4e5; 
   color: #453a27; 
   border: 4px solid #453a27; 
   border-radius: 25px; 
@@ -482,33 +502,53 @@ const goBack = () => {
   display: flex;
   align-items: center;
   gap: 8px; 
+    margin-right: 50px;
+    white-space: nowrap;
 }
 
-.currency-box.is-bag {
-  font-size: 1.1rem;
-  font-weight: bold;
-  background: #fffdf9;
-}
 
 .shop-main-content {
   flex: 1;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 40px;
-  height: calc(100% - 80px);
+  height: calc(100vh - 160px);
+  max-height: calc(100vh - 160px);
+  overflow: hidden; /* 阻止父容器變形 */
   animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .loading-state {
+  /* 🎯 1. 核心定位：固定定位，死死鎖定整個瀏覽器視窗 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;   /* 撐滿整個螢幕寬度 */
+  height: 100vh;  /* 撐滿整個螢幕高度 */
+  
+  /* 🎯 2. 核心布局：讓內部的大圈圈與文字上下垂直排列，並精準幾何居中 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  height: 100%;
+  gap: 30px;      /* 圈圈與文字的間距 */
+  
+  /* 🎯 3. 層級鎖定：確保加載畫面絕對蓋在最上層（不被商店其他卡片遮擋） */
+  z-index: 9999;
+  
+  /* ===================================================
+     🎯 4. 完美複製：與首頁 100% 同步的森系微斜紋背景
+     =================================================== */
+  background-color: #f7ede2; /* Morandi 溫暖底色 */
+  background-image: 
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
+  
   font-size: 1.2rem;
   color: #453a27;
-  position: relative;
 }
 
 /* ===================================================
@@ -516,7 +556,11 @@ const goBack = () => {
    =================================================== */
 .preview-panel {
   flex: 0 0 35%;
-  height: 100%;
+  height: 99%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 讓繪本卡片在左側空間中完美垂直居中 */
 }
 
 .preview-card {
@@ -569,6 +613,28 @@ const goBack = () => {
   margin: 5px 0;
 }
 
+.preview-desc-box {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: #faf3e8;   /* 比背景再深一點點的溫暖羊皮紙色 */
+  border: 3px solid #453a27;   /* 符合 UI 的標誌性粗邊框 */
+  border-radius: 12px;
+  width: 85%;                  /* 寬度稍窄，收在正中央看起來比較內斂 */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05); /* 微內陰影，營造下陷手感 */
+}
+
+.preview-desc-text {
+  font-size: 0.95rem;
+  font-weight: 700;            /* 偏粗字體，在 Morandi 色系下更清晰 */
+  color: #5c4e37;              /* 比主色稍微淺一點點的深咖啡，閱讀較舒適 */
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;          /* 文字居中對齊 */
+  word-break: break-all;       /* 防止英文或特殊符號把版面撐開 */
+}
+
 .try-on-tag {
   background: #fcc86d;
   color: #453a27;
@@ -617,6 +683,8 @@ const goBack = () => {
 .shop-btn.is-actionable:hover {
   transform: translateY(-3px) scaleY(1.08);
   box-shadow: 0 8px 0 #453a27;
+  background-color: #fcc86d;
+  color: #453a27;
 }
 
 .shop-btn.is-actionable:active {
@@ -641,7 +709,8 @@ const goBack = () => {
   height: 100%;
   gap: 20px;
   overflow-y: auto;
-  padding-right: 10px;
+  scrollbar-gutter: stable;
+  padding-right: 40px !important;
 }
 
 .catalog-panel::-webkit-scrollbar {
@@ -668,40 +737,92 @@ const goBack = () => {
   padding: 25px;
   display: flex;
   flex-direction: column;
+  max-height: max-content;
 }
 
-.section-title {
-  font-size: 1.2rem;
-  font-weight: bold;
+.section-top-header {
+  display: flex;
+  justify-content:space-evenly; /* 讓標題在左，勾選框在右 */
+  align-items: center;           /* 垂直居中對齊 */
+  width: 100%;
+  margin-bottom: 20px;           /* 與下方商品格子的間距 */
+  padding: 0 10px;               /* 稍微給點內縮，對齊網格 */
+}
+
+.section-top-header .section-title {
+  font-size: 1.4rem;
+  font-weight: 900;
   color: #453a27;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 3px solid #453a27;
+  margin-bottom: 0; 
 }
 
-.section-header {
-  margin-bottom: 15px;
-}
 
 .checkbox-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   cursor: pointer;
   user-select: none;
+
+  /* 🎯 預設狀態（熄滅）：完美同步右側點數框的溫暖米底色 */
+  background: #fcf4e5;       
+  height: 60px;
+  padding: 8px 18px;        
+  border: 4px solid #453a27; 
+  border-radius: 20px;       
+  box-shadow: 0 4px 0 #453a27; 
+  
+  /* 讓顏色、下沉動畫過渡非常滑順 */
+  transition: transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              box-shadow 0.08s cubic-bezier(0.25, 0.8, 0.25, 1),
+              background-color 0.15s ease;
+              animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.checkbox-input {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #453a27;
+/* 📝 標籤文字（預設深色） */
+.checkbox-text,
+.icon-wrapper {
+  color: #453a27; 
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: color 0.15s ease; /* 讓字體顏色切換時有柔和漸變 */
 }
 
-.checkbox-text {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #453a27;
+.icon-wrapper {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* 🎯 核心魔法：讓 SVG 圖標強制繼承父層的文字顏色 (currentColor) */
+.icon-wrapper svg {
+  display: block;
+  color: currentColor; 
+}
+
+.checkbox-label.is-active {
+  background-color: #453a27; 
+}
+
+.checkbox-label.is-active .checkbox-text,
+.checkbox-label.is-active .icon-wrapper {
+  color: #ffffff;
+}
+
+.checkbox-label:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #453a27;
+}
+
+.checkbox-label:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 #453a27; /* 點擊下沉，陰影貼平 */
+}
+
+.checkbox-label:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .items-grid {
@@ -722,7 +843,7 @@ const goBack = () => {
    🎴 造型卡片
    =================================================== */
 .product-card {
-  background: #fdfbf7;
+  background: #fcf4e5;
   border: 4px solid #453a27;
   border-radius: 20px;
   padding: 12px;
@@ -738,12 +859,38 @@ const goBack = () => {
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 0 #453a27;
-  background-color: #fcf4e5;
+  animation: card-bg-flash 0.5s ease-in-out infinite alternate;
+}
+
+.product-card:active {
+  /* 🎯 點下去時往下平移：相對於 hover 的 translateY(-4px)，
+     我們讓它沉降到比平常更低的微幅平移，製造按下去的物理動態 */
+  transform: translateY(2px);
+  
+  /* 🎯 縮小陰影：原本是 6px 的厚重立體陰影，點擊時縮小到 2px，
+     這樣在視覺上卡片就會像是緊貼著底層桌面 */
+  box-shadow: 0 2px 0 #453a27;
+  
+  /* 🎯 加快反應速度：點下去的瞬間要瞬間反饋（0.05秒），按鈕感覺才會「彈手」 */
+  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
+}
+
+@keyframes card-bg-flash {
+  0% {
+    /* 啟始點：原本設定的經典米色 */
+    background-color: #fcc86d;
+  }
+  100% {
+    /* 呼吸頂點：稍微變亮到接近純白（但帶有溫暖黃調） */
+    background-color: #fffdf9;
+    
+    border-color: #fcc86d;
+  }
 }
 
 .product-card.is-selected {
-  border-color: #fcc86d;
-  background-color: #fff9ee;
+  border-color: #453a27;
+  background-color: #fcc86d;
   box-shadow: 0 4px 0 #453a27;
 }
 
@@ -759,7 +906,15 @@ const goBack = () => {
 .product-img-box {
   width: 100%;
   height: 80px;
-  background: #ffffff;
+  background-color: #f7ede2; 
+  
+  /* 🎯 精細雙向交織線：創造軟綿綿的微像素編織感 */
+  background-image: 
+    linear-gradient(90deg, rgba(234, 221, 206, 0.7) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(234, 221, 206, 0.7) 1px, transparent 1px);
+  
+  /* ⚡ 關鍵：縮小到 20px，讓它變成低調精緻的背景底紋 */
+  background-size: 10px 10px;
   border: 3px solid #453a27;
   border-radius: 12px;
   display: flex;
@@ -816,26 +971,53 @@ const goBack = () => {
    =================================================== */
 .custom-tooltip {
   position: fixed;
-  background: #453a27;
-  color: #fcf4e5;
-  padding: 12px 16px;
-  border-radius: 12px;
+  /* 🎯 背景換成米色，維持 Morandi 質感 */
+  background: #fdf6e6;
+  /* 🎯 加上核心的深色粗邊框 */
+  border: 4px solid #453a27;
+  /* 🎯 調整為更貼合整體的圓角 */
+  border-radius: 18px;
+  /* 🎯 文字顏色換回深色 */
+  color: #453a27;
+  /* 🎯 文字對齊左側 */
+  text-align: left;
+  /* 調整內邊距 */
+  padding: 15px 20px;
   font-size: 0.9rem;
   z-index: 10000;
   pointer-events: none;
   max-width: 250px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* 🎯 修改陰影，使其與商品卡片的懸浮陰影一致 */
+  box-shadow: 0 8px 0 #453a27;
+  /* ✨ 加上滑動出現的動畫特效 ( Anime.js style transition ) */
+  animation: tooltip-slide-up 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .tooltip-title {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 900; /* 加粗字體 */
+  margin-bottom: 6px;
+  font-size: 1.1rem; /* 稍微放大小標 */
+  border-bottom: 2px dashed #e8dcc8; /* 加一條淡淡的點點分隔線 */
+  padding-bottom: 4px;
 }
 
 .tooltip-body {
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 500;
 }
+
+@keyframes tooltip-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 
 /* 大型 Spinner（頁面加載用） */
 .spinner-large {

@@ -196,7 +196,16 @@ const backToWebHome = (event) => {
 <style scoped>
 .game-start-screen {
   height: 100vh;
-  background-color: #fcf4e5; /* 奶油米色背景 */
+  background-color: #f7ede2; 
+  
+  /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
+  background-image: 
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
+  
+  /* 調整格子的大小（數字越小格子越密） */
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -246,7 +255,7 @@ const backToWebHome = (event) => {
     -1px -1px 0 #453a27,
     1px -1px 0 #453a27,
     -1px 1px 0 #453a27,
-    5px 5px 0px rgba(252, 200, 109, 0.3);
+    10px 10px 0px rgba(252, 200, 109, 0.3);
 }
 
 .letter {

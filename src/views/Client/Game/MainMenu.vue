@@ -391,7 +391,16 @@ const closeNicknameModal = () => {
 
 .main-menu-container {
   height: 100vh;
-  background: #fcf4e5;
+  background-color: #f7ede2; 
+  
+  /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
+  background-image: 
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
+    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
+  
+  /* 調整格子的大小（數字越小格子越密） */
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
   color: #453a27;
   display: flex;
   position: relative;
@@ -602,7 +611,7 @@ const closeNicknameModal = () => {
   padding: 12px 30px;
   width: fit-content;
   z-index: 1;
-
+  font-weight: 900;
   background-color: #fcf4e5;
   border: 4px solid #453a27;
   border-radius: 20px;
