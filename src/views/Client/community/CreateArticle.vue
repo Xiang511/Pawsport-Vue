@@ -29,7 +29,7 @@ const handlePublish = async (postData) => {
         router.push(`/article-detail/${result.data}`)
       }, 1000) // 稍微延遲 1 秒讓使用者看得到 Toast 成功訊息
     } else {
-      router.push('/article-list') // 萬一拿不到 ID 的安全備案頁面
+      router.push('/community-home') // 萬一拿不到 ID 的安全備案頁面
     }
   } catch (error) {
     console.error('發布文章失敗：', error)

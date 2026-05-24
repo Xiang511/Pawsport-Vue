@@ -106,7 +106,7 @@ const filteredArticles = computed(() => {
       <!-- 1. 圖片作為絕對定位，直接鋪滿整個 section 的上下左右 -->
       <div class="absolute inset-0 h-full w-full">
         <img
-          src="@/assets/images/dogs-playing-together-stockcake.jpg"
+          src="/images/banner/dogs-playing-together-stockcake.jpg"
           alt="Petmily Community Banner"
           class="h-full w-full object-cover object-[center_65%]" />
         <!-- 💡 加上一層淡淡的黑色半透明遮罩，可以防止圖片太亮導致白字看不清楚 -->

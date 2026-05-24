@@ -1,10 +1,16 @@
 import { ref, reactive, watch } from 'vue'
 import axios from 'axios'
+import request from '@/api/axios'
+import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
+import Quill from 'quill'
 
 export function useEditorState(emit, quillInstanceRef) {
   const isNewArticleModalOpen = ref(false)
   const isDraftListModalOpen = ref(false)
   const detectedTags = ref([])
+  const toastRef = ref(null)
+  let isUploading = false
+  let savedIndex = 0
 
   const post = reactive({
     title: '',
@@ -31,20 +37,20 @@ export function useEditorState(emit, quillInstanceRef) {
   // 儲存草稿並開啟新檔
   const saveAndNew = (getFormData) => {
     if (!post.title.trim()) {
-      alert('請至少填寫文章標題，才能為您儲存草稿！')
+      toastRef.value?.trigger('請至少填寫文章標題，才能為您儲存草稿！')
       return
     }
     emit('save-draft', getFormData())
     clearEditorData()
     isNewArticleModalOpen.value = false
-    alert('草稿已儲存，已為您開啟新檔！')
+    toastRef.value?.trigger('草稿已儲存，已為您開啟新檔！')
   }
 
   // 放棄不儲存，直接開新檔
   const discardAndNew = () => {
     clearEditorData()
     isNewArticleModalOpen.value = false
-    alert('已放棄變更，已開啟全新文章！')
+    toastRef.value?.trigger('已放棄變更，已開啟全新文章！')
   }
 
   const extractTags = (htmlContent) => {
@@ -68,52 +74,70 @@ export function useEditorState(emit, quillInstanceRef) {
     (quill) => {
       if (!quill) return
 
+      // 標籤偵測
       quill.on('text-change', () => {
         const htmlContent = quill.root.innerHTML
         detectedTags.value = extractTags(htmlContent)
+      })
+
+      // 游標監聽：只要游標一有變動，立刻存起來
+      quill.on('selection-change', (range) => {
+        console.log('selection=', range)
+        if (range && range.index !== undefined) {
+          savedIndex = range.index
+        }
       })
     },
   )
 
   const imageHandler = () => {
-    // 1. 動態建立一個隱藏的 <input type="file">
-    const input = document.createElement('input')
-    input.setAttribute('type', 'file')
-    input.setAttribute('accept', 'image/*') // 只允許圖片
-    input.click()
+    console.log('imageHandler triggered')
 
-    // 2. 當使用者選好圖片後觸發
-    input.onchange = async () => {
-      const file = input.files[0]
-      if (!file) return
+    const input = document.getElementById('quill-hidden-image-input')
 
-      // 3. 將圖片檔案包裝成 FormData 格式
+    console.log('input=', input)
+
+    if (input) {
+      input.click()
+    }
+  }
+
+  const handleRealImageUpload = async (event) => {
+    if (isUploading) return
+
+    const file = event.target.files?.[0]
+    const quill = quillInstanceRef.value
+
+    if (!file || !quill) return
+
+    try {
+      isUploading = true
+
       const formData = new FormData()
-      formData.append('file', file) // 👈 這裡的 'file' 要對齊後端的 IFormFile file 參數名稱
+      formData.append('file', file)
 
-      try {
-        // 4. 發送請求到你剛剛寫好的後端 API
-        // ⚠️ 請根據你本機的後端埠號修改 (例如先前看到的 7048)
-        const response = await axios.post('https://localhost:7048/api/Image/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
+      const response = await request.post('/Users/community/upload', formData)
 
-        // 5. 拿到後端回傳的完整網址 { url: "https://..." }
-        const imageUrl = response.data.url
+      const imageUrl = response.data?.url || response.data
 
-        // 6. 取得當前 Quill 的實體與光標位置，把 <img> 標籤插進去
-        const quill = quillInstanceRef.value // 確保這能拿到你的 Quill 實體
-        const range = quill.getSelection()
-
-        // 在當前游標位置插入圖片，並把游標往後移一格
-        quill.insertEmbed(range.index, 'image', imageUrl)
-        quill.setSelection(range.index + 1)
-      } catch (error) {
-        console.error('圖片上傳失敗:', error)
-        alert(error.response?.data?.message || '圖片上傳失敗，請稍後再試。')
+      if (!imageUrl) {
+        toastRef.value?.trigger('後端未回傳有效圖片網址')
+        return
       }
+      const insertIndex = Math.min(savedIndex, quill.getLength() - 1)
+
+      quill.insertEmbed(insertIndex, 'image', imageUrl, 'user')
+
+      setTimeout(() => {
+        quill.setSelection(insertIndex + 1, 0, 'silent')
+      }, 0)
+    } catch (err) {
+      console.error(err)
+
+      toastRef.value?.trigger('圖片上傳失敗，請檢查後端連線')
+    } finally {
+      isUploading = false
+      event.target.value = ''
     }
   }
 
@@ -126,5 +150,7 @@ export function useEditorState(emit, quillInstanceRef) {
     discardAndNew,
     detectedTags,
     imageHandler,
+    toastRef,
+    handleRealImageUpload,
   }
 }

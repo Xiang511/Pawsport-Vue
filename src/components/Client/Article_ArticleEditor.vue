@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, shallowRef, markRaw } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -25,7 +25,7 @@ const props = defineProps({
 const currentSubCategories = ref([])
 const editorRef = ref(null)
 // 建立一個讓 Composable 能夠安全讀取到 quillInstance 的橋樑
-const quillWrapper = ref(null)
+const quillWrapper = shallowRef(null)
 
 const {
   post,
@@ -35,35 +35,36 @@ const {
   discardAndNew,
   detectedTags,
   imageHandler,
+  handleRealImageUpload,
 } = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
 onMounted(() => {
   if (!editorRef.value) return
   // 初始化編輯器
-  const quillInstance = new Quill(editorRef.value, {
-    theme: 'snow',
-    modules: {
-      toolbar: {
-        // 1. 這裡放原本的按鈕清單陣列
-        container: [
-          [{ header: [1, 2, 3, 4, false] }],
-          [{ font: [] }],
-          ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
-          [{ color: [] }, { background: [] }],
-          [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
-          [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
-          ['image', 'blockquote', 'link'],
-          ['clean'],
-        ],
-        // 2. 這裡放攔截事件
-        handlers: {
-          image: imageHandler, // 呼叫來自 useEditorState 的圖片上傳邏輯
+  const quillInstance = markRaw(
+    new Quill(editorRef.value, {
+      theme: 'snow',
+      modules: {
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, 4, false] }],
+            [{ font: [] }],
+            ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
+            [{ color: [] }, { background: [] }],
+            [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+            ['image', 'blockquote', 'link'],
+            ['clean'],
+          ],
+          handlers: {
+            image: imageHandler,
+          },
         },
       },
-    },
-  })
-  // 將實體提供給 Composable 之後做 clear 動作
+    }),
+  )
+
   quillWrapper.value = quillInstance
 })
 
@@ -258,6 +259,13 @@ defineExpose({
         @delete="deleteDraftItem" />
 
       <Article_ToastAlert ref="toastRef" />
+      <!-- 🎯 這就是那篇文章裡提到的「被觸發者」-->
+      <input
+        id="quill-hidden-image-input"
+        type="file"
+        accept="image/*"
+        class="hidden"
+        @change="handleRealImageUpload" />
     </div>
   </div>
 </template>
