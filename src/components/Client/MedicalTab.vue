@@ -5,14 +5,18 @@ defineProps({
     type: Array,
     default: () => []
   }
-});
+})
+
+const emit = defineEmits(['add-medical'])
 </script>
 
 <template>
   <div>
     <div class="flex justify-between items-center mb-4 border-b pb-2">
       <h2 class="text-lg font-bold text-gray-800">醫療診斷紀錄</h2>
-      <button class="text-[#9C6D6D] text-sm border border-[#9C6D6D] px-3 py-1 rounded-full hover:bg-[#9C6D6D] hover:text-white transition">
+      <button
+        @click="emit('add-medical')"
+        class="text-[#9C6D6D] text-sm border border-[#9C6D6D] px-3 py-1 rounded-full hover:bg-[#9C6D6D] hover:text-white transition">
         + 新增診斷
       </button>
     </div>
