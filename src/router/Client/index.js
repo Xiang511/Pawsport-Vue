@@ -158,6 +158,14 @@ export default [
           title: '電子報訂閱 | Petmily',
         },
       },
+      {
+        path: '/support/enewsletter/:id', // :id 代表動態文章編號
+        name: 'Client-enewsletter-detail',
+        component: () => import('@/views/Client/Support/ENewsletterDetailView.vue'),
+         meta: {
+          title: '電子報 | Petmily',
+        },
+      },
     ],
   },
   {
