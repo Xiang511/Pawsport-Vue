@@ -23,9 +23,15 @@ const form = reactive({
 onMounted(async () => {
   passportId.value = route.params.id
   try {
-    const response = await request.get(`/api/users/pet/passport/${passportId.value}`)
+    const response = await request.get(`/users/pet/passport/${passportId.value}`)
     if (response.data && response.data.data) {
-      Object.assign(form, response.data.data)
+      const data = response.data.data
+      const genderRevMap = {
+        1: '公',
+        2: '母'
+      }
+      data.gender = genderRevMap[data.gender] || '未知'
+      Object.assign(form, data)
     }
   } catch (error) {
     console.error('讀取護照明細失敗:', error)
@@ -45,16 +51,22 @@ const deletePet = () => {
 // 變更儲存 API 串接
 const saveChanges = async () => {
   try {
+    const genderMap = {
+      '公': 1,
+      '母': 2,
+      '未知': null
+    }
+
     const payload = {
       recordDate: form.recordDate,
       weight: parseFloat(form.weight),
       note: form.note,
       photo: form.photo,
-      gender: form.gender,
+      gender: genderMap[form.gender] !== undefined ? genderMap[form.gender] : null,
       isDesex: form.isDesex,
     }
 
-    await request.put(`/api/users/pet/passport/${passportId.value}`, payload)
+    await request.put(`/users/pet/passport/${passportId.value}`, payload)
     alert('護照資料變更成功')
     router.back()
   } catch (error) {
