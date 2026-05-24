@@ -118,12 +118,19 @@ export function useEditorState(emit, quillInstanceRef) {
 
       const response = await request.post('/Users/community/upload', formData)
 
-      const imageUrl = response.data?.url || response.data
+      console.log('圖片上傳 response.data=', response.data)
 
-      if (!imageUrl) {
+      const imageUrl =
+        response.data?.url || response.data?.data?.url || response.data?.data || response.data
+
+      console.log('imageUrl=', imageUrl)
+
+      if (!imageUrl || typeof imageUrl !== 'string') {
+        console.error('無效的圖片網址:', response.data)
         toastRef.value?.trigger('後端未回傳有效圖片網址')
         return
       }
+
       const insertIndex = Math.min(savedIndex, quill.getLength() - 1)
 
       quill.insertEmbed(insertIndex, 'image', imageUrl, 'user')

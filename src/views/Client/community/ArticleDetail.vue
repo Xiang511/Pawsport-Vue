@@ -173,7 +173,7 @@ onMounted(() => {
           <aside class="order-2 w-full md:order-1 md:w-1/4">
             <div class="sticky top-6 flex flex-col gap-4">
               <div class="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
-                <div class="h-16 bg-gradient-to-r from-orange-400 to-amber-500"></div>
+                <div class="h-16 bg-linear-to-r from-orange-400 to-amber-500"></div>
                 <div class="px-4 pb-6">
                   <div class="-mt-8 mb-3 flex justify-center">
                     <img
