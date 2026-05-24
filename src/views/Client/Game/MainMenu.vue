@@ -225,19 +225,11 @@ const closeNicknameModal = () => {
       <span class="user-profile-tail"></span>
     </div>
 
-    <div v-if="showBigSave" class="big-save-overlay">
-      <div class="big-save-icon">
-        <img src="../../../../public/images/game/cat.gif" alt="Save Icon" class="custom-save-gif" />
-        <!-- <Save :size="500" /> -->
-      </div>
-    </div>
-
     <Transition name="modal-fade">
       <PlayerProfile v-if="isProfileOpen" @close="handleClose" />
     </Transition>
 
     <div class="menu-side">
-      <h2 class="mini-logo animate__animated animate__jackInTheBox">PETMILY</h2>
       <nav class="nav-list animate__animated animate__jackInTheBox">
         <div
           class="nav-item"
@@ -359,7 +351,6 @@ const closeNicknameModal = () => {
       </div>
     </div>
   </Transition>
-
 </template>
 
 <style scoped>
@@ -392,19 +383,15 @@ const closeNicknameModal = () => {
 .main-menu-container {
   height: 100vh;
   background-color: #f7ede2; 
-  
-  /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
-  background-image: 
-    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
-    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
-  
-  /* 調整格子的大小（數字越小格子越密） */
-  background-size: 60px 60px;
-  background-position: 0 0, 30px 30px;
+  background-image: url("../../../../public/images/game/MainMenuBG.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 115%;
   color: #453a27;
   display: flex;
   position: relative;
-  padding: 60px 100px;
+  align-content: center;
+  padding: 40px 80px;
   user-select: none;
 }
 
@@ -579,22 +566,8 @@ const closeNicknameModal = () => {
   z-index: 2;
 }
 
-.mini-logo {
-  color: #453a27;
-  font-size: 7.5rem;
-  font-weight: 900;
-  margin-bottom: 30px;
-  -webkit-text-stroke: 4px #453a27;
-  paint-order: stroke fill;
-  text-shadow:
-    1px 1px 0 #453a27,
-    -1px -1px 0 #453a27,
-    1px -1px 0 #453a27,
-    -1px 1px 0 #453a27,
-    5px 5px 0px rgba(252, 200, 109, 0.3);
-}
-
 .nav-list {
+  margin-top: 30%;
   display: flex;
   flex-direction: column;
 }

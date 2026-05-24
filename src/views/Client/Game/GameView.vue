@@ -92,8 +92,8 @@ onMounted(async() => {
       '.letter',
       {
         y: [
-          { to: '-3rem', ease: 'out-expo', duration: 600 },
-          { to: 0, ease: 'out-bounce', duration: 800, delay: 100 },
+          { to: '-8rem', ease: 'out-expo', duration: 600 },
+          { to: '4rem', ease: 'out-bounce', duration: 800, delay: 500 },
         ],
         rotate: { from: '0turn', to: '1turn' },
       },
@@ -168,7 +168,7 @@ const backToWebHome = (event) => {
   <div class="game-start-screen" @click="proceedToMenu">
     <div class="back-home-btn" @click="backToWebHome">
       <Home :size="18" />
-      <span>返回 Petmily 首頁</span>
+      <span>返回首頁</span>
     </div>
 
     <div class="logo-container">
@@ -199,13 +199,10 @@ const backToWebHome = (event) => {
   background-color: #f7ede2; 
   
   /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
-  background-image: 
-    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
-    linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
-  
+  background-image: url("../../../../public/images/game/GameViewBG.png");
   /* 調整格子的大小（數字越小格子越密） */
-  background-size: 60px 60px;
-  background-position: 0 0, 30px 30px;
+  background-position:center;
+  background-size: 150%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -243,19 +240,31 @@ const backToWebHome = (event) => {
 
 .game-logo {
   font-size: 200px;
-  color: #453a27;
   font-weight: 900;
+  color: #fcf4e5;                  /* 最內層核心：粉嫩鵝黃肉體 */
   letter-spacing: 15px;
   display: flex;
   justify-content: center;
-  -webkit-text-stroke: 4px #453a27;
-  paint-order: stroke fill;
-  text-shadow:
-    1px 1px 0 #453a27,
-    -1px -1px 0 #453a27,
-    1px -1px 0 #453a27,
-    -1px 1px 0 #453a27,
-    10px 10px 0px rgba(252, 200, 109, 0.3);
+  user-select: none;
+  
+  /* 🎯 2. 核心第一層框：最貼近文字的深咖啡色粗邊 (10px) */
+  -webkit-text-stroke: 15px #453a27;
+  paint-order: stroke fill;        /* 確保粗邊乖乖往外生長，絕不吃進文字內裏 */
+  
+  /* ===================================================
+     🎯 3. 終極魔法：用兩組 filter 分開影印出 鵝黃邊 與 純白邊
+     =================================================== */
+  /* filter 的渲染順序是「由上往下」像蓋章一樣疊上去：
+     第一組 4 顆：抓取目前的「字+深色框」，朝四周推 6px，印出你期待的明亮鵝黃色。
+     第二組 4 顆：抓取前一步「字+深色框+鵝黃色」的總外輪廓，再朝四周推 6px，印出最外圈的白色！ */
+  filter: 
+    drop-shadow(0px 6px 0px #ffe2af)
+    
+    /* 🤍 第二步：在鵝黃色外再包上最後一圈 6px 的乾淨純白外邊 */
+    drop-shadow(6px 0px 0px #ffffff)
+    drop-shadow(-6px 0px 0px #ffffff)
+    drop-shadow(0px 6px 0px #ffffff)
+    drop-shadow(0px -6px 0px #ffffff);
 }
 
 .letter {
