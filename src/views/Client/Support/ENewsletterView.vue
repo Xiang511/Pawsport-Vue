@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { ArrowRight, Calendar, ImageIcon } from 'lucide-vue-next'
 import SupportHeader from '@/components/Client/SupportHeader.vue'
+import LineBotFloat from '@/views/Client/Support/LineBotView.vue'
+import AiChatFloat from '@/views/Client/Support/AiChatFloatView.vue'
 
 const enewsList = ref([])
 const activeCategory = ref('全部')
@@ -50,6 +52,8 @@ const formatDate = (dateString) => {
   <div class="min-h-screen bg-[#FCF4E5] px-4 py-12 font-sans">
     <div class="mx-auto w-11/12 lg:w-[95%] xl:w-10/12">
       <SupportHeader />
+      <LineBotFloat />
+      <AiChatFloat />
 
       <div class="mb-12 flex justify-center border-b-2 border-[#e8dccb]/60 pb-px">
         <div class="flex gap-8 lg:gap-12">
@@ -113,11 +117,12 @@ const formatDate = (dateString) => {
                 <span>{{ formatDate(enews.publishDate) }}</span>
               </div>
 
-              <div
-                class="flex items-center gap-1 font-bold text-[#755e44] transition-transform group-hover:translate-x-1">
+              <router-link
+                :to="{ name: 'Client-enewsletter-detail', params: { id: enews.newsLetterId } }"
+                class="flex cursor-pointer items-center gap-1 font-bold text-[#755e44] transition-transform group-hover:translate-x-1">
                 閱讀更多
                 <ArrowRight class="h-4 w-4" />
-              </div>
+              </router-link>
             </div>
           </div>
         </article>
