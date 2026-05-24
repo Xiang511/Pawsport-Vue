@@ -1,11 +1,13 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
 
+const router = useRouter()
 const emit = defineEmits(['search', 'select'])
 
 // 使用 Algolia 搜尋
-const { query, hits, isLoading, error, nbHits, clearResults } = useAlgoliaSearch()
+const { query, hits, isLoading, error, clearResults } = useAlgoliaSearch('dev_page')
 
 // 控制下拉選單顯示
 const showDropdown = ref(false)
@@ -27,21 +29,31 @@ const handleBlur = () => {
 
 // 當有搜尋結果時自動顯示下拉選單
 watch(hits, (newHits) => {
-  showDropdown.value = newHits.length > 0
+  showDropdown.value = newHits.length > 0 && query.value !== ''
 })
 
-// 選擇搜尋結果
+// 選擇搜尋結果並導航
 const selectResult = (hit) => {
-  query.value = hit.name || hit.title || ''
   showDropdown.value = false
   emit('select', hit)
-  emit('search', hit)
+
+  // 導航到選中的頁面
+  if (hit.path) {
+    router.push(hit.path)
+  }
+
+  // 清空搜尋
+  setTimeout(() => {
+    query.value = ''
+    clearResults()
+  }, 100)
 }
 
-// Enter 鍵搜尋
+// Enter 鍵選擇第一個結果
 const handleEnter = () => {
-  showDropdown.value = false
-  emit('search', { query: query.value, hits: hits.value })
+  if (hits.value.length > 0) {
+    selectResult(hits.value[0])
+  }
 }
 
 // 清空搜尋
@@ -57,10 +69,23 @@ const highlightMatch = (text, searchQuery) => {
   const regex = new RegExp(`(${searchQuery})`, 'gi')
   return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-800">$1</mark>')
 }
+
+// 取得圖示顏色類別
+const getIconColor = (category) => {
+  const colors = {
+    主選單: 'text-blue-500',
+    寵物: 'text-green-500',
+    遊戲: 'text-purple-500',
+    社群: 'text-pink-500',
+    支援: 'text-orange-500',
+    帳戶: 'text-gray-500',
+  }
+  return colors[category] || 'text-gray-400'
+}
 </script>
 
 <template>
-  <div class="relative hidden w-[60%]! rounded-full! border-none! bg-white lg:block">
+  <div class="relative hidden w-[74%]! rounded-full! border-none! bg-white lg:block">
     <div class="relative">
       <!-- 搜尋圖示 -->
       <div class="absolute top-1/2 left-4 -translate-y-1/2">
@@ -103,12 +128,12 @@ const highlightMatch = (text, searchQuery) => {
       <input
         ref="searchInput"
         type="text"
-        placeholder="請輸入關鍵字"
+        placeholder="搜尋頁面..."
         v-model="query"
         @keyup.enter="handleEnter"
         @focus="handleFocus"
         @blur="handleBlur"
-        class="dark:bg-dark-900 dark:focus:border-theme-info-800 h-11 w-[100%]! w-full rounded-full border border-[#445944] bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:border-[#445944] focus:ring-1 focus:ring-[#445944] focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
+        class="dark:bg-dark-900 dark:focus:border-theme-info-800 h-11 w-[100%]! w-full rounded-full border-2 border-[#445944] bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:border-[#445944] focus:ring-1 focus:ring-[#445944] focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" />
 
       <!-- 清除按鈕 -->
       <button
@@ -122,60 +147,103 @@ const highlightMatch = (text, searchQuery) => {
     <!-- 搜尋結果下拉選單 -->
     <div
       v-if="showDropdown"
-      class="absolute top-full right-0 left-0 z-50 mt-2 max-h-96 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg xl:w-[430px] dark:border-gray-800 dark:bg-gray-900">
+      class="absolute top-full right-0 left-0 z-50 mt-2 max-h-[500px] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-xl xl:w-[430px] dark:border-gray-800 dark:bg-gray-900">
       <!-- 錯誤訊息 -->
       <div v-if="error" class="p-4 text-sm text-red-600 dark:text-red-400">
-        {{ error }}
+        <div class="flex items-center gap-2">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ error }}
+        </div>
       </div>
 
       <!-- 無結果 -->
-      <div
-        v-else-if="!isLoading && hits.length === 0 && query"
-        class="p-4 text-sm text-gray-500 dark:text-gray-400">
-        找不到符合「{{ query }}」的結果
+      <div v-else-if="!isLoading && hits.length === 0 && query" class="p-6 text-center">
+        <div class="mb-2 text-gray-400 dark:text-gray-500">
+          <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          找不到符合「
+          <span class="font-medium">{{ query }}</span>
+          」的頁面
+        </p>
       </div>
 
       <!-- 搜尋結果列表 -->
       <div v-else-if="hits.length > 0">
         <!-- 結果數量提示 -->
         <div
-          class="border-b border-gray-200 px-4 py-2 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
-          找到 {{ nbHits }} 個結果
+          class="border-b border-gray-100 bg-gray-50 px-4 py-2 text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400">
+          找到
+          <span class="font-medium">{{ hits.length }}</span>
+          個頁面
         </div>
 
         <!-- 結果項目 -->
-        <button
-          v-for="hit in hits"
-          :key="hit.objectID"
-          @click="selectResult(hit)"
-          class="w-full border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800">
-          <div class="flex items-center gap-3">
-            <!-- 頭像（如果有） -->
+        <div class="py-1">
+          <button
+            v-for="hit in hits"
+            :key="hit.objectID"
+            @click="selectResult(hit)"
+            class="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+            <!-- 圖示 -->
             <div
-              v-if="hit.avatar"
-              class="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-              <img :src="hit.avatar" :alt="hit.name" class="h-full w-full object-cover" />
+              :class="[
+                'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg',
+                'bg-gray-100 group-hover:bg-white dark:bg-gray-800 dark:group-hover:bg-gray-700',
+                'transition-colors',
+              ]">
+              <svg
+                class="h-5 w-5"
+                :class="getIconColor(hit.category)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7" />
+              </svg>
             </div>
 
-            <!-- 預設頭像 -->
-            <div
-              v-else
-              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500 font-bold text-white">
-              {{ (hit.name || hit.title || '?')[0].toUpperCase() }}
-            </div>
-
-            <!-- 資訊 -->
+            <!-- 內容 -->
             <div class="min-w-0 flex-1">
-              <div
-                class="truncate text-sm font-medium text-gray-900 dark:text-white"
-                v-html="highlightMatch(hit.name || hit.title || 'Unknown', query)"></div>
-              <div
-                v-if="hit.id || hit.email"
-                class="truncate text-xs text-gray-500 dark:text-gray-400"
-                v-html="highlightMatch(hit.id || hit.email || '', query)"></div>
+              <div class="mb-1 flex items-center gap-2">
+                <div
+                  class="truncate text-sm font-medium text-gray-900 dark:text-white"
+                  v-html="highlightMatch(hit.name, query)"></div>
+              </div>
+
+              <!-- 麵包屑 -->
+              <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+                {{ hit.breadcrumb }}
+              </div>
             </div>
-          </div>
-        </button>
+
+            <!-- 右箭頭 -->
+            <div class="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>

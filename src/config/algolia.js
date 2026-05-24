@@ -34,6 +34,16 @@ export const algoliaConfig = {
         attributesToRetrieve: ['name', 'path', 'category', 'group', 'icon', 'breadcrumb', 'type', 'level', 'isPro', 'isNew'],
         attributesToHighlight: ['name', 'category', 'searchableText'],
       }
+    },
+    
+    // 導航頁面搜尋索引
+    dev_page: {
+      name: import.meta.env.VITE_ALGOLIA_INDEX_NAME || 'dev_PAGENAME',
+      searchOptions: {
+        hitsPerPage: 20,
+        attributesToRetrieve: ['name', 'path', 'category', 'group', 'icon', 'breadcrumb', 'type', 'description', 'level'],
+        attributesToHighlight: ['name', 'description', 'searchableText'],
+      }
     }
   },
   

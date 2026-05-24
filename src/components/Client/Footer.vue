@@ -159,46 +159,40 @@ import { Dog } from 'lucide-vue-next'
               </div>
             </div>
           </div>
-          <div class="mt-12 flex gap-6">
-            <div class="mt-6 w-1/4">
-              <span>- 種類</span>
+
+          <div class="mt-12 flex gap-0">
+            <div class="mt-6 w-1/5">
+              <span>• 寵物</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-2">貓</li>
-                <li class="mt-2">狗</li>
-                <li class="mt-2">鳥</li>
-                <li class="mt-2">其他</li>
+                <li class="mt-4">領養資訊</li>
+                <li class="mt-4">健康護照</li>
+                <li class="mt-4">遺失協尋</li>
+                <!-- <li class="mt-4">其他</li> -->
               </ul>
             </div>
-            <div class="mt-6 w-1/4">
-              <span>- 種類</span>
+            <div class="mt-6 w-1/5">
+              <span>• 遊戲</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-2">貓</li>
-                <li class="mt-2">狗</li>
-                <li class="mt-2">鳥</li>
-                <li class="mt-2">其他</li>
+                <li class="mt-4">寵物知識問答</li>
+                <!-- <li class="mt-4">狗</li>
+                <li class="mt-4">鳥</li>
+                <li class="mt-4">其他</li> -->
               </ul>
             </div>
-            <div class="mt-6 w-1/4">
-              <span>- 種類</span>
+
+            <div class="mt-6 w-1/5">
+              <span>• 社群</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-2">貓</li>
-                <li class="mt-2">狗</li>
-                <li class="mt-2">鳥</li>
-                <li class="mt-2">其他</li>
+                <li class="mt-4">社群首頁</li>
+                <li class="mt-4">專業科普</li>
               </ul>
             </div>
-            <div class="mt-6 w-1/4">
-              <span class="font-bold text-white">- 客服中心</span>
+            <div class="mt-6 w-1/5">
+              <span>• 客服</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-2 transition-colors hover:text-white">
-                  <router-link :to="{ name: 'Client-faq' }">常見問答</router-link>
-                </li>
-                <li class="mt-2 transition-colors hover:text-white">
-                  <router-link :to="{ name: 'Client-qa' }">聯絡我們</router-link>
-                </li>
-                <li class="mt-2 transition-colors hover:text-white">
-                  <router-link :to="{ name: 'Client-enewsletter' }">寵物專欄</router-link>
-                </li>
+                <li class="mt-4">常見問題</li>
+                <li class="mt-4">聯絡我們</li>
+                <li class="mt-4">電子報訂閱</li>
               </ul>
             </div>
           </div>
@@ -206,9 +200,15 @@ import { Dog } from 'lucide-vue-next'
 
         <div class="my-6 w-4/12 xl:w-3/12">
           <div>
-            <a href="" class="mr-4 inline-block">參考網站</a>
-            <a href="" class="mx-4 inline-block">參考網站</a>
-            <a href="" class="mx-4 inline-block">參考網站</a>
+            <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block">
+              高雄市動物保護處
+            </a>
+            <a
+              href="https://www.pet.gov.tw/AnimalApp/AnnounceMent_Announce.aspx"
+              class="mx-4 inline-block">
+              全國動物收容系統
+            </a>
+            <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block">動物保護資訊網</a>
           </div>
         </div>
         <div class="my-6 w-8/12 xl:w-7/12">

@@ -10,6 +10,7 @@ import {
   Heart,
   LogIn,
   User,
+  TwitterIcon,
 } from 'lucide-vue-next'
 import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
 import SearchBarAlgolia from '@/components/Client/SearchBarAlgolia.vue'
@@ -66,25 +67,25 @@ onUnmounted(() => {
 <template>
   <nav class="relative sticky top-0 bg-[#FCF4E5] transition-all duration-300">
     <div class="border-b-4">
-      <div
-        class="mx-auto w-[95%] transition-all duration-300"
-        :class="isScrolled ? 'py-8' : 'py-14'">
+      <div class="mx-auto w-[95%] py-8 transition-all duration-300">
+        <!-- :class="isScrolled ? 'py-8' : 'py-14' -->
         <div class="relative flex items-center justify-between gap-4">
           <div class="hidden gap-4 md:flex">
             <Instagram
               class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
-            <Mail
+            <TwitterIcon
               class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
           </div>
           <div class="flex">
             <router-link
               to="/"
+              @click="toggleMenu"
               class="logo-group -top-1.5 flex text-center text-4xl text-black sm:text-5xl md:-top-3 md:text-5xl lg:text-5xl">
               <img class="logo" src="/images/logo/LOGO-WHITE.svg" alt="" />
               <h1 class="ml-3 inline-block font-bold text-[#445944]">PETMILY</h1>
             </router-link>
           </div>
-          <div class="relative flex cursor-pointer items-center justify-between gap-3 md:gap-1">
+          <div class="relative flex items-center justify-between gap-3 md:gap-1">
             <SearchBarAlgolia />
 
             <router-link v-if="!authStore.isLoggedIn" to="/login" cursor-pointer title="登入">
@@ -98,12 +99,12 @@ onUnmounted(() => {
               <MenuIcon
                 v-if="!isMenuOpen"
                 key="menu"
-                class="inline h-5 w-5 text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
                 @click="toggleMenu" />
               <X
                 v-else
                 key="close"
-                class="inline h-5 w-5 text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
                 @click="toggleMenu" />
             </Transition>
           </div>
@@ -116,13 +117,11 @@ onUnmounted(() => {
           <div class="mx-auto h-full w-[1286px] pt-[.5em] pl-3 md:pt-[72px]">
             <router-link
               to="/"
-              @click="closeMenu"
               class="menu-item fontmdxtrabold relative block py-7 text-center text-left text-xl font-bold tracking-widest md:text-3xl">
               Home
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('pets')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -130,7 +129,6 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('games')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -138,7 +136,6 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('community')"
               @mouseleave="handleMenuLeave"
               class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -146,7 +143,6 @@ onUnmounted(() => {
             </router-link>
             <router-link
               to="/"
-              @click="closeMenu"
               @mouseenter="handleMenuHover('support')"
               @mouseleave="handleMenuLeave"
               class="menu-item text-md relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
@@ -175,11 +171,6 @@ onUnmounted(() => {
                 class="mb-2 block text-sm font-bold tracking-widest duration-300 hover:opacity-40">
                 PRIVACY POLICY
               </router-link>
-              <router-link
-                :to="{ name: 'Client-login' }"
-                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
-                🚧登入
-              </router-link>
             </div>
             <Transition name="sidebar-panel">
               <div
@@ -189,88 +180,76 @@ onUnmounted(() => {
                 class="pointer-events-auto absolute top-0 right-0 z-2 h-full w-[65%] bg-[#FEF8EA]">
                 <Transition name="menu-content" mode="out-in">
                   <div v-if="hoveredMenu === 'pets'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Pet Categories</h3>
-                    <div class="grid grid-cols-2 gap-4">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">寵物</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
                         :to="{ name: 'pet-adoption' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
                         領養狗狗
                       </router-link>
                       <router-link
                         :to="{ name: 'pet-health-passport' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        寵物健康護照
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        健康護照
                       </router-link>
                       <router-link
                         :to="{ name: 'missing-report' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
                         遺失協尋
                       </router-link>
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'games'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">知識遊戲</h3>
-                    <div class="space-y-3">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">遊戲</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
                         :to="{ name: 'Client-gameview' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
                         寵物知識問答
                       </router-link>
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'community'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Community</h3>
-                    <div class="space-y-3">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">社群</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
-                        to="/"
+                        :to="{ name: 'community-home' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Forums
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-wider transition-all hover:shadow-md">
+                        社群首頁
                       </router-link>
                       <router-link
-                        to="/"
+                        :to="{ name: 'create-article' }"
                         @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Events
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Pet Stories
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Q&A
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        新增貼文
                       </router-link>
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'support'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Support</h3>
-                    <div class="space-y-3">
+                    <h3 class="mb-6 text-2xl font-medium tracking-wider">支援</h3>
+                    <div class="grid w-[60%] grid-cols-2 gap-4">
                       <router-link
                         :to="{ name: 'Client-faq' }"
                         @click="toggleMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        F A Q
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        常見問題
                       </router-link>
                       <router-link
                         :to="{ name: 'Client-qa' }"
                         @click="toggleMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Contact Us
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        聯絡我們
                       </router-link>
                       <router-link
                         :to="{ name: 'Client-enewsletter' }"
                         @click="toggleMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        E-Newsletter
+                        class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
+                        電子報
                       </router-link>
                     </div>
                   </div>

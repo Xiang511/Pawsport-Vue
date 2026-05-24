@@ -1,12 +1,13 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import { useGameAudio } from '@/composables/useGameAudio'
 const { initAudioLogic } = useGameAudio()
 initAudioLogic()
+const route = useRoute()
 </script>
 
 <template>
-  <RouterView />
+  <RouterView :key="route.fullPath" />
 </template>
 
 <style scoped></style>

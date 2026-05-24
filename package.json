@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write --experimental-cli src/",
-    "lint": "eslint --fix --ext .js,.vue src/"
+    "lint": "eslint --fix --ext .js,.vue src/",
+    "upload:nav": "node scripts/upload-nav-to-algolia.js",
+    "upload:sidebar": "node scripts/upload-sidebar-to-algolia.js"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
@@ -38,6 +40,7 @@
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "quill": "^2.0.3",
+    "sweetalert2": "^11.26.25",
     "swiper": "^12.1.2",
     "tailwindcss": "^4.2.4",
     "vue": "^3.5.33",
