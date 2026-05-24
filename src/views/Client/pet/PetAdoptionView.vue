@@ -20,9 +20,6 @@ const filters = reactive({
 // 2. API 請求
 const fetchPets = async () => {
   try {
-    useAuthStore().consoleLoginInfo() // 調試用：查看登入狀態
-    useAuthStore().userInfo // 調試用：查看登入狀態
-
     loading.value = true
     // 銜接你的 API 格式
     const response = await request.get('https://localhost:7048/api/users/pet/adoption')
