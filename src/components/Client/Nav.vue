@@ -65,7 +65,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="relative sticky top-0 bg-[#FCF4E5] transition-all duration-300">
+  <nav class="sticky top-0 bg-[#FCF4E5] transition-all duration-300">
     <div class="border-b-4">
       <div class="mx-auto w-[95%] py-8 transition-all duration-300">
         <!-- :class="isScrolled ? 'py-8' : 'py-14' -->
@@ -117,35 +117,35 @@ onUnmounted(() => {
           <div class="mx-auto h-full w-[1286px] pt-[.5em] pl-3 md:pt-[72px]">
             <router-link
               to="/"
-              class="menu-item fontmdxtrabold relative block py-7 text-center text-left text-xl font-bold tracking-widest md:text-3xl">
+              class="menu-item fontmdxtrabold relative block py-7 text-left text-xl font-bold tracking-widest md:text-3xl">
               Home
             </router-link>
             <router-link
               to="/"
               @mouseenter="handleMenuHover('pets')"
               @mouseleave="handleMenuLeave"
-              class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
+              class="menu-item textmdl relative block py-7 text-left font-bold tracking-widest md:text-3xl">
               Pets
             </router-link>
             <router-link
               to="/"
               @mouseenter="handleMenuHover('games')"
               @mouseleave="handleMenuLeave"
-              class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
+              class="menu-item textmdl relative block py-7 text-left font-bold tracking-widest md:text-3xl">
               Games
             </router-link>
             <router-link
               to="/"
               @mouseenter="handleMenuHover('community')"
               @mouseleave="handleMenuLeave"
-              class="menu-item textmdl relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
+              class="menu-item textmdl relative block py-7 text-left font-bold tracking-widest md:text-3xl">
               Community
             </router-link>
             <router-link
               to="/"
               @mouseenter="handleMenuHover('support')"
               @mouseleave="handleMenuLeave"
-              class="menu-item text-md relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
+              class="menu-item text-md relative block py-7 text-left font-bold tracking-widest md:text-3xl">
               Support
             </router-link>
             <div class="ml-3">
