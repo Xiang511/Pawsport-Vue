@@ -5,14 +5,18 @@ defineProps({
     type: Array,
     default: () => []
   }
-});
+})
+
+const emit = defineEmits(['add-image'])
 </script>
 
 <template>
   <div>
     <div class="flex justify-between items-center mb-4 border-b pb-2">
       <h2 class="text-lg font-bold text-gray-800">影像與照片</h2>
-      <button class="bg-[#9C6D6D] text-white text-sm px-4 py-1 rounded-full shadow-sm hover:opacity-90">
+      <button
+        @click="emit('add-image')"
+        class="bg-[#9C6D6D] text-white text-sm px-4 py-1 rounded-full shadow-sm hover:opacity-90">
         上傳影像
       </button>
     </div>

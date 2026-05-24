@@ -67,7 +67,7 @@ const submitForm = async () => {
     }
 
     // 串接後端 API (對齊企劃書路徑)
-    const response = await request.post('/api/users/pet/adoption', submitData, {
+    const response = await request.post('/users/pet/adoption', submitData, {
       withCredentials: true,
     })
 

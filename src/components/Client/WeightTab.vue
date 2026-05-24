@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import apexchart from 'vue3-apexcharts'
 
+const emit = defineEmits(['add-weight'])
+
 // 接收來自父組件的體重紀錄
 const props = defineProps({
   records: {
@@ -87,6 +89,7 @@ const series = ref([
     <div class="mb-4 flex items-center justify-between border-b pb-2">
       <h2 class="text-lg font-bold text-gray-800">體重紀錄</h2>
       <button
+        @click="emit('add-weight')"
         class="rounded-full border border-[#9C6D6D] px-3 py-1 text-sm text-[#9C6D6D] transition hover:bg-[#9C6D6D] hover:text-white">
         + 新增體重
       </button>
