@@ -1,101 +1,50 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
-// 自己做的卡片樣式
-import Article_ListCard from '@/components/Client/Article_ListCard.vue'
-import Article_PopularCard from '@/components/Client/Article_PopularCard.vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+// 自己做的卡片樣式
+import Article_ListCard from '@/components/Client/Article_ListCard.vue'
+import { useCommunityHome } from '@/composables/useCommunityHome'
+
 const router = useRouter()
+
+const {
+  parentCategories,
+  subCategories,
+  isLoading,
+  isError,
+  currentParentId,
+  currentSubId,
+  searchQuery,
+  currentPage,
+  totalPages,
+  pagedArticles, // 改用分頁後的文章
+  selectParent,
+  selectSub,
+  fetchData,
+} = useCommunityHome()
+
+// 跳轉
+const goToArticleDetail = (articleId) => {
+  if (!articleId) {
+    console.error('錯誤：沒有拿到有效的文章 ID')
+    return
+  }
+
+  // 導向你的詳細頁路由，名稱請對照你的 router/index.js 設定
+  router.push({
+    name: 'article-detail', // 或者是 'community-detail'
+    params: { id: articleId },
+  })
+}
+
 const goToCreatePage = () => {
   router.push({ name: 'create-article' })
 }
 
-//===假資料===
-
-// 1. 模擬「分類 DTO」清單 (通常這會是另一個 API 回傳的)
-const categories = ref([
-  { categoryid: 0, categoryname: '全部' },
-  { categoryid: 1, categoryname: '版規' },
-  { categoryid: 2, categoryname: '寵物知識' },
-  { categoryid: 3, categoryname: '專業科普' },
-])
-
-// 2. 模擬「文章 DTO」清單
-const articleData = ref([
-  {
-    id: 1,
-    categoryid: 2,
-    categoryname: '寵物知識',
-    title: '如何照顧幼貓？',
-    summary: '幼貓需要特別的營養與耐心...',
-    author: '貓奴A',
-    date: '2026-05-11',
-  },
-  {
-    id: 2,
-    categoryid: 2,
-    categoryname: '寵物知識',
-    title: '柴犬個性分析—其實原本是狼!?',
-    summary: '很多人說柴犬很固執，其實...',
-    author: '柴大師',
-    date: '2026-05-10',
-    image: 'https://placecats.com/120/80',
-  },
-  {
-    id: 3,
-    categoryid: 3,
-    categoryname: '專業科普',
-    title: '犬貓鮮食推薦~!來自鮮味小姐自創研發品牌',
-    summary: '市面上鮮食如此多種，到底該如何選擇...',
-    author: '鮮味小姐',
-    date: '2026-04-22',
-    image: 'https://placecats.com/millie/120/80',
-  },
-  {
-    id: 4,
-    categoryid: 3,
-    categoryname: '專業科普',
-    title: '寵物星座圖鑑',
-    summary: '不只是人類，其實動物們也因為星座...',
-    author: '寵物星座國師',
-    date: '2025-11-4',
-    image: 'https://placecats.com/g/120/80',
-  },
-  {
-    id: 5,
-    categoryid: 1,
-    categoryname: '版規',
-    title: '版規更新',
-    summary: '親愛的會員們，由於我們的隱私政策更新...',
-    author: '管理員',
-    date: '2025-5-14',
-  },
-])
-
-//===function===
-//設0=全部文章
-const currentCategory = ref(0)
-//篩選文章
-const filteredArticles = computed(() => {
-  if (currentCategory.value === 0) {
-    return articleData.value
-  }
-  return articleData.value.filter((a) => a.categoryid === currentCategory.value)
+onMounted(() => {
+  fetchData()
 })
-
-// // 模擬 API 呼叫
-// const isLoading = ref(false)
-// const fetchData = async () => {
-//   isLoading.value = true
-//   // 模擬網路延遲 0.5 秒
-//   await new Promise((resolve) => setTimeout(resolve, 500))
-//   isLoading.value = false
-// }
-
-// onMounted(() => {
-//   fetchData()
-// })
 </script>
 
 <template>
@@ -132,55 +81,114 @@ const filteredArticles = computed(() => {
       <div class="flex flex-col gap-6 py-8 md:flex-row">
         <!-- 右邊70% -->
         <main class="flex w-full flex-col gap-8 md:w-3/4">
-          <!-- 熱門文章區 -->
-          <div>
-            <h1 class="border-b border-stone-300 pb-4 text-2xl font-medium text-[#433D3C]">
-              熱門文章
-            </h1>
-            <div class="flex gap-4 py-4">
-              <!-- 卡片 -->
-              <Article_PopularCard />
-              <Article_PopularCard />
+          <div
+            class="flex items-center gap-3 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-base">
+              📢
+            </span>
+            <p class="text-sm leading-relaxed text-orange-900">
+              <span class="font-bold">今日焦點：</span>
+              歡迎來到 Petmily！本週六將舉辦「線上毛孩鮮食講座」，詳情請密切注意官方消息。
+            </p>
+          </div>
+          <div class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
+            <h2 class="mb-4 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
+              <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
+              分類瀏覽
+            </h2>
+
+            <div class="flex flex-wrap gap-2 border-b border-stone-100 pb-4">
+              <button
+                v-for="c in parentCategories"
+                :key="c.categoryid"
+                @click="selectParent(c.categoryid)"
+                :class="[
+                  'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
+                  currentParentId === c.categoryid
+                    ? 'bg-brand-success-600 scale-105 font-medium text-white'
+                    : 'bg-stone-50 text-stone-600 hover:bg-stone-100',
+                ]">
+                {{ c.categoryname }}
+              </button>
+            </div>
+
+            <div
+              v-if="subCategories.length > 0"
+              class="animate-fade-in mt-4 flex flex-wrap gap-2 pt-1">
+              <button
+                @click="selectSub(0)"
+                :class="[
+                  'rounded-full border px-3 py-1 text-xs transition-all',
+                  currentSubId === 0
+                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
+                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
+                ]">
+                全部子項目
+              </button>
+              <button
+                v-for="sc in subCategories"
+                :key="sc.categoryid"
+                @click="selectSub(sc.categoryid)"
+                :class="[
+                  'rounded-full border px-3 py-1 text-xs transition-all',
+                  currentSubId === sc.categoryid
+                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
+                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
+                ]">
+                {{ sc.categoryname }}
+              </button>
             </div>
           </div>
 
-          <!-- 分類瀏覽區 -->
-          <div>
-            <!-- 分類切換按鈕 -->
-            <div>
-              <h1 class="mb-4 text-2xl font-medium text-[#433D3C]">分類瀏覽</h1>
-              <div class="mb-6 flex gap-4 border-b border-stone-300 pb-4">
-                <button
-                  v-for="c in categories"
-                  :key="c.categoryid"
-                  @click="currentCategory = c.categoryid"
-                  :class="[
-                    'rounded-full px-5 py-2 shadow-sm transition-all',
-                    currentCategory === c.categoryid
-                      ? 'bg-brand-success-600 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-100',
-                  ]">
-                  {{ c.categoryname }}
-                </button>
-              </div>
+          <div class="flex flex-col gap-4">
+            <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
+            <div v-else-if="isError" class="py-12 text-center text-red-500">
+              ❌ 系統異常，請稍後再試。
             </div>
 
-            <!-- 文章列表 -->
-            <div class="flex flex-col gap-4">
-              <!-- 卡片 -->
-              <div class="article-list flex flex-col">
-                <Article_ListCard
-                  v-for="article in filteredArticles"
-                  :key="article.id"
-                  :title="article.title"
-                  :image="article.image"
-                  :summary="article.summary"
-                  :author="article.author"
-                  :date="article.date" />
-                <!-- 如果沒文章時的提示 -->
-                <p v-if="filteredArticles.length === 0" class="text-gray-400">
-                  目前沒有相關分類的文章喔！
-                </p>
+            <div v-else class="flex flex-col gap-4">
+              <Article_ListCard
+                v-for="article in pagedArticles"
+                :key="article.articleId"
+                :id="article.articleId"
+                :title="article.title"
+                :summary="article.summary"
+                :author="article.userName"
+                :date="article.createAt"
+                :image="article.image"
+                :categoryid="article.categoryId"
+                :category="article.categoryName"
+                :tags="article.tagNames"
+                :viewCount="article.viewCount"
+                :bookmarkCount="article.bookmarkCount ?? 0"
+                :isBookmarked="article.isBookmarked ?? false"
+                @click-card="goToArticleDetail"
+                @toggle-bookmark="(id) => console.log('收藏文章：', id)"
+                class="cursor-pointer transition-transform hover:-translate-y-0.5" />
+
+              <div
+                v-if="pagedArticles.length === 0"
+                class="rounded-xl border border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                🐾 找不到相關的文章喔！
+              </div>
+
+              <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
+                <button
+                  @click="currentPage--"
+                  :disabled="currentPage === 1"
+                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                  上一頁
+                </button>
+                <span class="text-sm text-stone-600">
+                  第 {{ currentPage }} / {{ totalPages }} 頁
+                </span>
+                <button
+                  @click="currentPage++"
+                  :disabled="currentPage === totalPages"
+                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                  下一頁
+                </button>
               </div>
             </div>
           </div>
@@ -189,7 +197,7 @@ const filteredArticles = computed(() => {
         <!-- 左邊30% -->
         <aside class="flex w-full flex-col gap-4 md:w-1/4">
           <input
-            type="text"
+            v-model="searchQuery"
             placeholder="搜尋關鍵字..."
             class="focus:ring-brand-success-400 rounded-md border border-stone-300 bg-white p-2 shadow-sm focus:ring-2 focus:outline-none" />
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { Heart } from 'lucide-vue-next'
 
 //defineProps用在顯示唯讀的資料
 const props = defineProps({
@@ -17,29 +18,37 @@ const props = defineProps({
   isBookmarked: { type: Boolean, default: false },
 })
 
+const emit = defineEmits(['toggle-bookmark', 'click-card'])
+
 // 處理 yyyy-mm-dd-hh-MM 格式
 const displayDate = computed(() => {
-  if (!props.date) return ''
-  const d = new Date(props.date.replace(/-/g, '/'))
-  const Y = d.getFullYear()
-  const M = String(d.getMonth() + 1).padStart(2, '0')
-  const D = String(d.getDate()).padStart(2, '0')
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mm = String(d.getMinutes()).padStart(2, '0')
-  return `${Y}-${M}-${D}-${hh}-${mm}`
+  if (!props.date) return '近期發表'
+  try {
+    const d = new Date(props.date.replace(/-/g, '/'))
+    if (isNaN(d.getTime())) return props.date // 如果本來就是乾淨的字串就直接回傳
+    const Y = d.getFullYear()
+    const M = String(d.getMonth() + 1).padStart(2, '0')
+    const D = String(d.getDate()).padStart(2, '0')
+    const hh = String(d.getHours()).padStart(2, '0')
+    const mm = String(d.getMinutes()).padStart(2, '0')
+    return `${Y}-${M}-${D} ${hh}:${mm}`
+  } catch {
+    return props.date
+  }
 })
 
-// 定義 Emits，方便父組件處理收藏邏輯 (API 更新)
-// const emit = defineEmits(['toggle-bookmark', 'click-card'])
+const handleCardClick = () => {
+  emit('click-card', props.id)
+}
 
-// const handleBookmark = (e) => {
-//   e.stopPropagation() // 防止觸發卡片點擊
-//   emit('toggle-bookmark', props.id)
-// }
+const handleBookmark = (e) => {
+  e.stopPropagation() // 防止觸發整張卡片的點擊
+  emit('toggle-bookmark', props.id)
+}
 </script>
 
 <template>
-  <div class="article-card" @click="emit('click-card', id)">
+  <div class="article-card" @click="handleCardClick">
     <!-- 外層邊框裝飾 (Hover時出現) -->
     <div class="hover-border"></div>
 
@@ -87,10 +96,7 @@ const displayDate = computed(() => {
             :class="{ active: isBookmarked }"
             @click.stop="handleBookmark"
             aria-label="收藏文章">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
+            <Heart />
           </button>
         </slot>
       </footer>

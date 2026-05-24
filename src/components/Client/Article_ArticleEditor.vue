@@ -259,7 +259,7 @@ defineExpose({
         @delete="deleteDraftItem" />
 
       <Article_ToastAlert ref="toastRef" />
-      <!-- 🎯 這就是那篇文章裡提到的「被觸發者」-->
+      <!-- 這就是那篇文章裡提到的「被觸發者」-->
       <input
         id="quill-hidden-image-input"
         type="file"

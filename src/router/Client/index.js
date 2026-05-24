@@ -38,7 +38,7 @@ export default [
         },
       },
       {
-        path: '/article-detail',
+        path: '/article-detail/:id',
         name: 'article-detail',
         component: () => import('@/views/Client/community/ArticleDetail.vue'),
         meta: {
