@@ -25,7 +25,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore()
 
   // 設置頁面標題
@@ -40,11 +40,10 @@ router.beforeEach((to, from, next) => {
     if (!from.name || from.path === '/') {
       console.log('禁止直接訪問錯誤頁面:', to.path)
       if (to.path.startsWith('/dashboard')) {
-        next('/dashboard')
+        return '/dashboard'
       } else {
-        next('/')
+        return '/'
       }
-      return
     }
   }
 
@@ -58,22 +57,21 @@ router.beforeEach((to, from, next) => {
     if (!isDashboardPublic && !authStore.isLoggedIn) {
       // 後台需要認證但未登入，跳轉到後台登入頁
       console.log('未登入，從', to.path, '跳轉到 /dashboard/login')
-      next('/dashboard/login')
-      return
+      return '/dashboard/login'
     }
   }
 
   // 前台需要認證的路由檢查 - 所有 /user 開頭的都需要登入
-  if (to.path.startsWith('/user')||to.path.startsWith('/game')) {
+  if (to.path.startsWith('/user') || to.path.startsWith('/game')) {
     if (!authStore.isLoggedIn) {
       // 前台需要認證但未登入，跳轉到前台登入頁
       console.log('未登入，從', to.path, '跳轉到 /login')
-      next('/login')
-      return
+      return '/login'
     }
   }
 
-  next()
+  // 允許繼續導航
+  return true
 })
 
 export default router
