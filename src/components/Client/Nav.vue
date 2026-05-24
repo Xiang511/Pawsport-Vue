@@ -67,9 +67,8 @@ onUnmounted(() => {
 <template>
   <nav class="relative sticky top-0 bg-[#FCF4E5] transition-all duration-300">
     <div class="border-b-4">
-      <div
-        class="mx-auto w-[95%] transition-all duration-300"
-        :class="isScrolled ? 'py-8' : 'py-14'">
+      <div class="mx-auto w-[95%] py-8 transition-all duration-300">
+        <!-- :class="isScrolled ? 'py-8' : 'py-14' -->
         <div class="relative flex items-center justify-between gap-4">
           <div class="hidden gap-4 md:flex">
             <Instagram
