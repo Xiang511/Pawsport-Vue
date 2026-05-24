@@ -254,6 +254,36 @@ export default [
     ],
   },
   {
+    path: '/reset-password',
+    name: 'ResetPasswordLayout',
+    component: () => import('@/layouts/Client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Client-reset-password',
+        component: () => import('@/components/Client/ForgotPassword.vue'),
+        meta: {
+          title: '忘記密碼 | Petmily 寵物媒合平台',
+        },
+      },
+    ],
+  },
+  {
+    path: '/reset-password/confirm',
+    name: 'ResetPasswordConfirmLayout',
+    component: () => import('@/layouts/Client/SigninLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Client-reset-password-confirm',
+        component: () => import('@/components/Client/ResetPasswordWithToken.vue'),
+        meta: {
+          title: '設定新密碼 | Petmily 寵物媒合平台',
+        },
+      },
+    ],
+  },
+  {
     path: '/user',
     name: 'UserLayout',
     component: () => import('@/layouts/Client/Basic.vue'),
