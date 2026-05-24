@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, nextTick, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate, stagger } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
@@ -11,6 +11,7 @@ const { playSFX } = useGameAudio()
 
 const userPoints = ref(0)
 const router = useRouter()
+const route = useRoute()
 
 // 千位數格式化函數
 const formatNumber = (num) => {
@@ -181,6 +182,103 @@ const generateLevelLayout = (startId) => {
   })
 }
 
+// 🎯 【關鍵修正】抽取大章節與關卡自動聚焦的決策邏輯
+const determineAndFocusLevel = () => {
+  // 🎯 優先讀取網址參數，如果網址沒帶（如點暫停返回漏帶），就讀取剛才點擊關卡時留下的記憶
+  const lastPlayedId = parseInt(route.query.lastPlayedLevelId) || parseInt(sessionStorage.getItem('last_selected_level_id'))
+  let targetLevelId = null
+
+  if (lastPlayedId && !isNaN(lastPlayedId)) {
+    // 1. 取出玩家在進入遊戲前，地圖上最新能玩的關卡 ID
+    const savedLatestId = parseInt(sessionStorage.getItem('before_game_latest_level_id'))
+    
+    // 2. 檢查這一關在後端有沒有通關紀錄
+    const currentRecord = apiGameHistory.value.find(h => h.gameId === lastPlayedId)
+    const isCurrentCleared = currentRecord && currentRecord.stageClear === true
+
+    // 🎯 核心判定
+    if (savedLatestId && lastPlayedId === savedLatestId && isCurrentCleared && lastPlayedId < 30) {
+      targetLevelId = lastPlayedId + 1 // 🚀 只有「打最新關」且「通關成功」才前進下一關
+      console.log(`[導航決策] 成功攻克最新關卡 ${lastPlayedId}，前進至第 ${targetLevelId} 關`)
+    } else {
+      targetLevelId = lastPlayedId // ↩️ 玩舊關卡、中途暫停退出、未通關 -> 嚴格留在原本點擊的那一關
+      console.log(`[導航決策] 判定為複習舊關卡或中途退出，精準停留在原關卡: ${targetLevelId}`)
+    }
+
+    // 清除快取記憶，保持乾淨
+    sessionStorage.removeItem('before_game_latest_level_id')
+    sessionStorage.removeItem('last_selected_level_id')
+  }
+
+  // 3. 計算目標關卡應該隸屬哪一個大區域章節，若不同則自動翻頁
+  if (targetLevelId) {
+    const targetAreaIndex = areas.value.findIndex(
+      area => targetLevelId >= area.idRange[0] && targetLevelId <= area.idRange[1]
+    )
+    
+    if (targetAreaIndex !== -1 && targetAreaIndex !== currentAreaIndex.value) {
+      currentAreaIndex.value = targetAreaIndex
+      const startId = areas.value[currentAreaIndex.value].idRange[0]
+      levels.value = generateLevelLayout(startId)
+    }
+  }
+
+  // 4. 高亮選中它
+  const matchedLevel = levels.value.find(l => l.id === targetLevelId)
+  if (matchedLevel) {
+    selectedLevel.value = matchedLevel
+  } else {
+    // 降級防呆
+    const latestUnlocked = levels.value.filter(l => !l.locked).pop()
+    selectedLevel.value = latestUnlocked || levels.value[0]
+  }
+}
+  const lastPlayedId = parseInt(route.query.lastPlayedLevelId)
+  let targetLevelId = null
+
+  if (lastPlayedId && !isNaN(lastPlayedId)) {
+    // 1. 模擬下一關的 ID
+    const nextLevelId = lastPlayedId + 1
+
+    // 2. 先去資料庫歷史紀錄裡找，看「下一關」或「當前關」有沒有被解鎖的痕跡
+    // 判斷邏輯：如果剛剛玩的關卡有通關 (stageClear == true)，或者下一關本身就有紀錄
+    const currentRecord = apiGameHistory.value.find(h => h.gameId === lastPlayedId)
+    const nextRecord = apiGameHistory.value.find(h => h.gameId === nextLevelId)
+    const isNextUnlockedByServer = (currentRecord && currentRecord.stageClear === true) || nextRecord
+
+    if (isNextUnlockedByServer && nextLevelId <= 30) {
+      targetLevelId = nextLevelId // 🚀 通關了，解鎖新關卡 -> 預設選中新關卡！
+      console.log(`[導航決策] 檢測到關卡 ${lastPlayedId} 已通關，自動聚焦新解鎖關卡: ${nextLevelId}`)
+    } else {
+      targetLevelId = lastPlayedId // ❌ 沒通關，或是最後一關 -> 留在原本那一關
+      console.log(`[導航決策] 留在原本挑戰的關卡: ${lastPlayedId}`)
+    }
+  }
+
+  // 3. 計算目標關卡應該隸屬哪一個大區域章節 (每10關一區)
+  if (targetLevelId) {
+    const targetAreaIndex = areas.value.findIndex(
+      area => targetLevelId >= area.idRange[0] && targetLevelId <= area.idRange[1]
+    )
+    
+    if (targetAreaIndex !== -1 && targetAreaIndex !== currentAreaIndex.value) {
+      // 🚀 如果目標關卡在別的大章節，自動進行大章節翻頁切換
+      currentAreaIndex.value = targetAreaIndex
+      const startId = areas.value[currentAreaIndex.value].idRange[0]
+      levels.value = generateLevelLayout(startId)
+    }
+  }
+
+  // 4. 在當前渲染好的關卡清單中，找出對應的關卡物件並高亮選中它
+  const matchedLevel = levels.value.find(l => l.id === targetLevelId)
+  if (matchedLevel) {
+    selectedLevel.value = matchedLevel
+  } else {
+    // 如果網址沒有參數、或者找不到，維持預設選中目前分頁最新解鎖的關卡
+    const latestUnlocked = levels.value.filter(l => !l.locked).pop()
+    selectedLevel.value = latestUnlocked || levels.value[0]
+  }
+
 // 3. 切換區域時更新關卡資料
 const updateAreaContent = async () => {
   // 【新增】顯示 Loading 進度條
@@ -222,9 +320,10 @@ const updateAreaContent = async () => {
   // 渲染地圖數據
   const startId = areas.value[currentAreaIndex.value].idRange[0]
   levels.value = generateLevelLayout(startId)
-  selectedLevel.value = levels.value[0]
 
-  // 確保 Vue 把 HTML 按鈕生出來，再執行 Anime.js
+  // 🎯 【核心修正點】在這裡執行選關決策，它會完美處理初次進入、返回原地、通關解鎖並兼顧自動翻大分頁
+  determineAndFocusLevel()
+
   await nextTick()
   
   console.log('🎮 LevelSelect - 渲染完成')
@@ -303,7 +402,18 @@ watch(isLoading, (newVal) => {
 const playerStore = usePlayerStore()
 
 const selectLevel = (lvl) => {
-  if (!lvl.locked) selectedLevel.value = lvl
+  if (!lvl.locked) {
+    selectedLevel.value = lvl
+
+    // 🎯【全時段鎖定】只要玩家點了這一關，我們就把當時地圖上最新解鎖的關卡 ID 記下來
+    const mapLatestLevelId = Math.max(...levels.value.filter(l => !l.locked).map(l => l.id))
+    sessionStorage.setItem('before_game_latest_level_id', mapLatestLevelId.toString())
+    
+    // 🎯 同時把玩家現在選的這關 ID 也存起來當作最強防線
+    sessionStorage.setItem('last_selected_level_id', lvl.id.toString())
+    
+    console.log(`[地圖記憶] 玩家選中第 ${lvl.id} 關。當時地圖最新解鎖為: 第 ${mapLatestLevelId} 關`)
+  }
 }
 
 const changeArea = (dir) => {
@@ -317,23 +427,38 @@ const changeArea = (dir) => {
 const startGame = () => {
   if (selectedLevel.value && !selectedLevel.value.locked) {
     const levelId = selectedLevel.value.id
-    
-    // 根據目前的關卡 ID，抓出對應的分類名稱
     const categoryName = levelCategoryMap[levelId] || '認養須知'
 
-    console.log(`【PETMILY導航】準備進入第 ${levelId} 關，分類為：【${categoryName}】`)
+    // 🎯【新增鎖定邏輯】找出在進攻這一關之前，地圖上最新解鎖（也就是最大 ID）的關卡是哪一關
+    // 這樣能百分之百防呆，不受後端回傳更新陣列的干擾
+    const mapLatestLevelId = Math.max(...levels.value.filter(l => !l.locked).map(l => l.id))
+    sessionStorage.setItem('before_game_latest_level_id', mapLatestLevelId.toString())
 
-    // 導向我們在 index.js 設好的全能動態路由 'Client-gameplay'
+    console.log(`【PETMILY導航】準備進入第 ${levelId} 關。進遊戲前地圖最新關卡為: 第 ${mapLatestLevelId} 關`)
+
     router.push({
-      name: 'Client-gameplay',         // 通用遊戲頁路由名稱
-      params: { category: categoryName } // 將分類中文作為網址參數傳過去！
+      name: 'Client-gameplay',         
+      params: { category: categoryName },
+      query: { currentLevelId: levelId } 
     }).catch((err) => {
       console.error('遊戲導航失敗:', err)
     })
   }
 }
 
-onMounted(() => updateAreaContent())
+onMounted(() => {
+  const lastPlayedId = parseInt(route.query.lastPlayedLevelId)
+  if (lastPlayedId && !isNaN(lastPlayedId)) {
+    // 自動推算剛剛玩的關卡在哪個大區，避免一開畫面固定卡在第一章
+    const targetAreaIndex = areas.value.findIndex(
+      area => lastPlayedId >= area.idRange[0] && lastPlayedId <= area.idRange[1]
+    )
+    if (targetAreaIndex !== -1) {
+      currentAreaIndex.value = targetAreaIndex
+    }
+  }
+  updateAreaContent()
+})
 const goBack = () => router.push({ name: 'Client-mainmenu' })
 </script>
 
@@ -455,7 +580,16 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 
 .level-list-panel {
   flex: 1.6;
-  background: #fcf4e5;
+  background-color: #f6ebe0; 
+  
+  /* 🎯 點矩陣魔法：利用極小的圓形與錯位 */
+  background-image: 
+    radial-gradient(#e5d5c5 10%, transparent 11%),
+    radial-gradient(#e5d5c5 10%, transparent 11%);
+  
+  /* 讓圓點變得極小（僅 3px），且彼此間距 24px，非常內斂 */
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
   border: 6px solid #453a27;
   box-shadow: 0 6px 0 #453a27;
   border-radius: 50px;
@@ -596,7 +730,16 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 }
 .info-card {
   height: 100%;
-  background: #fcf4e5;
+  background-color: #f6ebe0; 
+  
+  /* 🎯 點矩陣魔法：利用極小的圓形與錯位 */
+  background-image: 
+    radial-gradient(#e5d5c5 10%, transparent 11%),
+    radial-gradient(#e5d5c5 10%, transparent 11%);
+  
+  /* 讓圓點變得極小（僅 3px），且彼此間距 24px，非常內斂 */
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
   border: 5px solid #453a27;
   box-shadow: 0 6px 0 #453a27; /* 增加厚實感 */
   border-radius: 40px;
@@ -832,12 +975,6 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   align-items: center;
   gap: 8px; /* 圖標和文字之間的間距 */
   transition: all 0.2s ease; /* 平滑過渡 */
-}
-
-.currency-box:hover {
-  background: #fcc86d; /* 懸停時變色 */
-  transform: translateY(-2px); /* 向上浮起 */
-  box-shadow: 0 8px 0 #453a27;
 }
 
 .nav-menu {

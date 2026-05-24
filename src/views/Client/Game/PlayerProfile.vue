@@ -12,9 +12,11 @@ const emit = defineEmits(['close'])
 const isVisible = ref(false)
 
 // 計算屬性：從 store 取得玩家資料
-const playerData = computed(() => playerStore.playerData)
-const isLoading = computed(() => playerStore.isLoading)
-const errorMessage = computed(() => playerStore.error)
+const playerData = ref(null)
+const isLoading = ref(true)
+const errorMessage = ref('')
+
+const currentUserId = computed(() => playerStore.userId || localStorage.getItem('userId') || 1)
 
 // 計算屬性：玩家的遊戲進度
 const playerProgress = computed(() => {
@@ -23,8 +25,19 @@ const playerProgress = computed(() => {
 })
 // 計算屬性：玩家的造型數量
 const skinCountDisplay = computed(() => {
-  if (!playerData.value || !playerData.value.ownedSkins) return 0
-  return playerData.value.ownedSkins.length
+  // 1. 取得擁有的造型陣列 (同時相容後端回傳的 ownedSkins 或 OwnedSkins)
+  const ownedSkins = playerData.value?.ownedSkins || playerData.value?.OwnedSkins
+
+  if (!ownedSkins || !Array.isArray(ownedSkins)) return 0
+
+  // 2. 過濾掉 skinId 為 1 的造型 (使用 ?? 同時防呆大寫 SkinId)
+  const filteredSkins = ownedSkins.filter((skin) => {
+    const id = skin.skinId ?? skin.SkinId
+    return id !== 1
+  })
+
+  // 3. 回傳過濾後的實際造型數量
+  return filteredSkins.length
 })
 
 // 計算屬性：目前裝備的造型資訊
@@ -69,25 +82,30 @@ onMounted(async () => {
 const fetchPlayerData = async () => {
   try {
     isLoading.value = true
-    // 呼叫後端 API 獲取玩家列表
-    const response = await request.get('https://localhost:7048/api/Player?page=1')
+    errorMessage.value = ''
+    
+    const userId = currentUserId.value
+    console.log(`【前端發送請求】正在獲取 UserId: ${userId} 的玩家資料庫記錄...`)
+
+    // 使用你提供的新 API 端點
+    const response = await request.get(`https://localhost:7048/api/Users/${userId}/player-profile`)
+    
+    console.log('【後端回傳的原始資料】:', response.data)
 
     if (response.data && response.data.success) {
-      const players = response.data.data.data
-      // 尋找 PlayerId = 1 的玩家
-      const targetPlayer = players.find((p) => p.playerId === 1)
-
-      if (targetPlayer) {
-        playerData.value = targetPlayer
-      } else {
-        errorMessage.value = '找不到測試玩家資料 (PlayerId=1)'
+      // 成功獲取，直接塞給本地響應式變數
+      playerData.value = response.data.data
+      
+      // 同步回填給全域狀態機 Store 讓大廳點數即時更新
+      if (playerStore && playerStore.$patch) {
+        playerStore.$patch({ playerData: response.data.data })
       }
     } else {
-      errorMessage.value = '獲取資料失敗'
+      errorMessage.value = response.data?.message || '獲取玩家資料失敗'
     }
   } catch (error) {
     console.error('API 請求錯誤:', error)
-    errorMessage.value = '無法連接到伺服器'
+    errorMessage.value = '無法連接到伺服器，請確認後端 API 是否開啟'
   } finally {
     isLoading.value = false
   }
@@ -287,8 +305,9 @@ const startClose = (type) => {
 
         <!-- 載入中狀態 -->
         <div v-if="isLoading" class="loading-state">
-          <p>正在讀取玩家資料...</p>
-        </div>
+      <div class="spinner-small"></div>
+      <p class="loading-text">正在翻閱玩家檔案...</p>
+    </div>
 
         <!-- 錯誤狀態 -->
         <div v-else-if="errorMessage" class="error-state">
@@ -298,8 +317,7 @@ const startClose = (type) => {
         <!-- 資料顯示區 -->
         <template v-else-if="playerData">
           <div class="header-meta">
-            <p>玩家建立時間: {{ formatDate(playerData.createTime) }}</p>
-            <p>玩家ID: P7328643539300{{ playerData.playerId }}</p>
+            <p>玩家ID: P7328643539300{{ playerData.playerId || playerData.PlayerId }}</p>
           </div>
 
           <div class="card-content">
@@ -318,14 +336,14 @@ const startClose = (type) => {
 
                   <!-- 造型名稱 -->
                   <div class="skin-name-display">
-                    <p class="skin-label">目前裝備：{{ getEnabledSkinName() }}</p>
+                    <p class="skin-label">目前裝備：{{ currentEquippedSkin.skinName }}</p>
                   </div>
                 </div>
 
                 <div class="corner-tape top-left"></div>
                 <div class="corner-tape bottom-right"></div>
               </div>
-              <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint) }} 點</div>
+              <div class="rank-badge">現有點數：{{ formatPoints(playerData.currentPoint ?? playerData.CurrentPoint) }} 點</div>
             </div>
 
             <!-- 右側：玩家資訊 -->
@@ -333,7 +351,7 @@ const startClose = (type) => {
               <!-- 玩家名字編輯區 -->
               <div class="player-name-container">
                 <div v-if="!isEditingName" class="player-name-display">
-                  <h2 class="player-name">{{ playerData.userName }}</h2>
+                  <h2 class="player-name">{{ playerData.userName || playerData.UserName || '未設定名稱' }}</h2>
                   <button
                     class="edit-name-btn"
                     @click="
@@ -346,6 +364,7 @@ const startClose = (type) => {
                 </div>
 
                 <div v-else class="player-name-edit">
+                  <div v-if="nameSaveError" class="error-message">{{ nameSaveError }}</div>
                   <input
                     v-model="editedName"
                     type="text"
@@ -353,9 +372,8 @@ const startClose = (type) => {
                     placeholder="輸入新的玩家名字"
                     maxlength="50"
                     @keyup.enter="savePlayerName" />
-                  <div v-if="nameSaveError" class="error-message">{{ nameSaveError }}</div>
                   <div class="edit-buttons">
-                    <button class="confirm-btn" @click="savePlayerName" :disabled="isSavingName">
+                    <button class="sticky-save-btn" @click="savePlayerName" :disabled="isSavingName">
                       <Save :size="16" />
                       {{ isSavingName ? '儲存中...' : '確認' }}
                     </button>
@@ -364,9 +382,6 @@ const startClose = (type) => {
                       取消
                     </button>
                   </div>
-                  <div v-if="nameSaveError" class="error-message">
-                    {{ nameSaveError }}
-                  </div>
                 </div>
               </div>
 
@@ -374,16 +389,16 @@ const startClose = (type) => {
               <div class="stats-container">
                 <div class="stat-row">
                   <span class="label">最新遊玩進度：</span>
-                  <span class="value">{{ getProgressText(playerData.maxGameId) }}</span>
+                  <span class="value">{{ getProgressText(playerProgress) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">最後遊玩時間：</span>
-                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate) }}</span>
+                  <span class="value">{{ formatDateTime(playerData.lastPlayedDate || playerData.LastPlayedDate) }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="label">擁有造型數量：</span>
                   <span class="value">
-                    {{ playerData.ownedSkins?.filter((s) => s.skinId !== 1).length || 0 }} 個
+                    {{ skinCountDisplay }} 個
                   </span>
                 </div>
               </div>
@@ -395,7 +410,7 @@ const startClose = (type) => {
           </div>
         </template>
 
-        <button
+        <!-- <button
           class="sticky-save-btn"
           @click="
             playSFX('click');
@@ -403,7 +418,7 @@ const startClose = (type) => {
           ">
           <Save />
           儲存並返回
-        </button>
+        </button> -->
       </div>
     </Transition>
   </div>
@@ -437,6 +452,7 @@ const startClose = (type) => {
   position: relative;
   color: #453a27;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+  
 }
 
 /* 半透明線條裝飾層 */
@@ -548,11 +564,22 @@ const startClose = (type) => {
 .photo-frame {
   width: 280px;
   height: 320px;
-  background: #fff;
   border: 1px solid #e0e0e0;
   padding: 12px;
   position: relative;
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
+  background-color: #f5eae0; 
+  
+  /* 🎯 純 CSS 人字波浪拼貼 */
+  background-image: 
+    linear-gradient(135deg, #e9dacb 25%, transparent 25%), 
+    linear-gradient(225deg, #e9dacb 25%, transparent 25%), 
+    linear-gradient(45deg, #e9dacb 25%, transparent 25%), 
+    linear-gradient(315deg, #e9dacb 25%, transparent 25%);
+  
+  /* 鎖定波浪的尺寸 */
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
 }
 
 .avatar-placeholder img {
@@ -564,7 +591,7 @@ const startClose = (type) => {
 .skin-name-display {
   text-align: center;
   font-size: 1.2rem;
-  margin: 0;
+  margin: 10px;
   font-weight: 900;
 }
 /* 照片角落膠帶感裝飾 */
@@ -648,7 +675,6 @@ const startClose = (type) => {
   border-radius: 8px;
   background-color: #fff;
   color: #453a27;
-  font-family: inherit;
   transition: all 0.3s ease;
 }
 
@@ -661,49 +687,6 @@ const startClose = (type) => {
 .edit-buttons {
   display: flex;
   gap: 10px;
-}
-
-.confirm-btn,
-.cancel-btn {
-  flex: 1;
-  padding: 10px 16px;
-  border: 2px solid #453a27;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
-}
-
-.confirm-btn {
-  background-color: #453a27;
-  color: #fcf4e5;
-}
-
-.confirm-btn:hover:not(:disabled) {
-  background-color: #fcc86d;
-  color: #453a27;
-  transform: translateY(-2px);
-}
-
-.cancel-btn {
-  background-color: #fcf4e5;
-  color: #453a27;
-}
-
-.cancel-btn:hover:not(:disabled) {
-  background-color: #e8dcc8;
-  transform: translateY(-2px);
-}
-
-.confirm-btn:disabled,
-.cancel-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .error-message {
@@ -741,17 +724,38 @@ const startClose = (type) => {
 /* 儲存按鈕：圓角、一半在外 */
 .sticky-save-btn {
   position: absolute;
-  bottom: -25px;
-  right: 60px;
-  background-color: #453a27;
-  color: #fcf4e5;
-  border: 4px solid #fcf4e5; /* 增加粗邊框與背景切齊 */
+  bottom: -50px;
+  right: 160px;
+  background-color: #fcf4e5;
+  color: #453a27;
+  border: 4px solid #453a27; /* 增加粗邊框與背景切齊 */
   padding: 12px 40px;
   font-size: 1.1rem;
   font-weight: bold;
   border-radius: 50px; /* 橢圓長條圓角 */
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 0px #453a27;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  display: flex;
+  align-items: center; /* 垂直置中 */
+  justify-content: center; /* 水平置中 */
+  gap: 10px; /* 圖示與文字間的距離 */
+  z-index: 5;
+}
+.cancel-btn {
+  position: absolute;
+  bottom: -50px;
+  right: 0px;
+  background-color: #fcf4e5;
+  color: #453a27;
+  border: 4px solid #453a27; /* 增加粗邊框與背景切齊 */
+  padding: 12px 40px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 50px; /* 橢圓長條圓角 */
+  cursor: pointer;
+  box-shadow: 0 5px 0px #453a27;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   display: flex;
@@ -768,36 +772,94 @@ const startClose = (type) => {
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: center;
 }
-
-.sticky-save-btn:hover {
-  background-color: #fcc86d;
-  color: #453a27;
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+.cancel-btn :deep(svg) {
+  display: block;
+  stroke-width: 2.5px; /* 讓 Lucide 圖示線條跟文字粗細更接近 */
+  /* 新增：圖示本身的放大與動畫 transition */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: center;
 }
-
+.sticky-save-btn:hover {
+  background-color: #445944;
+  color: #fcf4e5;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 0px #453a27;
+}
+.cancel-btn:hover {
+  background-color: #f57e6c;
+  color: #fcf4e5;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 0px #453a27;
+}
 .sticky-save-btn:hover :deep(svg) {
   /* 1. 圖示放大一些，比貓咪更明顯，更有強調感 */
-  transform: scale(1.3);
+  transform: scale(1.8);
 
   /* 2. 套用持續晃動動畫，比貓咪的搖晃速度稍快，增加張力 */
   animation: save-wiggle 1.5s ease-in-out infinite;
   animation-delay: 0.1s; /* 在放大完成後稍稍延遲一點點開始，更有層次 */
 }
+.cancel-btn:hover :deep(svg) {
+  /* 1. 圖示放大一些，比貓咪更明顯，更有強調感 */
+  transform: scale(1.8);
 
+  /* 2. 套用持續晃動動畫，比貓咪的搖晃速度稍快，增加張力 */
+  animation: save-wiggle 1.5s ease-in-out infinite;
+  animation-delay: 0.1s; /* 在放大完成後稍稍延遲一點點開始，更有層次 */
+}
 /* 載入與錯誤狀態樣式 */
 .loading-state,
 .error-state {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  width: 100%;    /* 完美佔滿玩家檔案卡片的寬度 */
+  height: 100%;   /* 完美佔滿玩家檔案卡片的高度 */
+  
+  /* 內部排版：讓圈圈與文字上下左右精準幾何居中 */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 300px;
-  font-size: 1.5rem;
-  color: #453a27;
+  
+  /* 確保蓋在卡片內容的最上層，且底色使用與卡片一致的溫暖 Morandi 色 */
+  z-index: 50;
+  border-radius: 24px;   /* 完美佔滿玩家檔案卡片的高度 */
 }
 
 .error-state {
   color: #d32f2f;
+}
+
+.spinner-small {
+  width: 400px;
+  height: 400px;
+  box-sizing: border-box;   /* 確保邊框算在 120px 內，圓形才不會變形 */
+  border: 40px solid #e8dcc8;  /* 溫暖的底圈 */
+  border-top-color: #453a27;  /* 主題深咖啡色旋轉頭 */
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite; /* 稍微放慢一點點點，轉起來更沉穩優雅 */
+}
+
+/* 🎯 提示文字微調，消除預設邊距 */
+.loading-text {
+  font-size: 1.75rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* ⚡ 究極定位：往回推自身寬高的 50%，達成絕對字面幾何居中 */
+  
+  margin: 0;      /* 稍微縮小字體，確保文字能完美收納在 120px 的圓圈圈內部 */
+  font-weight: 900;         /* 特粗體，讓小字在圓圈裡依舊清晰好讀 */
+  color: #453a27;           /* 主題深咖啡色 */
+  white-space: nowrap;      /* 強制不換行，防止字體折疊 */
+  letter-spacing: 0.5px;
+}
+
+/* 🎯 旋轉動畫定義（如果你的 CSS 最底下本來就有 @keyframes spin 就可以不用重複貼） */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes cat-breath {
@@ -828,32 +890,14 @@ const startClose = (type) => {
 @keyframes save-wiggle {
   0%,
   100% {
-    transform: scale(1.3) rotate(0deg);
+    transform: scale(1.8) rotate(0deg);
   } /* 維持在放大狀態 */
   25% {
-    transform: scale(1.3) rotate(-15deg);
+    transform: scale(1.8) rotate(-15deg);
   } /* 搖晃幅度稍大 */
   75% {
-    transform: scale(1.3) rotate(15deg);
+    transform: scale(1.8) rotate(15deg);
   }
 }
 
-@keyframes save-pop {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  70% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.2);
-    opacity: 0;
-  } /* 最後微微放大並消失 */
-}
 </style>

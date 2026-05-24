@@ -205,25 +205,13 @@ onUnmounted(() => {
                     </div>
                   </div>
                   <div v-else-if="hoveredMenu === 'games'" class="p-10 md:pt-[100px]">
-                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Games</h3>
+                    <h3 class="mb-6 text-2xl font-bold tracking-wider">知識遊戲</h3>
                     <div class="space-y-3">
                       <router-link
-                        to="/"
+                        :to="{ name: 'Client-gameview' }"
                         @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Pet Quiz
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Memory Game
-                      </router-link>
-                      <router-link
-                        to="/"
-                        @click="closeMenu"
-                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
-                        Puzzle
+                        寵物知識問答
                       </router-link>
                     </div>
                   </div>
