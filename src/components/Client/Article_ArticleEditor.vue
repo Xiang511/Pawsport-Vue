@@ -1,16 +1,19 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed, shallowRef, markRaw } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
-import Article_BaseButton from './Article_BaseButton.vue'
-import { useAuthStore } from '@/stores/auth'
 
+import { useAuthStore } from '@/stores/auth'
 import { useEditorState } from '@/composables/useEditorState'
+
+import Article_BaseButton from './Article_BaseButton.vue'
 import NewArticleModal from './Article_NewArticleModal.vue'
 import DraftListModal from './Article_DraftListModal.vue'
+import Article_ToastAlert from './Article_ToastAlert.vue'
 
 const authStore = useAuthStore()
+const toastRef = ref(null)
 const emit = defineEmits(['publish', 'save-draft', 'reset-id', 'load-draft', 'delete-draft'])
 
 // 接收來自父組件傳入的分類和草稿陣列資料
@@ -22,47 +25,52 @@ const props = defineProps({
 const currentSubCategories = ref([])
 const editorRef = ref(null)
 // 建立一個讓 Composable 能夠安全讀取到 quillInstance 的橋樑
-const quillWrapper = ref(null)
+const quillWrapper = shallowRef(null)
 
-const { post, isNewArticleModalOpen, isDraftListModalOpen, saveAndNew, discardAndNew } =
-  useEditorState(emit, quillWrapper)
+const {
+  post,
+  isNewArticleModalOpen,
+  isDraftListModalOpen,
+  saveAndNew,
+  discardAndNew,
+  detectedTags,
+  imageHandler,
+  handleRealImageUpload,
+} = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
 onMounted(() => {
   if (!editorRef.value) return
   // 初始化編輯器
-  const quillInstance = new Quill(editorRef.value, {
-    theme: 'snow',
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, 4, false] }],
-        [{ font: [] }],
-        ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
-        [{ color: [] }, { background: [] }],
-        [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
-        [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
-        ['image', 'blockquote', 'link'],
-        ['clean'],
-      ],
-    },
-  })
-  // 將實體提供給 Composable 之後做 clear 動作
+  const quillInstance = markRaw(
+    new Quill(editorRef.value, {
+      theme: 'snow',
+      modules: {
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, 4, false] }],
+            [{ font: [] }],
+            ['bold', 'italic', { script: 'sub' }, { script: 'super' }, 'strike', 'underline'],
+            [{ color: [] }, { background: [] }],
+            [{ indent: '-1' }, { indent: '+1' }, { align: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+            ['image', 'blockquote', 'link'],
+            ['clean'],
+          ],
+          handlers: {
+            image: imageHandler,
+          },
+        },
+      },
+    }),
+  )
+
   quillWrapper.value = quillInstance
 })
 
 // 封裝要外傳的完整資料包
 const getFormData = () => {
-  let finalTags = []
-  if (Array.isArray(post.tag)) {
-    finalTags = post.tag
-  } else if (typeof post.tag === 'string' && post.tag.trim() !== '') {
-    // 手動輸入字串（例如 "#貓咪 #飼料"）
-    finalTags = post.tag
-      .replace(/#/g, ' ') // 把所有 # 換成空格，這樣 "#貓咪" 就變成 "貓咪"
-      .split(' ') // 用空格切開成陣列
-      .map((t) => t.trim()) // 去除前後空白
-      .filter((t) => t !== '') // 濾掉空字串
-  }
+  let finalTags = [...detectedTags.value]
 
   return {
     title: post.title,
@@ -97,11 +105,11 @@ const onSaveDraft = () => {
 }
 
 const onSubmit = () => {
-  if (!post.title.trim()) return alert('請填寫文章標題！')
-  if (!post.mainCategory) return alert('請選擇文章大分類！')
+  if (!post.title.trim()) return toastRef.value?.trigger('請填寫文章標題！')
+  if (!post.mainCategory) return toastRef.value?.trigger('請選擇文章大分類！')
   // 如果目前的大分類「有小分類存在」，但使用者卻沒選，才需要彈出警告
   if (currentSubCategories.value.length > 0 && !post.categoryId) {
-    return alert('請選擇文章小分類！')
+    return toastRef.value?.trigger('請選擇文章小分類！')
   }
   emit('publish', getFormData())
 }
@@ -209,10 +217,18 @@ defineExpose({
       </div>
 
       <!-- 標籤區 -->
-      <div class="mt-5 mb-2 flex px-4">
+      <div class="mt-5 mb-2 flex min-h-9 flex-wrap items-center gap-2 px-4">
         <span
-          class="bg-brand-success-600 hover:bg-brand-success-700 w-fit rounded-full px-3 py-1 text-sm whitespace-nowrap text-white">
-          #標籤
+          v-for="(tag, index) in detectedTags"
+          :key="index"
+          class="bg-brand-success-600 hover:bg-brand-success-700 flex h-7 w-fit items-center justify-center rounded-full px-3 text-sm whitespace-nowrap text-white transition-all duration-200">
+          #{{ tag }}
+        </span>
+        <!-- 防呆提示（可選）：沒標籤時顯示淡色提示 -->
+        <span
+          v-if="detectedTags.length === 0"
+          class="self-center align-middle text-sm text-gray-400 italic">
+          在文章中輸入 #標籤 將自動顯示在此處
         </span>
       </div>
     </div>
@@ -241,6 +257,15 @@ defineExpose({
         :drafts="props.drafts"
         @select="selectDraft"
         @delete="deleteDraftItem" />
+
+      <Article_ToastAlert ref="toastRef" />
+      <!-- 這就是那篇文章裡提到的「被觸發者」-->
+      <input
+        id="quill-hidden-image-input"
+        type="file"
+        accept="image/*"
+        class="hidden"
+        @change="handleRealImageUpload" />
     </div>
   </div>
 </template>

@@ -38,7 +38,7 @@ export default [
         },
       },
       {
-        path: '/article-detail',
+        path: '/article-detail/:id',
         name: 'article-detail',
         component: () => import('@/views/Client/community/ArticleDetail.vue'),
         meta: {
@@ -194,7 +194,7 @@ export default [
         path: '/support/enewsletter/:id', // :id 代表動態文章編號
         name: 'Client-enewsletter-detail',
         component: () => import('@/views/Client/Support/ENewsletterDetailView.vue'),
-         meta: {
+        meta: {
           title: '電子報 | Petmily',
         },
       },

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import request from '@/api/axios'
+
 export function useCategories() {
   const categoriesData = ref({})
   const isCategoryLoading = ref(false)
@@ -42,7 +43,7 @@ export function useCategories() {
       categoriesData.value = transformCategories(response.data.data)
     } catch (error) {
       console.error('取得分類失敗：', error)
-      alert('無法載入分類選單')
+      throw error
     } finally {
       isCategoryLoading.value = false
     }
