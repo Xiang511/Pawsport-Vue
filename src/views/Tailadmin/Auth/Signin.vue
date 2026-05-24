@@ -1,39 +1,234 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import request from '@/api/axios'
 import CommonGridShape from '@/components/Tailadmin/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/Tailadmin/layout/FullScreenLayout.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { googleTokenLogin } from 'vue3-google-login'
+import Swal from 'sweetalert2'
 
+// 表單欄位
 const email = ref('')
 const password = ref('')
+const verificationCode = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
+
+// 驗證流程狀態
+const isPasswordVerified = ref(false) // 密碼是否已驗證通過
+const isWaitingForCode = ref(false) // 是否等待輸入驗證碼
+const firstStepResponse = ref(null) // 保存第一步的響應數據
+
+// Store 和載入狀態
 const authStore = useAuthStore()
 const isGoogleLoading = ref(false)
 
+// 切換密碼可見性
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
-const handleSubmit = async () => {
+/**
+ * 步驟一：發送驗證碼（同時驗證密碼）
+ * POST /api/Auth/login/request-code
+ */
+const requestVerificationCode = async () => {
+  // 驗證必填欄位
+  if (!email.value.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入電子郵件',
+      text: '電子郵件不能為空',
+    })
+    return
+  }
+
+  if (!password.value.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入密碼',
+      text: '密碼不能為空',
+    })
+    return
+  }
+
+  // 顯示載入提示
+  Swal.fire({
+    title: '驗證中...',
+    html: '正在驗證密碼並發送驗證碼',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    },
+  })
+
   try {
-    const response = await request.post('/Auth/login', {
-      userEmail: email.value.trim(),
+    const response = await request.post('/Auth/login/request-code', {
+      email: email.value.trim(),
       password: password.value.trim(),
     })
 
-    if (response.status === 200) {
-      authStore.setLoginInfo(response.data.data.user)
-      console.log('【登入成功】使用者資訊已儲存到 Pinia store：', authStore.userInfo)
-      router.replace('/dashboard')
+    console.log('驗證碼發送回應:', response.data)
+    console.log('回應完整結構:', JSON.stringify(response.data, null, 2))
+
+    // 檢查密碼驗證是否成功
+    if (response.status === 200 && response.data?.success) {
+      // 保存第一步的響應數據，可能包含 sessionId 或其他需要的信息
+      firstStepResponse.value = response.data
+      isPasswordVerified.value = true
+      isWaitingForCode.value = true
+
+      Swal.fire({
+        icon: 'success',
+        title: '驗證碼已發送！',
+        html: '請查看您的電子郵件信箱<br/>並輸入收到的驗證碼',
+        confirmButtonText: '確定',
+      })
+    } else {
+      throw new Error(response.data?.message || '密碼驗證失敗')
     }
   } catch (error) {
-    console.error('登入失敗:', error)
-    alert('登入失敗，請檢查帳號密碼')
+    console.error('發送驗證碼失敗:', error)
+    console.error('錯誤詳情:', error.response?.data)
+
+    // 重置狀態
+    isPasswordVerified.value = false
+    isWaitingForCode.value = false
+    firstStepResponse.value = null
+
+    Swal.fire({
+      icon: 'error',
+      title: '驗證失敗',
+      text: error.response?.data?.message || error.message || '請檢查帳號密碼是否正確',
+    })
   }
+}
+
+/**
+ * 步驟二：驗證驗證碼並完成登入
+ * POST /api/Auth/login/verify-code
+ */
+const verifyCodeAndLogin = async () => {
+  // 驗證驗證碼是否已輸入
+  if (!verificationCode.value.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入驗證碼',
+      text: '驗證碼不能為空',
+    })
+    return
+  }
+
+  // 顯示載入提示
+  Swal.fire({
+    title: '驗證中...',
+    html: '正在驗證驗證碼',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    },
+  })
+
+  try {
+    // 準備第二步的請求參數
+    const requestData = {
+      email: email.value.trim(),
+      verificationCode: verificationCode.value.trim(),
+    }
+
+    // 如果第一步響應中有 sessionId 或其他需要的字段，添加到請求中
+    if (firstStepResponse.value?.data?.sessionId) {
+      requestData.sessionId = firstStepResponse.value.data.sessionId
+    }
+
+    console.log('📤 發送驗證碼驗證請求，參數:', requestData)
+
+    const response = await request.post('/Auth/login/verify-code', requestData)
+
+    console.log('驗證碼驗證回應:', response.data)
+
+    // 檢查驗證是否成功
+    if (response.status === 200 && response.data?.data?.user) {
+      // 設定登入資訊
+      authStore.setLoginInfo(response.data.data.user)
+
+      // 等待 store 更新完成
+      await nextTick()
+
+      console.log('登入成功，準備跳轉到 /dashboard/ecommerce')
+
+      // 顯示成功訊息，強制等待 2 秒
+      Swal.fire({
+        icon: 'success',
+        title: '登入成功！',
+        text: '正在跳轉...',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
+
+      // 強制等待 2000 毫秒
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // 關閉 Swal
+      Swal.close()
+
+      // 使用 replace 並處理可能的錯誤
+      try {
+        await router.replace('/dashboard/ecommerce')
+      } catch (navError) {
+        // 如果路由跳轉失敗，使用硬跳轉
+        console.warn('路由跳轉失敗，使用硬跳轉', navError)
+        window.location.href = '/dashboard/ecommerce'
+      }
+    } else {
+      throw new Error(response.data?.message || '驗證碼驗證失敗')
+    }
+  } catch (error) {
+    console.error('驗證碼驗證失敗:', error)
+    console.error('錯誤詳情:', error.response?.data)
+    console.error('請求參數:', { email: email.value, verificationCode: verificationCode.value })
+
+    // 取得後端返回的錯誤訊息
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.response?.data?.title ||
+      error.message ||
+      '驗證碼錯誤或已過期'
+
+    Swal.fire({
+      icon: 'error',
+      title: '驗證失敗',
+      text: errorMessage,
+      footer: '請確認驗證碼是否正確，或重新獲取驗證碼',
+    })
+  }
+}
+
+/**
+ * 主表單提交處理
+ * 根據當前狀態決定執行哪個步驟
+ */
+const handleSubmit = async () => {
+  if (!isPasswordVerified.value) {
+    // 步驟一：發送驗證碼
+    await requestVerificationCode()
+  } else {
+    // 步驟二：驗證驗證碼並登入
+    await verifyCodeAndLogin()
+  }
+}
+
+/**
+ * 重新獲取驗證碼
+ */
+const resendVerificationCode = async () => {
+  verificationCode.value = '' // 清空驗證碼輸入
+  await requestVerificationCode()
 }
 
 /**
@@ -44,6 +239,16 @@ const handleGoogleLogin = async () => {
   isGoogleLoading.value = true
 
   try {
+    // 顯示加載提示
+    Swal.fire({
+      title: 'Google 登入中...',
+      html: '請稍候',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
+
     // 呼叫 googleTokenLogin 會取得 access_token
     const response = await googleTokenLogin()
     console.log('🟢 [Google Login] 收到 Google 回應', response)
@@ -62,25 +267,68 @@ const handleGoogleLogin = async () => {
       idToken: token,
     })
 
-    if (backendResponse.data.success) {
-      authStore.setLoginInfo(backendResponse.data.data.user)
+    console.log('🟢 [Google Login] 後端回應:', backendResponse.data)
 
-      if (backendResponse.data.data.token) {
-        localStorage.setItem('token', backendResponse.data.data.token)
+    // 檢查多種可能的成功狀態
+    const isSuccess = backendResponse.data?.success || backendResponse.status === 200
+    const userData = backendResponse.data?.data?.user
+
+    if (isSuccess && userData) {
+      // 設定登入資訊
+      authStore.setLoginInfo(userData)
+
+      // 等待 store 更新完成
+      await nextTick()
+
+      console.log('✅ Google 登入成功，準備跳轉')
+
+      // 顯示成功訊息，強制等待2秒
+      Swal.fire({
+        icon: 'success',
+        title: 'Google 登入成功！',
+        text: '正在跳轉...',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
+
+      // 強制等待2000毫秒
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // 關閉 Swal
+      Swal.close()
+
+      // 使用 replace 並處理可能的錯誤
+      try {
+        await router.replace('/dashboard/ecommerce')
+      } catch (navError) {
+        // 如果路由跳轉失敗，使用硬跳轉
+        console.warn('路由跳轉失敗，使用硬跳轉', navError)
+        window.location.href = '/dashboard/ecommerce'
       }
-
-      router.replace('/dashboard')
     } else {
-      throw new Error(backendResponse.data.message || '登入失敗')
+      throw new Error(backendResponse.data?.message || '後端驗證失敗：未返回用戶資料')
     }
   } catch (error) {
     console.error('🔴 [Google Login] 失敗:', error)
+    Swal.close()
+
     if (error.type === 'popup_closed' || error.message === 'popup_closed_by_user') {
       console.log('ℹ️ [User] 使用者關閉了登入視窗')
     } else if (error.response) {
-      alert(`Google 登入失敗: ${error.response.data?.message || '後端驗證錯誤'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 登入失敗',
+        text: error.response.data?.message || '後端驗證錯誤',
+      })
     } else {
-      alert(`Google 登入失敗: ${error.message || '請稍後再試'}`)
+      Swal.fire({
+        icon: 'error',
+        title: 'Google 登入失敗',
+        text: error.message || '請稍後再試',
+      })
     }
   } finally {
     isGoogleLoading.value = false
@@ -141,7 +389,8 @@ const handleGoogleLogin = async () => {
                         id="email"
                         name="email"
                         placeholder="輸入您的電子郵件地址"
-                        class="focus:border-brand-success-500 focus:ring-brand-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                        :disabled="isPasswordVerified"
+                        class="focus:border-brand-success-500 focus:ring-brand-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                     </div>
                     <!-- Password -->
                     <div>
@@ -157,8 +406,10 @@ const handleGoogleLogin = async () => {
                           :type="showPassword ? 'text' : 'password'"
                           id="password"
                           placeholder="輸入您的密碼"
-                          class="focus:border-brand-success-500 focus:ring-brand-success-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                          :disabled="isPasswordVerified"
+                          class="focus:border-brand-success-500 focus:ring-brand-success-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                         <span
+                          v-if="!isPasswordVerified"
                           @click="togglePasswordVisibility"
                           class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
                           <svg
@@ -192,8 +443,35 @@ const handleGoogleLogin = async () => {
                         </span>
                       </div>
                     </div>
+
+                    <!-- 驗證碼輸入框（密碼驗證通過後顯示） -->
+                    <div v-if="isPasswordVerified && isWaitingForCode" class="space-y-3">
+                      <div>
+                        <label
+                          for="verificationCode"
+                          class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                          驗證碼
+                          <span class="text-error-500">*</span>
+                        </label>
+                        <input
+                          v-model="verificationCode"
+                          type="text"
+                          id="verificationCode"
+                          placeholder="請輸入 6 位數驗證碼"
+                          maxlength="6"
+                          class="focus:border-brand-success-500 focus:ring-brand-900/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                      </div>
+                      <!-- 重新獲取驗證碼按鈕 -->
+                      <button
+                        type="button"
+                        @click="resendVerificationCode"
+                        class="text-brand-success-500 hover:text-brand-success-800 dark:text-brand-400 text-sm transition-colors">
+                        重新獲取驗證碼
+                      </button>
+                    </div>
+
                     <!-- Checkbox -->
-                    <div class="flex items-center justify-between">
+                    <div v-if="!isPasswordVerified" class="flex items-center justify-between">
                       <label
                         for="keepLoggedIn"
                         class="flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400">
@@ -236,11 +514,13 @@ const handleGoogleLogin = async () => {
                       </router-link>
                     </div>
                     <!-- Button -->
-                    <button
-                      type="submit"
-                      class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-800 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
-                      登入
-                    </button>
+                    <div>
+                      <button
+                        type="submit"
+                        class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-800 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
+                        {{ isPasswordVerified ? '驗證並登入' : '發送驗證碼' }}
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
