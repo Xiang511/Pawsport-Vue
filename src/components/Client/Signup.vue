@@ -13,8 +13,15 @@ const lastName = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const verificationCode = ref('')
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+
+// 驗證流程狀態
+const isEmailSent = ref(false) // 驗證碼是否已發送
+const isWaitingForCode = ref(false) // 是否等待輸入驗證碼
+const firstStepResponse = ref(null) // 保存第一步的響應數據
+
 const authStore = useAuthStore()
 const isGoogleLoading = ref(false)
 
@@ -26,7 +33,11 @@ const toggleConfirmPasswordVisibility = () => {
   showConfirmPassword.value = !showConfirmPassword.value
 }
 
-const handleSubmit = async () => {
+/**
+ * 步驟一：發送註冊資料並獲取驗證碼
+ * POST /api/Auth/register
+ */
+const requestRegisterCode = async () => {
   // 驗證表單
   if (!lastName.value.trim()) {
     Swal.fire({
@@ -76,7 +87,7 @@ const handleSubmit = async () => {
   // 顯示加載提示
   Swal.fire({
     title: '註冊中...',
-    html: '請稍候',
+    html: '正在發送驗證碼到您的信箱',
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading()
@@ -89,27 +100,34 @@ const handleSubmit = async () => {
       email: email.value.trim(),
       password: password.value.trim(),
     })
-    console.log('response.data:', response.data) // 新增這行來檢查後端回應的內容;
-    console.log('註冊回應:', response)
 
-    if (response.status === 200 || response.status === 201) {
-      await Swal.fire({
+    console.log('註冊第一步回應:', response.data)
+
+    // 檢查是否成功發送驗證碼
+    if (response.status === 200 && response.data?.success) {
+      // 保存第一步的響應數據
+      firstStepResponse.value = response.data
+      isEmailSent.value = true
+      isWaitingForCode.value = true
+
+      Swal.fire({
         icon: 'success',
-        title: '註冊成功！',
-        text: '正在跳轉到登入頁面...',
-        timer: 2000,
-        showConfirmButton: false,
+        title: '驗證碼已發送！',
+        html: '請查看您的電子郵件信箱<br/>並輸入收到的驗證碼',
+        confirmButtonText: '確定',
       })
-      try {
-        // 跳轉到登入頁面
-        await router.replace('/login')
-      } catch (loginError) {
-        console.warn('路由跳轉失敗，使用硬跳轉', loginError)
-        window.location.href = '/login'
-      }
+    } else {
+      throw new Error(response.data?.message || '發送驗證碼失敗')
     }
   } catch (error) {
-    console.error('註冊失敗:', error)
+    console.error('發送驗證碼失敗:', error)
+    console.error('錯誤詳情:', error.response?.data)
+
+    // 重置狀態
+    isEmailSent.value = false
+    isWaitingForCode.value = false
+    firstStepResponse.value = null
+
     if (error.response?.data?.message) {
       Swal.fire({
         icon: 'error',
@@ -120,9 +138,104 @@ const handleSubmit = async () => {
       Swal.fire({
         icon: 'error',
         title: '註冊失敗',
-        text: '請稍後再試',
+        text: error.message || '請稍後再試',
       })
     }
+  }
+}
+
+/**
+ * 步驟二：驗證 Email 驗證碼並完成註冊
+ * POST /api/Auth/register/verify-email
+ */
+const verifyEmailAndRegister = async () => {
+  // 驗證驗證碼是否已輸入
+  if (!verificationCode.value.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請輸入驗證碼',
+      text: '驗證碼不能為空',
+    })
+    return
+  }
+
+  // 顯示載入提示
+  Swal.fire({
+    title: '驗證中...',
+    html: '正在驗證您的電子郵件',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    },
+  })
+
+  try {
+    const response = await request.post('/Auth/register/verify-email', {
+      email: email.value.trim(),
+      verificationCode: verificationCode.value.trim(),
+    })
+
+    console.log('Email 驗證回應:', response.data)
+
+    // 檢查驗證是否成功
+    if (response.status === 200 && response.data?.success) {
+      // 顯示成功訊息
+      await Swal.fire({
+        icon: 'success',
+        title: '註冊成功！',
+        text: '正在跳轉到登入頁面...',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
+
+      // 強制等待 2000 毫秒
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // 關閉 Swal
+      Swal.close()
+
+      try {
+        // 跳轉到登入頁面
+        await router.replace('/login')
+      } catch (navError) {
+        console.warn('路由跳轉失敗，使用硬跳轉', navError)
+        window.location.href = '/login'
+      }
+    } else {
+      throw new Error(response.data?.message || 'Email 驗證失敗')
+    }
+  } catch (error) {
+    console.error('Email 驗證失敗:', error)
+    console.error('錯誤詳情:', error.response?.data)
+
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.response?.data?.title ||
+      error.message ||
+      '驗證碼錯誤或已過期'
+
+    Swal.fire({
+      icon: 'error',
+      title: '驗證失敗',
+      text: errorMessage,
+    })
+  }
+}
+
+/**
+ * 主提交函數：根據當前狀態決定執行哪個步驟
+ */
+const handleSubmit = async () => {
+  if (!isEmailSent.value) {
+    // 第一步：發送驗證碼
+    await requestRegisterCode()
+  } else {
+    // 第二步：驗證驗證碼
+    await verifyEmailAndRegister()
   }
 }
 
@@ -253,7 +366,8 @@ const handleGoogleSignUp = async () => {
                         id="lname"
                         name="lname"
                         placeholder="請輸入你的名稱"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                        :disabled="isEmailSent"
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500" />
                     </div>
                   </div>
                   <!-- Email -->
@@ -270,7 +384,8 @@ const handleGoogleSignUp = async () => {
                       id="email"
                       name="email"
                       placeholder="請輸入你的電子郵件地址"
-                      class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                      :disabled="isEmailSent"
+                      class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500" />
                   </div>
                   <!-- Password -->
                   <div>
@@ -286,10 +401,12 @@ const handleGoogleSignUp = async () => {
                         :type="showPassword ? 'text' : 'password'"
                         id="password"
                         placeholder="請輸入你的密碼"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                        :disabled="isEmailSent"
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500" />
                       <span
                         @click="togglePasswordVisibility"
-                        class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
+                        class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400"
+                        :class="{ 'pointer-events-none opacity-50': isEmailSent }">
                         <svg
                           v-if="!showPassword"
                           class="fill-current"
@@ -334,10 +451,12 @@ const handleGoogleSignUp = async () => {
                         :type="showConfirmPassword ? 'text' : 'password'"
                         id="confirmPassword"
                         placeholder="請確認你的密碼"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                        :disabled="isEmailSent"
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500" />
                       <span
                         @click="toggleConfirmPasswordVisibility"
-                        class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
+                        class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400"
+                        :class="{ 'pointer-events-none opacity-50': isEmailSent }">
                         <svg
                           v-if="!showConfirmPassword"
                           class="fill-current"
@@ -368,6 +487,26 @@ const handleGoogleSignUp = async () => {
                         </svg>
                       </span>
                     </div>
+                  </div>
+                  <!-- 驗證碼輸入欄位 -->
+                  <div v-if="isWaitingForCode">
+                    <label
+                      for="verificationCode"
+                      class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                      驗證碼
+                      <span class="text-error-500">*</span>
+                    </label>
+                    <input
+                      v-model="verificationCode"
+                      type="text"
+                      id="verificationCode"
+                      name="verificationCode"
+                      placeholder="請輸入 6 位數驗證碼"
+                      maxlength="6"
+                      class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      驗證碼已發送至您的信箱，請查收
+                    </p>
                   </div>
                   <!-- Checkbox -->
                   <!-- <div>
@@ -421,7 +560,7 @@ const handleGoogleSignUp = async () => {
                     <button
                       type="submit"
                       class="bg-brand-success-500 shadow-theme-xs hover:bg-brand-success-600 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
-                      註冊
+                      {{ isEmailSent ? '驗證並完成註冊' : '發送驗證碼' }}
                     </button>
                   </div>
                 </div>
