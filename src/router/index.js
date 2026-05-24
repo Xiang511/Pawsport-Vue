@@ -48,7 +48,15 @@ router.beforeEach((to, from) => {
   }
 
   // 公開路由（不需要認證）
-  const publicRoutes = ['/dashboard/login', '/login', '/signup', '/', '/error-404']
+  const publicRoutes = [
+    '/dashboard/login',
+    '/login',
+    '/signup',
+    '/',
+    '/error-404',
+    '/reset-password',
+    '/reset-password/confirm',
+  ]
 
   // 後台路由檢查 - 所有 /dashboard 開頭的都需要登入
   if (to.path.startsWith('/dashboard')) {
