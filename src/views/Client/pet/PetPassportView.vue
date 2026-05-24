@@ -23,7 +23,7 @@ const currentPet = computed(() => {
 const fetchPassports = async () => {
   try {
     loading.value = true
-    const response = await request.get('https://localhost:7048/api/users/pet/passports')
+    const response = await request.get('/users/pet/passports')
     const { success, data } = response.data
     if (success && data && data.length > 0) {
       pets.value = data
@@ -45,6 +45,20 @@ onMounted(() => {
 const addNewPet = () => router.push({ name: 'pet-health-passport-add' })
 const goToEditPage = (PetId) => {
   router.push({ name: 'pet-health-passport-edit', params: { id: PetId } })
+}
+
+// Tab 新增按鈕路由跳轉
+const onAddMedical = () => {
+  router.push({ name: 'passport-add-medical', query: { passportId: currentPet.value?.id } })
+}
+const onAddVaccine = () => {
+  router.push({ name: 'passport-add-vaccine', query: { passportId: currentPet.value?.id } })
+}
+const onAddImage = () => {
+  router.push({ name: 'passport-add-image', query: { passportId: currentPet.value?.id } })
+}
+const onAddWeight = () => {
+  router.push({ name: 'passport-add-weight', query: { passportId: currentPet.value?.id } })
 }
 </script>
 
@@ -130,12 +144,12 @@ const goToEditPage = (PetId) => {
           </div>
 
           <div class="min-h-[400px] rounded-2xl bg-white p-6 shadow-sm" v-if="currentPet">
-            <MedicalTab v-if="activeTab === '醫療史'" :records="currentPet.medicalRecords" />
-            <VaccineTab v-if="activeTab === '疫苗'" :vaccines="currentPet.vaccinations" />
+            <MedicalTab v-if="activeTab === '醫療史'" :records="currentPet.medicalRecords" @add-medical="onAddMedical" />
+            <VaccineTab v-if="activeTab === '疫苗'" :vaccines="currentPet.vaccinations" @add-vaccine="onAddVaccine" />
             <div v-if="activeTab === '影像'">
-              <ImageTab :passportRecords="[currentPet]" />
+              <ImageTab :passportRecords="[currentPet]" @add-image="onAddImage" />
             </div>
-            <WeightTab v-if="activeTab === '體重'" :records="currentPet.weightRecords" />
+            <WeightTab v-if="activeTab === '體重'" :records="currentPet.weightRecords" @add-weight="onAddWeight" />
           </div>
         </div>
       </div>
