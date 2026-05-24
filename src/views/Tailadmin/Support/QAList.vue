@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { MessageSquareText, Eye, X } from 'lucide-vue-next'
+import Chart from 'chart.js/auto'
+import axios from 'axios'
 
 const qaData = ref([])
 const currentPage = ref(1)
@@ -26,15 +28,16 @@ const loadQaData = async (page = 1) => {
 
 onMounted(() => {
   loadQaData(1)
+  fetchDashboardData() //圖表一開始就自動出現
 })
 
 const getStatusStyle = (status) => {
   if (status === '追蹤中') {
     return 'bg-brand-success-600 text-white'
   } else if (status === '已結案') {
-    return 'bg-brand-error-600 text-white'
-  } else {
     return 'bg-gray-400 text-white'
+  } else {
+    return 'bg-brand-error-600 text-white'
   }
 }
 
@@ -121,9 +124,155 @@ const formatDate = (dateStr) => {
 
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
+
+let typeChartInstance = null
+let statusChartInstance = null
+
+const fetchDashboardData = async () => {
+  try {
+    const res = await axios.get('https://localhost:7048/api/Support/Dashboard')
+
+    const dashboardData = res.data.data
+
+    renderTypeChart(dashboardData.questionTypeStats)
+    renderStatusChart(dashboardData.statusStats)
+  } catch (error) {
+    console.error('取得圖表數據失敗:', error)
+  }
+}
+
+// 執行畫圖
+const renderTypeChart = (statsObj) => {
+  const ctx = document.getElementById('questionTypeChart')
+
+  if (!ctx) {
+    console.warn('找不到畫布元素，可能畫面還沒渲染完')
+    return
+  }
+
+  // 如果畫布上已經有舊圖表，先銷毀它，確保不會重疊破圖
+  if (typeChartInstance) {
+    typeChartInstance.destroy()
+  }
+
+  const labels = Object.keys(statsObj)
+  const dataValues = Object.values(statsObj)
+
+  // 呼叫 Chart.js 產出圓餅圖
+  typeChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: dataValues,
+          backgroundColor: ['#fca5a5', '#fcd34d', '#93c5fd', '#c4b5fd', '#fdba74', '#86efac'],
+          borderWidth: 1,
+          hoverOffset: 15,
+          borderRadius: 10,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false, // 讓圖表聽從外層div的大小
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: {
+              family: "'Noto Sans TC', sans-serif", // 讓圖例字體好看一點
+            },
+          },
+        },
+      },
+    },
+  })
+}
+
+// 第二張圖
+const renderStatusChart = (statsObj) => {
+  const ctx = document.getElementById('statusChart')
+  if (!ctx) return
+
+  if (statusChartInstance) statusChartInstance.destroy()
+
+  const incomingLabels = Object.keys(statsObj)
+  const dataValues = Object.values(statsObj)
+
+  const statusColorMap = {
+    未處理: '#fca5a5', 
+    追蹤中: '#065f46', 
+    已結案: '#9ca3af', 
+  }
+
+  const sortedColors = incomingLabels.map((label) => statusColorMap[label] || '#e5e7eb')
+
+  statusChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: incomingLabels,
+      datasets: [
+        {
+          data: dataValues,
+          backgroundColor: sortedColors,
+          borderWidth: 1,
+          hoverOffset: 15,
+          borderRadius: 10,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 15,
+            padding: 15,
+            font: { family: "'Noto Sans TC', sans-serif" },
+          },
+        },
+        tooltip: {
+          padding: 10,
+          cornerRadius: 10,
+        },
+      },
+
+      // 甜甜圈圖專用設定：設定中間空洞的大小 (0~100)
+      cutout: '50%',
+    },
+  })
+}
 </script>
 
 <template>
+  <div class="container mx-auto mt-6">
+    <div class="mb-8 rounded-xl border border-gray-100 bg-white p-8 shadow-sm">
+      <h3 class="mb-8 flex items-center gap-2 text-xl font-bold text-gray-800">
+        <span class="text-2xl"></span>
+        客服數據中心
+      </h3>
+
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div class="flex flex-col items-center">
+          <h5 class="mb-6 text-lg font-medium text-gray-600">近一個月問題類型</h5>
+          <div class="relative flex h-72 w-72 justify-center">
+            <canvas id="questionTypeChart"></canvas>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <h5 class="mb-6 text-lg font-medium text-gray-600">近一個月處理狀態追蹤</h5>
+          <div class="relative flex h-72 w-72 justify-center">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="p-6">
     <div class="mb-6 flex items-center justify-between">
       <h2 class="flex items-center gap-2 text-2xl font-bold text-gray-800">
