@@ -147,8 +147,10 @@ onUnmounted(() => {
             <router-link
               to="/"
               @click="closeMenu"
+              @mouseenter="handleMenuHover('support')"
+              @mouseleave="handleMenuLeave"
               class="menu-item text-md relative block py-7 text-center text-left font-bold tracking-widest md:text-3xl">
-              Contact Us
+              Support
             </router-link>
             <div class="ml-3">
               <p class="mt-20 mb-3 text-sm font-bold tracking-widest">FOLLOW</p>
@@ -172,6 +174,11 @@ onUnmounted(() => {
                 @click="closeMenu"
                 class="mb-2 block text-sm font-bold tracking-widest duration-300 hover:opacity-40">
                 PRIVACY POLICY
+              </router-link>
+              <router-link
+                :to="{ name: 'Client-login' }"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-500">
+                🚧登入
               </router-link>
             </div>
             <Transition name="sidebar-panel">
@@ -241,6 +248,29 @@ onUnmounted(() => {
                         @click="closeMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
                         Q&A
+                      </router-link>
+                    </div>
+                  </div>
+                  <div v-else-if="hoveredMenu === 'support'" class="p-10 md:pt-[100px]">
+                    <h3 class="mb-6 text-2xl font-bold tracking-wider">Support</h3>
+                    <div class="space-y-3">
+                      <router-link
+                        :to="{ name: 'Client-faq' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        F A Q
+                      </router-link>
+                      <router-link
+                        :to="{ name: 'Client-qa' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        Contact Us
+                      </router-link>
+                      <router-link
+                        :to="{ name: 'Client-enewsletter' }"
+                        @click="toggleMenu"
+                        class="block rounded-lg bg-white p-4 text-lg font-semibold transition-all hover:shadow-md">
+                        E-Newsletter
                       </router-link>
                     </div>
                   </div>
