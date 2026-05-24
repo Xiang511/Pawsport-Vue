@@ -1,92 +1,44 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { SquarePlus } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 // 1. 篩選狀態
 const filters = reactive({
-  type: '狗', // 預設狗
-  gender: '', // 公/母
-  city: '', // 新增：縣市
-  district: '', // 新增：地區
-  variety: '', // 品種
-  keyword: '', // 晶片/特徵
+  type: '不限', // 預設不限
+  gender: '不限', // 公/母/不限
+  city: '', // 縣市
+  district: '', // 地區
+  keyword: '', // 關鍵字
 })
 
-// 2. 模擬遺失寵物資料 (對應原始碼中的 losePets)
-const lostPets = ref([
-  {
-    id: 1,
-    breed: '可愛小笨狗',
-    gender: '母',
-    city: '台北市',
-    district: '大安區',
-    lostTime: '2024-05-15',
-    lostPlace: '嘉義市東區中山路',
-    chipId: '900111000123***',
-    feature: '身上穿著藍色胸背帶，對陌生人害羞但不會攻擊。',
-    photo:
-      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=400',
-  },
-  {
-    id: 2,
-    breed: '米克斯',
-    gender: '公',
-    city: '嘉義市',
-    district: '東區',
-    lostTime: '2024-05-12',
-    lostPlace: '台南市永康區',
-    chipId: '無',
-    feature: '左耳有剪耳標記，尾巴末端有一點勾勾。',
-    photo:
-      'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=400',
-  },
-])
+// 2. 遺失寵物資料 (從 API 取得)
+const lostPets = ref([])
+
+const fetchMissingPets = async () => {
+  try {
+    const response = await request.get('/users/missing-pets')
+    // 若後端封裝在 response.data.data 中，請根據實際攔截器調整
+    lostPets.value = response.data.data || response.data || []
+  } catch (error) {
+    console.error('獲取遺失寵物列表失敗:', error)
+  }
+}
+
+onMounted(() => {
+  fetchMissingPets()
+})
 
 const cityData = {
-  台北市: [
-    '中正區',
-    '大同區',
-    '中山區',
-    '松山區',
-    '大安區',
-    '萬華區',
-    '信義區',
-    '士林區',
-    '北投區',
-    '內湖區',
-    '南港區',
-    '文山區',
-  ],
-  新北市: [
-    '板橋區',
-    '三重區',
-    '中和區',
-    '永和區',
-    '新莊區',
-    '新店區',
-    '土城區',
-    '蘆洲區',
-    '樹林區',
-    '汐止區',
-  ],
+  台北市: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
+  新北市: ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '土城區', '蘆洲區', '樹林區', '汐止區'],
   桃園市: ['桃園區', '中壢區', '平鎮區', '八德區', '楊梅區', '蘆竹區'],
-  台中市: [
-    '中區',
-    '東區',
-    '南區',
-    '西區',
-    '北區',
-    '北屯區',
-    '西屯區',
-    '南屯區',
-    '太平區',
-    '大里區',
-  ],
+  台中市: ['中區', '東區', '南區', '西區', '北區', '北屯區', '西屯區', '南屯區', '太平區', '大里區'],
   台南市: ['中西區', '東區', '南區', '北區', '安平區', '安南區', '永康區', '歸仁區'],
   高雄市: ['新興區', '前金區', '苓雅區', '左營區', '楠梓區', '三民區', '鼓山區', '鳳山區'],
   嘉義市: ['東區', '西區'],
-  // ... 其他縣市可以依此類推
 }
+
 // 取得當前選中縣市的地區清單
 const availableDistricts = computed(() => {
   return cityData[filters.city] || []
@@ -97,10 +49,30 @@ const onCityChange = () => {
   filters.district = ''
 }
 
-// 3. 搜尋方法
+// 3. 搜尋方法 (前端過濾)
+const filteredPets = computed(() => {
+  return lostPets.value.filter(pet => {
+    // 雖然 API 中沒有明確的 Species，但我們可以在後端或前端簡單過濾 (假設目前 DTO 有或是預設)
+    // 這裡主要針對前端提供的條件過濾
+    if (filters.gender && filters.gender !== '不限' && pet.gender !== filters.gender) return false
+    if (filters.city && pet.city !== filters.city) return false
+    if (filters.district && pet.district !== filters.district) return false
+    
+    if (filters.keyword) {
+      const kw = filters.keyword.toLowerCase()
+      const matchFeature = pet.feature?.toLowerCase().includes(kw)
+      const matchBreed = pet.breed?.toLowerCase().includes(kw)
+      const matchChip = pet.chipId?.toLowerCase().includes(kw)
+      const matchPlace = pet.lostPlace?.toLowerCase().includes(kw)
+      if (!matchFeature && !matchBreed && !matchChip && !matchPlace) return false
+    }
+
+    return true
+  })
+})
+
 const handleSearch = () => {
-  console.log('執行篩選：', filters)
-  // 這裡之後串接 API
+  // computed 已經自動響應，此處可保留做未來擴充 (如發送 API 搜尋)
 }
 </script>
 
@@ -226,7 +198,7 @@ const handleSearch = () => {
 
       <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div
-          v-for="pet in lostPets"
+          v-for="pet in filteredPets"
           :key="pet.id"
           class="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md">
           <div class="relative h-48 overflow-hidden">
