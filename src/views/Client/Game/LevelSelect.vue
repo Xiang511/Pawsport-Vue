@@ -20,7 +20,7 @@ const formatNumber = (num) => {
   return Math.round(num).toLocaleString('en-US')
 }
 // 【新增】Loading 狀態管理
-const isLoading = ref(false)
+const isLoading = ref(true)
 const loadingProgress = ref(0)
 
 // 【新增】Loading 文字計算屬性
@@ -443,7 +443,7 @@ const startGame = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async() => {
   const lastPlayedId = parseInt(route.query.lastPlayedLevelId)
   if (lastPlayedId && !isNaN(lastPlayedId)) {
     // 自動推算剛剛玩的關卡在哪個大區，避免一開畫面固定卡在第一章
@@ -453,6 +453,15 @@ onMounted(() => {
     if (targetAreaIndex !== -1) {
       currentAreaIndex.value = targetAreaIndex
     }
+  }
+  isLoading.value = true
+  if (playerStore.playerId) {
+    // 已經有 ID，代表是重整後的恢復狀態
+    // 這裡可以選擇不重新 fetch，直接顯示頁面，大幅提升速度
+    isLoading.value = false; 
+  } else {
+    // 真的沒資料，才執行初始化
+    await playerStore.initializePlayer();
   }
   updateAreaContent()
 })
