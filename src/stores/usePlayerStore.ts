@@ -148,4 +148,9 @@ export const usePlayerStore = defineStore('player', () => {
     refreshPlayerData,
     clearPlayer
   }
+}, {
+  // 🎯 加入這一行設定即可開啟持久化
+  persist: {
+    storage: localStorage, // 預設就是 localStorage
+  }
 })
