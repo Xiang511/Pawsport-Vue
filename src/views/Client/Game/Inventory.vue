@@ -5,6 +5,7 @@ import { useGameAudio } from '@/composables/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 import { Eye, EyeOff } from 'lucide-vue-next'
+import { Icon } from '@iconify/vue'
 
 const { playSFX } = useGameAudio()
 const router = useRouter()
@@ -183,9 +184,11 @@ const toggleUnownedSkins = async () => {
 
 // 裝備造型（只有已擁有的造型才能裝備）
 const equipSkin = async (id) => {
+  const playerStore = usePlayerStore()
+    const playerId = playerStore.playerId
   try {
-    const response = await request.put(`/Player/1/equip-skin`, {
-      playerId: 1,
+    const response = await request.put(`/Player/${playerId}/equip-skin`, {
+      playerId: playerId,
       skinId: id,
     })
 
@@ -270,7 +273,7 @@ const goBack = () => {
             {{ showUnownedSkins ? '隱藏未擁有造型' : '顯示未擁有造型' }}
           </span>
         </button>
-        <div class="currency-box">🪙 {{ formatNumber(userPoints) }}</div>
+        <div class="currency-box"><Icon icon="bi:coin" /> {{ formatNumber(userPoints) }}</div>
       </div>
     </div>
 

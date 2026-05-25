@@ -6,13 +6,14 @@ import { animate, stagger } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
+import { Icon } from '@iconify/vue'
 
 const { playSFX } = useGameAudio()
 
 const userPoints = ref(0)
 const router = useRouter()
 const route = useRoute()
-
+const isServerConnected = ref(false)
 // 千位數格式化函數
 const formatNumber = (num) => {
   if (num === null || num === undefined) return '0'
@@ -134,39 +135,33 @@ const generateLevelLayout = (startId) => {
     // 🎯 3. 嚴格鎖定邏輯
     let isLocked = true 
 
-    if (levelId === startId) {
-      // 🥇 每個區域的第一關預設解鎖（或是整個遊戲的第一關 Id === 1 永遠解鎖）
-      if (levelId === 1) {
+    if (levelId === 1) {
+      isLocked = false // 第一關永遠開放
+    } else if (levelId === startId) {
+      // 跨大區的第一關（如 11、21）
+      const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
+      if (prevLevelRecord && prevLevelRecord.stageClear === true) {
         isLocked = false
-      } else {
-        // 如果是其他大區的第一關（如 11 關、21 關），看前一關（10關、20關）有沒有通關
-        const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
-        if (prevLevelRecord && prevLevelRecord.stageClear === true) {
-          isLocked = false
-        }
       }
     } else {
-      // 🌐 【後端進度比對線】：嚴格的卡關條件判定
-      if (apiGameHistory.value && apiGameHistory.value.length > 0) {
-        // 條件 A：如果前一關在資料庫裡有紀錄，而且「必須通關成功」(stageClear === true)
+      // 🎯 核心修正點：如果後端成功連線（不論有沒有資料，只要沒斷網）
+      if (isServerConnected.value) {
         const prevLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId - 1)
         const isPrevCleared = prevLevelRecord && prevLevelRecord.stageClear === true
 
-        // 條件 B：這關本身在資料庫裡，已經是有通過的狀態
         const thisLevelRecord = apiGameHistory.value.find(h => h.gameId === levelId)
         const isThisCleared = thisLevelRecord && thisLevelRecord.stageClear === true
 
-        // 只有前一關通過了，或者這關本身就是已通關狀態，才解鎖鎖頭
         if (isPrevCleared || isThisCleared) {
           isLocked = false
         }
       } else {
-        // 【離線本地防線】
+        // 只有在完全斷網、沒連上伺服器時，才允許走這條本地離線防線
         if (levelId === 2) {
           if (progress['level_2_unlocked'] === true) isLocked = false
         } else {
           const prevLevelData = progress[`level_${levelId - 1}`]
-          if (prevLevelData && progress[`level_${levelId}_unlocked`]) isLocked = false
+          if (prevLevelData && progress[`level_${levelId}_unlocked`] === true) isLocked = false
         }
       }
     }
@@ -298,14 +293,15 @@ const updateAreaContent = async () => {
   
   try {
     // A. 撲取通關歷史紀錄 - 【修改】使用動態 PlayerId
-    const historyRes = await request.get(`https://localhost:7048/api/Player/${playerId}/game-history`)
+    const historyRes = await request.get(`/Player/${playerId}/game-history`)
     if (historyRes.data && historyRes.data.success) {
       apiGameHistory.value = historyRes.data.data
+      isServerConnected.value = true;
       console.log('✅ 通關歷史已加載:', apiGameHistory.value.length, '筆')
     }
 
     // B. 精準撲取玩家資料 - 【修改】使用動態 PlayerId
-    const playerRes = await request.get(`https://localhost:7048/api/Player/${playerId}`)
+    const playerRes = await request.get(`/Player/${playerId}`)
     if (playerRes.data && playerRes.data.success) {
       const playerData = playerRes.data.data
       userPoints.value = playerData.currentPoint ?? 0
@@ -315,6 +311,7 @@ const updateAreaContent = async () => {
     console.error('❌ 後端連線失敗，切換為本地安全模式:', error)
     // 斷網時的備用防禦點數，避免顯示 0 嚇到玩家
     if (userPoints.value === 0) userPoints.value = 1200 
+    isServerConnected.value = false;
   }
 
   // 渲染地圖數據
@@ -497,7 +494,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
           Lv. {{ areas[currentAreaIndex].idRange[0] }} - {{ areas[currentAreaIndex].idRange[1] }}
         </p>
       </div>
-      <div class="currency-box">🪙 {{ formatNumber(userPoints) }}</div>
+      <div class="currency-box"><Icon icon="bi:coin" /> {{ formatNumber(userPoints) }}</div>
     </header>
 
     <div v-if="showMenu" class="menu-dropdown">

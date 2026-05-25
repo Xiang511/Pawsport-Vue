@@ -82,32 +82,32 @@ import { Dog } from 'lucide-vue-next'
           <div class="flex gap-1">
             <Dog size="48" class="mt-0.5 inline align-middle" />
             <div class="leading-snug">
-              <span class="mt-2 ml-3 block text-2xl font-extrabold">Petmily 寵物媒合平台</span>
+              <span class="mt-2 ml-3 block text-2xl font-extrabold">PETMILY 寵物媒合平台</span>
             </div>
           </div>
 
           <div class="">
-            <p class="mt-8 mb-8 inline-block bg-[#434343] px-2 py-1 text-sm tracking-widest">
+            <p class="mt-8 mb-8 inline-block bg-[#434343] px-2 py-1 text-[14px] tracking-widest">
               我想給所有寵物一個溫暖又幸福的家
             </p>
             <div class="flex items-center">
               <p class="mr-6 text-sm font-bold tracking-widest">官方帳號</p>
-              <ul class="flex justify-evenly gap-4">
-                <li class="icon inline-block">
+              <ul class="flex justify-evenly gap-4 ">
+                <li class="icon inline-block hover:bg-[#434343]">
                   <a href="#">
                     <span>
                       <Instagram size="20" />
                     </span>
                   </a>
                 </li>
-                <li class="icon inline-block">
+                <li class="icon inline-block hover:bg-[#434343]">
                   <a href="#">
                     <span>
                       <Mail size="20" />
                     </span>
                   </a>
                 </li>
-                <li class="icon inline-block">
+                <li class="icon inline-block hover:bg-[#434343]">
                   <a href="#">
                     <span>
                       <Rss size="20" />
@@ -190,29 +190,31 @@ import { Dog } from 'lucide-vue-next'
             <div class="mt-6 w-1/5">
               <span>• 客服</span>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-4">常見問題</li>
+                <li class="mt-4">常見問答</li>
                 <li class="mt-4">聯絡我們</li>
-                <li class="mt-4">電子報訂閱</li>
+                <li class="mt-4">寵物專欄</li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div class="my-6 w-4/12 xl:w-3/12">
-          <div>
-            <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block">
-              高雄市動物保護處
-            </a>
-            <a
-              href="https://www.pet.gov.tw/AnimalApp/AnnounceMent_Announce.aspx"
-              class="mx-4 inline-block">
-              全國動物收容系統
-            </a>
-            <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block">動物保護資訊網</a>
+        <div class="w-[83%] mx-auto flex justify-between">
+          <div class="inline-block my-6 w-4/12 xl:w-auto">
+            <div>
+              <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block">
+                高雄市動物保護處
+              </a>
+              <a
+                href="https://www.pet.gov.tw/AnimalApp/AnnounceMent_Announce.aspx"
+                class="mx-4 inline-block">
+                全國動物收容系統
+              </a>
+              <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block">動物保護資訊網</a>
+            </div>
           </div>
-        </div>
-        <div class="my-6 w-8/12 xl:w-7/12">
-          <p class="text-right text-sm text-[#8a8a8a]">Copyright © 2026 Petmily.</p>
+          <div class="inline-block my-6 w-8/12 xl:w-8/12">
+            <p class="text-right text-sm text-[#8a8a8a]">Copyright © 2026 PETMILY.</p>
+          </div>
         </div>
       </div>
     </div>

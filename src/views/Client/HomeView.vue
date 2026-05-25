@@ -199,7 +199,7 @@ const mockArticles = [
     views: 3120,
     likes: 912,
     image:
-      'https://images.unsplash.com/photo-1589722748805-d14fb9ba0c4a?auto=format&fit=crop&q=80&w=300',
+      'https://images.unsplash.com/photo-1608408891486-f5cade977d19?auto=format&fit=crop&q=80&w=300',
   },
   {
     id: 4,
@@ -305,7 +305,7 @@ onMounted(() => {
   <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased">
     <!-- HERO SECTION -->
     <header
-      class="hero-container relative overflow-hidden border-b-4 border-[#445944] bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
+      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -333,14 +333,14 @@ onMounted(() => {
         <!-- Hero Left Info -->
         <div class="hero-left flex flex-col justify-center lg:col-span-6">
           <div
-            class="font-fredoka mb-6 inline-flex w-max items-center gap-2 rounded-full bg-[#9C6D6D] px-4 py-1.5 text-sm font-semibold tracking-wider text-white shadow-sm">
+            class="font-fredoka mb-6 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-sm font-semibold tracking-wider text-white shadow-sm">
             <Sparkles :size="16" class="animate-spin-slow" />
             WELCOME TO PETMILY
           </div>
           <h1 class="mb-6 text-4xl leading-tight font-black text-[#445944] md:text-5xl lg:text-6xl">
-            為愛啟航，與命定的
+            為愛啓航，與命定的
             <br class="hidden md:block" />
-            <span class="relative z-10 inline-block px-2 text-[#9C6D6D]">
+            <span class="relative z-10 inline-block px-2 text-[#7a6856]">
               毛茸夥伴
               <span
                 class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-5"></span>
@@ -354,14 +354,14 @@ onMounted(() => {
           <div class="flex flex-col gap-4 sm:flex-row">
             <router-link
               to="/adopt"
-              class="group flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-[#445944] px-8 py-4 text-lg font-bold text-white shadow-[4px_4px_0px_#000] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0px_#000]">
+              class="group flex items-center justify-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-8 py-4 text-lg font-bold text-white transition-all hover:translate-x-[3px] hover:translate-y-[3px]">
               <Dog :size="22" class="group-hover:bounce" />
               立即探索領養
-              <ArrowRight :size="18" class="transition-transform group-hover:translate-x-1" />
+              <!-- <ArrowRight :size="18" class="transition-transform group-hover:translate-x-1" /> -->
             </router-link>
             <router-link
               to="/community-home"
-              class="flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-white px-8 py-4 text-lg font-bold text-[#445944] shadow-[4px_4px_0px_#000] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-gray-50 hover:shadow-[1px_1px_0px_#000]">
+              class="flex items-center justify-center gap-2 rounded-2xl border-2 border-[#445944] bg-white px-8 py-4 text-lg font-bold text-[#445944] transition-all hover:translate-x-[3px] hover:translate-y-[3px]">
               <MessageCircle :size="20" />
               前往社群交流
             </router-link>
@@ -371,7 +371,7 @@ onMounted(() => {
         <!-- Hero Right Carousel -->
         <div class="hero-right lg:col-span-6">
           <div
-            class="relative rounded-3xl border-4 border-black bg-white p-4 shadow-[8px_8px_0px_#445944]">
+            class="relative rounded-3xl border-4 border-[#445944] bg-white p-4 shadow-[8px_8px_0px_#445944]">
             <!-- Decorative badge -->
             <!-- <div class="absolute -top-6 -right-6 bg-[#f2d44d] border-2 border-black text-black font-black px-4 py-2 rounded-xl rotate-12 z-20 shadow-md flex items-center gap-1 font-fredoka text-sm">
               <Award :size="16" />
@@ -405,7 +405,7 @@ onMounted(() => {
     </header>
 
     <!-- CORE FEATURES SECTION -->
-    <section class="border-b-4 border-[#445944] bg-[#F7F3F1] py-20">
+    <section class=" bg-[#FCF4E5] py-20">
       <div class="mx-auto w-[90%] max-w-7xl">
         <div class="mx-auto mb-16 max-w-2xl text-center">
           <h2 class="mb-4 text-3xl font-black text-[#445944] md:text-4xl">
@@ -419,10 +419,10 @@ onMounted(() => {
         <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
           <!-- CARD 1: 領養狗狗 -->
           <div
-            class="card-feature group rounded-3xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="rounded-2xl border-2 border-black bg-[#9C6D6D]/15 p-3 text-[#9C6D6D]">
+                <div class="rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-[#445944]">
                   <Dog :size="28" />
                 </div>
                 <div>
@@ -432,7 +432,7 @@ onMounted(() => {
               </div>
               <router-link
                 to="/adopt"
-                class="flex items-center gap-1 text-sm font-bold text-[#9C6D6D] hover:underline">
+                class="flex items-center gap-1 text-sm font-bold text-[#445944] hover:underline">
                 查看全部
                 <ChevronRight :size="16" />
               </router-link>
@@ -443,15 +443,15 @@ onMounted(() => {
               <div
                 v-for="pet in adoptionPets.slice(0, 2)"
                 :key="pet.id"
-                class="sub-pet-card overflow-hidden rounded-2xl border-2 border-black bg-[#FDF9F3] transition-transform hover:scale-[1.02]">
+                class="sub-pet-card overflow-hidden rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] transition-transform hover:scale-[1.02]">
                 <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   <img :src="pet.imageUrl" :alt="pet.name" class="h-full w-full object-cover" />
                   <span
-                    class="absolute top-2 left-2 rounded-full border border-black bg-[#9C6D6D] px-2 py-0.5 text-[10px] font-bold text-white">
+                    class="absolute top-2 left-2 rounded-full bg-[#9C6D6D] px-2 py-0.5 text-[10px] font-bold text-white">
                     {{ pet.nickname }}
                   </span>
                 </div>
-                <div class="p-3">
+                <div class="p-3 bg-[#FCF4E5]">
                   <div class="mb-1 flex items-center justify-between">
                     <h4 class="truncate text-base font-bold">{{ pet.name }}</h4>
                     <!-- Custom Inline SVG for Gender -->
@@ -493,12 +493,12 @@ onMounted(() => {
             <div class="flex gap-3">
               <router-link
                 to="/adopt"
-                class="flex-1 rounded-xl border-2 border-black bg-[#FAE4AE] py-3 text-center text-sm font-bold text-black shadow-[2px_2px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]">
+                class="flex-1 rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 🐾 給牠一個溫暖的家
               </router-link>
               <router-link
                 to="/adopt/create"
-                class="rounded-xl border-2 border-black bg-white px-4 py-3 text-center text-sm font-bold text-gray-700 transition-all hover:bg-gray-50">
+                class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center text-theme-lg font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 刊登送養
               </router-link>
             </div>
@@ -506,11 +506,11 @@ onMounted(() => {
 
           <!-- CARD 2: 健康護照 (Pawsport) -->
           <div
-            class="card-feature group rounded-3xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group rounded-3xl border-4 border-brand-success-950 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
-                  class="text-brand-info-800 rounded-2xl border-2 border-black bg-[#83aeba]/15 p-3">
+                  class="text-brand-success-950 rounded-2xl border-2 border-brand-success-950 bg-[#FCF4E5] p-3">
                   <Activity :size="28" />
                 </div>
                 <div>
@@ -520,18 +520,18 @@ onMounted(() => {
               </div>
               <router-link
                 to="/healthpassport"
-                class="flex items-center gap-1 text-sm font-bold text-[#83aeba] hover:underline">
+                class="flex items-center gap-1 text-sm font-bold text-[#445944] hover:underline">
                 開啟護照
                 <ChevronRight :size="16" />
               </router-link>
             </div>
 
             <!-- Inside Pawsport Card: Weight Tracker Chart Simulator & Vaccines -->
-            <div class="mb-6 rounded-2xl border-2 border-black bg-[#F8F9FA] p-4">
+            <div class="mb-6 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4">
               <div class="mb-3 flex items-center justify-between">
                 <span class="text-xs font-black text-gray-500">愛寵體重追蹤曲線 (kg)</span>
                 <span
-                  class="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                  class="rounded-full bg-brand-success-500 px-2 py-0.5 text-[10px] font-bold text-white">
                   狀態良好
                 </span>
               </div>
@@ -591,18 +591,18 @@ onMounted(() => {
 
             <router-link
               to="/healthpassport"
-              class="block w-full rounded-xl border-2 border-black bg-[#83aeba] py-3 text-center text-sm font-bold text-white shadow-[2px_2px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#6d919a] hover:shadow-[1px_1px_0px_#000]">
+              class="block w-full rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
               📊 開啟專屬健康檔案
             </router-link>
           </div>
 
           <!-- CARD 3: 遺失協尋 (Missing Report) -->
           <div
-            class="card-feature group rounded-3xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group rounded-3xl border-4 border-brand-success-950 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
-                  class="animate-pulse-slow rounded-2xl border-2 border-black bg-[#f58a72]/15 p-3 text-[#f58a72]">
+                  class="animate-pulse-slow rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-[#445944]">
                   <AlertTriangle :size="28" />
                 </div>
                 <div>
@@ -616,7 +616,7 @@ onMounted(() => {
               </div>
               <router-link
                 to="/missingreport"
-                class="flex items-center gap-1 text-sm font-bold text-[#f58a72] hover:underline">
+                class="flex items-center gap-1 text-sm font-bold text-[#445944] hover:underline">
                 查看協尋
                 <ChevronRight :size="16" />
               </router-link>
@@ -627,8 +627,8 @@ onMounted(() => {
               <div
                 v-for="pet in missingPets"
                 :key="pet.id"
-                class="relative flex items-center gap-4 rounded-2xl border-2 border-[#f58a72] bg-[#FFF5F2] p-3">
-                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-black">
+                class="relative flex items-center gap-4 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3">
+                <div class="h-22 w-22 shrink-0 overflow-hidden rounded-xl border-2 border-[#445944]">
                   <img :src="pet.photo" :alt="pet.breed" class="h-full w-full object-cover" />
                 </div>
                 <div class="min-w-0 flex-1">
@@ -656,12 +656,12 @@ onMounted(() => {
             <div class="flex gap-3">
               <router-link
                 to="/missingreport"
-                class="flex-1 rounded-xl border-2 border-black bg-[#f58a72] py-3 text-center text-sm font-bold text-white shadow-[2px_2px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#d92d20] hover:shadow-[1px_1px_0px_#000]">
+                class="flex-1 rounded-xl bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 🚨 我有協尋線索
               </router-link>
               <router-link
                 to="/missingreport/create"
-                class="rounded-xl border-2 border-black bg-white px-4 py-3 text-center text-sm font-bold text-gray-700 transition-all hover:bg-gray-50">
+                class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center text-theme-lg font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 刊登協尋啟事
               </router-link>
             </div>
@@ -669,11 +669,11 @@ onMounted(() => {
 
           <!-- CARD 4: 知識問答挑戰 (Trivia Quiz) -->
           <div
-            class="card-feature group rounded-3xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
-                  class="text-brand-warning-800 rounded-2xl border-2 border-black bg-[#f2d44d]/15 p-3">
+                  class="text-[#445944] rounded-2xl border-2 border-[#445944] bg-[#f2d44d]/15 p-3">
                   <Award :size="28" />
                 </div>
                 <div>
@@ -683,14 +683,14 @@ onMounted(() => {
               </div>
               <router-link
                 to="/game"
-                class="text-brand-warning-900 flex items-center gap-1 text-sm font-bold hover:underline">
+                class="text-brand-success-900 flex items-center gap-1 text-sm font-bold hover:underline">
                 進入遊戲
                 <ChevronRight :size="16" />
               </router-link>
             </div>
 
             <!-- Quiz preview interactive box -->
-            <div class="mb-6 rounded-2xl border-2 border-black bg-[#FCF9EE] p-4">
+            <div class="mb-6 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4">
               <div class="mb-3 flex items-center justify-between">
                 <span
                   class="rounded-full bg-[#FAE4AE] px-2 py-0.5 text-xs font-bold text-amber-800">
@@ -757,7 +757,7 @@ onMounted(() => {
 
             <router-link
               to="/game"
-              class="block w-full rounded-xl border-2 border-black bg-[#f2d44d] py-3 text-center text-sm font-bold text-black shadow-[2px_2px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#e6c43c] hover:shadow-[1px_1px_0px_#000]">
+              class="block w-full rounded-xl bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
               🎮 開始寵物問答挑戰
             </router-link>
           </div>
@@ -766,11 +766,11 @@ onMounted(() => {
     </section>
 
     <!-- SUCCESS STORIES SECTION -->
-    <section class="border-b-4 border-[#445944] bg-white py-20">
+    <section class=" bg-[#FCF4E5] py-20">
       <div class="mx-auto w-[90%] max-w-7xl">
         <div class="mx-auto mb-16 max-w-2xl text-center">
           <span
-            class="mb-3 inline-block rounded-full bg-[#FAE4AE] px-3 py-1 text-xs font-extrabold tracking-wider text-amber-900">
+            class="mb-3 inline-block rounded-full bg-[#7a6856] px-3 py-1 text-xs font-extrabold tracking-wider text-white">
             HAPPY ADOPTION STORIES
           </span>
           <h2 class="mb-4 text-3xl font-black text-[#445944] md:text-4xl">幸福見證，溫馨相遇</h2>
@@ -783,13 +783,13 @@ onMounted(() => {
           <div
             v-for="story in mockSuccessStories"
             :key="story.id"
-            class="story-card overflow-hidden rounded-3xl border-4 border-black bg-white shadow-[4px_4px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#000]">
+            class="story-card overflow-hidden rounded-3xl border-4 border-[#7a6856] bg-white shadow-[4px_4px_0px_#7a6856] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#7a6856]">
             <!-- Hero Top Overlay Image -->
-            <div class="relative h-48 overflow-hidden border-b-2 border-black bg-gray-50">
+            <div class="relative h-48 overflow-hidden border-b-2 border-[#7a6856] bg-gray-50">
               <img :src="story.familyPhoto" :alt="story.title" class="h-full w-full object-cover" />
               <!-- Small pet inset avatar -->
               <div
-                class="absolute right-3 bottom-3 h-16 w-16 overflow-hidden rounded-full border-2 border-black shadow-md">
+                class="absolute right-3 bottom-3 h-16 w-16 overflow-hidden rounded-full border-2 border-[#7a6856] shadow-md">
                 <img
                   :src="story.petPhoto"
                   :alt="story.petName"
@@ -807,7 +807,7 @@ onMounted(() => {
                   {{ story.petName }}
                 </span>
               </div>
-              <h3 class="mb-3 text-lg font-black text-gray-800">{{ story.title }}</h3>
+              <h3 class="mb-3 text-lg font-black text-[#7a6856]">{{ story.title }}</h3>
               <p class="text-xs leading-relaxed font-medium text-gray-600 italic md:text-sm">
                 {{ story.quote }}
               </p>
@@ -818,19 +818,19 @@ onMounted(() => {
     </section>
 
     <!-- COMMUNITY SPOTLIGHTS SECTION -->
-    <section class="bg-[#FCF4E5]/40 py-20">
+    <section class="bg-[#FCF4E5] py-20">
       <div class="mx-auto w-[90%] max-w-7xl">
         <div class="mb-12 flex flex-col justify-between md:flex-row md:items-end">
           <div>
             <span
-              class="mb-3 inline-block rounded-full bg-[#9C6D6D]/15 px-3 py-1 text-xs font-extrabold tracking-wider text-[#9C6D6D]">
+              class="mb-3 inline-block rounded-full bg-[#7a6856] px-3 py-1 text-xs font-extrabold tracking-wider text-[#FCF4E5]">
               COMMUNITY TOPICS
             </span>
             <h2 class="text-3xl font-black text-[#445944] md:text-4xl">社群熱門話題 & 交流</h2>
           </div>
           <router-link
             to="/community-home"
-            class="mt-4 flex items-center gap-1 text-sm font-bold text-[#9C6D6D] hover:underline md:mt-0">
+            class="mt-4 flex items-center gap-1 text-sm font-bold text-[#7a6856] hover:underline md:mt-0">
             前往社群專區
             <ChevronRight :size="16" />
           </router-link>
@@ -841,10 +841,10 @@ onMounted(() => {
             v-for="article in mockArticles"
             :key="article.id"
             @click="router.push({ name: 'article-detail' })"
-            class="group cursor-pointer overflow-hidden rounded-2xl border-2 border-black bg-white shadow-sm transition-shadow hover:shadow-md">
+            class="group cursor-pointer overflow-hidden rounded-2xl border-2 border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-shadow hover:border-[#7a6856] hover:shadow-[#7a6856]">
             <div class="relative h-44 overflow-hidden bg-gray-100">
               <span
-                class="absolute top-3 left-3 z-10 rounded-full border border-black bg-white/90 px-2.5 py-1 text-[10px] font-bold text-[#445944]">
+                class="absolute top-3 left-3 z-10 rounded-full border border-[#445944] bg-[#FCF4E5] px-2.5 py-1 text-[10px] font-bold text-[#445944]">
                 {{ article.categoryname }}
               </span>
               <img
@@ -854,7 +854,7 @@ onMounted(() => {
             </div>
             <div class="p-5">
               <h3
-                class="mb-2 line-clamp-1 text-base font-extrabold text-gray-800 transition-colors group-hover:text-[#9C6D6D] md:text-lg">
+                class="mb-2 line-clamp-1 text-base font-extrabold text-[#445944] transition-colors group-hover:text-[#7a6856] md:text-lg">
                 {{ article.title }}
               </h3>
               <p class="mb-4 line-clamp-2 text-xs leading-relaxed text-gray-500">
@@ -865,10 +865,10 @@ onMounted(() => {
               <div class="flex items-center justify-between border-t border-gray-100 pt-3">
                 <div class="flex items-center gap-2">
                   <div
-                    class="flex h-6 w-6 items-center justify-center rounded-full border border-black bg-[#FAE4AE] text-[10px] font-bold">
+                    class="flex h-6 w-6 items-center justify-center rounded-full border border-[#445944] bg-[#FAE4AE] text-[10px] font-bold">
                     {{ article.author[0] }}
                   </div>
-                  <span class="text-xs font-bold text-gray-600">{{ article.author }}</span>
+                  <span class="text-xs font-bold text-[#445944]">{{ article.author }}</span>
                 </div>
                 <div class="flex items-center gap-3 text-gray-400">
                   <span class="flex items-center gap-0.5 text-[10px]">
@@ -914,7 +914,7 @@ onMounted(() => {
             class="flex-1 rounded-xl border-2 border-black px-5 py-4 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#FAE4AE] focus:outline-none" />
           <router-link
             to="/enewsletter"
-            class="rounded-xl border-2 border-black bg-[#FAE4AE] px-6 py-4 font-extrabold text-black shadow-[3px_3px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]">
+            class="rounded-xl border-2 border-black bg-[#FAE4AE] px-6 py-4 font-extrabold text-black shadow-[3px_3px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#000]">
             立即訂閱
           </router-link>
         </div>
@@ -950,7 +950,7 @@ onMounted(() => {
   height: 10px;
   border-radius: 9999px;
   transition: all 0.2s ease;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 
 :deep(.custom-hero-pagination .swiper-pagination-bullet-active) {

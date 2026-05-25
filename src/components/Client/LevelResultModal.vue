@@ -3,6 +3,8 @@ import { computed, watch, nextTick } from 'vue'
 import { animate } from 'animejs'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
+import { Icon } from '@iconify/vue'
+
 
 
 // 接收外部傳進來的參數
@@ -187,7 +189,7 @@ const playModalAnimations = () => {
           </div>
           <div class="stat-line">
             <span class="stat-label">獲得獎勵</span>
-            <span class="stat-value points-val">🪙 {{ bonusPoints }}</span>
+            <span class="stat-value points-val"><Icon icon="bi:coin" /> {{ bonusPoints }}</span>
           </div>
         </div>
 
@@ -317,6 +319,7 @@ const playModalAnimations = () => {
 .stat-line {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 8px 0;
   font-size: 1.25rem;
   font-weight: 800;
@@ -328,6 +331,9 @@ const playModalAnimations = () => {
 }
 
 .points-val {
+  display: flex;         /* 關鍵：讓內部的 Icon 和數字水平並排 */
+  align-items: center;   /* 關鍵：讓 Icon 和數字垂直置中對齊 */
+  gap: 6px;              /* Icon 和數字之間的水平間距，可依喜好調整 */
   color: #e4987e; /* 主橘色 */
 }
 

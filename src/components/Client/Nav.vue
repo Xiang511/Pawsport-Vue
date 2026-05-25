@@ -72,9 +72,9 @@ onUnmounted(() => {
         <div class="relative flex items-center justify-between gap-4">
           <div class="hidden gap-4 md:flex">
             <Instagram
-              class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
+              class="inline h-5 w-5 cursor-pointer text-[#445944] duration-300 hover:opacity-40 md:h-8 md:w-8" />
             <TwitterIcon
-              class="inline h-5 w-5 cursor-pointer text-black duration-300 hover:opacity-40 md:h-8 md:w-8" />
+              class="inline h-5 w-5 cursor-pointer text-[#445944] duration-300 hover:opacity-40 md:h-8 md:w-8" />
           </div>
           <div class="flex">
             <router-link
@@ -89,22 +89,22 @@ onUnmounted(() => {
             <SearchBarAlgolia />
 
             <router-link v-if="!authStore.isLoggedIn" to="/login" cursor-pointer title="登入">
-              <log-in class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8" />
+              <log-in class="inline h-5 w-5 cursor-pointer text-[#445944] md:h-8 md:w-8" />
             </router-link>
             <router-link v-else to="/user/profile" cursor-pointer title="個人資料">
-              <User class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8" />
+              <User class="inline h-5 w-5 cursor-pointer text-[#445944] md:h-8 md:w-8" />
             </router-link>
 
             <Transition name="menu-icon" mode="out-in">
               <MenuIcon
                 v-if="!isMenuOpen"
                 key="menu"
-                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-[#445944] md:h-8 md:w-8"
                 @click="toggleMenu" />
               <X
                 v-else
                 key="close"
-                class="inline h-5 w-5 cursor-pointer text-black md:h-8 md:w-8"
+                class="inline h-5 w-5 cursor-pointer text-[#445944] md:h-8 md:w-8"
                 @click="toggleMenu" />
             </Transition>
           </div>
@@ -237,7 +237,7 @@ onUnmounted(() => {
                         :to="{ name: 'Client-faq' }"
                         @click="toggleMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
-                        常見問題
+                        常見問答
                       </router-link>
                       <router-link
                         :to="{ name: 'Client-qa' }"
@@ -249,7 +249,7 @@ onUnmounted(() => {
                         :to="{ name: 'Client-enewsletter' }"
                         @click="toggleMenu"
                         class="block rounded-lg bg-white p-4 text-lg font-medium tracking-widest transition-all hover:shadow-md">
-                        電子報
+                        寵物專欄
                       </router-link>
                     </div>
                   </div>

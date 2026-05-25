@@ -6,6 +6,7 @@ import { usePlayerStore } from '@/stores/usePlayerStore'
 import { animate } from 'animejs'
 import { Eye, EyeOff, Coins, CoinsIcon } from 'lucide-vue-next'
 import request from '@/api/axios'
+import { Icon } from '@iconify/vue'
 
 
 const { playSFX } = useGameAudio()
@@ -315,7 +316,7 @@ const goBack = () => {
                 {{ showOwnedSkins ? '隱藏已擁有造型' : '顯示已擁有造型' }}
               </span>
             </button>
-      <div class="currency-box">🪙 {{ formatNumber(displayPoints) }}</div>
+      <div class="currency-box"><Icon icon="bi:coin" /> {{ formatNumber(displayPoints) }}</div>
       </div>
     </div>
 
@@ -399,8 +400,8 @@ const goBack = () => {
                 <img :src="item.imgUrl" alt="product" class="product-real-img" />
               </div>
 
-              <div class="product-price-row">
-                <div class="product-price">🪙{{ item.price }}</div>
+              <div class="product-price-box">
+                <div class="product-price"><Icon icon="bi:coin" /> {{ item.price }}</div>
               </div>
             </div>
           </div>
@@ -474,6 +475,15 @@ const goBack = () => {
 </template>
 
 <style scoped>
+.product-price {
+  display: flex;         /* 關鍵：讓內部的 Icon 和文字水平並排 */
+  align-items: center;   /* 關鍵：讓 Icon 和文字在高度上完美的對齊置中 */
+  justify-content: center; /* 如果你想讓整個金額在 price-box 裡面置中，就加這行 */
+  gap: 6px;              /* 關鍵：設定 Icon 和文字之間的距離（可依喜好調整，例如 4px ~ 8px） */
+  
+  /* 以下為字體與顏色調整，可依你的設計調整 */  
+  font-weight: bold;
+}
 /* ===================================================
    🎨 核心樣式
    =================================================== */
