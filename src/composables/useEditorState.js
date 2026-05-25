@@ -1,8 +1,5 @@
 import { ref, reactive, watch } from 'vue'
-import axios from 'axios'
 import request from '@/api/axios'
-import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
-import Quill from 'quill'
 
 export function useEditorState(emit, quillInstanceRef) {
   const isNewArticleModalOpen = ref(false)

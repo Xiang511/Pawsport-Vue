@@ -9,6 +9,8 @@ import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
 import { useArticleActions } from '@/composables/useArticleActions'
 import { useCategories } from '@/composables/useCategories'
 
+import { useAuthStore } from '@/stores/auth'
+
 const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
 const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle } = useArticleActions()
 
@@ -16,6 +18,8 @@ const router = useRouter()
 const articleEditorRef = ref(null)
 const articleId = ref(null)
 const toastRef = ref(null)
+
+const authStore = useAuthStore()
 
 // 發布貼文 (Status = 1)
 const handlePublish = async (postData) => {
@@ -100,8 +104,13 @@ const handleResetArticleId = () => {
 }
 
 onMounted(async () => {
+  if (!authStore.isLoggedIn) {
+    toastRef.value?.trigger('請先登入')
+    router.push('/login')
+    return
+  }
+
   try {
-    // 使用 Promise.all 讓兩個 API 同時發送，速度更快
     await Promise.all([fetchCategories(), fetchDrafts()])
   } catch (error) {
     console.error('初始化資料失敗：', error)

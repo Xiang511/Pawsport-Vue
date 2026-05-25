@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-// 💡 1. 引入你指定的 Lucide 經典圖標
 import {
   Heart,
   ChevronUp,
@@ -12,7 +11,6 @@ import {
   Eye,
   Calendar,
 } from 'lucide-vue-next'
-// 💡 2. 引入你專案實際的 axios 實例
 import request from '@/api/axios'
 
 const route = useRoute()
@@ -29,7 +27,7 @@ const fetchArticleDetail = async () => {
 
   try {
     const articleId = route.params.id
-    // 💡 對應你的 UserController 路由
+    // 對應你的 UserController 路由
     const response = await request.get(`/Users/articles/${articleId}`)
 
     // 對接 C# Success 封裝的雙層 .data
@@ -43,7 +41,7 @@ const fetchArticleDetail = async () => {
 }
 
 const goBack = () => {
-  router.push({ name: 'community-home' }) // 💡 依你首頁路由名稱微調
+  router.push({ name: 'community-home' })
 }
 
 onMounted(() => {
