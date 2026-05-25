@@ -3,9 +3,11 @@ import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import request from '@/api/axios'
 import { Undo2 } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const passportId = parseInt(route.query.passportId) || null
 
@@ -29,7 +31,15 @@ const submitForm = async () => {
 
   submitting.value = true
   try {
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+    if (!userId) {
+      alert('請先登入後再進行操作')
+      submitting.value = false
+      return
+    }
+
     await request.post('/users/pet/passport/unified', {
+      userId: userId,
       detailType: 'weight',
       passportId: passportId,
       weight: parseFloat(form.weight),
