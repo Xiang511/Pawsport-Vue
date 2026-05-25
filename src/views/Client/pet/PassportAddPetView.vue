@@ -2,7 +2,7 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import request from '@/api/axios'
-import { Undo2, Camera } from 'lucide-vue-next'
+import { Undo2, Camera, Sparkles } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -93,139 +93,174 @@ const closePage = () => {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-[#F7F3F1] px-6 py-8">
-    <!-- 頁首導航 -->
-    <div class="relative mb-8 flex items-center justify-center">
-      <h1 class="text-xl font-bold text-gray-700">建立毛孩健康護照</h1>
-      <button @click="closePage" class="absolute right-0 text-gray-400 hover:text-gray-600 transition">
-        <Undo2 class="h-6 w-6" />
-      </button>
-    </div>
-
-    <!-- 表單卡片 -->
-    <div class="mx-auto max-w-xl space-y-6 rounded-2xl bg-white p-6 shadow-sm">
-      <!-- 寵物頭像上傳 -->
-      <div class="flex flex-col items-center justify-center py-4">
-        <div class="relative h-28 w-28 overflow-hidden rounded-full border-4 border-[#F7F3F1] bg-gray-100 shadow-md">
-          <img :src="form.photo || 'default_pet.jpg'" class="h-full w-full object-cover" />
-          <label class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
-            <Camera class="h-6 w-6 mb-1" />
-            <span class="text-xs">上傳相片</span>
-            <input type="file" @change="handleImageUpload" class="hidden" accept="image/*" />
-          </label>
-        </div>
-        <button v-if="form.photo" @click="removeImage" type="button" class="mt-2 text-xs text-red-500 hover:underline">
-          移除照片
-        </button>
-        <p class="mt-2 text-xs text-gray-400">建議上傳毛孩清楚的面部照片 (限 2MB)</p>
-      </div>
-
-      <!-- 寵物姓名 -->
-      <div>
-        <label class="mb-2 block font-bold text-[#9C6D6D]">
-          寵物姓名
-          <span class="text-red-500">*</span>
-        </label>
-        <input
-          v-model="form.name"
-          type="text"
-          placeholder="請輸入毛孩名字"
-          required
-          class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition" />
-      </div>
-
-      <!-- 出生日期 -->
-      <div>
-        <label class="mb-2 block font-bold text-[#9C6D6D]">出生日期</label>
-        <input
-          v-model="form.birthDate"
-          type="date"
-          class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition" />
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <!-- 寵物性別 -->
-        <div>
-          <label class="mb-2 block font-bold text-gray-500">毛孩性別</label>
-          <select
-            v-model="form.gender"
-            class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition">
-            <option value="公">公</option>
-            <option value="母">母</option>
-            <option value="未知">未知</option>
-          </select>
+  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka px-4 py-8">
+    <div class="mx-auto max-w-xl mt-6">
+      
+      <!-- MAIN CONTAINER CARD -->
+      <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
+        
+        <!-- HEADER ROW -->
+        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
+          <button
+            @click="closePage"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            <Undo2 class="h-5 w-5" />
+          </button>
+          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
+            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+            建立毛孩健康護照
+          </h1>
+          <div class="w-10"></div>
         </div>
 
-        <!-- 絕育狀況 -->
-        <div>
-          <label class="mb-2 block font-bold text-gray-500">絕育狀況</label>
-          <select
-            v-model="form.isDesex"
-            class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition">
-            <option :value="true">已絕育</option>
-            <option :value="false">未絕育</option>
-          </select>
+        <!-- FORM BODY -->
+        <div class="space-y-6">
+
+          <!-- 寵物頭像上傳 -->
+          <div class="flex flex-col items-center justify-center py-6 bg-[#FCF4E5] rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944] mb-4">
+            <div class="relative h-28 w-28 overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md">
+              <img :src="form.photo || 'default_pet.jpg'" class="h-full w-full object-cover" />
+              <label class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
+                <Camera class="h-6 w-6 mb-1" />
+                <span class="text-xs font-black">上傳相片</span>
+                <input type="file" @change="handleImageUpload" class="hidden" accept="image/*" />
+              </label>
+            </div>
+            
+            <button
+              v-if="form.photo"
+              @click="removeImage"
+              type="button"
+              class="mt-3 rounded-xl border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944] hover:bg-red-600 transition-colors">
+              移除照片 ✕
+            </button>
+            
+            <p class="mt-3 text-xs font-bold text-gray-500 text-center px-4">建議上傳毛孩清楚的面部照片 (限 2MB)</p>
+          </div>
+
+          <!-- 寵物姓名 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-[#445944]">
+              寵物姓名 <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="form.name"
+              type="text"
+              placeholder="請輸入毛孩名字"
+              required
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+          </div>
+
+          <!-- 出生日期 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-[#445944]">出生日期</label>
+            <input
+              v-model="form.birthDate"
+              type="date"
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+          </div>
+
+          <!-- 性別 & 絕育 -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="mb-2 block text-sm font-black text-gray-500">毛孩性別</label>
+              <select
+                v-model="form.gender"
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                <option value="公">公</option>
+                <option value="母">母</option>
+                <option value="未知">未知</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-black text-gray-500">絕育狀況</label>
+              <select
+                v-model="form.isDesex"
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                <option :value="true">已絕育</option>
+                <option :value="false">未絕育</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 目前體重 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-gray-500">
+              目前體重 <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input
+                v-model="form.weight"
+                type="number"
+                step="0.01"
+                placeholder="請輸入體重"
+                required
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              <span class="absolute top-1/2 right-4 -translate-y-1/2 font-black text-[#445944]">KG</span>
+            </div>
+          </div>
+
+          <!-- 記錄測量日期 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-gray-500">
+              記錄測量日期 <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="form.recordDate"
+              type="date"
+              required
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+          </div>
+
+          <!-- 健康狀況備註描述 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-gray-500">備註描述</label>
+            <textarea
+              v-model="form.note"
+              placeholder="請輸入此階段的常規健康描述（如：食慾正常、精神好...）"
+              rows="3"
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+          </div>
+
+          <!-- 提交按鈕 -->
+          <div class="pt-4">
+            <button
+              @click="submitForm"
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
+              完成並建立護照
+            </button>
+          </div>
         </div>
-      </div>
-
-      <!-- 目前體重 -->
-      <div>
-        <label class="mb-2 block font-bold text-gray-500">
-          目前體重
-          <span class="text-red-500">*</span>
-        </label>
-        <div class="relative">
-          <input
-            v-model="form.weight"
-            type="number"
-            step="0.01"
-            placeholder="請輸入體重"
-            required
-            class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition" />
-          <span class="absolute top-1/2 right-4 -translate-y-1/2 font-bold text-gray-400">KG</span>
-        </div>
-      </div>
-
-      <!-- 記錄測量日期 -->
-      <div>
-        <label class="mb-2 block font-bold text-gray-500">
-          記錄測量日期
-          <span class="text-red-500">*</span>
-        </label>
-        <input
-          v-model="form.recordDate"
-          type="date"
-          required
-          class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition" />
-      </div>
-
-      <!-- 健康狀況備註描述 -->
-      <div>
-        <label class="mb-2 block font-bold text-gray-500">備註描述</label>
-        <textarea
-          v-model="form.note"
-          placeholder="請輸入此階段的常規健康描述（如：食慾正常、精神好...）"
-          rows="3"
-          class="w-full resize-none rounded-xl border-gray-200 bg-gray-50/50 p-4 outline-none focus:border-[#9C6D6D] focus:ring-2 focus:ring-[#9C6D6D]/20 transition"></textarea>
-      </div>
-
-      <!-- 提交按鈕 -->
-      <div class="pt-4 pb-4">
-        <button
-          @click="submitForm"
-          class="w-full rounded-full bg-[#B59891] py-4 text-lg font-bold text-white shadow-lg transition hover:bg-[#9C6D6D]">
-          完成並建立護照
-        </button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 input[type='date']::-webkit-calendar-picker-indicator {
   display: block;
   cursor: pointer;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%239C6D6D" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23445944" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
   opacity: 1;
 }
 </style>

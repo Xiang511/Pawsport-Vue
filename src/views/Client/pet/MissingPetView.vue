@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { SquarePlus } from 'lucide-vue-next'
+import { SquarePlus, Sparkles } from 'lucide-vue-next'
 import request from '@/api/axios'
 
 // 1. 篩選狀態
@@ -77,175 +77,322 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F7F3F1] pb-20">
-    <section class="mb-8 bg-white px-6 py-10 text-center shadow-sm">
-      <h1 class="mb-2 text-3xl font-bold text-[#9C6D6D]">遺失啟事</h1>
-      <p class="text-gray-500">希望能幫助每個毛孩找到回家的路</p>
-      <div
-        class="mt-4 inline-block rounded-full bg-orange-50 px-4 py-1 text-sm font-medium text-orange-600">
-        尋獲寵物後，請記得辦理撤銷申報唷！
+  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
+    
+    <!-- HERO SECTION -->
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+      <!-- Background floating ornaments -->
+      <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
+        <svg
+          class="animate-float absolute top-8 left-10 h-20 w-20 text-[#445944]"
+          viewBox="0 0 100 100">
+          <path
+            fill="currentColor"
+            d="M30,50 C30,35 40,25 50,25 C60,25 70,35 70,50 C70,65 60,75 50,75 C40,75 30,65 30,50 Z" />
+          <circle cx="25" cy="30" r="10" fill="currentColor" />
+          <circle cx="42" cy="15" r="10" fill="currentColor" />
+          <circle cx="62" cy="15" r="10" fill="currentColor" />
+          <circle cx="78" cy="30" r="10" fill="currentColor" />
+        </svg>
+        <svg
+          class="animate-float-delayed absolute right-16 bottom-8 h-24 w-24 text-[#9C6D6D]"
+          viewBox="0 0 100 100">
+          <path
+            fill="currentColor"
+            d="M10,40 C10,30 20,20 30,20 C45,20 50,35 50,35 C50,35 55,20 70,20 C80,20 90,30 90,40 C90,65 50,85 50,85 C50,85 10,65 10,40 Z" />
+        </svg>
       </div>
-    </section>
 
-    <div class="mx-auto max-w-6xl px-4">
-      <div class="mb-8 rounded-3xl bg-white p-6 shadow-sm">
-        <div class="mb-6 flex items-center gap-2 border-b pb-4">
-          <i class="fa-solid fa-filter text-[#9C6D6D]"></i>
-          <h2 class="text-lg font-bold text-gray-700">篩選條件</h2>
+      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+        <div
+          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          <Sparkles :size="14" class="animate-spin-slow" />
+          HELP US FIND THEM
+        </div>
+        <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
+          遺失協尋
+          <span class="relative z-10 inline-block px-2 text-[#7a6856]">
+            啟事列表
+            <span
+              class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
+          </span>
+        </h1>
+        <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
+          凝聚社群力量，守護毛孩回家防線。希望能幫助每個走失的寶貝早日回到溫暖的避風港。
+        </p>
+        <div
+          class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] px-5 py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944]">
+          <span>📢</span>
+          尋獲寵物後，請記得辦理撤銷申報唷！
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <div class="mx-auto max-w-7xl w-[90%] px-4 mt-12">
+      
+      <!-- Filters Card -->
+      <div class="mb-10 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
+        <div class="mb-6 flex items-center gap-2 border-b-2 border-[#445944] pb-4">
+          <span class="text-[#445944] text-xl">🔍</span>
+          <h2 class="text-xl font-black text-[#445944]">篩選條件</h2>
         </div>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Animal Type Filter -->
           <div>
-            <label class="mb-2 block text-sm text-gray-500">動物類別</label>
-            <div class="flex gap-4">
+            <label class="mb-2 block text-sm font-black text-[#445944]">動物類別</label>
+            <div class="flex gap-2">
               <button
                 v-for="t in ['狗', '貓', '其他']"
                 :key="t"
                 @click="filters.type = t"
                 :class="
-                  filters.type === t ? 'bg-[#9C6D6D] text-white' : 'bg-gray-100 text-gray-500'
+                  filters.type === t
+                    ? 'bg-[#445944] text-white border-[#445944]'
+                    : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
                 "
-                class="rounded-full px-6 py-2 text-sm shadow-sm transition">
+                class="rounded-2xl border-2 px-6 py-2 text-sm font-black transition duration-200">
                 {{ t }}
               </button>
             </div>
           </div>
 
+          <!-- Gender Filter -->
           <div>
-            <label class="mb-2 block text-sm text-gray-500">性別</label>
-            <div class="flex gap-4">
+            <label class="mb-2 block text-sm font-black text-[#445944]">性別</label>
+            <div class="flex gap-2">
               <button
                 v-for="g in ['公', '母', '不限']"
                 :key="g"
                 @click="filters.gender = g"
                 :class="
                   filters.gender === g
-                    ? 'border-[#9C6D6D] text-[#9C6D6D]'
-                    : 'border-gray-200 text-gray-400'
+                    ? 'bg-[#445944] text-white border-[#445944]'
+                    : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
                 "
-                class="flex-1 rounded-xl border-2 py-2 text-sm transition">
+                class="flex-1 rounded-2xl border-2 py-2 text-sm font-black transition duration-200">
                 {{ g }}
               </button>
             </div>
           </div>
 
+          <!-- City Dropdown -->
           <div>
-            <label class="mb-2 block text-sm text-gray-500">遺失縣市</label>
+            <label class="mb-2 block text-sm font-black text-[#445944]">遺失縣市</label>
             <div class="relative">
               <select
                 v-model="filters.city"
                 @change="onCityChange"
-                class="w-full cursor-pointer appearance-none rounded-xl border-none bg-gray-50 p-3 text-gray-700 outline-none focus:ring-2 focus:ring-[#9C6D6D]">
+                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#445944]">
                 <option value="">請選擇縣市</option>
                 <option v-for="(districts, city) in cityData" :key="city" :value="city">
                   {{ city }}
                 </option>
               </select>
-              <i
-                class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-400"></i>
+              <i class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
             </div>
           </div>
 
+          <!-- District Dropdown -->
           <div>
-            <label class="mb-2 block text-sm text-gray-500">行政地區</label>
+            <label class="mb-2 block text-sm font-black text-[#445944]">行政地區</label>
             <div class="relative">
               <select
                 v-model="filters.district"
                 :disabled="!filters.city"
-                class="w-full cursor-pointer appearance-none rounded-xl border-none bg-gray-50 p-3 text-gray-700 outline-none focus:ring-2 focus:ring-[#9C6D6D] disabled:cursor-not-allowed disabled:opacity-50">
+                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#445944] disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="">{{ filters.city ? '請選擇地區' : '請先選擇縣市' }}</option>
                 <option v-for="dist in availableDistricts" :key="dist" :value="dist">
                   {{ dist }}
                 </option>
               </select>
-              <i
-                class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-400"></i>
+              <i class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
             </div>
           </div>
 
+          <!-- Keyword Input -->
           <div class="lg:col-span-2">
-            <label class="mb-2 block text-sm text-gray-500">關鍵字搜尋</label>
+            <label class="mb-2 block text-sm font-black text-[#445944]">關鍵字搜尋</label>
             <input
               v-model="filters.keyword"
               type="text"
-              placeholder="晶片號碼 / 特徵描述 / 遺失地點"
-              class="w-full rounded-xl border-none bg-gray-50 p-3 outline-none focus:ring-2 focus:ring-[#9C6D6D]" />
+              placeholder="晶片號碼 / 特徵描述 / 遺失地點..."
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#445944]" />
           </div>
 
+          <!-- Search Button -->
           <div class="flex items-end">
             <button
               @click="handleSearch"
-              class="w-full rounded-xl bg-[#B59891] py-3 font-bold text-white shadow-md transition hover:bg-[#9C6D6D]">
-              執行篩選
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-3 text-sm font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
+              🔍 執行篩選
             </button>
           </div>
         </div>
       </div>
 
-      <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-list-ul text-[#9C6D6D]"></i>
-          <h2 class="text-xl font-bold text-gray-700">最新遺失啟事</h2>
+      <!-- Title & CTA Button -->
+      <div class="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div class="flex items-center gap-2.5">
+          <span class="text-[#445944] text-2xl">📋</span>
+          <h2 class="text-2xl font-black text-[#445944]">最新遺失啟事</h2>
         </div>
 
         <router-link
           :to="{ name: 'missing-report-create' }"
-          class="flex items-center gap-2 rounded-full bg-[#9C6D6D] px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-[#855a5a]">
-          <SquarePlus />
+          class="flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-6 py-3 text-base font-bold text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
+          <SquarePlus :size="18" />
           刊登遺失協尋
         </router-link>
       </div>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <!-- Cards Grid -->
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div
           v-for="pet in filteredPets"
           :key="pet.id"
-          class="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md">
-          <div class="relative h-48 overflow-hidden">
+          class="group overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944] transition-all duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944]">
+          
+          <!-- Image Section -->
+          <div class="relative h-48 overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
             <img
               :src="pet.photo"
               class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div
-              class="absolute top-3 left-3 rounded-md bg-red-500 px-2 py-1 text-xs text-white shadow-sm">
-              LOST 遺失中
+              class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+              🚨 LOST 協尋中
             </div>
           </div>
 
-          <div class="p-4">
-            <h3 class="mb-3 text-lg font-bold text-gray-800">{{ pet.breed }}</h3>
+          <!-- Card Info Body -->
+          <div class="p-5 bg-[#FCF4E5]">
+            <h3 class="mb-3 text-xl font-black text-[#445944] truncate">{{ pet.breed }}</h3>
 
-            <ul class="mb-4 space-y-2 text-sm text-gray-600">
-              <li class="flex gap-2">
-                <span class="shrink-0 font-bold text-gray-400">毛色：</span>
-                {{ pet.color }}
+            <ul class="mb-4 space-y-2 text-xs font-bold text-gray-700">
+              <li class="flex items-center gap-1.5">
+                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">毛色</span>
+                <span class="truncate">{{ pet.color || '未填寫' }}</span>
               </li>
-              <li class="flex gap-2">
-                <span class="shrink-0 font-bold text-gray-400">時間：</span>
-                {{ pet.lostTime }}
+              <li class="flex items-center gap-1.5">
+                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">時間</span>
+                <span class="truncate">{{ pet.lostTime || '未知' }}</span>
               </li>
-              <li class="flex gap-2">
-                <span class="shrink-0 font-bold text-gray-400">地點：</span>
-                {{ pet.lostPlace }}
+              <li class="flex items-center gap-1.5">
+                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">地點</span>
+                <span class="truncate" :title="pet.lostPlace">{{ pet.lostPlace || '未知' }}</span>
               </li>
-              <li class="flex gap-2">
-                <span class="shrink-0 font-bold text-gray-400">晶片：</span>
-                {{ pet.chipId }}
+              <li class="flex items-center gap-1.5">
+                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">晶片</span>
+                <span class="truncate">{{ pet.chipId || '無晶片或未填' }}</span>
               </li>
             </ul>
 
-            <p
-              class="mb-4 min-h-[60px] rounded-xl bg-[#FBF9F8] p-3 text-xs leading-relaxed text-gray-500">
-              {{ pet.feature }}
+            <!-- Features Highlights Description Box -->
+            <p class="mb-4 min-h-[72px] line-clamp-3 rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] p-3 text-[11px] font-bold leading-relaxed text-gray-600">
+              {{ pet.feature || '無特徵描述。' }}
             </p>
 
+            <!-- Card details link -->
             <router-link
               :to="{ name: 'missing-report-detail', params: { id: pet.id } }"
-              class="block w-full text-center rounded-lg border-2 border-[#B59891] py-2 text-sm font-bold text-[#B59891] transition hover:bg-[#B59891] hover:text-white">
-              查看詳細內容
+              class="block w-full text-center rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
+              🔍 查看詳細啟事
             </router-link>
           </div>
         </div>
       </div>
+
+      <!-- Empty State -->
+      <div v-if="filteredPets.length === 0" class="py-16 text-center max-w-md mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
+        <span class="text-5xl block mb-4">😿</span>
+        <h3 class="text-xl font-black text-[#445944] mb-2">找不到符合條件的遺失毛孩</h3>
+        <p class="text-sm font-bold text-gray-600">嘗試調整一下篩選條件，或許命定毛孩就在下方唷！</p>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', 'GenJyuu', sans-serif;
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-3deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.group:hover .group-hover\:bounce {
+  animation: bounce 0.6s ease infinite alternate;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+</style>

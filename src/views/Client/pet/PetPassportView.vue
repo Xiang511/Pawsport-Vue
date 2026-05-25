@@ -5,7 +5,7 @@ import VaccineTab from '@/components/Client/VaccineTab.vue'
 import ImageTab from '@/components/Client/ImageTab.vue'
 import WeightTab from '@/components/Client/WeightTab.vue'
 import { useRouter } from 'vue-router'
-import { SquarePlus, SquarePen } from 'lucide-vue-next'
+import { SquarePlus, SquarePen, Sparkles } from 'lucide-vue-next'
 import request from '@/api/axios'
 import { useAuthStore } from '@/stores/auth'
 
@@ -73,62 +73,121 @@ const onAddWeight = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F7F3F1] pb-20">
-    <section class="mb-8 bg-white px-6 py-10 text-center shadow-sm">
-      <h1 class="mb-2 text-3xl font-bold text-[#9C6D6D]">毛孩護照</h1>
-      <p class="text-gray-500">記錄毛孩的健康點滴</p>
-    </section>
-
-    <div class="relative mx-auto max-w-6xl px-4">
-      <button
-        @click="addNewPet"
-        class="absolute -top-16 right-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#9C6D6D] shadow-sm transition hover:bg-[#9C6D6D] hover:text-white lg:right-4">
-        <SquarePlus />
-      </button>
-
-      <div v-if="loading" class="py-20 text-center text-gray-500">資料同步加載中...</div>
-
-      <div v-else-if="pets.length === 0" class="rounded-3xl bg-white py-20 text-center shadow-sm">
-        <p class="text-lg text-gray-400">目前尚無建檔的毛孩護照紀錄。</p>
+  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
+    
+    <!-- HERO SECTION -->
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+      <!-- Background floating ornaments -->
+      <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
+        <svg
+          class="animate-float absolute top-8 left-10 h-20 w-20 text-[#445944]"
+          viewBox="0 0 100 100">
+          <path
+            fill="currentColor"
+            d="M30,50 C30,35 40,25 50,25 C60,25 70,35 70,50 C70,65 60,75 50,75 C40,75 30,65 30,50 Z" />
+          <circle cx="25" cy="30" r="10" fill="currentColor" />
+          <circle cx="42" cy="15" r="10" fill="currentColor" />
+          <circle cx="62" cy="15" r="10" fill="currentColor" />
+          <circle cx="78" cy="30" r="10" fill="currentColor" />
+        </svg>
+        <svg
+          class="animate-float-delayed absolute right-16 bottom-8 h-24 w-24 text-[#9C6D6D]"
+          viewBox="0 0 100 100">
+          <path
+            fill="currentColor"
+            d="M10,40 C10,30 20,20 30,20 C45,20 50,35 50,35 C50,35 55,20 70,20 C80,20 90,30 90,40 C90,65 50,85 50,85 C50,85 10,65 10,40 Z" />
+        </svg>
       </div>
 
-      <div v-else class="flex flex-col gap-6 lg:flex-row">
+      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+        <div
+          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          <Sparkles :size="14" class="animate-spin-slow" />
+          PAWSPORT HEALTH RECORD
+        </div>
+        <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
+          健康護照
+          <span class="relative z-10 inline-block px-2 text-[#7a6856]">
+            毛孩 Pawsport
+            <span
+              class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
+          </span>
+        </h1>
+        <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
+          科學化記錄愛寵健康成長點滴，包含醫療史、疫苗接種、日常體重與醫療影像，全方位守護寶貝健康。
+        </p>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <div class="relative mx-auto max-w-7xl w-[90%] px-4 mt-12">
+      <!-- Add New Pet Floating Action Item -->
+      <button
+        @click="addNewPet"
+        class="absolute -top-16 right-4 flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#445944] text-white shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] z-10">
+        <SquarePlus :size="22" />
+      </button>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="flex flex-col items-center justify-center py-20 gap-4">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-dashed border-[#445944]"></div>
+        <p class="text-[#445944] font-black animate-pulse">健康護照同步載入中...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="pets.length === 0" class="py-16 text-center max-w-md mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
+        <span class="text-5xl block mb-4">📖</span>
+        <h3 class="text-xl font-black text-[#445944] mb-2">尚無健康護照紀錄</h3>
+        <p class="text-sm font-bold text-gray-600 mb-6">目前還沒有為您的毛孩建立護照紀錄唷！</p>
+        <button
+          @click="addNewPet"
+          class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-6 py-3 font-bold text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
+          <SquarePlus :size="18" />
+          立即建立第一份護照
+        </button>
+      </div>
+
+      <!-- Main Layout columns -->
+      <div v-else class="flex flex-col gap-8 lg:flex-row">
+        <!-- Left Side Column: Active Pet Card -->
         <div class="w-full lg:w-1/3">
-          <div class="sticky top-6 rounded-3xl bg-white p-6 shadow-sm">
+          <div class="sticky top-6 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]">
             <div class="mb-6 flex flex-col items-center text-center" v-if="currentPet">
               <div
-                class="relative mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-gray-200 shadow-lg">
+                class="relative mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-[#445944] bg-gray-100 shadow-md">
                 <img :src="currentPet.photo" class="h-full w-full object-cover" />
               </div>
-              <h2 class="flex items-center gap-2 text-2xl font-bold text-gray-800">
+              <h2 class="flex items-center justify-center gap-2 text-2xl font-black text-[#445944]">
                 {{ currentPet.name }}
                 <SquarePen
                   @click="goToEditPage(currentPet.id)"
-                  class="h-5 w-5 cursor-pointer text-gray-400 hover:text-[#9C6D6D]" />
+                  class="h-5 w-5 cursor-pointer text-gray-500 hover:text-[#9C6D6D] transition-colors" />
               </h2>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm font-bold text-gray-500 mt-1">
                 {{ currentPet.age }} ({{
                   currentPet.gender === 1 ? '公' : currentPet.gender === 2 ? '母' : '未知'
                 }})
               </p>
+              
               <p
-                class="mt-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                class="mt-3 rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-1 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944]">
                 {{ currentPet.isDesex ? '已絕育' : '未絕育' }} · 最新體重 {{ currentPet.weight }} KG
               </p>
             </div>
 
-            <div class="border-t pt-4">
-              <h3 class="mb-3 text-sm font-bold text-gray-400">切換護照紀錄</h3>
+            <!-- Passport Switch List -->
+            <div class="border-t-2 border-[#445944] pt-4 mt-6">
+              <h3 class="mb-3 text-sm font-black text-[#445944] text-center">切換護照紀錄</h3>
               <div class="flex flex-wrap justify-center gap-3">
                 <div
                   v-for="pet in pets"
                   :key="pet.id"
                   @click="activePetId = pet.id"
-                  class="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 shadow-sm transition-all duration-300"
+                  class="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 transition-all duration-300 hover:scale-105 hover:opacity-100"
                   :class="
                     activePetId === pet.id
-                      ? 'scale-110 border-[#9C6D6D]'
-                      : 'border-white opacity-60'
+                      ? 'scale-110 border-4 border-[#445944] opacity-100'
+                      : 'border-gray-300 opacity-60'
                   ">
                   <img :src="pet.photo" class="h-full w-full object-cover" />
                 </div>
@@ -137,23 +196,26 @@ const onAddWeight = () => {
           </div>
         </div>
 
+        <!-- Right Side Column: Tab Selector and Content Tab -->
         <div class="w-full lg:w-2/3">
-          <div class="mb-6 flex justify-center rounded-full bg-gray-200 p-1">
+          <!-- Neo-brutalist Tabs Bar -->
+          <div class="mb-6 flex flex-wrap justify-center gap-2 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] p-1.5 shadow-[4px_4px_0px_#445944]">
             <button
               v-for="tab in tabs"
               :key="tab"
               @click="activeTab = tab"
               :class="[
-                'flex-1 rounded-full px-4 py-2 text-sm font-bold transition-all duration-300',
+                'flex-1 rounded-xl px-4 py-2.5 text-sm font-black transition-all duration-200',
                 activeTab === tab
-                  ? 'bg-[#9C6D6D] text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-100',
+                  ? 'bg-[#445944] text-white border-2 border-[#445944]'
+                  : 'text-gray-600 border-2 border-transparent hover:bg-white hover:text-[#445944]',
               ]">
               {{ tab }}
             </button>
           </div>
 
-          <div class="min-h-[400px] rounded-2xl bg-white p-6 shadow-sm" v-if="currentPet">
+          <!-- Tabs Content Card Panel -->
+          <div class="min-h-[400px] rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]" v-if="currentPet">
             <MedicalTab v-if="activeTab === '醫療史'" :records="currentPet.medicalRecords" @add-medical="onAddMedical" />
             <VaccineTab v-if="activeTab === '疫苗'" :vaccines="currentPet.vaccinations" @add-vaccine="onAddVaccine" />
             <div v-if="activeTab === '影像'">
@@ -166,3 +228,87 @@ const onAddWeight = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', 'GenJyuu', sans-serif;
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-3deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.group:hover .group-hover\:bounce {
+  animation: bounce 0.6s ease infinite alternate;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+</style>
