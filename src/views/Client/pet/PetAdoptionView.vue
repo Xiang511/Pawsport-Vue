@@ -22,7 +22,7 @@ const fetchPets = async () => {
   try {
     loading.value = true
     // 銜接你的 API 格式
-    const response = await request.get('https://localhost:7048/api/users/pet/adoption')
+    const response = await request.get('/users/pet/adoption')
     const { success, data } = response.data
     if (success) {
       rawPets.value = data.map((pet) => {
