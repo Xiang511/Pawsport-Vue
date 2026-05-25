@@ -3,8 +3,10 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import request from '@/api/axios'
 import { Undo2, Camera } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // 定義完全對接 PetPassportDisplayDto & PetPassportUpsertDto 欄位的格式
 const form = reactive({
@@ -51,6 +53,12 @@ const submitForm = async () => {
   }
 
   try {
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+    if (!userId) {
+      alert('請先登入後再進行操作')
+      return
+    }
+
     const genderMap = {
       '公': 1,
       '母': 2,
@@ -58,6 +66,7 @@ const submitForm = async () => {
     }
 
     const payload = {
+      userId: userId,
       petId: 0, // 帶入 0 觸發後端自動建立全新 Pet 紀錄
       name: form.name,
       birthDate: form.birthDate || null,

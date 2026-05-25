@@ -3,8 +3,10 @@ import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Undo2, MapPin, Camera } from 'lucide-vue-next'
 import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // 表單初始資料 (對齊 CreateMissingPetDTO)
 const form = reactive({
@@ -60,7 +62,14 @@ const availableDistricts = computed(() => cityData[form.city] || [])
 // 提交表單
 const handleSubmit = async () => {
   try {
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+    if (!userId) {
+      alert('請先登入後再進行操作')
+      return
+    }
+
     const payload = {
+      userId: userId,
       petName: form.petName,
       petType: form.petType,
       gender: form.gender,

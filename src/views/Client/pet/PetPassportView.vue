@@ -7,8 +7,10 @@ import WeightTab from '@/components/Client/WeightTab.vue'
 import { useRouter } from 'vue-router'
 import { SquarePlus, SquarePen } from 'lucide-vue-next'
 import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const loading = ref(true)
 const pets = ref([])
@@ -23,7 +25,15 @@ const currentPet = computed(() => {
 const fetchPassports = async () => {
   try {
     loading.value = true
-    const response = await request.get('/users/pet/passports')
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+    
+    if (!userId) {
+      console.warn('無法取得使用者 ID，請確認是否已登入')
+      pets.value = []
+      return
+    }
+
+    const response = await request.get(`/users/pet/passports?userId=${userId}`)
     const { success, data } = response.data
     if (success && data && data.length > 0) {
       pets.value = data
