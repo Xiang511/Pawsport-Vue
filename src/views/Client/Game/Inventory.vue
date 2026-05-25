@@ -6,7 +6,6 @@ import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 import { Eye, EyeOff } from 'lucide-vue-next'
 
-
 const { playSFX } = useGameAudio()
 const router = useRouter()
 
@@ -21,7 +20,6 @@ const playerData = ref(null)
 const userPoints = ref(0)
 const isLoadingData = ref(true)
 
-
 // 造型資料
 const allSkins = ref([])
 const currentEquippedId = ref(null)
@@ -29,10 +27,10 @@ const previewSkin = ref(null)
 
 const defaultAvatar = {
   id: 2, // 預設造型改為 SkinId=2
-  name: '', 
+  name: '',
   imgUrl: '',
   isOwned: true,
-  description: ''
+  description: '',
 }
 
 // 🎯 建立一個計算屬性：如果 previewSkin 沒被選中（為 null），自動退回顯示預設頭像
@@ -56,23 +54,23 @@ onMounted(async () => {
 const fetchData = async () => {
   try {
     isLoadingData.value = true
-    
+
     // 【修改】從 store 取得動態 PlayerId
     const playerStore = usePlayerStore()
     const playerId = playerStore.playerId
-    
+
     console.log('🎮 Inventory - 取得 PlayerId:', playerId)
-    
+
     if (!playerId) {
       console.error('❌ PlayerId 不存在')
       return
     }
-    
+
     // 1. 【修改】使用動態 PlayerId 獲取玩家資料
-    const playerResponse = await request.get(`https://localhost:7048/api/Player/${playerId}`)
+    const playerResponse = await request.get(`/Player/${playerId}`)
     if (playerResponse.data.success) {
       playerData.value = playerResponse.data.data
-      
+
       if (playerData.value) {
         userPoints.value = playerData.value.currentPoint
         currentEquippedId.value = playerData.value.enabledSkinId || 2
@@ -80,55 +78,55 @@ const fetchData = async () => {
     }
 
     // 2. 獲取所有造型
-    const shopResponse = await request.get('https://localhost:7048/api/Shop')
+    const shopResponse = await request.get('/Shop')
     if (shopResponse.data.success) {
       const shopSkins = shopResponse.data.data
-      
+
       // 3. 合併資料
-      allSkins.value = shopSkins.map(skin => {
-  const isOwned = playerData.value?.ownedSkins?.some(s => s.skinId === skin.skinId) || false
-  
-  // 確保圖片路徑包含完整的後端 URL
-  let imgUrl = skin.skinImage
-  if (imgUrl && !imgUrl.startsWith('http' )) {
-    // 如果是相對路徑，添加後端伺服器地址
-    imgUrl = `https://localhost:7048${imgUrl}?t=${Date.now( )}`
-  } else if (imgUrl) {
-    // 如果已經是完整 URL，只添加時間戳
-    imgUrl = `${imgUrl}?t=${Date.now()}`
-  }
-  
-  return {
-    id: skin.skinId,
-    name: skin.skinName,
-    imgUrl: imgUrl,
-    price: skin.price,
-    isOwned: isOwned,
-    description: skin.description
-  }
-})
+      allSkins.value = shopSkins.map((skin) => {
+        const isOwned = playerData.value?.ownedSkins?.some((s) => s.skinId === skin.skinId) || false
+
+        // 確保圖片路徑包含完整的後端 URL
+        let imgUrl = skin.skinImage
+        if (imgUrl && !imgUrl.startsWith('http')) {
+          // 如果是相對路徑，添加後端伺服器地址
+          imgUrl = `https://localhost:7048${imgUrl}?t=${Date.now()}`
+        } else if (imgUrl) {
+          // 如果已經是完整 URL，只添加時間戳
+          imgUrl = `${imgUrl}?t=${Date.now()}`
+        }
+
+        return {
+          id: skin.skinId,
+          name: skin.skinName,
+          imgUrl: imgUrl,
+          price: skin.price,
+          isOwned: isOwned,
+          description: skin.description,
+        }
+      })
 
       // 4. 設置預覽造型為目前裝備的造型
-      const enabledSkin = playerData.value?.ownedSkins?.find(s => s.enable === true)
+      const enabledSkin = playerData.value?.ownedSkins?.find((s) => s.enable === true)
       if (enabledSkin) {
         // 找到對應的造型資訊
-        const matchingSkin = allSkins.value.find(s => s.id === enabledSkin.skinId)
+        const matchingSkin = allSkins.value.find((s) => s.id === enabledSkin.skinId)
         if (matchingSkin) {
           previewSkin.value = { ...matchingSkin }
         }
       } else {
         // 如果沒有裝備的造型，預設顯示 SkinId=2（預設造型）
-        const defaultSkin = allSkins.value.find(s => s.id === 2)
+        const defaultSkin = allSkins.value.find((s) => s.id === 2)
         if (defaultSkin) {
           previewSkin.value = { ...defaultSkin }
         } else {
           // 如果 SkinId=2 不存在，顯示第一個已擁有的造型
-          const ownedSkinsArray = allSkins.value.filter(s => s.isOwned)
+          const ownedSkinsArray = allSkins.value.filter((s) => s.isOwned)
           if (ownedSkinsArray.length > 0) {
             previewSkin.value = { ...ownedSkinsArray[0] }
           } else {
             // 如果沒有已擁有的造型，顯示第一個未擁有的造型
-            const unownedSkinsArray = allSkins.value.filter(s => !s.isOwned)
+            const unownedSkinsArray = allSkins.value.filter((s) => !s.isOwned)
             if (unownedSkinsArray.length > 0) {
               previewSkin.value = { ...unownedSkinsArray[0] }
             } else {
@@ -148,21 +146,21 @@ const fetchData = async () => {
 
 // 篩選未擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const unownedSkins = computed(() => {
-  return allSkins.value.filter(s => !s.isOwned && s.id !== 1 )
+  return allSkins.value.filter((s) => !s.isOwned && s.id !== 1)
 })
 
 // 篩選已擁有的造型（排除 SkinId=1 的遊戲獎勵）
 const ownedSkins = computed(() => {
-  return allSkins.value.filter(s => s.isOwned && s.id !== 1)
+  return allSkins.value.filter((s) => s.isOwned && s.id !== 1)
 })
 
 // 已擁有造型數量（排除 SkinId=1 的遊戲獎勵）
-const ownedCount = computed(() => allSkins.value.filter(s => s.isOwned && s.id !== 1).length)
+const ownedCount = computed(() => allSkins.value.filter((s) => s.isOwned && s.id !== 1).length)
 
 // 選擇造型
 const selectSkin = (skin) => {
   previewSkin.value = { ...skin }
-  playSFX('click')
+  playSFX('click');
 }
 
 // 切換未擁有造型的顯示（添加 Loading 狀態）
@@ -173,11 +171,11 @@ const toggleUnownedSkins = async () => {
   } else {
     // 勾選，顯示 Loading 進度
     isLoadingUnownedSkins.value = true
-    playSFX('click')
-    
+    playSFX('click');
+
     // 模擬異步操作（實際上只是渲染造型卡片，所以用 setTimeout 讓 UI 更新）
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
     showUnownedSkins.value = true
     isLoadingUnownedSkins.value = false
   }
@@ -186,21 +184,21 @@ const toggleUnownedSkins = async () => {
 // 裝備造型（只有已擁有的造型才能裝備）
 const equipSkin = async (id) => {
   try {
-    const response = await request.put(
-      `https://localhost:7048/api/Player/1/equip-skin`,
-      { playerId: 1, skinId: id }
-    )
+    const response = await request.put(`/Player/1/equip-skin`, {
+      playerId: 1,
+      skinId: id,
+    })
 
     if (response.data.success) {
       // 立即更新本地狀態
       currentEquippedId.value = id
-      
+
       // 更新預覽造型的狀態
       if (previewSkin.value) {
         previewSkin.value = { ...previewSkin.value }
       }
-      
-      playSFX('click')
+
+      playSFX('click');
       console.log('造型裝備成功')
     }
   } catch (error) {
@@ -214,7 +212,7 @@ const goToBuySkin = (skin) => {
   // 使用 router.push 跳轉到商店，並透過 query 參數傳遞要選中的造型 ID
   router.push({
     name: 'Client-skinshop',
-    query: { selectSkinId: skin.id }
+    query: { selectSkinId: skin.id },
   })
 }
 
@@ -223,14 +221,14 @@ const showTooltip = (event, item) => {
   hoverData.value = item
   tooltipPos.value = {
     x: event.clientX + 15,
-    y: event.clientY + 15
+    y: event.clientY + 15,
   }
 }
 
 const moveTooltip = (event) => {
   tooltipPos.value = {
     x: event.clientX + 15,
-    y: event.clientY + 15
+    y: event.clientY + 15,
   }
 }
 
@@ -247,45 +245,53 @@ const goBack = () => {
   <div class="shop-page-container">
     <div class="shop-header">
       <div class="header-left">
-        <button class="back-btn" @click="playSFX('click'); goBack()">
+        <button
+          class="back-btn"
+          @click="
+            playSFX('click');
+            goBack()
+          ">
           <span class="arrow-icon">‹</span>
         </button>
         <h1 class="shop-title">我的收藏</h1>
       </div>
-      
+
       <div class="header-right-group">
-        <button 
-              type="button"
-              :disabled="isLoadingUnownedSkins"
-              :class="['checkbox-label', { 'is-active': showUnownedSkins }]"
-              @click="toggleUnownedSkins"
-            >
-            <span class="icon-wrapper">
-                <Eye v-if="showUnownedSkins" :size="18" stroke-width="2.5" />
-                <EyeOff v-else :size="18" stroke-width="2.5" />
-              </span>
-              <span class="checkbox-text">
-                {{ showUnownedSkins ? '隱藏未擁有造型' : '顯示未擁有造型' }}
-              </span>
-          </button>
+        <button
+          type="button"
+          :disabled="isLoadingUnownedSkins"
+          :class="['checkbox-label', { 'is-active': showUnownedSkins }]"
+          @click="toggleUnownedSkins">
+          <span class="icon-wrapper">
+            <Eye v-if="showUnownedSkins" :size="18" stroke-width="2.5" />
+            <EyeOff v-else :size="18" stroke-width="2.5" />
+          </span>
+          <span class="checkbox-text">
+            {{ showUnownedSkins ? '隱藏未擁有造型' : '顯示未擁有造型' }}
+          </span>
+        </button>
         <div class="currency-box">🪙 {{ formatNumber(userPoints) }}</div>
       </div>
     </div>
 
     <div v-if="isLoadingData" class="loading-state">
-  <div class="spinner-large"></div>
-  <p class="loading-text-big">整理收藏庫...</p>
-</div>
+      <div class="spinner-large"></div>
+      <p class="loading-text-big">整理收藏庫...</p>
+    </div>
 
     <div v-else class="shop-main-content">
       <!-- 左側：預覽面板 -->
       <div class="preview-panel">
         <div class="preview-card">
           <div class="preview-title-bar">當前造型</div>
-          
+
           <div class="avatar-display-zone">
             <div class="avatar-mock">
-              <img v-if="displaySkin?.imgUrl" :src="displaySkin.imgUrl" alt="preview" class="avatar-img-preview" />
+              <img
+                v-if="displaySkin?.imgUrl"
+                :src="displaySkin.imgUrl"
+                alt="preview"
+                class="avatar-img-preview" />
               <p class="skin-name-preview">{{ displaySkin?.name }}</p>
               <div class="preview-desc-box" v-if="previewSkin">
                 <p class="preview-desc-text">
@@ -297,27 +303,34 @@ const goBack = () => {
 
           <div class="action-zone">
             <!-- 已擁有且已裝備 -->
-            <button 
-              v-if="displaySkin?.isOwned && (displaySkin?.id === currentEquippedId || (currentEquippedId === null && displaySkin?.id === 0))"
-              class="shop-btn is-equipped" 
-              disabled
-            >
+            <button
+              v-if="
+                displaySkin?.isOwned &&
+                (displaySkin?.id === currentEquippedId ||
+                  (currentEquippedId === null && displaySkin?.id === 0))
+              "
+              class="shop-btn is-equipped"
+              disabled>
               已裝備
             </button>
             <!-- 已擁有但未裝備 -->
-            <button 
-              v-else-if="displaySkin?.isOwned" 
-              @click="playSFX('click'); equipSkin(displaySkin.id)" 
-              class="shop-btn is-actionable"
-            >
+            <button
+              v-else-if="displaySkin?.isOwned"
+              @click="
+                playSFX('click');
+                equipSkin(displaySkin.id)
+              "
+              class="shop-btn is-actionable">
               確認裝備
             </button>
             <!-- 未擁有 -->
-            <button 
-              v-else 
-              @click="playSFX('click'); goToBuySkin(displaySkin)" 
-              class="shop-btn is-actionable"
-            >
+            <button
+              v-else
+              @click="
+                playSFX('click');
+                goToBuySkin(displaySkin)
+              "
+              class="shop-btn is-actionable">
               前往購買
             </button>
           </div>
@@ -326,80 +339,79 @@ const goBack = () => {
 
       <!-- 右側：造型列表面板 -->
       <div class="catalog-panel">
-  
-  <div class="skins-section ">
-    <div class="section-top-header">
-      <div class="section-title ">已擁有的造型</div>
-      
-      
-    </div>
-    
-    <div class="items-grid">
-      <div v-if="ownedSkins.length === 0" class="empty-state">
-        <p>您還沒有擁有任何造型</p>
-      </div>
+        <div class="skins-section">
+          <div class="section-top-header">
+            <div class="section-title">已擁有的造型</div>
+          </div>
 
-      <div 
-        v-for="item in ownedSkins" 
-        :key="item.id"
-        :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
-        @click="playSFX('click'); selectSkin(item)"
-        @mouseenter="showTooltip($event, item)" 
-        @mousemove="moveTooltip($event)" 
-        @mouseleave="hideTooltip"
-      >
-        <div class="product-title">{{ item.name }}</div>
-        
-        <div class="product-img-box">
-          <img :src="item.imgUrl" alt="product" class="product-real-img" />
+          <div class="items-grid">
+            <div v-if="ownedSkins.length === 0" class="empty-state">
+              <p>您還沒有擁有任何造型</p>
+            </div>
+
+            <div
+              v-for="item in ownedSkins"
+              :key="item.id"
+              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+              @click="
+                playSFX('click');
+                selectSkin(item)
+              "
+              @mouseenter="showTooltip($event, item)"
+              @mousemove="moveTooltip($event)"
+              @mouseleave="hideTooltip">
+              <div class="product-title">{{ item.name }}</div>
+
+              <div class="product-img-box">
+                <img :src="item.imgUrl" alt="product" class="product-real-img" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="showUnownedSkins || isLoadingUnownedSkins" class="skins-section">
+          <div class="section-top-header">
+            <div class="section-title">尚未擁有的造型</div>
+          </div>
+
+          <div v-if="isLoadingUnownedSkins" class="loading-container">
+            <div class="spinner-small"></div>
+            <p class="loading-text">正在載入未擁有的造型...</p>
+          </div>
+
+          <div v-else class="items-grid">
+            <div v-if="unownedSkins.length === 0" class="empty-state">
+              <p>您已擁有所有造型！</p>
+            </div>
+
+            <div
+              v-for="item in unownedSkins"
+              :key="item.id"
+              :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
+              @click="
+                playSFX('click');
+                selectSkin(item)
+              "
+              @mouseenter="showTooltip($event, item)"
+              @mousemove="moveTooltip($event)"
+              @mouseleave="hideTooltip">
+              <div class="product-title">{{ item.name }}</div>
+
+              <div class="product-img-box">
+                <img :src="item.imgUrl" alt="product" class="product-real-img" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div v-if="showUnownedSkins || isLoadingUnownedSkins" class="skins-section">
-    <div class="section-top-header">
-    <div class="section-title">尚未擁有的造型</div>
-  </div>
-
-    <div v-if="isLoadingUnownedSkins" class="loading-container">
-      <div class="spinner-small"></div>
-      <p class="loading-text">正在載入未擁有的造型...</p>
-    </div>
-
-    <div v-else class="items-grid">
-      <div v-if="unownedSkins.length === 0" class="empty-state">
-        <p>您已擁有所有造型！</p>
-      </div>
-
-      <div 
-        v-for="item in unownedSkins" 
-        :key="item.id"
-        :class="['product-card', { 'is-selected': previewSkin?.id === item.id }]"
-        @click="playSFX('click'); selectSkin(item)"
-        @mouseenter="showTooltip($event, item)" 
-        @mousemove="moveTooltip($event)" 
-        @mouseleave="hideTooltip"
-      >
-        <div class="product-title">{{ item.name }}</div>
-        
-        <div class="product-img-box">
-          <img :src="item.imgUrl" alt="product" class="product-real-img" />
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
     </div>
   </div>
 
   <!-- Hover 提示 -->
-  <div 
-    v-if="hoverData" 
+  <div
+    v-if="hoverData"
     class="custom-tooltip"
-    :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
-  >
+    :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }">
     <div class="tooltip-title">{{ hoverData.name }}</div>
     <div class="tooltip-body">{{ hoverData.description }}</div>
   </div>
@@ -412,17 +424,19 @@ const goBack = () => {
 .shop-page-container {
   min-height: 100vh;
   /* 🎯 基礎低飽和度 Morandi 溫暖底色 */
-  background-color: #f7ede2; 
-  
+  background-color: #f7ede2;
+
   /* 🎯 純 CSS 網格微斜紋魔法：利用線性漸層疊加 */
-  background-image: 
+  background-image:
     linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
     linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
-  
+
   /* 調整格子的大小（數字越小格子越密） */
   background-size: 60px 60px;
-  background-position: 0 0, 30px 30px;
-  
+  background-position:
+    0 0,
+    30px 30px;
+
   padding: 24px;
   box-sizing: border-box;
 }
@@ -432,7 +446,6 @@ const goBack = () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  
 }
 
 .header-left {
@@ -491,21 +504,20 @@ const goBack = () => {
 }
 
 .currency-box {
-  background: #fcf4e5; 
-  color: #453a27; 
-  border: 4px solid #453a27; 
-  border-radius: 25px; 
-  padding: 12px 30px; 
-  font-size: 1.2rem; 
-  font-weight: 900; 
-  box-shadow: 0 6px 0 #453a27; 
+  background: #fcf4e5;
+  color: #453a27;
+  border: 4px solid #453a27;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  box-shadow: 0 6px 0 #453a27;
   display: flex;
   align-items: center;
-  gap: 8px; 
-    margin-right: 50px;
-    white-space: nowrap;
+  gap: 8px;
+  margin-right: 50px;
+  white-space: nowrap;
 }
-
 
 .shop-main-content {
   flex: 1;
@@ -523,30 +535,32 @@ const goBack = () => {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;   /* 撐滿整個螢幕寬度 */
-  height: 100vh;  /* 撐滿整個螢幕高度 */
-  
+  width: 100vw; /* 撐滿整個螢幕寬度 */
+  height: 100vh; /* 撐滿整個螢幕高度 */
+
   /* 🎯 2. 核心布局：讓內部的大圈圈與文字上下垂直排列，並精準幾何居中 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 30px;      /* 圈圈與文字的間距 */
-  
+  gap: 30px; /* 圈圈與文字的間距 */
+
   /* 🎯 3. 層級鎖定：確保加載畫面絕對蓋在最上層（不被商店其他卡片遮擋） */
   z-index: 9999;
-  
+
   /* ===================================================
      🎯 4. 完美複製：與首頁 100% 同步的森系微斜紋背景
      =================================================== */
   background-color: #f7ede2; /* Morandi 溫暖底色 */
-  background-image: 
+  background-image:
     linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3),
     linear-gradient(45deg, #efe3d3 25%, transparent 25%, transparent 75%, #efe3d3 75%, #efe3d3);
   background-size: 60px 60px;
-  background-position: 0 0, 30px 30px;
-  
+  background-position:
+    0 0,
+    30px 30px;
+
   font-size: 1.2rem;
   color: #453a27;
 }
@@ -616,10 +630,10 @@ const goBack = () => {
 .preview-desc-box {
   margin-top: 16px;
   padding: 12px 16px;
-  background-color: #faf3e8;   /* 比背景再深一點點的溫暖羊皮紙色 */
-  border: 3px solid #453a27;   /* 符合 UI 的標誌性粗邊框 */
+  background-color: #faf3e8; /* 比背景再深一點點的溫暖羊皮紙色 */
+  border: 3px solid #453a27; /* 符合 UI 的標誌性粗邊框 */
   border-radius: 12px;
-  width: 85%;                  /* 寬度稍窄，收在正中央看起來比較內斂 */
+  width: 85%; /* 寬度稍窄，收在正中央看起來比較內斂 */
   margin-left: auto;
   margin-right: auto;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05); /* 微內陰影，營造下陷手感 */
@@ -627,12 +641,12 @@ const goBack = () => {
 
 .preview-desc-text {
   font-size: 0.95rem;
-  font-weight: 700;            /* 偏粗字體，在 Morandi 色系下更清晰 */
-  color: #5c4e37;              /* 比主色稍微淺一點點的深咖啡，閱讀較舒適 */
+  font-weight: 700; /* 偏粗字體，在 Morandi 色系下更清晰 */
+  color: #5c4e37; /* 比主色稍微淺一點點的深咖啡，閱讀較舒適 */
   line-height: 1.5;
   margin: 0;
-  text-align: center;          /* 文字居中對齊 */
-  word-break: break-all;       /* 防止英文或特殊符號把版面撐開 */
+  text-align: center; /* 文字居中對齊 */
+  word-break: break-all; /* 防止英文或特殊符號把版面撐開 */
 }
 
 .try-on-tag {
@@ -742,20 +756,19 @@ const goBack = () => {
 
 .section-top-header {
   display: flex;
-  justify-content:space-evenly; /* 讓標題在左，勾選框在右 */
-  align-items: center;           /* 垂直居中對齊 */
+  justify-content: space-evenly; /* 讓標題在左，勾選框在右 */
+  align-items: center; /* 垂直居中對齊 */
   width: 100%;
-  margin-bottom: 20px;           /* 與下方商品格子的間距 */
-  padding: 0 10px;               /* 稍微給點內縮，對齊網格 */
+  margin-bottom: 20px; /* 與下方商品格子的間距 */
+  padding: 0 10px; /* 稍微給點內縮，對齊網格 */
 }
 
 .section-top-header .section-title {
   font-size: 1.4rem;
   font-weight: 900;
   color: #453a27;
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
-
 
 .checkbox-label {
   display: inline-flex;
@@ -765,24 +778,25 @@ const goBack = () => {
   user-select: none;
 
   /* 🎯 預設狀態（熄滅）：完美同步右側點數框的溫暖米底色 */
-  background: #fcf4e5;       
+  background: #fcf4e5;
   height: 60px;
-  padding: 8px 18px;        
-  border: 4px solid #453a27; 
-  border-radius: 20px;       
-  box-shadow: 0 4px 0 #453a27; 
-  
+  padding: 8px 18px;
+  border: 4px solid #453a27;
+  border-radius: 20px;
+  box-shadow: 0 4px 0 #453a27;
+
   /* 讓顏色、下沉動畫過渡非常滑順 */
-  transition: transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              box-shadow 0.08s cubic-bezier(0.25, 0.8, 0.25, 1),
-              background-color 0.15s ease;
-              animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.08s cubic-bezier(0.25, 0.8, 0.25, 1),
+    background-color 0.15s ease;
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* 📝 標籤文字（預設深色） */
 .checkbox-text,
 .icon-wrapper {
-  color: #453a27; 
+  color: #453a27;
   font-size: 1.5rem;
   font-weight: 900;
   line-height: 1;
@@ -798,11 +812,11 @@ const goBack = () => {
 /* 🎯 核心魔法：讓 SVG 圖標強制繼承父層的文字顏色 (currentColor) */
 .icon-wrapper svg {
   display: block;
-  color: currentColor; 
+  color: currentColor;
 }
 
 .checkbox-label.is-active {
-  background-color: #453a27; 
+  background-color: #453a27;
 }
 
 .checkbox-label.is-active .checkbox-text,
@@ -866,13 +880,15 @@ const goBack = () => {
   /* 🎯 點下去時往下平移：相對於 hover 的 translateY(-4px)，
      我們讓它沉降到比平常更低的微幅平移，製造按下去的物理動態 */
   transform: translateY(2px);
-  
+
   /* 🎯 縮小陰影：原本是 6px 的厚重立體陰影，點擊時縮小到 2px，
      這樣在視覺上卡片就會像是緊貼著底層桌面 */
   box-shadow: 0 2px 0 #453a27;
-  
+
   /* 🎯 加快反應速度：點下去的瞬間要瞬間反饋（0.05秒），按鈕感覺才會「彈手」 */
-  transition: transform 0.05s ease-out, box-shadow 0.05s ease-out;
+  transition:
+    transform 0.05s ease-out,
+    box-shadow 0.05s ease-out;
 }
 
 @keyframes card-bg-flash {
@@ -883,7 +899,7 @@ const goBack = () => {
   100% {
     /* 呼吸頂點：稍微變亮到接近純白（但帶有溫暖黃調） */
     background-color: #fffdf9;
-    
+
     border-color: #fcc86d;
   }
 }
@@ -906,13 +922,13 @@ const goBack = () => {
 .product-img-box {
   width: 100%;
   height: 80px;
-  background-color: #f7ede2; 
-  
+  background-color: #f7ede2;
+
   /* 🎯 精細雙向交織線：創造軟綿綿的微像素編織感 */
-  background-image: 
+  background-image:
     linear-gradient(90deg, rgba(234, 221, 206, 0.7) 1px, transparent 1px),
     linear-gradient(0deg, rgba(234, 221, 206, 0.7) 1px, transparent 1px);
-  
+
   /* ⚡ 關鍵：縮小到 20px，讓它變成低調精緻的背景底紋 */
   background-size: 10px 10px;
   border: 3px solid #453a27;
@@ -1018,7 +1034,6 @@ const goBack = () => {
   }
 }
 
-
 /* 大型 Spinner（頁面加載用） */
 .spinner-large {
   width: 500px;
@@ -1062,7 +1077,7 @@ const goBack = () => {
   font-weight: 600;
 }
 
-.loading-text-big{
+.loading-text-big {
   font-size: 2.8rem;
   color: #453a27;
   font-weight: 600;

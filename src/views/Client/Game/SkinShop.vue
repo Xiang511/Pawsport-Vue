@@ -71,7 +71,7 @@ const fetchData = async () => {
     }
     
     // 1. 【修改】使用動態 PlayerId 獲取玩家資料
-    const playerResponse = await request.get(`https://localhost:7048/api/Player/${playerId}`)
+    const playerResponse = await request.get(`/Player/${playerId}`)
     if (playerResponse.data.success) {
       playerData.value = playerResponse.data.data
       
@@ -83,7 +83,7 @@ const fetchData = async () => {
     }
 
     // 2. 獲取所有造型
-    const shopResponse = await request.get('https://localhost:7048/api/Shop')
+    const shopResponse = await request.get('/Shop')
     if (shopResponse.data.success) {
       const shopSkins = shopResponse.data.data
       
@@ -175,9 +175,12 @@ const confirmBuySkin = async () => {
   if (!pendingSkin.value) return
 
   try {
+    const playerStore = usePlayerStore()
+    const playerId = playerStore.playerId
+
     const response = await request.post(
-      `https://localhost:7048/api/Player/1/buy-skin`,
-      { playerId: 1, skinId: pendingSkin.value.id }
+      `/Player/${playerId}/buy-skin`,
+      { playerId: playerId, skinId: pendingSkin.value.id }
     )
 
     if (response.data.success) {
@@ -221,7 +224,7 @@ const equipSkin = async (id) => {
     const playerId = playerStore.playerId
     
     const response = await request.put(
-      `https://localhost:7048/api/Player/${playerId}/equip-skin`,
+      `/Player/${playerId}/equip-skin`,
       { playerId: playerId, skinId: id }
     )
 

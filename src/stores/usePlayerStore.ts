@@ -1,20 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
+import { useAuthStore } from './auth'
 
-/**
- * 玩家全域狀態 Store
- * 用於管理登入使用者的 UserId 和對應的 PlayerId、玩家資料
- */
 export const usePlayerStore = defineStore('player', () => {
+  const authStore = useAuthStore() as { userInfo: { userId: number } | null }
+
   // ============ 狀態 ============
-  const userId = ref<number | null>(null)
   const playerId = ref<number | null>(null)
   const playerData = ref<any>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
   // ============ 計算屬性 ============
+  const userId = computed(() => authStore.userInfo?.userId ?? null)
   const isPlayerLoaded = computed(() => playerData.value !== null && playerId.value !== null)
   const playerName = computed(() => playerData.value?.userName || '玩家')
   const playerPoints = computed(() => playerData.value?.currentPoint || 0)
@@ -22,21 +21,21 @@ export const usePlayerStore = defineStore('player', () => {
 
   // ============ 方法 ============
 
-  /**
-   * 根據 UserId 初始化玩家資料
-   * @param newUserId - 登入的使用者 ID
-   */
-  const initializePlayer = async (newUserId: number) => {
+  const initializePlayer = async () => {
+    const currentUserId = authStore.userInfo?.userId
+    if (!currentUserId) {
+      error.value = '使用者未登入'
+      return false
+    }
+
     try {
       isLoading.value = true
       error.value = null
-      userId.value = newUserId
 
-      console.log(`🔄 正在初始化玩家資料... UserId: ${newUserId}`)
+      console.log(`🔄 正在初始化玩家資料... UserId: ${currentUserId}`)
 
-      // 呼叫後端 API：GET /api/users/{userId}/player-profile
       const response = await axios.get(
-        `https://localhost:7048/api/users/${newUserId}/player-profile`
+        `https://localhost:7048/api/users/${currentUserId}/player-profile`
       )
 
       if (response.data && response.data.success) {
@@ -44,7 +43,7 @@ export const usePlayerStore = defineStore('player', () => {
         playerId.value = data.playerId
         playerData.value = data
 
-        console.log(`✅ 玩家初始化成功 - UserId: ${newUserId}, PlayerId: ${data.playerId}, 玩家名稱: ${data.userName}`)
+        console.log(`✅ 玩家初始化成功 - UserId: ${currentUserId}, PlayerId: ${data.playerId}, 玩家名稱: ${data.userName}`)
         return true
       } else {
         throw new Error('無法取得玩家資料')
@@ -61,9 +60,6 @@ export const usePlayerStore = defineStore('player', () => {
     }
   }
 
-  /**
-   * 更新玩家名稱
-   */
   const updatePlayerName = async (newName: string) => {
     if (!playerId.value) {
       error.value = '玩家 ID 不存在'
@@ -101,10 +97,6 @@ export const usePlayerStore = defineStore('player', () => {
     }
   }
 
-  /**
-   * 更新玩家點數（本地狀態）
-   * 【修正】移除 async，改為同步方法
-   */
   const updatePlayerPoints = (points: number) => {
     if (playerData.value) {
       playerData.value.currentPoint = points
@@ -112,10 +104,6 @@ export const usePlayerStore = defineStore('player', () => {
     }
   }
 
-  /**
-   * 更新裝備的造型 ID
-   * 【修正】移除 async，改為同步方法
-   */
   const updateEnabledSkinId = (skinId: number) => {
     if (playerData.value) {
       playerData.value.enabledSkinId = skinId
@@ -123,22 +111,15 @@ export const usePlayerStore = defineStore('player', () => {
     }
   }
 
-  /**
-   * 重新整理玩家資料
-   */
   const refreshPlayerData = async () => {
     if (!userId.value) {
       error.value = '使用者 ID 不存在'
       return false
     }
-    return await initializePlayer(userId.value)
+    return await initializePlayer()
   }
 
-  /**
-   * 清除玩家資料（登出時使用）
-   */
   const clearPlayer = () => {
-    userId.value = null
     playerId.value = null
     playerData.value = null
     error.value = null

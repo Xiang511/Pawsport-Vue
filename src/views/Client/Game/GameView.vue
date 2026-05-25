@@ -5,11 +5,9 @@ import { Home } from 'lucide-vue-next'
 import { animate, stagger } from 'animejs'
 import { useGameAudio } from '@/composables/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
-import { useAuthStore } from '@/stores/auth'
 
 const { playSFX, forcePlayBGM, updateBGMVolume, updateSFXVolume, hasPromptedAudio } = useGameAudio()
 const playerStore = usePlayerStore()
-const authStore = useAuthStore()
 const router = useRouter()
 
 // 控制彈窗是否顯示
@@ -47,23 +45,10 @@ const initializePlayerFromAuth = async () => {
     isInitializing.value = true
     initError.value = ''
 
-    // 從 auth store 取得 userId
-    const userId = authStore.userInfo?.userId
-
-    if (!userId) {
-      console.warn('⚠️ 未找到 UserId，請先登入')
-      initError.value = '未找到登入資訊，請返回首頁重新登入'
-      return false
-    }
-
-    console.log(`🔄 正在初始化玩家資料... UserId: ${userId}`)
-
-    // 呼叫 store 的初始化方法
-    const success = await playerStore.initializePlayer(userId)
+    const success = await playerStore.initializePlayer()
 
     if (success) {
       console.log('✅ 玩家資料初始化成功')
-      // 自動顯示音效設定
       showAudioModal.value = !hasPromptedAudio.value
       return true
     } else {

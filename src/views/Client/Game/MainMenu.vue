@@ -51,7 +51,7 @@ const fetchPlayerData = async () => {
     }
 
     // 【修改】使用 request 呼叫 API（改為 request 以支援 header 設定）
-    const response = await request.get(`https://localhost:7048/api/users/${userId}/player-profile`)
+    const response = await request.get(`/users/${userId}/player-profile`)
 
     console.log('📡 API 回應:', response.data)
 
