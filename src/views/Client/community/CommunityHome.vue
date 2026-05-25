@@ -156,53 +156,70 @@ onMounted(async () => {
               歡迎來到 Petmily！本週六將舉辦「線上毛孩鮮食講座」，詳情請密切注意官方消息。
             </p>
           </div>
-          <div class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
-              <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
-              分類瀏覽
-            </h2>
+          <div class="flex flex-col gap-4">
+            <!-- 大分類區塊 -->
+            <section class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
+              <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
+                <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
+                分類瀏覽
+              </h2>
 
-            <div class="flex flex-wrap gap-2 border-b border-stone-100 pb-4">
-              <button
-                v-for="c in parentCategories"
-                :key="c.categoryid"
-                @click="selectParent(c.categoryid)"
-                :class="[
-                  'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
-                  currentParentId === c.categoryid
-                    ? 'bg-brand-success-600 scale-105 font-medium text-white'
-                    : 'bg-stone-50 text-stone-600 hover:bg-stone-100',
-                ]">
-                {{ c.categoryname }}
-              </button>
-            </div>
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-stone-700">大分類</h3>
+                <span class="text-xs text-stone-400">選擇文章主題</span>
+              </div>
 
-            <div
-              v-if="subCategories.length > 0"
-              class="animate-fade-in mt-4 flex flex-wrap gap-2 pt-1">
-              <button
-                @click="selectSub(0)"
-                :class="[
-                  'rounded-full border px-3 py-1 text-xs transition-all',
-                  currentSubId === 0
-                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
-                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
-                ]">
-                全部子項目
-              </button>
-              <button
-                v-for="sc in subCategories"
-                :key="sc.categoryid"
-                @click="selectSub(sc.categoryid)"
-                :class="[
-                  'rounded-full border px-3 py-1 text-xs transition-all',
-                  currentSubId === sc.categoryid
-                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
-                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
-                ]">
-                {{ sc.categoryname }}
-              </button>
-            </div>
+              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
+                <button
+                  v-for="c in parentCategories"
+                  :key="c.categoryid"
+                  @click="selectParent(c.categoryid)"
+                  :class="[
+                    'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
+                    Number(currentParentId) === Number(c.categoryid)
+                      ? 'bg-brand-success-600 scale-105 font-medium text-white'
+                      : 'bg-white text-stone-600 hover:bg-stone-100',
+                  ]">
+                  {{ c.categoryname }}
+                </button>
+              </div>
+            </section>
+
+            <!-- 小分類區塊：選全部時完全不出現 -->
+            <section
+              v-if="Number(currentParentId) !== 0 && subCategories.length > 0"
+              class="rounded-xl border border-orange-100 bg-white p-6 shadow-sm">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-orange-800">小分類</h3>
+                <span class="text-xs text-orange-500">目前大分類底下的分類</span>
+              </div>
+
+              <div class="flex flex-wrap gap-2 rounded-2xl bg-orange-50/60 p-4">
+                <button
+                  @click="selectSub(0)"
+                  :class="[
+                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    Number(currentSubId) === 0
+                      ? 'border-orange-400 bg-orange-100 font-medium text-orange-700'
+                      : 'border-stone-200 bg-white text-stone-500 hover:border-orange-300 hover:text-orange-600',
+                  ]">
+                  全部小分類
+                </button>
+
+                <button
+                  v-for="sc in subCategories"
+                  :key="sc.categoryid"
+                  @click="selectSub(sc.categoryid)"
+                  :class="[
+                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    Number(currentSubId) === Number(sc.categoryid)
+                      ? 'border-orange-400 bg-orange-100 font-medium text-orange-700'
+                      : 'border-stone-200 bg-white text-stone-500 hover:border-orange-300 hover:text-orange-600',
+                  ]">
+                  {{ sc.categoryname }}
+                </button>
+              </div>
+            </section>
           </div>
 
           <div class="flex flex-col gap-4">
