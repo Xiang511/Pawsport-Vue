@@ -2,8 +2,8 @@
 import { watch, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-const sfxVolume = ref(0.5) // 預設音效音量 50%
-const bgmVolume = ref(0.3) // 預設背景音樂音量 30%
+const sfxVolume = ref(0.4) 
+const bgmVolume = ref(0.2) 
 
 let isAudioAuthorized = false
 // 用來確保只提示一次音訊授權，避免重複彈窗騷擾玩家
