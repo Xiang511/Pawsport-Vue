@@ -81,7 +81,8 @@ const myPets = ref([
     age: 2,
     weight: 10.5,
     health: 'good',
-    avatar: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=200',
+    avatar:
+      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=200',
     nextVaccine: '2026-07-15',
   },
   {
@@ -92,7 +93,8 @@ const myPets = ref([
     age: 1,
     weight: 4.2,
     health: 'good',
-    avatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=200',
+    avatar:
+      'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=200',
     nextVaccine: '2026-06-01',
   },
 ])
@@ -229,7 +231,6 @@ const avatarInitials = computed(() => {
 
 <template>
   <div class="profile-page min-h-screen bg-[#FCF4E5]">
-
     <!-- ── HERO HEADER ─────────────────────────────────────────── -->
     <header class="profile-hero bg-[#FCF4E5] pt-10 pb-8">
       <div class="mx-auto w-[90%] max-w-7xl">
@@ -239,7 +240,7 @@ const avatarInitials = computed(() => {
             <!-- Avatar -->
             <div class="avatar-wrapper relative shrink-0">
               <div
-                class="avatar-ring h-24 w-24 rounded-3xl border-4 border-black bg-[#445944] shadow-[4px_4px_0px_#000] flex items-center justify-center overflow-hidden">
+                class="avatar-ring flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border-4 border-black bg-[#445944] shadow-[4px_4px_0px_#000]">
                 <img
                   v-if="user.avatar"
                   :src="user.avatar"
@@ -248,7 +249,7 @@ const avatarInitials = computed(() => {
                 <span v-else class="text-4xl font-black text-[#FAE4AE]">{{ avatarInitials }}</span>
               </div>
               <button
-                class="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-black bg-[#FAE4AE] shadow-[2px_2px_0px_#000] transition-all hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]"
+                class="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-black bg-[#FAE4AE] shadow-[2px_2px_0px_#000] transition-all hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]"
                 title="更換頭像">
                 <Camera :size="14" />
               </button>
@@ -256,12 +257,11 @@ const avatarInitials = computed(() => {
 
             <!-- User details -->
             <div class="flex-1">
-              <div class="mb-1 flex items-center gap-3 flex-wrap">
+              <div class="mb-1 flex flex-wrap items-center gap-3">
                 <h1 class="font-fredoka text-3xl font-black text-[#445944]">
                   {{ user.name || user.userName || '毛孩的好朋友' }}
                 </h1>
-                <span
-                  class="rounded-full bg-[#7a6856] px-3 py-0.5 text-xs font-bold text-white">
+                <span class="rounded-full bg-[#7a6856] px-3 py-0.5 text-xs font-bold text-white">
                   🐾 Petmily 會員
                 </span>
               </div>
@@ -286,7 +286,7 @@ const avatarInitials = computed(() => {
           <div class="flex flex-wrap items-center gap-3">
             <button
               @click="startEdit"
-              class="flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-white px-5 py-2.5 text-sm font-bold text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#445944] hover:bg-[#FAE4AE]">
+              class="flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-white px-5 py-2.5 text-sm font-bold text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#FAE4AE] hover:shadow-[1px_1px_0px_#445944]">
               <Edit3 :size="16" />
               編輯資料
             </button>
@@ -300,18 +300,23 @@ const avatarInitials = computed(() => {
         </div>
 
         <!-- Stats bar -->
-        <div class="mt-6 grid grid-cols-3 divide-x-2 divide-[#445944] rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[4px_4px_0px_#445944] sm:grid-cols-3">
-          <div class="flex flex-col items-center py-4 px-2">
+        <div
+          class="mt-6 grid grid-cols-3 divide-x-2 divide-[#445944] rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[4px_4px_0px_#445944] sm:grid-cols-3">
+          <div class="flex flex-col items-center px-2 py-4">
             <span class="font-fredoka text-2xl font-black text-[#445944]">{{ myPets.length }}</span>
-            <span class="text-xs text-gray-500 mt-0.5">我的毛孩</span>
+            <span class="mt-0.5 text-xs text-gray-500">我的毛孩</span>
           </div>
-          <div class="flex flex-col items-center py-4 px-2">
-            <span class="font-fredoka text-2xl font-black text-[#A07A3C]">{{ gameStats.points.toLocaleString() }}</span>
-            <span class="text-xs text-gray-500 mt-0.5">毛幣點數</span>
+          <div class="flex flex-col items-center px-2 py-4">
+            <span class="font-fredoka text-2xl font-black text-[#A07A3C]">
+              {{ gameStats.points.toLocaleString() }}
+            </span>
+            <span class="mt-0.5 text-xs text-gray-500">毛幣點數</span>
           </div>
-          <div class="flex flex-col items-center py-4 px-2">
-            <span class="font-fredoka text-2xl font-black text-[#7a6856]">{{ myPosts.length }}</span>
-            <span class="text-xs text-gray-500 mt-0.5">我的文章</span>
+          <div class="flex flex-col items-center px-2 py-4">
+            <span class="font-fredoka text-2xl font-black text-[#7a6856]">
+              {{ myPosts.length }}
+            </span>
+            <span class="mt-0.5 text-xs text-gray-500">我的文章</span>
           </div>
         </div>
       </div>
@@ -320,12 +325,11 @@ const avatarInitials = computed(() => {
     <!-- ── MAIN CONTENT GRID ──────────────────────────────────── -->
     <main class="mx-auto w-[90%] max-w-7xl py-10">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-
         <!-- ── LEFT COLUMN (2/3) ──────────────────────────────── -->
         <div class="space-y-8 lg:col-span-2">
-
           <!-- TAB NAV -->
-          <div class="flex gap-2 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-1.5 shadow-[3px_3px_0px_#445944]">
+          <div
+            class="flex gap-2 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-1.5 shadow-[3px_3px_0px_#445944]">
             <button
               v-for="tab in [
                 { id: 'pets', label: '🐾 寵物概況', icon: PawPrint },
@@ -351,7 +355,7 @@ const avatarInitials = computed(() => {
               <h2 class="font-fredoka text-2xl font-black text-[#445944]">我的毛孩</h2>
               <router-link
                 to="/healthpassport/addpet"
-                class="flex items-center gap-1.5 rounded-xl border-2 text-[#445944] border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
+                class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
                 <Plus :size="15" />
                 新增毛孩
               </router-link>
@@ -365,15 +369,22 @@ const avatarInitials = computed(() => {
                 class="pet-card group relative overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[5px_5px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#445944]">
                 <!-- Pet image -->
                 <div class="relative aspect-[16/9] overflow-hidden bg-gray-100">
-                  <img :src="pet.avatar" :alt="pet.name" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img
+                    :src="pet.avatar"
+                    :alt="pet.name"
+                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <!-- Health badge -->
                   <span
-                    class="absolute top-3 right-3 rounded-full border-2  border-[#445944] px-2.5 py-0.5 text-xs font-bold shadow-[2px_2px_0px_#445944]"
-                    :style="{ background: getHealthBg(pet.health), color: getHealthColor(pet.health) }">
+                    class="absolute top-3 right-3 rounded-full border-2 border-[#445944] px-2.5 py-0.5 text-xs font-bold shadow-[2px_2px_0px_#445944]"
+                    :style="{
+                      background: getHealthBg(pet.health),
+                      color: getHealthColor(pet.health),
+                    }">
                     {{ getHealthLabel(pet.health) }}
                   </span>
                   <!-- Gender badge -->
-                  <span class="absolute top-3 left-3 rounded-full border-2 text-[#445944] border-[#445944] bg-white px-2 py-0.5 text-xs font-bold shadow-[2px_2px_0px_#445944]">
+                  <span
+                    class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-white px-2 py-0.5 text-xs font-bold text-[#445944] shadow-[2px_2px_0px_#445944]">
                     {{ pet.gender === 'male' ? '♂ 男生' : '♀ 女生' }}
                   </span>
                 </div>
@@ -382,19 +393,22 @@ const avatarInitials = computed(() => {
                   <div class="mb-3 flex items-center justify-between">
                     <div>
                       <h3 class="font-fredoka text-xl font-black text-[#445944]">{{ pet.name }}</h3>
-                      <p class="text-xs text-gray-500">{{ pet.breed }} · {{ pet.age }} 歲 · {{ pet.weight }} kg</p>
+                      <p class="text-xs text-gray-500">
+                        {{ pet.breed }} · {{ pet.age }} 歲 · {{ pet.weight }} kg
+                      </p>
                     </div>
                     <router-link
                       :to="`/healthpassport`"
-                      class="flex items-center gap-1 rounded-xl border-2 border-[#445944] bg-[#D4E6D0] px-2.5 py-1.5 text-xs font-bold text-[#445944] shadow-[2px_2px_0px_#445944] hover:shadow-[1px_1px_0px_#445944] hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                      class="flex items-center gap-1 rounded-xl border-2 border-[#445944] bg-[#D4E6D0] px-2.5 py-1.5 text-xs font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
                       <Activity :size="12" />
                       護照
                     </router-link>
                   </div>
 
                   <!-- Vaccine reminder -->
-                  <div class="flex items-center gap-2 rounded-xl border-2 border-dashed border-[#A07A3C] bg-[#FAE4AE]/50 px-3 py-2 text-xs">
-                    <Bell :size="13" class="text-[#A07A3C] shrink-0" />
+                  <div
+                    class="flex items-center gap-2 rounded-xl border-2 border-dashed border-[#A07A3C] bg-[#FAE4AE]/50 px-3 py-2 text-xs">
+                    <Bell :size="13" class="shrink-0 text-[#A07A3C]" />
                     <span class="text-[#7A5A20]">下次疫苗：{{ formatDate(pet.nextVaccine) }}</span>
                   </div>
                 </div>
@@ -404,7 +418,8 @@ const avatarInitials = computed(() => {
               <router-link
                 to="/healthpassport/addpet"
                 class="group flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] transition-all hover:border-[#445944] hover:bg-[#D4E6D0]/30">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] shadow-[3px_3px_0px_#445944] transition-all group-hover:scale-110">
+                <div
+                  class="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] shadow-[3px_3px_0px_#445944] transition-all group-hover:scale-110">
                   <Plus :size="24" class="text-[#445944]" />
                 </div>
                 <p class="text-sm font-bold text-gray-500 group-hover:text-[#445944]">新增毛孩</p>
@@ -413,7 +428,8 @@ const avatarInitials = computed(() => {
 
             <!-- Pet Health Summary -->
             <div class="rounded-3xl border-4 border-[#445944] p-5 shadow-[5px_5px_0px_#445944]">
-              <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#445944]">
+              <h3
+                class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
                 <Shield :size="20" />
                 健康摘要
               </h3>
@@ -423,11 +439,15 @@ const avatarInitials = computed(() => {
                   <span class="text-xs text-[#445944]/70">飼養數量</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <span class="text-2xl font-black text-[#445944]">{{ myPets.filter(p => p.health === 'good').length }}</span>
+                  <span class="text-2xl font-black text-[#445944]">
+                    {{ myPets.filter((p) => p.health === 'good').length }}
+                  </span>
                   <span class="text-xs text-[#445944]/70">健康良好</span>
                 </div>
                 <div class="flex flex-col items-center">
-                  <span class="text-2xl font-black text-[#A07A3C]">{{ myPets.filter(p => p.nextVaccine).length }}</span>
+                  <span class="text-2xl font-black text-[#A07A3C]">
+                    {{ myPets.filter((p) => p.nextVaccine).length }}
+                  </span>
                   <span class="text-xs text-[#445944]/70">疫苗提醒</span>
                 </div>
               </div>
@@ -440,51 +460,72 @@ const avatarInitials = computed(() => {
 
             <!-- Game stats grid -->
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-              <div class="game-stat-card rounded-3xl border-4 border-[#A07A3C] bg-[#FAE4AE] p-5 shadow-[5px_5px_0px_#A07A3C] text-center transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#A07A3C]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#A07A3C] bg-[#FAE4AE] p-5 text-center shadow-[5px_5px_0px_#A07A3C] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#A07A3C]">
                 <div class="mb-2 flex justify-center">
-                  <div class="rounded-2xl border-2 border-[#A07A3C] bg-white p-2.5 shadow-[2px_2px_0px_#A07A3C">
+                  <div
+                    class="shadow-[2px_2px_0px_#A07A3C rounded-2xl border-2 border-[#A07A3C] bg-white p-2.5">
                     <Zap :size="24" class="text-[#A07A3C]" />
                   </div>
                 </div>
-                <div class="font-fredoka text-3xl font-black text-[#A07A3C]">{{ gameStats.points.toLocaleString() }}</div>
+                <div class="font-fredoka text-3xl font-black text-[#A07A3C]">
+                  {{ gameStats.points.toLocaleString() }}
+                </div>
                 <div class="text-sm font-bold text-[#7A5A20]">毛幣點數</div>
               </div>
 
-              <div class="game-stat-card rounded-3xl border-4 border-[#9C6D6D] bg-[#9C6D6D]/15 p-5 shadow-[5px_5px_0px_#9C6D6D] text-center transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#9C6D6D]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#9C6D6D] bg-[#9C6D6D]/15 p-5 text-center shadow-[5px_5px_0px_#9C6D6D] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#9C6D6D]">
                 <div class="mb-2 flex justify-center">
-                  <div class="rounded-2xl border-2 border-[#9C6D6D] bg-white p-2.5 shadow-[2px_2px_0px_#9C6D6D]">
+                  <div
+                    class="rounded-2xl border-2 border-[#9C6D6D] bg-white p-2.5 shadow-[2px_2px_0px_#9C6D6D]">
                     <Trophy :size="24" class="text-[#9C6D6D]" />
                   </div>
                 </div>
-                <div class="font-fredoka text-3xl font-black text-[#9C6D6D]">{{ gameStats.level || 0 }}</div>
+                <div class="font-fredoka text-3xl font-black text-[#9C6D6D]">
+                  {{ gameStats.level || 0 }}
+                </div>
                 <div class="text-sm font-bold text-[#7A4A4A]">最高關卡</div>
               </div>
 
-              <div class="game-stat-card rounded-3xl border-4 border-[#5B7FA0] bg-[#D0E2F3] p-5 shadow-[5px_5px_0px_#5B7FA0] text-center transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#5B7FA0]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#5B7FA0] bg-[#D0E2F3] p-5 text-center shadow-[5px_5px_0px_#5B7FA0] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#5B7FA0]">
                 <div class="mb-2 flex justify-center">
-                  <div class="rounded-2xl border-2 border-[#5B7FA0] bg-white p-2.5 shadow-[2px_2px_0px_#5B7FA0]">
+                  <div
+                    class="rounded-2xl border-2 border-[#5B7FA0] bg-white p-2.5 shadow-[2px_2px_0px_#5B7FA0]">
                     <ShoppingBag :size="24" class="text-[#5B7FA0]" />
                   </div>
                 </div>
-                <div class="font-fredoka text-3xl font-black text-[#5B7FA0]">{{ gameStats.skins }}</div>
+                <div class="font-fredoka text-3xl font-black text-[#5B7FA0]">
+                  {{ gameStats.skins }}
+                </div>
                 <div class="text-sm font-bold text-[#3A5870]">擁有造型</div>
               </div>
             </div>
 
             <!-- Game progress card -->
-            <div class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[5px_5px_0px_#445944]">
-              <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#445944]">
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[5px_5px_0px_#445944]">
+              <h3
+                class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
                 <Award :size="20" />
                 遊戲進度
               </h3>
               <div class="space-y-3">
-                <div class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
+                <div
+                  class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
                   <span class="text-sm font-bold text-gray-600">目前進度</span>
-                  <span class="rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-sm font-black text-[#7A5A20] shadow-[2px_2px_0px_#445944]">{{ gameStats.progress }}</span>
+                  <span
+                    class="rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-sm font-black text-[#7A5A20] shadow-[2px_2px_0px_#445944]">
+                    {{ gameStats.progress }}
+                  </span>
                 </div>
-                <div class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
+                <div
+                  class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
                   <span class="text-sm font-bold text-gray-600">最後遊玩</span>
-                  <span class="text-sm font-bold text-[#445944]">{{ formatDate(gameStats.lastPlayed) }}</span>
+                  <span class="text-sm font-bold text-[#445944]">
+                    {{ formatDate(gameStats.lastPlayed) }}
+                  </span>
                 </div>
               </div>
               <router-link
@@ -503,7 +544,7 @@ const avatarInitials = computed(() => {
               <h2 class="font-fredoka text-2xl font-black text-[#445944]">我的文章</h2>
               <router-link
                 to="/create-article"
-                class="flex items-center gap-1.5 rounded-xl border-2 text-[#445944] border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
+                class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
                 <Plus :size="15" />
                 寫文章
               </router-link>
@@ -513,18 +554,25 @@ const avatarInitials = computed(() => {
               <div
                 v-for="post in myPosts"
                 :key="post.id"
-                class="group rounded-3xl border-4 text-[#445944] border-[#445944] bg-white p-5 shadow-[4px_4px_0px_#445944] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#445944]">
+                class="group rounded-3xl border-4 border-[#445944] bg-white p-5 text-[#445944] shadow-[4px_4px_0px_#445944] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#445944]">
                 <div class="mb-2 flex items-start justify-between gap-3">
                   <div class="flex-1">
-                    <span class="mb-2 inline-block rounded-full border-2 border-[#445944] bg-[#D4E6D0] px-2.5 py-0.5 text-xs font-bold text-[#445944]">
+                    <span
+                      class="mb-2 inline-block rounded-full border-2 border-[#445944] bg-[#D4E6D0] px-2.5 py-0.5 text-xs font-bold text-[#445944]">
                       {{ post.tag }}
                     </span>
-                    <h3 class="font-fredoka text-lg font-black text-gray-800 group-hover:text-[#445944]">{{ post.title }}</h3>
+                    <h3
+                      class="font-fredoka text-lg font-black text-gray-800 group-hover:text-[#445944]">
+                      {{ post.title }}
+                    </h3>
                   </div>
                 </div>
-                <p class="mb-3 text-sm text-gray-600 line-clamp-2">{{ post.summary }}</p>
+                <p class="mb-3 line-clamp-2 text-sm text-gray-600">{{ post.summary }}</p>
                 <div class="flex items-center justify-between text-xs text-gray-500">
-                  <span class="flex items-center gap-1"><Clock :size="12" /> {{ post.date }}</span>
+                  <span class="flex items-center gap-1">
+                    <Clock :size="12" />
+                    {{ post.date }}
+                  </span>
                   <div class="flex items-center gap-4">
                     <span class="flex items-center gap-1">❤️ {{ post.likes }}</span>
                     <span class="flex items-center gap-1">💬 {{ post.comments }}</span>
@@ -532,8 +580,10 @@ const avatarInitials = computed(() => {
                 </div>
               </div>
 
-              <div v-if="myPosts.length === 0" class="rounded-3xl border-4 border-dashed border-black bg-[#FCF4E5] py-16 text-center">
-                <p class="text-gray-400 font-bold">還沒有發表文章，來分享你的毛孩日常吧！</p>
+              <div
+                v-if="myPosts.length === 0"
+                class="rounded-3xl border-4 border-dashed border-black bg-[#FCF4E5] py-16 text-center">
+                <p class="font-bold text-gray-400">還沒有發表文章，來分享你的毛孩日常吧！</p>
               </div>
             </div>
 
@@ -545,15 +595,14 @@ const avatarInitials = computed(() => {
               <ChevronRight :size="16" />
             </router-link>
           </div>
-
         </div>
 
         <!-- ── RIGHT SIDEBAR ──────────────────────────────────── -->
         <div class="space-y-6 lg:col-span-1">
-
           <!-- Quick Navigation -->
-          <div class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
-            <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#445944]">
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
               <Zap :size="18" />
               快速導覽
             </h3>
@@ -565,26 +614,33 @@ const avatarInitials = computed(() => {
                 class="quick-link flex flex-col items-center gap-1.5 rounded-2xl border-2 border-[#445944] p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#445944]"
                 :style="{ background: link.bg }">
                 <component :is="link.icon" :size="20" :style="{ color: link.color }" />
-                <span class="text-[11px] font-bold leading-tight" :style="{ color: link.color }">{{ link.label }}</span>
+                <span class="text-[11px] leading-tight font-bold" :style="{ color: link.color }">
+                  {{ link.label }}
+                </span>
               </router-link>
             </div>
           </div>
 
           <!-- Community Stats -->
-          <div class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#7a6856]">
-            <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#7a6856]">
+          <div
+            class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#7a6856]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
               <Users :size="18" />
               社群概況
             </h3>
             <div class="space-y-3">
-              <div class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
                   <FileText :size="15" class="text-[#7a6856]" />
                   發表文章
                 </span>
-                <span class="font-fredoka text-xl font-black text-[#7a6856]">{{ myPosts.length }}</span>
+                <span class="font-fredoka text-xl font-black text-[#7a6856]">
+                  {{ myPosts.length }}
+                </span>
               </div>
-              <div class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
                   <Heart :size="15" class="text-[#7a6856]" />
                   累計按讚
@@ -593,7 +649,8 @@ const avatarInitials = computed(() => {
                   {{ myPosts.reduce((acc, p) => acc + p.likes, 0) }}
                 </span>
               </div>
-              <div class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
                   <MessageCircle :size="15" class="text-[#7a6856]" />
                   累計留言
@@ -606,13 +663,15 @@ const avatarInitials = computed(() => {
             <router-link
               to="/community-home"
               class="mt-4 flex items-center justify-center gap-1 text-sm font-bold text-[#7a6856] hover:underline">
-              前往社群 <ChevronRight :size="14" />
+              前往社群
+              <ChevronRight :size="14" />
             </router-link>
           </div>
 
           <!-- Support & Contact -->
-          <div class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
-            <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#445944]">
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
               <HeadphonesIcon :size="18" />
               客服 &amp; 支援
             </h3>
@@ -622,21 +681,25 @@ const avatarInitials = computed(() => {
                 :key="link.label"
                 :to="link.route"
                 class="group flex items-center gap-3 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#445944]/30 hover:shadow-[2px_2px_0px_#445944]">
-                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[2px_2px_0px_#445944] transition-all group-hover:shadow-none">
+                <div
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[2px_2px_0px_#445944] transition-all group-hover:shadow-none">
                   <component :is="link.icon" :size="16" class="text-[#445944]" />
                 </div>
-                <div class="flex-1 min-w-0">
+                <div class="min-w-0 flex-1">
                   <div class="text-sm font-bold text-[#445944]">{{ link.label }}</div>
                   <div class="truncate text-xs text-[#445944]">{{ link.desc }}</div>
                 </div>
-                <ChevronRight :size="14" class="shrink-0 text-gray-400 transition-transform group-hover:translate-x-1" />
+                <ChevronRight
+                  :size="14"
+                  class="shrink-0 text-gray-400 transition-transform group-hover:translate-x-1" />
               </router-link>
             </div>
           </div>
 
           <!-- Account Settings -->
-          <div class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#7a6856]">
-            <h3 class="mb-4 flex items-center gap-2 font-fredoka text-lg font-black text-[#7a6856]">
+          <div
+            class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#7a6856]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
               <Settings :size="18" />
               帳號設定
             </h3>
@@ -646,13 +709,17 @@ const avatarInitials = computed(() => {
                 class="group flex w-full items-center gap-3 rounded-2xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3 text-left transition-all hover:bg-[#7a6856]/30">
                 <Edit3 :size="15" class="text-[#7a6856]" />
                 <span class="text-sm font-bold text-[#7a6856]">編輯個人資料</span>
-                <ChevronRight :size="14" class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
+                <ChevronRight
+                  :size="14"
+                  class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 class="group flex w-full items-center gap-3 rounded-2xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3 text-left transition-all hover:bg-[#7a6856]/30">
                 <Bell :size="15" class="text-[#7a6856]" />
                 <span class="text-sm font-bold text-[#7a6856]">通知設定</span>
-                <ChevronRight :size="14" class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
+                <ChevronRight
+                  :size="14"
+                  class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 @click="logout"
@@ -662,7 +729,6 @@ const avatarInitials = computed(() => {
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </main>
@@ -673,7 +739,8 @@ const avatarInitials = computed(() => {
         v-if="isEditingProfile"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
         @click.self="isEditingProfile = false">
-        <div class="w-full max-w-lg rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-8 shadow-[8px_8px_0px_#445944]">
+        <div
+          class="w-full max-w-lg rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-8 shadow-[8px_8px_0px_#445944]">
           <div class="mb-6 flex items-center justify-between">
             <h2 class="font-fredoka text-2xl font-black text-[#445944]">編輯個人資料</h2>
             <button
@@ -690,7 +757,7 @@ const avatarInitials = computed(() => {
                 v-model="editForm.name"
                 type="text"
                 placeholder="請輸入姓名"
-                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:outline-none focus:ring-2 focus:ring-[#445944]/20" />
+                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:ring-2 focus:ring-[#445944]/20 focus:outline-none" />
             </div>
             <div>
               <label class="mb-1.5 block text-sm font-bold text-gray-700">電子郵件</label>
@@ -698,7 +765,7 @@ const avatarInitials = computed(() => {
                 v-model="editForm.email"
                 type="email"
                 placeholder="請輸入電子郵件"
-                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:outline-none focus:ring-2 focus:ring-[#445944]/20" />
+                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:ring-2 focus:ring-[#445944]/20 focus:outline-none" />
             </div>
             <div>
               <label class="mb-1.5 block text-sm font-bold text-gray-700">電話</label>
@@ -706,7 +773,7 @@ const avatarInitials = computed(() => {
                 v-model="editForm.phone"
                 type="tel"
                 placeholder="請輸入電話號碼"
-                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:outline-none focus:ring-2 focus:ring-[#445944]/20" />
+                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:ring-2 focus:ring-[#445944]/20 focus:outline-none" />
             </div>
             <div>
               <label class="mb-1.5 block text-sm font-bold text-gray-700">個人簡介</label>
@@ -714,14 +781,14 @@ const avatarInitials = computed(() => {
                 v-model="editForm.bio"
                 rows="3"
                 placeholder="介紹一下自己和你的毛孩..."
-                class="w-full rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:outline-none focus:ring-2 focus:ring-[#445944]/20 resize-none" />
+                class="w-full resize-none rounded-2xl border-2 border-gray-700 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:ring-2 focus:ring-[#445944]/20 focus:outline-none" />
             </div>
 
             <div class="flex gap-3 pt-2">
               <button
                 @click="saveProfile"
                 class="flex-1 rounded-2xl border-2 border-[#445944] bg-[#445944] py-3 text-sm font-bold text-white transition-all hover:translate-x-[2px] hover:translate-y-[2px]">
-                <CheckCircle class="inline mr-1.5" :size="16" />
+                <CheckCircle class="mr-1.5 inline" :size="16" />
                 儲存變更
               </button>
               <button
@@ -734,7 +801,6 @@ const avatarInitials = computed(() => {
         </div>
       </div>
     </Transition>
-
   </div>
 </template>
 
