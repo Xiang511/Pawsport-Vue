@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 // 自己做的卡片樣式
 import Article_ListCard from '@/components/Client/Article_ListCard.vue'
@@ -22,18 +23,26 @@ const {
   selectParent,
   selectSub,
   fetchData,
+  saveRecentViewedArticle,
 } = useCommunityHome()
 
+const recentViewedArticles = ref([])
+
 // 跳轉
-const goToArticleDetail = (articleId) => {
+const goToArticleDetail = (article) => {
+  const articleId = article.articleId
+
   if (!articleId) {
     console.error('錯誤：沒有拿到有效的文章 ID')
     return
   }
 
-  // 導向你的詳細頁路由，名稱請對照你的 router/index.js 設定
+  saveRecentViewedArticle(article)
+
+  recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
+
   router.push({
-    name: 'article-detail', // 或者是 'community-detail'
+    name: 'article-detail',
     params: { id: articleId },
   })
 }
@@ -42,8 +51,14 @@ const goToCreatePage = () => {
   router.push({ name: 'create-article' })
 }
 
+const clearRecentViewed = () => {
+  localStorage.removeItem('recentViewedArticles')
+  recentViewedArticles.value = []
+}
+
 onMounted(() => {
   fetchData()
+  recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
 })
 </script>
 
@@ -163,7 +178,7 @@ onMounted(() => {
                 :viewCount="article.viewCount"
                 :bookmarkCount="article.bookmarkCount ?? 0"
                 :isBookmarked="article.isBookmarked ?? false"
-                @click-card="goToArticleDetail"
+                @click-card="() => goToArticleDetail(article)"
                 @toggle-bookmark="(id) => console.log('收藏文章：', id)"
                 class="cursor-pointer transition-transform hover:-translate-y-0.5" />
 
@@ -174,6 +189,13 @@ onMounted(() => {
               </div>
 
               <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
+                <!-- 第一頁 -->
+                <button
+                  @click="currentPage = 1"
+                  :disabled="currentPage === 1"
+                  class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                  <ChevronLeft :size="18" />
+                </button>
                 <button
                   @click="currentPage--"
                   :disabled="currentPage === 1"
@@ -188,6 +210,13 @@ onMounted(() => {
                   :disabled="currentPage === totalPages"
                   class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
                   下一頁
+                </button>
+                <!-- 最後一頁 -->
+                <button
+                  @click="currentPage = totalPages"
+                  :disabled="currentPage === totalPages"
+                  class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                  <ChevronRight :size="18" />
                 </button>
               </div>
             </div>
@@ -223,13 +252,42 @@ onMounted(() => {
                 </button>
               </div>
             </div>
-            <div class="flex flex-col gap-2">
-              <h3>最近瀏覽</h3>
-              <ul class="flex list-disc flex-col gap-2 pl-5 text-sm text-gray-600">
-                <li>如何照顧幼貓？</li>
-                <li>柴犬個性分析—其實原本是狼!?</li>
-                <li>犬貓鮮食推薦~!來自鮮味小姐自創研發品牌</li>
+            <div class="rounded-2xl p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-stone-800">最近瀏覽</h3>
+
+                <button
+                  v-if="recentViewedArticles.length > 0"
+                  class="text-xs text-stone-400 hover:text-amber-600"
+                  @click="clearRecentViewed">
+                  清除
+                </button>
+              </div>
+
+              <ul
+                v-if="recentViewedArticles.length > 0"
+                class="flex flex-col divide-y divide-stone-100">
+                <li v-for="article in recentViewedArticles" :key="article.articleId" class="py-2">
+                  <RouterLink
+                    :to="{ name: 'article-detail', params: { id: article.articleId } }"
+                    class="group block rounded-lg px-2 py-1 transition-colors hover:bg-amber-50">
+                    <p
+                      class="line-clamp-2 text-sm font-medium text-stone-700 group-hover:text-amber-700">
+                      {{ article.title }}
+                    </p>
+
+                    <p class="mt-1 text-xs text-stone-400">
+                      {{ article.categoryName }}
+                    </p>
+                  </RouterLink>
+                </li>
               </ul>
+
+              <div
+                v-else
+                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                尚無最近瀏覽紀錄
+              </div>
             </div>
           </div>
         </aside>

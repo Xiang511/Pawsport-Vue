@@ -11,6 +11,7 @@ import {
   Eye,
   Calendar,
 } from 'lucide-vue-next'
+import { useDateTime } from '@/composables/useDateTime'
 import request from '@/api/axios'
 
 const route = useRoute()
@@ -20,6 +21,7 @@ const articleDetail = ref(null)
 const isLoading = ref(false)
 const isError = ref(false)
 
+const { formatLocalDate, timeAgo } = useDateTime()
 // 取得文章詳細資料
 const fetchArticleDetail = async () => {
   isLoading.value = true
@@ -42,6 +44,9 @@ const fetchArticleDetail = async () => {
 
 const goBack = () => {
   router.push({ name: 'community-home' })
+}
+const goToHome = () => {
+  router.push({ name: 'home' })
 }
 
 onMounted(() => {
@@ -67,12 +72,13 @@ onMounted(() => {
     <div v-else-if="articleDetail">
       <nav
         class="container mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 text-sm text-slate-500">
-        <button @click="goBack" class="flex items-center gap-0.5 hover:text-orange-600">
-          <ChevronLeft class="h-4 w-4" />
+        <button @click="goToHome" class="flex items-center gap-0.5 hover:text-orange-600">
           首頁
         </button>
         <span>></span>
-        <span>論壇</span>
+        <button @click="goBack" class="flex items-center gap-0.5 hover:text-orange-600">
+          社群
+        </button>
         <span>></span>
         <span class="font-medium text-orange-600">{{ articleDetail.categoryName }}</span>
         <span>></span>
@@ -218,7 +224,7 @@ onMounted(() => {
                       發表日期
                     </span>
                     <span class="font-mono text-xs text-slate-700">
-                      {{ articleDetail.createAt }}
+                      {{ formatLocalDate(articleDetail.createAt) }}
                     </span>
                   </div>
                 </div>

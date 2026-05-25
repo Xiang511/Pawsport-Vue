@@ -141,6 +141,24 @@ export function useCommunityHome() {
     currentPage.value = 1 // 切換子分類時，頁碼回到第一頁
   }
 
+  const saveRecentViewedArticle = (article) => {
+    const key = 'recentViewedArticles'
+
+    const oldData = JSON.parse(localStorage.getItem(key)) || []
+
+    const newItem = {
+      articleId: article.articleId,
+      title: article.title,
+      categoryName: article.categoryName,
+    }
+
+    const filtered = oldData.filter((item) => item.articleId !== newItem.articleId)
+
+    const updated = [newItem, ...filtered].slice(0, 5)
+
+    localStorage.setItem(key, JSON.stringify(updated))
+  }
+
   return {
     parentCategories,
     subCategories,
@@ -155,5 +173,6 @@ export function useCommunityHome() {
     selectParent,
     selectSub,
     fetchData,
+    saveRecentViewedArticle,
   }
 }
