@@ -22,7 +22,7 @@ const form = reactive({
   features: '',
   contactPhone: '',
   contactEmail: '',
-  photo: ''
+  photo: '',
 })
 
 const handleImageUpload = (event) => {
@@ -46,10 +46,45 @@ const removeImage = () => {
 }
 
 const cityData = {
-  台北市: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
-  新北市: ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '土城區', '蘆洲區', '樹林區', '汐止區'],
+  台北市: [
+    '中正區',
+    '大同區',
+    '中山區',
+    '松山區',
+    '大安區',
+    '萬華區',
+    '信義區',
+    '士林區',
+    '北投區',
+    '內湖區',
+    '南港區',
+    '文山區',
+  ],
+  新北市: [
+    '板橋區',
+    '三重區',
+    '中和區',
+    '永和區',
+    '新莊區',
+    '新店區',
+    '土城區',
+    '蘆洲區',
+    '樹林區',
+    '汐止區',
+  ],
   桃園市: ['桃園區', '中壢區', '平鎮區', '八德區', '楊梅區', '蘆竹區'],
-  台中市: ['中區', '東區', '南區', '西區', '北區', '北屯區', '西屯區', '南屯區', '太平區', '大里區'],
+  台中市: [
+    '中區',
+    '東區',
+    '南區',
+    '西區',
+    '北區',
+    '北屯區',
+    '西屯區',
+    '南屯區',
+    '太平區',
+    '大里區',
+  ],
   台南市: ['中西區', '東區', '南區', '北區', '安平區', '安南區', '永康區', '歸仁區'],
   高雄市: ['新興區', '前金區', '苓雅區', '左營區', '楠梓區', '三民區', '鼓山區', '鳳山區'],
   嘉義市: ['東區', '西區'],
@@ -79,13 +114,13 @@ const handleSubmit = async () => {
       features: form.features,
       contactPhone: form.contactPhone,
       contactEmail: form.contactEmail,
-      photo: form.photo
+      photo: form.photo,
     }
 
     await request.post('/users/missing-pets', payload)
 
     alert('刊登成功！希望能儘快找到毛孩。')
-    router.push({ name: "missing-report" })
+    router.push({ name: 'missing-report' })
   } catch (error) {
     console.error('刊登失敗:', error)
     alert('刊登失敗，請確認欄位格式是否正確或稍後再試。')
@@ -104,10 +139,11 @@ const closePage = () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
-    
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FDF9F3] pb-20 text-gray-800 antialiased">
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header
+      class="hero-container relative overflow-hidden border-b-4 border-[#445944] bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -130,9 +166,9 @@ const closePage = () => {
         </svg>
       </div>
 
-      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+      <div class="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4">
         <div
-          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          class="font-fredoka animate-pulse-slow mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm">
           <Sparkles :size="14" class="animate-spin-slow" />
           POST MISSING REPORT
         </div>
@@ -151,39 +187,43 @@ const closePage = () => {
     </header>
 
     <!-- FORM BODY CONTAINER -->
-    <div class="mx-auto max-w-4xl w-[90%] mt-12">
-      <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-10 shadow-[6px_6px_0px_#445944]">
-        
+    <div class="mx-auto mt-12 w-[90%] max-w-4xl">
+      <div
+        class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-10">
         <!-- Close page button -->
         <button
           @click="closePage"
-          class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] hover:shadow-[1px_1px_0px_#445944] hover:translate-x-[1px] hover:translate-y-[1px]">
+          class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#445944] hover:text-white hover:shadow-[1px_1px_0px_#445944]">
           ✕
         </button>
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
-
           <!-- 寵物照片上傳 -->
-          <div class="flex flex-col items-center justify-center py-6 bg-[#FCF4E5] rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944] mb-4">
-            <div class="relative h-36 w-36 overflow-hidden rounded-2xl border-4 border-[#445944] bg-white shadow-md">
+          <div
+            class="mb-4 flex flex-col items-center justify-center rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] py-6 shadow-[4px_4px_0px_#445944]">
+            <div
+              class="relative h-36 w-36 overflow-hidden rounded-2xl border-4 border-[#445944] bg-white shadow-md">
               <img v-if="form.photo" :src="form.photo" class="h-full w-full object-cover" />
-              <div v-else class="flex h-full w-full items-center justify-center bg-white text-gray-400">
+              <div
+                v-else
+                class="flex h-full w-full items-center justify-center bg-white text-gray-400">
                 <Camera class="h-8 w-8 text-[#445944]" />
               </div>
-              <label class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
+              <label
+                class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
                 <span class="text-xs font-black">上傳照片</span>
                 <input type="file" @change="handleImageUpload" class="hidden" accept="image/*" />
               </label>
             </div>
-            
+
             <button
               v-if="form.photo"
               @click="removeImage"
               type="button"
-              class="mt-3 rounded-xl border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944] hover:bg-red-600 transition-colors">
+              class="mt-3 rounded-xl border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944] transition-colors hover:bg-red-600">
               移除照片 ✕
             </button>
-            
+
             <p class="mt-3 text-xs font-bold text-gray-500">建議上傳清楚的全身照片 (限 2MB)</p>
           </div>
 
@@ -196,20 +236,26 @@ const closePage = () => {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-black text-gray-600">寵物名稱 <span class="text-red-500">*</span></label>
+                <label class="mb-2 block text-sm font-black text-gray-600">
+                  寵物名稱
+                  <span class="text-red-500">*</span>
+                </label>
                 <input
                   v-model="form.petName"
                   type="text"
                   placeholder="例如：阿寶"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div>
-                <label class="mb-2 block text-sm font-black text-gray-600">動物類別 <span class="text-red-500">*</span></label>
+                <label class="mb-2 block text-sm font-black text-gray-600">
+                  動物類別
+                  <span class="text-red-500">*</span>
+                </label>
                 <select
                   v-model="form.petType"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                  class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                   <option value="狗">狗</option>
                   <option value="貓">貓</option>
                   <option value="其他">其他</option>
@@ -222,29 +268,29 @@ const closePage = () => {
                 <label class="mb-2 block text-sm font-black text-gray-600">性別</label>
                 <select
                   v-model="form.gender"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                  class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                   <option value="公">公</option>
                   <option value="母">母</option>
                   <option value="未知">未知</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-gray-600">毛色</label>
                 <input
                   v-model="form.furColor"
                   type="text"
                   placeholder="例如：黃色、橘白"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-gray-600">晶片號碼</label>
                 <input
                   v-model="form.hasTag"
                   type="text"
                   placeholder="如果沒有請填無"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
             </div>
 
@@ -254,7 +300,7 @@ const closePage = () => {
                 v-model="form.features"
                 rows="3"
                 placeholder="請描述毛孩的特徵、個性或穿戴物（例如：左耳有剪耳、穿戴藍色項圈）"
-                class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]"></textarea>
+                class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none"></textarea>
             </div>
           </div>
 
@@ -267,36 +313,45 @@ const closePage = () => {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-black text-gray-600">遺失日期 <span class="text-red-500">*</span></label>
+                <label class="mb-2 block text-sm font-black text-gray-600">
+                  遺失日期
+                  <span class="text-red-500">*</span>
+                </label>
                 <input
                   v-model="form.lostDate"
                   type="date"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="mb-2 block text-sm font-black text-gray-600">縣市 <span class="text-red-500">*</span></label>
+                  <label class="mb-2 block text-sm font-black text-gray-600">
+                    縣市
+                    <span class="text-red-500">*</span>
+                  </label>
                   <select
                     v-model="form.city"
                     @change="form.district = ''"
                     required
-                    class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                    class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                     <option value="">請選擇</option>
                     <option v-for="(dists, city) in cityData" :key="city" :value="city">
                       {{ city }}
                     </option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label class="mb-2 block text-sm font-black text-gray-600">地區 <span class="text-red-500">*</span></label>
+                  <label class="mb-2 block text-sm font-black text-gray-600">
+                    地區
+                    <span class="text-red-500">*</span>
+                  </label>
                   <select
                     v-model="form.district"
                     :disabled="!form.city"
                     required
-                    class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none disabled:opacity-50">
+                    class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none disabled:opacity-50">
                     <option value="">請選擇</option>
                     <option v-for="d in availableDistricts" :key="d" :value="d">{{ d }}</option>
                   </select>
@@ -305,13 +360,16 @@ const closePage = () => {
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-black text-gray-600">確切遺失地點 / 街道 <span class="text-red-500">*</span></label>
+              <label class="mb-2 block text-sm font-black text-gray-600">
+                確切遺失地點 / 街道
+                <span class="text-red-500">*</span>
+              </label>
               <input
                 v-model="form.address"
                 type="text"
                 placeholder="例如：中山路一段123號附近、中央公園內"
                 required
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
             </div>
           </div>
 
@@ -324,39 +382,45 @@ const closePage = () => {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-black text-gray-600">聯絡電話 <span class="text-red-500">*</span></label>
+                <label class="mb-2 block text-sm font-black text-gray-600">
+                  聯絡電話
+                  <span class="text-red-500">*</span>
+                </label>
                 <input
                   v-model="form.contactPhone"
                   type="text"
                   placeholder="例如：0912-345-678"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div>
-                <label class="mb-2 block text-sm font-black text-gray-600">聯絡 E-mail <span class="text-red-500">*</span></label>
+                <label class="mb-2 block text-sm font-black text-gray-600">
+                  聯絡 E-mail
+                  <span class="text-red-500">*</span>
+                </label>
                 <input
                   v-model="form.contactEmail"
                   type="email"
                   placeholder="例如：owner@example.com"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
             </div>
           </div>
 
           <!-- Action buttons cancel / confirmation -->
-          <div class="flex flex-col sm:flex-row items-center gap-4 pt-6">
+          <div class="flex flex-col items-center gap-4 pt-6 sm:flex-row">
             <button
               type="button"
               @click="handleCancel"
-              class="w-full sm:flex-1 rounded-2xl border-2 border-[#445944] bg-white py-4 font-black text-[#445944] shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
+              class="w-full rounded-2xl border-2 border-[#445944] bg-white py-4 font-black text-[#445944] shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] sm:flex-1">
               取消
             </button>
-            
+
             <button
               type="submit"
-              class="w-full sm:flex-1 rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] sm:flex-1">
               確認刊登
             </button>
           </div>
