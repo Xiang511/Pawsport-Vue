@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   Heart,
@@ -43,8 +43,17 @@ const fetchArticleDetail = async () => {
 }
 
 const goBack = () => {
-  router.push({ name: 'community-home' })
+  router.push({
+    name: 'community-home',
+    query: {
+      page: route.query.fromPage || 1,
+      parent: route.query.fromParent || undefined,
+      sub: route.query.fromSub || undefined,
+      keyword: route.query.fromKeyword || undefined,
+    },
+  })
 }
+
 const goToHome = () => {
   router.push({ name: 'home' })
 }

@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 // 自己做的卡片樣式
@@ -8,6 +8,7 @@ import Article_ListCard from '@/components/Client/Article_ListCard.vue'
 import { useCommunityHome } from '@/composables/useCommunityHome'
 
 const router = useRouter()
+const route = useRoute()
 
 const {
   parentCategories,
@@ -44,6 +45,12 @@ const goToArticleDetail = (article) => {
   router.push({
     name: 'article-detail',
     params: { id: articleId },
+    query: {
+      fromPage: currentPage.value,
+      fromParent: currentParentId.value || undefined,
+      fromSub: currentSubId.value || undefined,
+      fromKeyword: searchQuery.value.trim() || undefined,
+    },
   })
 }
 
@@ -56,8 +63,50 @@ const clearRecentViewed = () => {
   recentViewedArticles.value = []
 }
 
-onMounted(() => {
-  fetchData()
+watch([currentPage, currentParentId, currentSubId, searchQuery], ([page, parent, sub, keyword]) => {
+  router.replace({
+    name: 'community-home',
+    query: {
+      page: page || 1,
+      parent: parent || undefined,
+      sub: sub || undefined,
+      keyword: keyword?.trim() || undefined,
+    },
+  })
+})
+
+watch(searchQuery, () => {
+  currentPage.value = 1
+})
+
+watch(totalPages, () => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value
+  }
+
+  if (currentPage.value < 1) {
+    currentPage.value = 1
+  }
+})
+
+onMounted(async () => {
+  await fetchData()
+
+  const pageFromQuery = Number(route.query.page)
+  const parentFromQuery = Number(route.query.parent)
+  const subFromQuery = Number(route.query.sub)
+  const keywordFromQuery = route.query.keyword
+
+  currentParentId.value = Number.isNaN(parentFromQuery) ? 0 : parentFromQuery
+  currentSubId.value = Number.isNaN(subFromQuery) ? 0 : subFromQuery
+  searchQuery.value = typeof keywordFromQuery === 'string' ? keywordFromQuery : ''
+
+  if (!Number.isNaN(pageFromQuery) && pageFromQuery > 0) {
+    currentPage.value = pageFromQuery
+  } else {
+    currentPage.value = 1
+  }
+
   recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
 })
 </script>
