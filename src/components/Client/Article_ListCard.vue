@@ -69,7 +69,7 @@ const handleBookmark = (e) => {
       <!-- 區塊 B：縮圖，維持原本 110x70 -->
       <div class="h-[70px] w-[110px] shrink-0 overflow-hidden rounded bg-stone-100">
         <img
-          :src="image"
+          :src="image || 'https://placehold.co/400x260'"
           :alt="title"
           class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
       </div>
