@@ -2,11 +2,33 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import request from '@/api/axios'
-import { Trash2, Undo2, Sparkles } from 'lucide-vue-next'
+import { Trash2, Undo2, Sparkles, Camera } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
 const passportId = ref(null)
+
+const fileInput = ref(null)
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const onFileChange = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('照片請勿超過 2MB')
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    form.photo = e.target.result // base64 Data URL
+  }
+  reader.readAsDataURL(file)
+}
 
 const form = reactive({
   id: null,
@@ -105,10 +127,22 @@ const saveChanges = async () => {
 
         <!-- ACTIVE PROFILE IMAGE BOX -->
         <div class="relative mb-6 flex flex-col items-center justify-center py-6 bg-[#FCF4E5] rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
-          <div class="h-24 w-24 overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md">
-            <img :src="form.photo || 'default_pet.jpg'" class="h-full w-full object-cover" />
+          <div
+            @click="triggerFileInput"
+            class="group relative h-24 w-24 cursor-pointer overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md transition hover:scale-105 active:scale-95">
+            <img :src="form.photo || 'https://placecats.com/g/100/100'" class="h-full w-full object-cover" />
+            <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <Camera class="h-5 w-5" />
+              <span class="text-[10px] font-black mt-0.5">更換照片</span>
+            </div>
           </div>
-          <p class="mt-3 text-xs font-black text-gray-500 text-center">健康護照專屬頭像</p>
+          <p class="mt-3 text-xs font-black text-gray-500 text-center">點擊頭像上傳/更換新照片</p>
+          <input
+            type="file"
+            ref="fileInput"
+            @change="onFileChange"
+            class="hidden"
+            accept="image/*" />
         </div>
 
         <!-- FORM BODY -->

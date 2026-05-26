@@ -9,8 +9,16 @@ const router = useRouter()
 
 // 寵物詳細資料 (與 API 對接)
 const pet = ref(null)
+const loading = ref(false)
+
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
 
 const fetchPetDetail = async (id) => {
+  loading.value = true
   try {
     const response = await request.get(`/users/missing-pets/${id}`)
     pet.value = response.data.data || response.data
@@ -18,6 +26,8 @@ const fetchPetDetail = async (id) => {
     console.error('取得寵物詳細資料失敗:', error)
     alert('找不到這筆遺失紀錄或已被撤銷')
     router.back()
+  } finally {
+    loading.value = false
   }
 }
 
@@ -99,7 +109,8 @@ const clipboard = (text) => {
             
             <div class="overflow-hidden rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] shadow-md">
               <img
-                :src="pet.photo"
+                :src="pet.photo || DEFAULT_PET_IMAGE"
+                @error="handleImageError"
                 class="w-full object-cover transition-transform duration-700 hover:scale-105"
                 :alt="pet.breed" />
             </div>
@@ -225,10 +236,30 @@ const clipboard = (text) => {
       </div>
     </div>
     
-    <!-- Loading State -->
-    <div v-else class="flex flex-col items-center justify-center py-32 gap-4">
-      <div class="h-16 w-16 animate-spin rounded-full border-4 border-dashed border-[#445944]"></div>
-      <p class="text-[#445944] font-black animate-pulse text-lg">協尋詳細內容加載中...</p>
+    <!-- Loading State with Premium Neo-Brutalist Skeleton Detailed Loader -->
+    <div v-else class="mx-auto max-w-7xl w-[90%] px-4 mt-12 flex flex-col gap-8 lg:flex-row animate-pulse">
+      <!-- Left Column skeleton photo box card -->
+      <aside class="w-full lg:w-1/3">
+        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div class="mb-4 h-6 bg-[#445944]/20 rounded-xl w-1/3"></div>
+          <div class="aspect-square w-full rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5] flex items-center justify-center">
+            <span class="text-4xl opacity-20">🚨</span>
+          </div>
+          <div class="mt-6 h-12 bg-[#445944]/20 rounded-xl w-full"></div>
+        </div>
+      </aside>
+      <!-- Right Column skeleton data block card -->
+      <div class="w-full lg:w-2/3">
+        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] space-y-6">
+          <div class="h-8 bg-[#445944]/20 rounded-xl w-1/4"></div>
+          <div class="space-y-4">
+            <div v-for="j in 4" :key="j" class="flex gap-4 border-b border-dashed border-gray-200 pb-2">
+              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
+              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

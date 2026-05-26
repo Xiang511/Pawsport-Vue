@@ -14,14 +14,24 @@ const filters = reactive({
 
 // 2. 遺失寵物資料 (從 API 取得)
 const lostPets = ref([])
+const loading = ref(false)
+
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
 
 const fetchMissingPets = async () => {
+  loading.value = true
   try {
     const response = await request.get('/users/missing-pets')
     // 若後端封裝在 response.data.data 中，請根據實際攔截器調整
     lostPets.value = response.data.data || response.data || []
   } catch (error) {
     console.error('獲取遺失寵物列表失敗:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -247,8 +257,29 @@ const handleSearch = () => {
         </router-link>
       </div>
 
+      <!-- Loading State with Premium Neo-Brutalist Skeleton Cards -->
+      <div v-if="loading" class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div
+          v-for="i in 8"
+          :key="i"
+          class="animate-pulse overflow-hidden rounded-3xl border-4 border-[#445944]/30 bg-white shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <!-- Image Skeleton -->
+          <div class="relative h-48 bg-[#FCF4E5] border-b-4 border-[#445944]/20 flex items-center justify-center">
+            <span class="text-4xl opacity-25">🚨</span>
+          </div>
+          <!-- Info Body Skeleton -->
+          <div class="p-5 bg-[#FCF4E5]/40 space-y-4">
+            <div class="h-6 bg-[#445944]/20 rounded-xl w-2/3"></div>
+            <div class="space-y-2">
+              <div class="h-4 bg-[#445944]/15 rounded-lg w-full"></div>
+              <div class="h-4 bg-[#445944]/15 rounded-lg w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Cards Grid -->
-      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div
           v-for="pet in filteredPets"
           :key="pet.id"
@@ -257,7 +288,8 @@ const handleSearch = () => {
           <!-- Image Section -->
           <div class="relative h-48 overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
             <img
-              :src="pet.photo"
+              :src="pet.photo || DEFAULT_PET_IMAGE"
+              @error="handleImageError"
               class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div
               class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">

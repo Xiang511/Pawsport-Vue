@@ -70,6 +70,12 @@ const onAddImage = () => {
 const onAddWeight = () => {
   router.push({ name: 'passport-add-weight', query: { passportId: currentPet.value?.id } })
 }
+
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
 </script>
 
 <template>
@@ -128,10 +134,54 @@ const onAddWeight = () => {
         <SquarePlus :size="22" />
       </button>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center py-20 gap-4">
-        <div class="h-16 w-16 animate-spin rounded-full border-4 border-dashed border-[#445944]"></div>
-        <p class="text-[#445944] font-black animate-pulse">健康護照同步載入中...</p>
+      <!-- Loading State (Premium Neo-Brutalist Skeleton Detailed Loader) -->
+      <div v-if="loading" class="animate-pulse flex flex-col gap-8 lg:flex-row">
+        <!-- Left Side Column: Active Pet Card Skeleton -->
+        <div class="w-full lg:w-1/3">
+          <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-6 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] flex flex-col items-center text-center">
+            <!-- Avatar Image Circle Skeleton -->
+            <div class="mb-4 h-32 w-32 rounded-full border-4 border-[#445944]/20 bg-[#FCF4E5] flex items-center justify-center">
+              <span class="text-4xl opacity-20">🐾</span>
+            </div>
+            <!-- Name & Info Skeleton -->
+            <div class="h-8 bg-[#445944]/20 rounded-xl w-1/2 mb-3"></div>
+            <div class="h-5 bg-[#445944]/15 rounded-lg w-2/3 mb-4"></div>
+            <div class="h-8 bg-[#445944]/20 rounded-xl w-3/4 mb-6"></div>
+            
+            <!-- Switch list circles skeleton -->
+            <div class="border-t-2 border-[#445944]/20 pt-4 w-full">
+              <div class="h-4 bg-[#445944]/15 rounded-lg w-1/3 mx-auto mb-3"></div>
+              <div class="flex justify-center gap-3">
+                <div v-for="j in 3" :key="j" class="h-12 w-12 rounded-full bg-[#FCF4E5]/40 border-2 border-dashed border-[#445944]/20"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side Column: Tab Selector and Content Tab Skeleton -->
+        <div class="w-full lg:w-2/3 space-y-6">
+          <!-- Neo-brutalist Tabs Bar Skeleton -->
+          <div class="flex gap-2 rounded-2xl border-4 border-[#445944]/30 bg-[#FCF4E5]/50 p-1.5 shadow-[4px_4px_0px_rgba(68,89,68,0.1)]">
+            <div v-for="t in 4" :key="t" class="flex-1 h-10 bg-[#445944]/20 rounded-xl"></div>
+          </div>
+          <!-- Tabs Content Card Panel Skeleton -->
+          <div class="h-[400px] rounded-3xl border-4 border-[#445944]/30 bg-white p-6 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] space-y-6">
+            <div class="flex justify-between items-center border-b-2 border-[#445944]/20 pb-2">
+              <div class="h-6 bg-[#445944]/20 rounded-xl w-1/4"></div>
+              <div class="h-8 bg-[#445944]/20 rounded-full w-24"></div>
+            </div>
+            <div class="space-y-4">
+              <div v-for="item in 2" :key="item" class="border-l-4 border-[#445944]/20 bg-gray-50/50 p-4 rounded-r-xl space-y-3">
+                <div class="flex justify-between">
+                  <div class="h-6 bg-[#445944]/20 rounded-xl w-1/3"></div>
+                  <div class="h-5 bg-[#445944]/15 rounded-lg w-16"></div>
+                </div>
+                <div class="h-5 bg-[#445944]/15 rounded-lg w-1/2"></div>
+                <div class="h-12 bg-white rounded-lg border border-gray-100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Empty State -->
@@ -155,7 +205,7 @@ const onAddWeight = () => {
             <div class="mb-6 flex flex-col items-center text-center" v-if="currentPet">
               <div
                 class="relative mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-[#445944] bg-gray-100 shadow-md">
-                <img :src="currentPet.photo" class="h-full w-full object-cover" />
+                <img :src="currentPet.photo || DEFAULT_PET_IMAGE" @error="handleImageError" class="h-full w-full object-cover" />
               </div>
               <h2 class="flex items-center justify-center gap-2 text-2xl font-black text-[#445944]">
                 {{ currentPet.name }}
@@ -189,7 +239,7 @@ const onAddWeight = () => {
                       ? 'scale-110 border-4 border-[#445944] opacity-100'
                       : 'border-gray-300 opacity-60'
                   ">
-                  <img :src="pet.photo" class="h-full w-full object-cover" />
+                  <img :src="pet.photo || DEFAULT_PET_IMAGE" @error="handleImageError" class="h-full w-full object-cover" />
                 </div>
               </div>
             </div>

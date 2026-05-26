@@ -117,6 +117,12 @@ const resetFilters = () => {
   filters.goodWith = []
 }
 
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
+
 onMounted(() => {
   fetchPets()
 })
@@ -325,10 +331,26 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center py-20 gap-4">
-        <div class="h-16 w-16 animate-spin rounded-full border-4 border-dashed border-[#445944]"></div>
-        <p class="text-[#445944] font-black animate-pulse">載入可愛毛孩中...</p>
+      <!-- Loading State with Premium Neo-Brutalist Skeleton Cards -->
+      <div v-if="loading" class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div
+          v-for="i in 8"
+          :key="i"
+          class="animate-pulse overflow-hidden rounded-3xl border-4 border-[#445944]/30 bg-white shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <!-- Image Skeleton -->
+          <div class="relative aspect-square bg-[#FCF4E5] border-b-4 border-[#445944]/20 flex items-center justify-center">
+            <span class="text-4xl opacity-25">🐾</span>
+          </div>
+          <!-- Info Body Skeleton -->
+          <div class="p-5 bg-[#FCF4E5]/40 space-y-4">
+            <div class="h-6 bg-[#445944]/20 rounded-xl w-2/3"></div>
+            <div class="flex gap-2">
+              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/3"></div>
+              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
+              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Pet Cards Grid -->
@@ -341,7 +363,8 @@ onMounted(() => {
           <!-- Image Section -->
           <div class="relative aspect-square overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
             <img
-              :src="pet.imageUrl"
+              :src="pet.imageUrl || DEFAULT_PET_IMAGE"
+              @error="handleImageError"
               :alt="pet.name"
               class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
             

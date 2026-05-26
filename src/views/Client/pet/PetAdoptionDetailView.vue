@@ -141,6 +141,12 @@ const formattedPublishDate = computed(() => {
   return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`
 })
 
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
+
 onMounted(() => {
   fetchPetDetail()
 })
@@ -161,12 +167,29 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- 載入中狀態 -->
+    <!-- 載入中狀態 with Premium Neo-Brutalist Skeleton Detailed Loader -->
     <div
       v-if="loading"
-      class="mx-auto flex max-w-7xl w-[90%] flex-col items-center justify-center px-4 py-24 gap-4">
-      <div class="h-16 w-16 animate-spin rounded-full border-4 border-dashed border-[#445944]"></div>
-      <p class="text-[#445944] font-black animate-pulse text-lg">正在開啟狗狗的專屬檔案，請稍候...</p>
+      class="mx-auto max-w-7xl w-[90%] px-4 pt-8 flex flex-col gap-8 lg:flex-row animate-pulse">
+      <!-- Left skeleton aspect-square card -->
+      <div class="w-full lg:w-5/12">
+        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div class="aspect-square w-full rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5] flex items-center justify-center">
+            <span class="text-5xl opacity-20">🐾</span>
+          </div>
+          <div class="mt-6 h-12 bg-[#445944]/20 rounded-2xl w-full"></div>
+        </div>
+      </div>
+      <!-- Right skeleton content cards -->
+      <div class="w-full lg:w-7/12 space-y-6">
+        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] space-y-4">
+          <div class="h-8 bg-[#445944]/20 rounded-xl w-1/3"></div>
+          <div class="h-6 bg-[#445944]/15 rounded-lg w-full"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div v-for="j in 4" :key="j" class="rounded-3xl border-4 border-[#445944]/30 bg-white p-4 shadow-[4px_4px_0px_rgba(68,89,68,0.1)] h-24 bg-[#FCF4E5]/20"></div>
+        </div>
+      </div>
     </div>
 
     <!-- 錯誤狀態 -->
@@ -189,7 +212,8 @@ onMounted(() => {
             class="sticky top-8 overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
             <div class="relative aspect-square w-full overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
               <img
-                :src="pet.photo"
+                :src="pet.photo || DEFAULT_PET_IMAGE"
+                @error="handleImageError"
                 :alt="pet.name"
                 class="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
 
