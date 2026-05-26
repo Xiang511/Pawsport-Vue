@@ -243,6 +243,7 @@ onMounted(async () => {
                 :viewCount="article.viewCount"
                 :bookmarkCount="article.bookmarkCount ?? 0"
                 :isBookmarked="article.isBookmarked ?? false"
+                :comment-count="article.commentCount ?? 0"
                 @click-card="() => goToArticleDetail(article)"
                 @toggle-bookmark="(id) => console.log('收藏文章：', id)"
                 class="cursor-pointer transition-transform hover:-translate-y-0.5" />

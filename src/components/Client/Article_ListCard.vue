@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { Eye, Heart } from 'lucide-vue-next'
+import { Eye, Heart, MessageSquare } from 'lucide-vue-next'
 import { useDateTime } from '@/composables/useDateTime'
 
 const { formatLocalDate, timeAgo } = useDateTime()
@@ -19,6 +19,7 @@ const props = defineProps({
   viewCount: { type: Number, default: 0 },
   bookmarkCount: { type: Number, default: 0 },
   isBookmarked: { type: Boolean, default: false },
+  commentCount: { type: Number, default: 0 },
 })
 
 const emit = defineEmits(['toggle-bookmark', 'click-card'])
@@ -102,6 +103,10 @@ const handleBookmark = (e) => {
           <span class="flex items-center gap-1 font-medium text-stone-500">
             <Eye :size="14" />
             <span>{{ viewCount }}</span>
+          </span>
+          <span class="flex items-center gap-1 font-medium text-stone-500">
+            <MessageSquare :size="14" />
+            <span>{{ commentCount }}</span>
           </span>
 
           <span class="max-w-[80px] truncate text-slate-500" :title="author">
