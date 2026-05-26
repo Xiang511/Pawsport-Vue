@@ -68,6 +68,8 @@ const handleSearch = async () => {
   const keyword = searchInput.value.trim()
 
   searchQuery.value = keyword
+  currentParentId.value = 0
+  currentSubId.value = 0
   currentPage.value = 1
 
   await fetchData(keyword)
@@ -95,6 +97,15 @@ watch([currentPage, currentParentId, currentSubId, searchQuery], ([page, parent,
 
 watch(searchQuery, () => {
   currentPage.value = 1
+})
+
+watch(searchInput, async (newValue) => {
+  if (newValue.trim() === '' && searchQuery.value.trim() !== '') {
+    searchQuery.value = ''
+    currentPage.value = 1
+
+    await fetchData()
+  }
 })
 
 watch(totalPages, () => {
@@ -331,7 +342,7 @@ onMounted(async () => {
             </div>
 
             <button
-              v-if="searchQuery.trim()"
+              v-if="searchInput.trim() || searchQuery.trim()"
               type="button"
               class="mt-2 text-xs text-stone-400 hover:text-amber-600"
               @click="clearSearch">
