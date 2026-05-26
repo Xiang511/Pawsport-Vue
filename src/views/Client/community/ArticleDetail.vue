@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   Eye,
   Calendar,
+  Hourglass,
 } from 'lucide-vue-next'
 import { useDateTime } from '@/composables/useDateTime'
 import request from '@/api/axios'
@@ -20,6 +21,8 @@ const router = useRouter()
 const articleDetail = ref(null)
 const isLoading = ref(false)
 const isError = ref(false)
+const isCommentLoading = ref(false)
+const isCommentError = ref(false)
 
 const { formatLocalDate, timeAgo } = useDateTime()
 // 取得文章詳細資料
@@ -58,8 +61,32 @@ const goToHome = () => {
   router.push({ name: 'home' })
 }
 
-onMounted(() => {
-  fetchArticleDetail()
+const commentText = ref('')
+
+const comments = ref([])
+
+const fetchComments = async () => {
+  isCommentLoading.value = true
+  isCommentError.value = false
+
+  try {
+    const articleId = route.params.id
+    const response = await request.get(`/Users/articles/${articleId}/comments`)
+
+    comments.value = response.data.data || []
+  } catch (error) {
+    console.error('取得留言失敗:', error)
+    console.error('後端錯誤內容:', error.response?.data)
+    console.error('HTTP 狀態碼:', error.response?.status)
+    isCommentError.value = true
+  } finally {
+    isCommentLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  await fetchArticleDetail()
+  await fetchComments()
 })
 </script>
 
@@ -105,7 +132,7 @@ onMounted(() => {
                   </span>
                   <div class="flex gap-2">
                     <span
-                      v-for="tag in articleDetail.tags"
+                      v-for="tag in articleDetail.tags || []"
                       :key="tag"
                       class="cursor-pointer text-xs text-blue-500 hover:underline">
                       #{{ tag }}
@@ -152,33 +179,106 @@ onMounted(() => {
                 </div>
               </footer>
             </article>
-
             <section class="mt-6 space-y-4">
+              <!-- 留言標題 -->
               <div class="flex items-center justify-between px-2">
-                <h3 class="text-lg font-bold">全部回覆 (2)</h3>
+                <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800">
+                  <MessageSquare class="text-brand-success-600 h-5 w-5" />
+                  全部回覆
+                  <span class="text-sm font-medium text-slate-400">({{ comments.length }})</span>
+                </h3>
+
                 <select
-                  class="rounded border border-slate-200 bg-transparent px-2 py-1 text-sm text-slate-600 outline-none">
-                  <option>熱門排序</option>
+                  class="focus:border-brand-success-400 focus:ring-brand-success-600/10 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600 transition outline-none focus:ring-2">
                   <option>最新優先</option>
+                  <option>熱門排序</option>
                 </select>
               </div>
 
-              <div
-                class="rounded-xl border border-l-4 border-slate-100 border-slate-300 border-l-slate-300 bg-white p-6 shadow-sm">
-                <div class="flex items-start gap-4">
+              <!-- 留言輸入框 -->
+              <div class="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div class="flex items-start gap-3">
                   <img
                     src="https://placecats.com/g/50/50"
-                    class="h-10 w-10 rounded-full object-cover" />
+                    alt="目前使用者"
+                    class="h-10 w-10 shrink-0 rounded-full object-cover" />
+
                   <div class="flex-1">
-                    <div class="mb-1 flex items-center justify-between">
-                      <span class="text-sm font-bold text-slate-700">二樓路人甲</span>
-                      <span class="text-xs text-slate-400">B2 | 2026-05-12 11:20</span>
+                    <textarea
+                      v-model="commentText"
+                      rows="3"
+                      maxlength="300"
+                      placeholder="留下你的想法吧..."
+                      class="focus:border-brand-success-400 focus:ring-brand-success-600/10 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 transition outline-none placeholder:text-slate-400 focus:bg-white focus:ring-2"></textarea>
+
+                    <div class="mt-3 flex items-center justify-between">
+                      <span class="text-xs text-slate-400">{{ commentText.length }} / 300</span>
+
+                      <button
+                        type="button"
+                        @click="submitComment"
+                        :disabled="commentText.trim().length === 0"
+                        class="bg-brand-success-600 hover:bg-brand-success-700 rounded-full px-5 py-2 text-sm font-medium text-white shadow-sm transition disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none">
+                        送出留言
+                      </button>
                     </div>
-                    <p class="text-sm text-slate-600">
-                      這篇分析好專業！推一個，我家貓咪真的很愛盯著海鮮看。
-                    </p>
                   </div>
                 </div>
+              </div>
+
+              <!-- 留言列表 -->
+              <div
+                v-if="isCommentLoading"
+                class="rounded-xl bg-white py-8 text-center text-sm text-slate-400">
+                留言讀取中...
+              </div>
+
+              <div
+                v-else-if="isCommentError"
+                class="rounded-xl bg-white py-8 text-center text-sm text-red-400">
+                留言載入失敗
+              </div>
+
+              <div v-else-if="comments.length > 0" class="space-y-3">
+                <div
+                  v-for="(comment, index) in comments"
+                  :key="comment.commentId"
+                  class="hover:border-brand-success-600/20 rounded-xl border border-slate-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+                  <div class="flex items-start gap-4">
+                    <img
+                      :src="comment.userPhoto || 'https://placecats.com/g/50/50'"
+                      class="h-10 w-10 shrink-0 rounded-full object-cover" />
+
+                    <div class="min-w-0 flex-1">
+                      <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-bold text-slate-700">
+                            {{ comment.userName }}
+                          </span>
+
+                          <span
+                            class="bg-brand-success-600/10 text-brand-success-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                            B{{ index + 1 }}
+                          </span>
+                        </div>
+
+                        <span class="text-xs text-slate-400">
+                          {{ formatLocalDate(comment.createAt) }}
+                        </span>
+                      </div>
+
+                      <p class="text-sm leading-relaxed whitespace-pre-line text-slate-600">
+                        {{ comment.content }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                v-else
+                class="rounded-xl border border-dashed border-slate-200 bg-white py-10 text-center text-sm text-slate-400">
+                目前還沒有留言，成為第一個回覆的人吧！
               </div>
             </section>
           </main>
