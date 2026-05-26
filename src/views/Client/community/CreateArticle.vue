@@ -3,13 +3,13 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
+
 import ArticleEditor from '@/components/Client/Article_ArticleEditor.vue'
 import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
 
 import { useArticleActions } from '@/composables/useArticleActions'
 import { useCategories } from '@/composables/useCategories'
-
-import { useAuthStore } from '@/stores/auth'
 
 const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
 const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle } = useArticleActions()
