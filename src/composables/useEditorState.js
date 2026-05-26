@@ -88,11 +88,19 @@ export function useEditorState(emit, quillInstanceRef) {
   )
 
   const imageHandler = () => {
-    console.log('imageHandler triggered')
+    const quill = quillInstanceRef.value
+
+    if (quill) {
+      const range = quill.getSelection(true)
+
+      if (range && range.index !== undefined) {
+        savedIndex = range.index
+      } else {
+        savedIndex = quill.getLength() - 1
+      }
+    }
 
     const input = document.getElementById('quill-hidden-image-input')
-
-    console.log('input=', input)
 
     if (input) {
       input.click()
@@ -129,11 +137,12 @@ export function useEditorState(emit, quillInstanceRef) {
       }
 
       const insertIndex = Math.min(savedIndex, quill.getLength() - 1)
-
       quill.insertEmbed(insertIndex, 'image', imageUrl, 'user')
+      quill.insertText(insertIndex + 1, '\n', 'user')
 
       setTimeout(() => {
-        quill.setSelection(insertIndex + 1, 0, 'silent')
+        quill.setSelection(insertIndex + 2, 0, 'silent')
+        savedIndex = insertIndex + 2
       }, 0)
     } catch (err) {
       console.error(err)
