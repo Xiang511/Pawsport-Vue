@@ -57,7 +57,7 @@ const requestVerificationCode = async () => {
   // 顯示載入提示
   Swal.fire({
     title: '驗證中...',
-    html: '正在驗證密碼並發送驗證碼',
+    html: '正在驗證密碼',
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading()
@@ -75,7 +75,38 @@ const requestVerificationCode = async () => {
 
     // 檢查密碼驗證是否成功
     if (response.status === 200 && response.data?.success) {
-      // 保存第一步的響應數據，可能包含 sessionId 或其他需要的信息
+      // 若後端判斷距上次登入未超過 20 分鐘，直接完成登入（跳過 Email 驗證）
+      if (response.data?.data?.skipVerification) {
+        const userData = response.data.data.user
+        if (userData) {
+          authStore.setLoginInfo(userData)
+          await nextTick()
+
+          Swal.fire({
+            icon: 'success',
+            title: '登入成功！',
+            text: '正在跳轉...',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          })
+
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+          Swal.close()
+
+          try {
+            await router.replace('/user/profile')
+          } catch (navError) {
+            console.warn('路由跳轉失敗，使用硬跳轉', navError)
+            window.location.href = '/user/profile'
+          }
+          return
+        }
+      }
+
+      // 一般流程：保存第一步的響應數據，等待驗證碼輸入
       firstStepResponse.value = response.data
       isPasswordVerified.value = true
       isWaitingForCode.value = true
