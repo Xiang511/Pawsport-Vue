@@ -255,7 +255,7 @@ defineExpose({
       </div>
       <!-- Quill 編輯器區塊 -->
       <div
-        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
+        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-editor_.ql-align-center_img]:mx-auto [&_.ql-editor_.ql-align-right_img]:mr-0 [&_.ql-editor_.ql-align-right_img]:ml-auto [&_.ql-editor_img]:my-4 [&_.ql-editor_img]:mr-auto [&_.ql-editor_img]:ml-0 [&_.ql-editor_img]:block [&_.ql-editor_img]:h-auto [&_.ql-editor_img]:max-h-[360px] [&_.ql-editor_img]:max-w-full [&_.ql-editor_img]:rounded-xl [&_.ql-editor_img]:object-contain [&_.ql-editor_img]:shadow-sm [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
         <div ref="editorRef" class="[&_.ql-editor]:min-h-62.5 [&_.ql-editor]:cursor-text"></div>
       </div>
 

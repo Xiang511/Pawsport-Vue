@@ -68,6 +68,7 @@ export function useArticleActions() {
       }
     } catch (error) {
       console.error('文章處理失敗:', error)
+      console.error('後端錯誤內容:', error.response?.data)
       throw error
     }
   }
