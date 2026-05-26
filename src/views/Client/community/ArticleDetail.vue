@@ -180,18 +180,30 @@ onMounted(async () => {
 
           <aside class="order-2 w-full md:order-1 md:w-1/4">
             <div class="sticky top-6 flex flex-col gap-4">
-              <div class="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
-                <div class="h-16 bg-linear-to-r from-orange-400 to-amber-500"></div>
-                <div class="px-4 pb-6">
-                  <div class="-mt-8 mb-3 flex justify-center">
-                    <img
-                      :src="articleDetail.userPhoto || 'https://placecats.com/g/100/100'"
-                      class="h-20 w-20 rounded-full border-4 border-white object-cover shadow-sm" />
+              <div class="overflow-hidden rounded-2xl border border-[#eadbd3] bg-white shadow-sm">
+                <!-- 上方柔和色塊 -->
+                <div class="h-18 bg-[#fbf5f1]"></div>
+
+                <div class="px-5 pb-6">
+                  <!-- 頭像 -->
+                  <div class="-mt-9 mb-3 flex justify-center">
+                    <div class="rounded-full bg-white p-1 shadow-sm">
+                      <img
+                        :src="articleDetail.userPhoto || 'https://placecats.com/g/100/100'"
+                        class="h-20 w-20 rounded-full border border-[#f7ebe5] object-cover" />
+                    </div>
                   </div>
+
+                  <!-- 作者資訊 -->
                   <div class="text-center">
-                    <h3 class="text-lg font-bold text-slate-800">{{ articleDetail.userName }}</h3>
+                    <p class="mb-1 text-xs font-medium tracking-wide text-[#d4a373]">文章作者</p>
+
+                    <h3 class="text-lg font-bold text-[#433D3C]">
+                      {{ articleDetail.userName }}
+                    </h3>
+
                     <button
-                      class="mt-4 w-full rounded-full bg-slate-900 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
+                      class="mt-4 w-full rounded-full border border-transparent bg-[#f7ebe5] py-2 text-sm font-medium text-[#9c6d6d] transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]">
                       + 追蹤
                     </button>
                   </div>
