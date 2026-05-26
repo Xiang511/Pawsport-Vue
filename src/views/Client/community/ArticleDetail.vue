@@ -137,7 +137,7 @@ onMounted(async () => {
               <section class="px-6 py-8 md:px-10">
                 <div
                   v-html="articleDetail.content"
-                  class="prose prose-slate max-w-none leading-relaxed text-slate-700 [&_.ql-align-center]:text-center [&_.ql-size-large]:text-2xl [&_.ql-size-large]:font-bold [&_img]:mx-auto [&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-xl [&_img]:shadow-sm [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-6 [&_span[style*='background-color']]:rounded [&_span[style*='background-color']]:px-1 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"></div>
+                  class="prose prose-slate max-w-none leading-relaxed text-slate-700 [&_.ql-align-center]:text-center [&_.ql-align-center_img]:mx-auto [&_.ql-align-right_img]:mr-0 [&_.ql-align-right_img]:ml-auto [&_.ql-size-large]:text-2xl [&_.ql-size-large]:font-bold [&_img]:my-6 [&_img]:mr-auto [&_img]:ml-0 [&_img]:block [&_img]:h-auto [&_img]:max-h-[480px] [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_img]:shadow-sm [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-6 [&_span[style*='background-color']]:rounded [&_span[style*='background-color']]:px-1 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"></div>
               </section>
 
               <footer
