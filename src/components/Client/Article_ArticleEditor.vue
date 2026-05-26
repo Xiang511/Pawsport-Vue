@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed, shallowRef, markRaw } from 'vue'
+import { ref, onMounted, watch, computed, shallowRef, markRaw, nextTick } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -36,7 +36,7 @@ const {
   detectedTags,
   imageHandler,
   handleRealImageUpload,
-  loadDraftToEditor,
+  loadDraftToEditor: loadDraftBaseToEditor,
 } = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
@@ -138,6 +138,35 @@ const deleteDraftItem = (draftId) => {
   if (confirm('確定要永久刪除這篇草稿嗎？')) {
     emit('delete-draft', draftId)
   }
+}
+
+const findMainCategoryByCategoryId = (categoryId) => {
+  const targetId = Number(categoryId)
+
+  for (const [mainCategoryName, subCategories] of Object.entries(props.categories)) {
+    const matched = subCategories.some((sub) => {
+      return Number(sub.id) === targetId || Number(sub.categoryId) === targetId
+    })
+
+    if (matched) {
+      return mainCategoryName
+    }
+  }
+
+  return ''
+}
+
+const loadDraftToEditor = async (draftDetail) => {
+  loadDraftBaseToEditor(draftDetail)
+
+  const mainCategory = findMainCategoryByCategoryId(draftDetail.categoryId)
+
+  post.mainCategory = mainCategory
+
+  await nextTick()
+
+  currentSubCategories.value = props.categories[mainCategory] || []
+  post.categoryId = draftDetail.categoryId ? String(draftDetail.categoryId) : ''
 }
 
 const syncArticleId = (id) => {
