@@ -24,17 +24,15 @@ const loadFaqData = async (page = 1) => {
   }
 }
 
-// 換頁功能：點擊按鈕時呼叫這個方法
 const changePage = (newPage) => {
   if (newPage >= 1 && newPage <= totalPages.value) {
     currentPage.value = newPage
-    loadFaqData(newPage) // 重新向後端要新一頁的資料
+    loadFaqData(newPage)
   }
 }
 
-// onMounted：當這個Vue網頁一載入完成時，請幫我執行裡面的程式
 onMounted(() => {
-  loadFaqData(1) // 網頁載入時，預設讀取第1頁
+  loadFaqData(1)
 })
 
 const getStatusText = (status) => {
@@ -53,16 +51,14 @@ const getStatusStyle = (status) => {
   }
 }
 
-// 新增
-const showCreateModal = ref(false) // 控制視窗開啟/關閉
-const isSubmitting = ref(false) // 防止連點
+const showCreateModal = ref(false)
+const isSubmitting = ref(false)
 
-// 綁定表單的資料模型
 const newFaq = reactive({
   questionType: '',
   question: '',
   answer: '',
-  note: '', // 備註
+  note: '',
 })
 
 const openCreateModal = () => {
@@ -73,9 +69,7 @@ const openCreateModal = () => {
   showCreateModal.value = true
 }
 
-// 新增資料
 const submitCreate = async () => {
-  // 防呆驗證
   if (!newFaq.questionType || !newFaq.question || !newFaq.answer) {
     alert('請填寫必填欄位 (*)')
     return
@@ -88,7 +82,6 @@ const submitCreate = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-
       body: JSON.stringify({
         questionType: newFaq.questionType,
         question: newFaq.question,
@@ -98,7 +91,6 @@ const submitCreate = async () => {
     })
 
     if (response.ok) {
-      // 成功後關閉視窗，並重新讀取第一頁資料
       showCreateModal.value = false
       loadFaqData(1)
       alert('新增成功！')
@@ -113,11 +105,9 @@ const submitCreate = async () => {
   }
 }
 
-// 修改
 const showEditModal = ref(false)
 const isEditing = ref(false)
 
-// 綁定修改中的資料模型
 const currentEditFaq = reactive({
   faqId: 0,
   questionType: '',
@@ -131,14 +121,13 @@ const openEditModal = (item) => {
   currentEditFaq.faqId = item.faqid
   currentEditFaq.questionType = item.questionType
   currentEditFaq.question = item.question
-  currentEditFaq.answer = item.answer || '' // 如果沒資料就塞空字串
+  currentEditFaq.answer = item.answer || ''
   currentEditFaq.note = item.note || ''
   currentEditFaq.status = item.status || '待發佈'
 
   showEditModal.value = true
 }
 
-// 修改資料
 const submitEdit = async () => {
   if (!currentEditFaq.questionType || !currentEditFaq.question || !currentEditFaq.answer) {
     alert('請填寫必填欄位 (*)')
@@ -147,7 +136,6 @@ const submitEdit = async () => {
 
   isEditing.value = true
   try {
-    // 指定要改哪一筆
     const response = await fetch(`https://localhost:7048/api/Support/Faq/${currentEditFaq.faqId}`, {
       method: 'PUT',
       headers: {
@@ -164,7 +152,6 @@ const submitEdit = async () => {
 
     if (response.ok) {
       showEditModal.value = false
-      // 重新讀取當前這一頁的資料，而不是跳回第1頁
       loadFaqData(currentPage.value)
       alert('修改成功！')
     } else {
@@ -178,18 +165,15 @@ const submitEdit = async () => {
   }
 }
 
-// 軟刪除
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
-const deleteTargetId = ref(null) // 用來記要刪哪一筆
+const deleteTargetId = ref(null)
 
-// 點擊刪除時，打開確認視窗，並記下ID
 const openDeleteModal = (id) => {
   deleteTargetId.value = id
   showDeleteModal.value = true
 }
 
-// 確定刪除
 const submitDelete = async () => {
   if (!deleteTargetId.value) return
 
@@ -201,7 +185,6 @@ const submitDelete = async () => {
 
     if (response.ok) {
       showDeleteModal.value = false
-      // 刪除後，重新讀取當前頁面的資料
       loadFaqData(currentPage.value)
       alert('刪除成功！')
     } else {
@@ -216,9 +199,7 @@ const submitDelete = async () => {
   }
 }
 
-// 時間格式轉換
 const formatDate = (dateStr) => {
-  // 如果沒時間或是預設空值，就顯示-
   if (!dateStr || dateStr.startsWith('0001')) return '-'
 
   const d = new Date(dateStr)
@@ -328,11 +309,11 @@ const formatDate = (dateStr) => {
     </div>
   </div>
 
-  <!-- 新增 -->
   <div
     v-if="showCreateModal"
-    class="bg-opacity-50 bg-brand-success-950 fixed inset-0 z-9999 flex items-center justify-center px-4">
-    <div class="mx-auto w-full max-w-2xl rounded-lg bg-white shadow-lg">
+    class="bg-opacity-50 bg-brand-success-950 fixed inset-0 z-[9999] flex items-center justify-center px-4 py-6">
+    <div
+      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
       <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">新增項目</h3>
@@ -413,10 +394,9 @@ const formatDate = (dateStr) => {
     </div>
   </div>
 
-  <!-- 修改 -->
   <div
     v-if="showEditModal"
-    class="bg-opacity-50 fixed inset-0 z-9999 mt-7 flex items-center justify-center bg-gray-900 px-4">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900 px-4 py-6">
     <div
       class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
       <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -512,10 +492,9 @@ const formatDate = (dateStr) => {
     </div>
   </div>
 
-  <!-- 刪除 -->
   <div
     v-if="showDeleteModal"
-    class="bg-opacity-50 fixed inset-0 z-9999 flex items-center justify-center bg-black px-4">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
     <div class="mx-auto w-full max-w-md overflow-hidden rounded-lg bg-white shadow-lg">
       <div class="p-6 text-center">
         <div

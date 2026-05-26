@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { MessageSquareText, Eye, X } from 'lucide-vue-next'
 import Chart from 'chart.js/auto'
 import axios from 'axios'
@@ -8,6 +8,7 @@ const qaData = ref([])
 const currentPage = ref(1)
 const totalPages = ref(1)
 const isLoading = ref(false)
+const isDashboardLoading = ref(false)
 
 const loadQaData = async (page = 1) => {
   isLoading.value = true
@@ -28,17 +29,13 @@ const loadQaData = async (page = 1) => {
 
 onMounted(() => {
   loadQaData(1)
-  fetchDashboardData() //圖表一開始就自動出現
+  fetchDashboardData()
 })
 
 const getStatusStyle = (status) => {
-  if (status === '追蹤中') {
-    return 'bg-brand-success-600 text-white'
-  } else if (status === '已結案') {
-    return 'bg-gray-400 text-white'
-  } else {
-    return 'bg-brand-error-600 text-white'
-  }
+  if (status === '追蹤中') return 'bg-brand-success-600 text-white'
+  if (status === '已結案') return 'bg-gray-400 text-white'
+  return 'bg-brand-error-600 text-white'
 }
 
 const changePage = (newPage) => {
@@ -83,22 +80,20 @@ const submitReply = async () => {
     alert('請填寫回覆內容')
     return
   }
-
   isSubmitting.value = true
   try {
     const response = await fetch(`https://localhost:7048/api/Support/Qa/${currentQa.value.qaId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        csname: currentQa.value.csname, // 傳送處理客服
-        replyContent: currentQa.value.replyContent, // 傳送回覆內容
-        note: currentQa.value.note, // 傳送內部備註狀態
+        csname: currentQa.value.csname,
+        replyContent: currentQa.value.replyContent,
+        note: currentQa.value.note,
       }),
     })
-
     if (response.ok) {
       showReplyModal.value = false
-      loadQaData(currentPage.value) // 重整畫面
+      loadQaData(currentPage.value)
       alert('回覆送出成功！')
     } else {
       alert('回覆失敗，請稍後再試')
@@ -110,18 +105,14 @@ const submitReply = async () => {
   }
 }
 
-// 時間格式轉換
 const formatDate = (dateStr) => {
-  // 如果沒時間或是預設空值，就顯示-
   if (!dateStr || dateStr.startsWith('0001')) return '-'
-
   const d = new Date(dateStr)
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   const hours = String(d.getHours()).padStart(2, '0')
   const minutes = String(d.getMinutes()).padStart(2, '0')
-
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
@@ -129,43 +120,34 @@ let typeChartInstance = null
 let statusChartInstance = null
 
 const fetchDashboardData = async () => {
+  isDashboardLoading.value = true
   try {
     const res = await axios.get('https://localhost:7048/api/Support/Dashboard')
-
     const dashboardData = res.data.data
+
+    isDashboardLoading.value = false
+    await nextTick()
 
     renderTypeChart(dashboardData.questionTypeStats)
     renderStatusChart(dashboardData.statusStats)
   } catch (error) {
     console.error('取得圖表數據失敗:', error)
+    isDashboardLoading.value = false
   }
 }
 
-// 執行畫圖
 const renderTypeChart = (statsObj) => {
   const ctx = document.getElementById('questionTypeChart')
+  if (!ctx) return
+  if (typeChartInstance) typeChartInstance.destroy()
 
-  if (!ctx) {
-    console.warn('找不到畫布元素，可能畫面還沒渲染完')
-    return
-  }
-
-  // 如果畫布上已經有舊圖表，先銷毀它，確保不會重疊破圖
-  if (typeChartInstance) {
-    typeChartInstance.destroy()
-  }
-
-  const labels = Object.keys(statsObj)
-  const dataValues = Object.values(statsObj)
-
-  // 呼叫 Chart.js 產出圓餅圖
   typeChartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: labels,
+      labels: Object.keys(statsObj),
       datasets: [
         {
-          data: dataValues,
+          data: Object.values(statsObj),
           backgroundColor: ['#fca5a5', '#fcd34d', '#93c5fd', '#c4b5fd', '#fdba74', '#86efac'],
           borderWidth: 1,
           hoverOffset: 15,
@@ -175,38 +157,21 @@ const renderTypeChart = (statsObj) => {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // 讓圖表聽從外層div的大小
+      maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            font: {
-              family: "'Noto Sans TC', sans-serif", // 讓圖例字體好看一點
-            },
-          },
-        },
+        legend: { position: 'bottom', labels: { font: { family: "'Noto Sans TC', sans-serif" } } },
       },
     },
   })
 }
 
-// 第二張圖
 const renderStatusChart = (statsObj) => {
   const ctx = document.getElementById('statusChart')
   if (!ctx) return
-
   if (statusChartInstance) statusChartInstance.destroy()
 
+  const statusColorMap = { 未處理: '#fca5a5', 追蹤中: '#065f46', 已結案: '#9ca3af' }
   const incomingLabels = Object.keys(statsObj)
-  const dataValues = Object.values(statsObj)
-
-  const statusColorMap = {
-    未處理: '#fca5a5', 
-    追蹤中: '#065f46', 
-    已結案: '#9ca3af', 
-  }
-
-  const sortedColors = incomingLabels.map((label) => statusColorMap[label] || '#e5e7eb')
 
   statusChartInstance = new Chart(ctx, {
     type: 'doughnut',
@@ -214,8 +179,8 @@ const renderStatusChart = (statsObj) => {
       labels: incomingLabels,
       datasets: [
         {
-          data: dataValues,
-          backgroundColor: sortedColors,
+          data: Object.values(statsObj),
+          backgroundColor: incomingLabels.map((label) => statusColorMap[label] || '#e5e7eb'),
           borderWidth: 1,
           hoverOffset: 15,
           borderRadius: 10,
@@ -228,19 +193,10 @@ const renderStatusChart = (statsObj) => {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: {
-            boxWidth: 15,
-            padding: 15,
-            font: { family: "'Noto Sans TC', sans-serif" },
-          },
+          labels: { boxWidth: 15, padding: 15, font: { family: "'Noto Sans TC', sans-serif" } },
         },
-        tooltip: {
-          padding: 10,
-          cornerRadius: 10,
-        },
+        tooltip: { padding: 10, cornerRadius: 10 },
       },
-
-      // 甜甜圈圖專用設定：設定中間空洞的大小 (0~100)
       cutout: '50%',
     },
   })
@@ -250,19 +206,21 @@ const renderStatusChart = (statsObj) => {
 <template>
   <div class="container mx-auto mt-6">
     <div class="mb-8 rounded-xl border border-gray-100 bg-white p-8 shadow-sm">
-      <h3 class="mb-8 flex items-center gap-2 text-xl font-bold text-gray-800">
-        <span class="text-2xl"></span>
-        客服數據中心
-      </h3>
+      <h3 class="mb-8 flex items-center gap-2 text-xl font-bold text-gray-800">客服數據中心</h3>
 
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div v-if="isDashboardLoading" class="py-20 text-center text-gray-500">
+        <div
+          class="border-brand-info-500 mb-4 inline-block h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"></div>
+        <div class="text-brand-info-600 font-bold tracking-widest">正在彙整最新數據報表... 🐾</div>
+      </div>
+
+      <div v-else class="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div class="flex flex-col items-center">
           <h5 class="mb-6 text-lg font-medium text-gray-600">近一個月問題類型</h5>
           <div class="relative flex h-72 w-72 justify-center">
             <canvas id="questionTypeChart"></canvas>
           </div>
         </div>
-
         <div class="flex flex-col items-center">
           <h5 class="mb-6 text-lg font-medium text-gray-600">近一個月處理狀態追蹤</h5>
           <div class="relative flex h-72 w-72 justify-center">
@@ -333,8 +291,7 @@ const renderStatusChart = (statsObj) => {
               <td class="px-6 py-4 text-center">
                 <button
                   @click="openReplyModal(item)"
-                  class="bg-brand-info-500 hover:bg-brand-info-600 inline-flex items-center justify-center gap-1 rounded-lg px-4 py-2 text-base text-white transition-all active:scale-95"
-                  title="查看詳細與回覆">
+                  class="bg-brand-info-500 hover:bg-brand-info-600 inline-flex items-center justify-center gap-1 rounded-lg px-4 py-2 text-base text-white transition-all active:scale-95">
                   <Eye class="h-4 w-4" />
                   查看/回覆
                 </button>
@@ -357,14 +314,13 @@ const renderStatusChart = (statsObj) => {
         <button
           @click="changePage(currentPage - 1)"
           :disabled="currentPage === 1"
-          class="hover:border-brand-info-500 hover:bg-brand-info-500 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700">
+          class="hover:border-brand-info-500 hover:bg-brand-info-500 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-white disabled:opacity-50">
           上一頁
         </button>
-
         <button
           @click="changePage(currentPage + 1)"
           :disabled="currentPage === totalPages"
-          class="hover:border-brand-info-500 hover:bg-brand-info-500 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700">
+          class="hover:border-brand-info-500 hover:bg-brand-info-500 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-white disabled:opacity-50">
           下一頁
         </button>
       </div>

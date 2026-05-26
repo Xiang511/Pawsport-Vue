@@ -28,7 +28,6 @@ onMounted(() => {
   loadNewsletterData(1)
 })
 
-// 時間格式轉換
 const formatDate = (dateStr) => {
   if (!dateStr || dateStr.startsWith('0001')) return '-'
   const d = new Date(dateStr)
@@ -70,7 +69,6 @@ const getCategoryStyle = (category) => {
   }
 }
 
-// 新增
 const showCreateModal = ref(false)
 const isSubmitting = ref(false)
 
@@ -125,7 +123,6 @@ const submitCreate = async () => {
   }
 }
 
-// 修改
 const showEditModal = ref(false)
 const isEditing = ref(false)
 
@@ -199,7 +196,6 @@ const submitEdit = async () => {
   }
 }
 
-// 刪除
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
 const deleteTargetId = ref(null)
@@ -231,7 +227,6 @@ const submitDelete = async () => {
   }
 }
 
-// 換頁
 const changePage = (newPage) => {
   if (newPage >= 1 && newPage <= totalPages.value) {
     currentPage.value = newPage
@@ -365,11 +360,11 @@ const changePage = (newPage) => {
     </div>
   </div>
 
-  <!-- 新增 -->
   <div
     v-if="showCreateModal"
-    class="bg-opacity-50 fixed inset-0 z-9999 flex items-center justify-center bg-black px-4">
-    <div class="mx-auto max-h-[90vh] w-full max-w-2xl rounded-lg bg-white shadow-lg">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
+    <div
+      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
       <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">新增電子報</h3>
@@ -475,10 +470,9 @@ const changePage = (newPage) => {
     </div>
   </div>
 
-  <!-- 修改 -->
   <div
     v-if="showEditModal"
-    class="bg-opacity-50 fixed inset-0 z-9999 flex items-center justify-center bg-black px-4">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
     <div
       class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
       <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -578,10 +572,9 @@ const changePage = (newPage) => {
     </div>
   </div>
 
-  <!-- 刪除確認 -->
   <div
     v-if="showDeleteModal"
-    class="bg-opacity-50 fixed inset-0 z-9999 flex items-center justify-center bg-black px-4">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
     <div class="mx-auto w-full max-w-md overflow-hidden rounded-lg bg-white shadow-lg">
       <div class="p-6 text-center">
         <div
