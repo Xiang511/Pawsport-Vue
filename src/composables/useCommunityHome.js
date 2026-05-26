@@ -67,7 +67,7 @@ export function useCommunityHome() {
     }
 
     const parents = allCategories.value.filter((c) => {
-      return Number(c.level) === 0 || c.parentId === null
+      return Number(c.level) === 0 && c.parentId === null
     })
 
     return [

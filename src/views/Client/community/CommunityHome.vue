@@ -188,20 +188,19 @@ onMounted(async () => {
             <!-- 小分類區塊：選全部時完全不出現 -->
             <section
               v-if="Number(currentParentId) !== 0 && subCategories.length > 0"
-              class="rounded-xl border border-orange-100 bg-white p-6 shadow-sm">
+              class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
               <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-orange-800">小分類</h3>
-                <span class="text-xs text-orange-500">目前大分類底下的分類</span>
+                <h3 class="text-sm font-semibold text-stone-700">小分類</h3>
               </div>
 
-              <div class="flex flex-wrap gap-2 rounded-2xl bg-orange-50/60 p-4">
+              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
                 <button
                   @click="selectSub(0)"
                   :class="[
                     'rounded-full border px-3 py-1 text-xs transition-all',
                     Number(currentSubId) === 0
-                      ? 'border-orange-400 bg-orange-100 font-medium text-orange-700'
-                      : 'border-stone-200 bg-white text-stone-500 hover:border-orange-300 hover:text-orange-600',
+                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
+                      : 'hover:border-brand-success-300 hover:text-brand-success-600 border-stone-200 bg-white text-stone-500',
                   ]">
                   全部小分類
                 </button>
@@ -213,8 +212,8 @@ onMounted(async () => {
                   :class="[
                     'rounded-full border px-3 py-1 text-xs transition-all',
                     Number(currentSubId) === Number(sc.categoryid)
-                      ? 'border-orange-400 bg-orange-100 font-medium text-orange-700'
-                      : 'border-stone-200 bg-white text-stone-500 hover:border-orange-300 hover:text-orange-600',
+                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
+                      : 'hover:text-brand-success-400 hover:border-brand-success-300 border-stone-200 bg-white text-stone-500',
                   ]">
                   {{ sc.categoryname }}
                 </button>
@@ -222,7 +221,7 @@ onMounted(async () => {
             </section>
           </div>
 
-          <div class="flex flex-col gap-4">
+          <div class="flex min-h-[720px] flex-col gap-4">
             <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
             <div v-else-if="isError" class="py-12 text-center text-red-500">
               ❌ 系統異常，請稍後再試。
@@ -250,7 +249,7 @@ onMounted(async () => {
 
               <div
                 v-if="pagedArticles.length === 0"
-                class="rounded-xl border border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                class="min-h-[360px] rounded-xl border border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
                 🐾 找不到相關的文章喔！
               </div>
 
