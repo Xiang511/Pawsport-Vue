@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 
+
 // 1. 建立一個 Axios 實例
 const service = axios.create({
   baseURL: '/api', // 使用相對路徑，透過 Vite 代理轉發到後端
@@ -51,10 +52,10 @@ service.interceptors.response.use(
           router.push('/dashboard/login')
         }
       } else {
-        // 前台路徑，跳到前台登入頁
+        // 前台路徑，跳到登入頁
         if (currentPath !== '/login') {
           console.log(' 401 未認證，跳轉到前台登入頁')
-          router.push('/login')
+          router.replace('/login').then(() => window.location.reload())
         }
       }
     }
@@ -70,9 +71,11 @@ service.interceptors.response.use(
           router.push('/dashboard/error-403')
         }
       } else {
-        // 前台暫時跳到首頁（可以之後創建前台的 403 頁面）
-        console.log(' 403 權限不足')
-        router.push('/')
+        // 前台路徑，跳到前台 403 頁面
+        if (currentPath !== '/error-403') {
+          console.log(' 403 權限不足，跳轉到前台 403 頁面')
+          router.push('/error-403')
+        }
       }
     }
     return Promise.reject(error)
