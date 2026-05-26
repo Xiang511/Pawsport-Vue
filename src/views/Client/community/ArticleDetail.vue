@@ -190,7 +190,6 @@ onMounted(async () => {
                   </div>
                   <div class="text-center">
                     <h3 class="text-lg font-bold text-slate-800">{{ articleDetail.userName }}</h3>
-                    <p class="text-xs text-slate-400">Lv.99 貓咪觀察員</p>
                     <button
                       class="mt-4 w-full rounded-full bg-slate-900 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
                       + 追蹤

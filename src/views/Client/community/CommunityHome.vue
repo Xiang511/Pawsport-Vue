@@ -334,90 +334,93 @@ onMounted(async () => {
                 </button>
               </div>
             </section>
-          </div>
 
-          <div
-            class="flex items-center justify-between rounded-xl border border-stone-100 bg-white px-4 py-3 shadow-sm">
-            <div>
-              <h3 class="text-sm font-semibold text-stone-700">文章列表</h3>
-              <p class="text-xs text-stone-400">可依發文時間或觀看數排序</p>
-            </div>
+            <section
+              class="min-h-[720px] overflow-hidden rounded-xl border border-stone-100 bg-transparent">
+              <!-- 文章列表 Header + 排序 -->
+              <div class="flex items-center justify-between border-b border-stone-100 px-4 py-3">
+                <div>
+                  <h3 class="text-sm font-semibold text-stone-700">文章列表</h3>
+                  <p class="text-xs text-stone-400">可依發文時間或觀看數排序</p>
+                </div>
 
-            <select
-              v-model="sortType"
-              class="focus:border-brand-success-400 focus:ring-brand-success-400/20 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-600 transition outline-none focus:ring-2"
-              @change="handleSortChange">
-              <option value="newest">最新發文</option>
-              <option value="oldest">最早發文</option>
-              <option value="mostViewed">最多觀看</option>
-            </select>
-          </div>
-
-          <div class="flex min-h-[720px] flex-col gap-4">
-            <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
-            <div v-else-if="isError" class="py-12 text-center text-red-500">
-              ❌ 系統異常，請稍後再試。
-            </div>
-
-            <div v-else class="flex flex-col gap-4">
-              <Article_ListCard
-                v-for="article in pagedArticles"
-                :key="article.articleId"
-                :id="article.articleId"
-                :title="article.title"
-                :summary="article.summary"
-                :author="article.userName"
-                :date="article.createAt"
-                :image="article.mainImageUrl || 'https://placehold.co/400x260'"
-                :categoryid="article.categoryId"
-                :category="article.categoryName"
-                :tags="article.tagNames"
-                :viewCount="article.viewCount"
-                :bookmarkCount="article.bookmarkCount ?? 0"
-                :isBookmarked="article.isBookmarked ?? false"
-                :comment-count="article.commentCount ?? 0"
-                @click-card="() => goToArticleDetail(article)"
-                @click-tag="handleTagSearch"
-                @toggle-bookmark="(id) => console.log('收藏文章：', id)"
-                class="cursor-pointer transition-transform hover:-translate-y-0.5" />
-
-              <div
-                v-if="pagedArticles.length === 0"
-                class="min-h-[360px] rounded-xl border border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
-                🐾 找不到相關的文章喔！
+                <select
+                  v-model="sortType"
+                  class="focus:border-brand-success-400 focus:ring-brand-success-400/20 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-600 transition outline-none focus:ring-2"
+                  @change="handleSortChange">
+                  <option value="newest">最新發文</option>
+                  <option value="oldest">最早發文</option>
+                  <option value="mostViewed">最多觀看</option>
+                </select>
               </div>
 
-              <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
-                <!-- 第一頁 -->
-                <button
-                  @click="currentPage = 1"
-                  :disabled="currentPage === 1"
-                  class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
-                  <ChevronLeft :size="18" />
-                </button>
-                <button
-                  @click="currentPage--"
-                  :disabled="currentPage === 1"
-                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
-                  上一頁
-                </button>
-                <span class="text-sm text-stone-600">
-                  第 {{ currentPage }} / {{ totalPages }} 頁
-                </span>
-                <button
-                  @click="currentPage++"
-                  :disabled="currentPage === totalPages"
-                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
-                  下一頁
-                </button>
-                <!-- 最後一頁 -->
-                <button
-                  @click="currentPage = totalPages"
-                  :disabled="currentPage === totalPages"
-                  class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
-                  <ChevronRight :size="18" />
-                </button>
+              <!-- Loading / Error -->
+              <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
+
+              <div v-else-if="isError" class="py-12 text-center text-red-500">
+                ❌ 系統異常，請稍後再試。
               </div>
+
+              <!-- 文章列表 -->
+              <div v-else>
+                <Article_ListCard
+                  v-for="article in pagedArticles"
+                  :key="article.articleId"
+                  :id="article.articleId"
+                  :title="article.title"
+                  :summary="article.summary"
+                  :author="article.userName"
+                  :date="article.createAt"
+                  :image="article.mainImageUrl || 'https://placehold.co/400x260'"
+                  :categoryid="article.categoryId"
+                  :category="article.categoryName"
+                  :tags="article.tagNames"
+                  :viewCount="article.viewCount"
+                  :bookmarkCount="article.bookmarkCount ?? 0"
+                  :isBookmarked="article.isBookmarked ?? false"
+                  :comment-count="article.commentCount ?? 0"
+                  @click-card="() => goToArticleDetail(article)"
+                  @click-tag="handleTagSearch"
+                  @toggle-bookmark="(id) => console.log('收藏文章：', id)"
+                  class="cursor-pointer transition-colors" />
+
+                <div
+                  v-if="pagedArticles.length === 0"
+                  class="min-h-[360px] border-t border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                  🐾 找不到相關的文章喔！
+                </div>
+              </div>
+            </section>
+            <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
+              <button
+                @click="currentPage = 1"
+                :disabled="currentPage === 1"
+                class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronLeft :size="18" />
+              </button>
+
+              <button
+                @click="currentPage--"
+                :disabled="currentPage === 1"
+                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                上一頁
+              </button>
+
+              <span class="text-sm text-stone-600">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+
+              <button
+                @click="currentPage++"
+                :disabled="currentPage === totalPages"
+                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                下一頁
+              </button>
+
+              <button
+                @click="currentPage = totalPages"
+                :disabled="currentPage === totalPages"
+                class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronRight :size="18" />
+              </button>
             </div>
           </div>
         </main>
