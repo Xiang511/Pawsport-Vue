@@ -30,6 +30,7 @@ const {
 
 const recentViewedArticles = ref([])
 const searchInput = ref('')
+const recentSearchedTags = ref([])
 
 // 跳轉
 const goToArticleDetail = (article) => {
@@ -82,10 +83,9 @@ const handleTagSearch = async (tag) => {
     .replace(/^#/, '')
     .trim()
 
-  console.log('點到 tag =', tag)
-  console.log('送給後端的 tagText =', tagText)
-
   if (!tagText) return
+
+  saveRecentSearchedTag(tagText)
 
   selectedTag.value = tagText
   searchInput.value = `#${tagText}`
@@ -97,6 +97,22 @@ const handleTagSearch = async (tag) => {
   await fetchData('', tagText)
 }
 
+const saveRecentSearchedTag = (tag) => {
+  const tagText = String(tag || '')
+    .replace(/^#/, '')
+    .trim()
+  if (!tagText) return
+
+  const key = 'recentSearchedTags'
+  const oldData = JSON.parse(localStorage.getItem(key)) || []
+
+  const filtered = oldData.filter((item) => item !== tagText)
+  const updated = [tagText, ...filtered].slice(0, 8)
+
+  localStorage.setItem(key, JSON.stringify(updated))
+  recentSearchedTags.value = updated
+}
+
 const clearSearch = async () => {
   searchInput.value = ''
   searchQuery.value = ''
@@ -104,6 +120,11 @@ const clearSearch = async () => {
   currentPage.value = 1
 
   await fetchData()
+}
+
+const clearRecentSearchedTags = () => {
+  localStorage.removeItem('recentSearchedTags')
+  recentSearchedTags.value = []
 }
 
 const handleSelectParent = async (id) => {
@@ -196,6 +217,7 @@ onMounted(async () => {
   }
 
   recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
+  recentSearchedTags.value = JSON.parse(localStorage.getItem('recentSearchedTags')) || []
 })
 </script>
 
@@ -416,18 +438,35 @@ onMounted(async () => {
           </div>
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
             <div class="flex flex-col gap-2">
-              <h3>熱門標籤</h3>
-              <div class="flex flex-row flex-wrap gap-x-2 gap-y-2">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold text-stone-800">最近搜尋的標籤</h3>
+
                 <button
-                  class="w-fit rounded-full bg-orange-50 px-3 py-1 text-sm whitespace-nowrap text-orange-600">
-                  # 鮮食
+                  v-if="recentSearchedTags.length > 0"
+                  type="button"
+                  class="text-xs text-stone-400 hover:text-amber-600"
+                  @click="clearRecentSearchedTags">
+                  清除
                 </button>
-                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
-                  # 寵物健康
+              </div>
+
+              <div
+                v-if="recentSearchedTags.length > 0"
+                class="flex flex-row flex-wrap gap-x-2 gap-y-2">
+                <button
+                  v-for="tag in recentSearchedTags"
+                  :key="tag"
+                  type="button"
+                  class="w-fit rounded-full bg-orange-50 px-3 py-1 text-sm whitespace-nowrap text-orange-600 transition hover:bg-orange-100"
+                  @click="handleTagSearch(tag)">
+                  # {{ tag }}
                 </button>
-                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
-                  # 訓練技巧
-                </button>
+              </div>
+
+              <div
+                v-else
+                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                尚無搜尋標籤
               </div>
             </div>
             <div class="rounded-2xl p-4">
