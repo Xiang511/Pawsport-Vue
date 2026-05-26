@@ -271,7 +271,7 @@ defineExpose({
         <span
           v-if="detectedTags.length === 0"
           class="self-center align-middle text-sm text-gray-400 italic">
-          在文章中輸入 #標籤 將自動顯示在此處
+          輸入 #標籤 後請用空白、換行或標點分隔
         </span>
       </div>
     </div>

@@ -50,21 +50,24 @@ export function useEditorState(emit, quillInstanceRef) {
     toastRef.value?.trigger('已放棄變更，已開啟全新文章！')
   }
 
-  const extractTags = (htmlContent) => {
-    if (!htmlContent) return []
-    try {
-      const doc = new DOMParser().parseFromString(htmlContent, 'text/html')
-      const pureText = doc.body.textContent || ''
-      const regex = /#([^#\s,、.]+)/g
-      const matches = pureText.match(regex)
-      if (!matches) return []
+  const extractTags = (plainText) => {
+    if (!plainText) return []
 
-      const cleanTags = matches.map((tag) => tag.replace('#', '').trim())
-      return [...new Set(cleanTags)].filter((tag) => tag.length > 0)
-    } catch (e) {
-      return []
+    const regex = /#([^#\s,，、。.!！?？；;：:]+)/g
+    const tags = []
+    let match
+
+    while ((match = regex.exec(plainText)) !== null) {
+      const tag = match[1]?.trim()
+
+      if (tag) {
+        tags.push(tag)
+      }
     }
+
+    return [...new Set(tags)]
   }
+
   //因為內文在 Quill 實體裡，我們利用 Quill 的 text-change 事件或直接監聽實體
   watch(
     () => quillInstanceRef.value,
@@ -73,8 +76,8 @@ export function useEditorState(emit, quillInstanceRef) {
 
       // 標籤偵測
       quill.on('text-change', () => {
-        const htmlContent = quill.root.innerHTML
-        detectedTags.value = extractTags(htmlContent)
+        const plainText = quill.getText()
+        detectedTags.value = extractTags(plainText)
       })
 
       // 游標監聽：只要游標一有變動，立刻存起來
