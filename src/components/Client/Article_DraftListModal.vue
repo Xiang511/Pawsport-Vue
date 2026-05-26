@@ -8,6 +8,32 @@ defineProps({
 })
 const emit = defineEmits(['update:modelValue', 'select', 'delete'])
 const { formatLocalDate, timeAgo } = useDateTime()
+
+const getDraftId = (draft) => {
+  return draft.articleId ?? draft.ArticleId ?? draft.articleID ?? draft.id ?? draft.Id
+}
+
+const selectDraft = (draft) => {
+  const id = getDraftId(draft)
+
+  if (!id) {
+    console.warn('草稿缺少文章 ID：', draft)
+    return
+  }
+
+  emit('select', id)
+}
+
+const deleteDraft = (draft) => {
+  const id = getDraftId(draft)
+
+  if (!id) {
+    console.warn('草稿缺少文章 ID，無法刪除：', draft)
+    return
+  }
+
+  emit('delete', id)
+}
 </script>
 
 <template>
@@ -44,9 +70,9 @@ const { formatLocalDate, timeAgo } = useDateTime()
         <!-- 草稿卡片項目 -->
         <div
           v-for="draft in drafts"
-          :key="draft.articleId"
+          :key="getDraftId(draft)"
           class="group flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-slate-50/80"
-          @click="emit('select', draft.articleId)">
+          @click="selectDraft(draft)">
           <!-- 左側：內文資訊 -->
           <div class="min-w-0 flex-1 pr-4">
             <div class="mb-1 flex items-center space-x-2">
@@ -72,7 +98,7 @@ const { formatLocalDate, timeAgo } = useDateTime()
 
           <!-- 右側：獨立刪除按鈕（阻止冒泡免得觸發點擊載入） -->
           <button
-            @click.stop="emit('delete', draft.articleId)"
+            @click.stop="deleteDraft(draft)"
             class="rounded-xl p-2.5 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500">
             <Trash2 class="h-5 w-5" />
           </button>

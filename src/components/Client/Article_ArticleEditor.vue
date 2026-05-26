@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed, shallowRef, markRaw } from 'vue'
+import { ref, onMounted, watch, computed, shallowRef, markRaw, nextTick } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -36,6 +36,7 @@ const {
   detectedTags,
   imageHandler,
   handleRealImageUpload,
+  loadDraftToEditor: loadDraftBaseToEditor,
 } = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
@@ -115,16 +116,57 @@ const onSubmit = () => {
 }
 
 // 選擇某篇草稿（點擊後載入）
-const selectDraft = (draft) => {
-  // 觸發 emit 讓父組件去抓那篇草稿的詳細資料並塞回編輯器
-  emit('load-draft', draft.id)
-  isDraftListModalOpen.value = false // 關閉彈窗
+const selectDraft = (draftId) => {
+  console.log('ArticleEditor 收到草稿 id =', draftId)
+
+  if (!draftId) {
+    console.warn('草稿 ID 無效：', draftId)
+    return
+  }
+
+  emit('load-draft', draftId)
+  isDraftListModalOpen.value = false
 }
+
 // 刪除某篇草稿
 const deleteDraftItem = (draftId) => {
+  if (!draftId) {
+    console.warn('刪除草稿失敗，草稿 ID 無效：', draftId)
+    return
+  }
+
   if (confirm('確定要永久刪除這篇草稿嗎？')) {
     emit('delete-draft', draftId)
   }
+}
+
+const findMainCategoryByCategoryId = (categoryId) => {
+  const targetId = Number(categoryId)
+
+  for (const [mainCategoryName, subCategories] of Object.entries(props.categories)) {
+    const matched = subCategories.some((sub) => {
+      return Number(sub.id) === targetId || Number(sub.categoryId) === targetId
+    })
+
+    if (matched) {
+      return mainCategoryName
+    }
+  }
+
+  return ''
+}
+
+const loadDraftToEditor = async (draftDetail) => {
+  loadDraftBaseToEditor(draftDetail)
+
+  const mainCategory = findMainCategoryByCategoryId(draftDetail.categoryId)
+
+  post.mainCategory = mainCategory
+
+  await nextTick()
+
+  currentSubCategories.value = props.categories[mainCategory] || []
+  post.categoryId = draftDetail.categoryId ? String(draftDetail.categoryId) : ''
 }
 
 const syncArticleId = (id) => {
@@ -132,6 +174,7 @@ const syncArticleId = (id) => {
 }
 defineExpose({
   syncArticleId,
+  loadDraftToEditor,
 })
 </script>
 
@@ -212,7 +255,7 @@ defineExpose({
       </div>
       <!-- Quill 編輯器區塊 -->
       <div
-        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
+        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-editor_.ql-align-center_img]:mx-auto [&_.ql-editor_.ql-align-right_img]:mr-0 [&_.ql-editor_.ql-align-right_img]:ml-auto [&_.ql-editor_img]:my-4 [&_.ql-editor_img]:mr-auto [&_.ql-editor_img]:ml-0 [&_.ql-editor_img]:block [&_.ql-editor_img]:h-auto [&_.ql-editor_img]:max-h-[360px] [&_.ql-editor_img]:max-w-full [&_.ql-editor_img]:rounded-xl [&_.ql-editor_img]:object-contain [&_.ql-editor_img]:shadow-sm [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
         <div ref="editorRef" class="[&_.ql-editor]:min-h-62.5 [&_.ql-editor]:cursor-text"></div>
       </div>
 
@@ -228,7 +271,7 @@ defineExpose({
         <span
           v-if="detectedTags.length === 0"
           class="self-center align-middle text-sm text-gray-400 italic">
-          在文章中輸入 #標籤 將自動顯示在此處
+          輸入 #標籤 後請用空白、換行或標點分隔
         </span>
       </div>
     </div>

@@ -1,12 +1,15 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 // 自己做的卡片樣式
 import Article_ListCard from '@/components/Client/Article_ListCard.vue'
 import { useCommunityHome } from '@/composables/useCommunityHome'
+import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 
 const router = useRouter()
+const route = useRoute()
 
 const {
   parentCategories,
@@ -22,19 +25,37 @@ const {
   selectParent,
   selectSub,
   fetchData,
+  saveRecentViewedArticle,
+  selectedTag,
+  sortType,
 } = useCommunityHome()
 
+const recentViewedArticles = ref([])
+const searchInput = ref('')
+const recentSearchedTags = ref([])
+
 // 跳轉
-const goToArticleDetail = (articleId) => {
+const goToArticleDetail = (article) => {
+  const articleId = article.articleId
+
   if (!articleId) {
     console.error('錯誤：沒有拿到有效的文章 ID')
     return
   }
 
-  // 導向你的詳細頁路由，名稱請對照你的 router/index.js 設定
+  saveRecentViewedArticle(article)
+
+  recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
+
   router.push({
-    name: 'article-detail', // 或者是 'community-detail'
+    name: 'article-detail',
     params: { id: articleId },
+    query: {
+      fromPage: currentPage.value,
+      fromParent: currentParentId.value || undefined,
+      fromSub: currentSubId.value || undefined,
+      fromKeyword: searchQuery.value.trim() || undefined,
+    },
   })
 }
 
@@ -42,8 +63,167 @@ const goToCreatePage = () => {
   router.push({ name: 'create-article' })
 }
 
-onMounted(() => {
-  fetchData()
+const clearRecentViewed = () => {
+  localStorage.removeItem('recentViewedArticles')
+  recentViewedArticles.value = []
+}
+
+const handleSearch = async () => {
+  const keyword = searchInput.value.trim()
+
+  selectedTag.value = ''
+  searchQuery.value = keyword
+  currentParentId.value = 0
+  currentSubId.value = 0
+  currentPage.value = 1
+
+  await fetchData(keyword)
+}
+
+const handleTagSearch = async (tag) => {
+  const tagText = String(tag || '')
+    .replace(/^#/, '')
+    .trim()
+
+  if (!tagText) return
+
+  saveRecentSearchedTag(tagText)
+
+  selectedTag.value = tagText
+  searchInput.value = `#${tagText}`
+  searchQuery.value = ''
+  currentParentId.value = 0
+  currentSubId.value = 0
+  currentPage.value = 1
+
+  await fetchData('', tagText)
+}
+
+const saveRecentSearchedTag = (tag) => {
+  const tagText = String(tag || '')
+    .replace(/^#/, '')
+    .trim()
+  if (!tagText) return
+
+  const key = 'recentSearchedTags'
+  const oldData = JSON.parse(localStorage.getItem(key)) || []
+
+  const filtered = oldData.filter((item) => item !== tagText)
+  const updated = [tagText, ...filtered].slice(0, 8)
+
+  localStorage.setItem(key, JSON.stringify(updated))
+  recentSearchedTags.value = updated
+}
+
+const clearSearch = async () => {
+  searchInput.value = ''
+  searchQuery.value = ''
+  selectedTag.value = ''
+  currentPage.value = 1
+
+  await fetchData()
+}
+
+const clearRecentSearchedTags = () => {
+  localStorage.removeItem('recentSearchedTags')
+  recentSearchedTags.value = []
+}
+
+const handleSelectParent = async (id) => {
+  const parentId = Number(id)
+
+  // 按「全部」時，清除搜尋與標籤，重新撈全部文章
+  if (parentId === 0) {
+    searchInput.value = ''
+    searchQuery.value = ''
+    selectedTag.value = ''
+    currentParentId.value = 0
+    currentSubId.value = 0
+    currentPage.value = 1
+
+    await fetchData()
+    return
+  }
+
+  selectParent(parentId)
+}
+
+const handleSortChange = () => {
+  currentPage.value = 1
+}
+
+watch(
+  [currentPage, currentParentId, currentSubId, searchQuery, selectedTag],
+  ([page, parent, sub, keyword, tag]) => {
+    router.replace({
+      name: 'community-home',
+      query: {
+        page: page || 1,
+        parent: parent || undefined,
+        sub: sub || undefined,
+        keyword: keyword?.trim() || undefined,
+        tag: tag?.trim() || undefined,
+      },
+    })
+  },
+)
+
+watch(searchQuery, () => {
+  currentPage.value = 1
+})
+
+watch(searchInput, async (newValue) => {
+  if (
+    newValue.trim() === '' &&
+    (searchQuery.value.trim() !== '' || selectedTag.value.trim() !== '')
+  ) {
+    searchQuery.value = ''
+    selectedTag.value = ''
+    currentPage.value = 1
+
+    await fetchData()
+  }
+})
+
+watch(totalPages, () => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value
+  }
+
+  if (currentPage.value < 1) {
+    currentPage.value = 1
+  }
+})
+
+onMounted(async () => {
+  const pageFromQuery = Number(route.query.page)
+  const parentFromQuery = Number(route.query.parent)
+  const subFromQuery = Number(route.query.sub)
+  const keywordFromQuery = route.query.keyword
+  const tagFromQuery = route.query.tag
+
+  searchQuery.value = typeof keywordFromQuery === 'string' ? keywordFromQuery : ''
+  selectedTag.value = typeof tagFromQuery === 'string' ? tagFromQuery : ''
+
+  if (selectedTag.value) {
+    searchInput.value = `#${selectedTag.value}`
+  } else {
+    searchInput.value = searchQuery.value
+  }
+
+  await fetchData(searchQuery.value, selectedTag.value)
+
+  currentParentId.value = Number.isNaN(parentFromQuery) ? 0 : parentFromQuery
+  currentSubId.value = Number.isNaN(subFromQuery) ? 0 : subFromQuery
+
+  if (!Number.isNaN(pageFromQuery) && pageFromQuery > 0) {
+    currentPage.value = pageFromQuery
+  } else {
+    currentPage.value = 1
+  }
+
+  recentViewedArticles.value = JSON.parse(localStorage.getItem('recentViewedArticles')) || []
+  recentSearchedTags.value = JSON.parse(localStorage.getItem('recentSearchedTags')) || []
 })
 </script>
 
@@ -92,114 +272,189 @@ onMounted(() => {
               歡迎來到 Petmily！本週六將舉辦「線上毛孩鮮食講座」，詳情請密切注意官方消息。
             </p>
           </div>
-          <div class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
-              <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
-              分類瀏覽
-            </h2>
-
-            <div class="flex flex-wrap gap-2 border-b border-stone-100 pb-4">
-              <button
-                v-for="c in parentCategories"
-                :key="c.categoryid"
-                @click="selectParent(c.categoryid)"
-                :class="[
-                  'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
-                  currentParentId === c.categoryid
-                    ? 'bg-brand-success-600 scale-105 font-medium text-white'
-                    : 'bg-stone-50 text-stone-600 hover:bg-stone-100',
-                ]">
-                {{ c.categoryname }}
-              </button>
-            </div>
-
-            <div
-              v-if="subCategories.length > 0"
-              class="animate-fade-in mt-4 flex flex-wrap gap-2 pt-1">
-              <button
-                @click="selectSub(0)"
-                :class="[
-                  'rounded-full border px-3 py-1 text-xs transition-all',
-                  currentSubId === 0
-                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
-                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
-                ]">
-                全部子項目
-              </button>
-              <button
-                v-for="sc in subCategories"
-                :key="sc.categoryid"
-                @click="selectSub(sc.categoryid)"
-                :class="[
-                  'rounded-full border px-3 py-1 text-xs transition-all',
-                  currentSubId === sc.categoryid
-                    ? 'border-orange-400 bg-orange-50 font-medium text-orange-700'
-                    : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300',
-                ]">
-                {{ sc.categoryname }}
-              </button>
-            </div>
-          </div>
-
           <div class="flex flex-col gap-4">
-            <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
-            <div v-else-if="isError" class="py-12 text-center text-red-500">
-              ❌ 系統異常，請稍後再試。
-            </div>
+            <!-- 大分類區塊 -->
+            <section class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
+              <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
+                <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
+                分類瀏覽
+              </h2>
 
-            <div v-else class="flex flex-col gap-4">
-              <Article_ListCard
-                v-for="article in pagedArticles"
-                :key="article.articleId"
-                :id="article.articleId"
-                :title="article.title"
-                :summary="article.summary"
-                :author="article.userName"
-                :date="article.createAt"
-                :image="article.image"
-                :categoryid="article.categoryId"
-                :category="article.categoryName"
-                :tags="article.tagNames"
-                :viewCount="article.viewCount"
-                :bookmarkCount="article.bookmarkCount ?? 0"
-                :isBookmarked="article.isBookmarked ?? false"
-                @click-card="goToArticleDetail"
-                @toggle-bookmark="(id) => console.log('收藏文章：', id)"
-                class="cursor-pointer transition-transform hover:-translate-y-0.5" />
-
-              <div
-                v-if="pagedArticles.length === 0"
-                class="rounded-xl border border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
-                🐾 找不到相關的文章喔！
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-stone-700">大分類</h3>
+                <span class="text-xs text-stone-400">選擇文章主題</span>
               </div>
 
-              <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
+              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
                 <button
-                  @click="currentPage--"
-                  :disabled="currentPage === 1"
-                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
-                  上一頁
-                </button>
-                <span class="text-sm text-stone-600">
-                  第 {{ currentPage }} / {{ totalPages }} 頁
-                </span>
-                <button
-                  @click="currentPage++"
-                  :disabled="currentPage === totalPages"
-                  class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
-                  下一頁
+                  v-for="c in parentCategories"
+                  :key="c.categoryid"
+                  @click="handleSelectParent(c.categoryid)"
+                  :class="[
+                    'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
+                    Number(currentParentId) === Number(c.categoryid)
+                      ? 'bg-brand-success-600 scale-105 font-medium text-white'
+                      : 'bg-white text-stone-600 hover:bg-stone-100',
+                  ]">
+                  {{ c.categoryname }}
                 </button>
               </div>
+            </section>
+
+            <!-- 小分類區塊：選全部時完全不出現 -->
+            <section
+              v-if="Number(currentParentId) !== 0 && subCategories.length > 0"
+              class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-stone-700">小分類</h3>
+              </div>
+
+              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
+                <button
+                  @click="selectSub(0)"
+                  :class="[
+                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    Number(currentSubId) === 0
+                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
+                      : 'hover:border-brand-success-300 hover:text-brand-success-600 border-stone-200 bg-white text-stone-500',
+                  ]">
+                  全部小分類
+                </button>
+
+                <button
+                  v-for="sc in subCategories"
+                  :key="sc.categoryid"
+                  @click="selectSub(sc.categoryid)"
+                  :class="[
+                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    Number(currentSubId) === Number(sc.categoryid)
+                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
+                      : 'hover:text-brand-success-400 hover:border-brand-success-300 border-stone-200 bg-white text-stone-500',
+                  ]">
+                  {{ sc.categoryname }}
+                </button>
+              </div>
+            </section>
+
+            <section
+              class="min-h-[420px] overflow-hidden rounded-xl border border-stone-100 bg-transparent">
+              <!-- 文章列表 Header + 排序 -->
+              <div class="flex items-center justify-between border-b border-stone-100 px-4 py-3">
+                <div>
+                  <h3 class="text-sm font-semibold text-stone-700">文章列表</h3>
+                  <p class="text-xs text-stone-400">可依發文時間或觀看數排序</p>
+                </div>
+
+                <select
+                  v-model="sortType"
+                  class="focus:border-brand-success-400 focus:ring-brand-success-400/20 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-600 transition outline-none focus:ring-2"
+                  @change="handleSortChange">
+                  <option value="newest">最新發文</option>
+                  <option value="oldest">最早發文</option>
+                  <option value="mostViewed">最多觀看</option>
+                </select>
+              </div>
+
+              <div v-if="isLoading" class="bg-white py-12 text-center text-stone-500">
+                ⏳ 資料讀取中...
+              </div>
+
+              <div v-else-if="isError" class="bg-white py-12 text-center text-red-500">
+                ❌ 系統異常，請稍後再試。
+              </div>
+
+              <div v-else>
+                <Article_ListCard
+                  v-for="article in pagedArticles"
+                  :key="article.articleId"
+                  :id="article.articleId"
+                  :title="article.title"
+                  :summary="article.summary"
+                  :author="article.userName"
+                  :date="article.createAt"
+                  :image="article.mainImageUrl || 'https://placehold.co/400x260'"
+                  :categoryid="article.categoryId"
+                  :category="article.categoryName"
+                  :tags="article.tagNames"
+                  :viewCount="article.viewCount"
+                  :bookmarkCount="article.bookmarkCount ?? 0"
+                  :isBookmarked="article.isBookmarked ?? false"
+                  :comment-count="article.commentCount ?? 0"
+                  @click-card="() => goToArticleDetail(article)"
+                  @click-tag="handleTagSearch"
+                  @toggle-bookmark="(id) => console.log('收藏文章：', id)"
+                  class="cursor-pointer" />
+
+                <div
+                  v-if="pagedArticles.length === 0"
+                  class="border-t border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                  🐾 找不到相關的文章喔！
+                </div>
+              </div>
+            </section>
+            <div v-if="totalPages > 1" class="mt-3 flex items-center justify-center gap-2">
+              <button
+                @click="currentPage = 1"
+                :disabled="currentPage === 1"
+                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronLeft :size="18" />
+              </button>
+
+              <button
+                @click="currentPage--"
+                :disabled="currentPage === 1"
+                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                上一頁
+              </button>
+
+              <span class="text-sm text-stone-600">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+
+              <button
+                @click="currentPage++"
+                :disabled="currentPage === totalPages"
+                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                下一頁
+              </button>
+
+              <button
+                @click="currentPage = totalPages"
+                :disabled="currentPage === totalPages"
+                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronRight :size="18" />
+              </button>
             </div>
           </div>
         </main>
 
         <!-- 左邊30% -->
         <aside class="flex w-full flex-col gap-4 md:w-1/4">
-          <input
-            v-model="searchQuery"
-            placeholder="搜尋關鍵字..."
-            class="focus:ring-brand-success-400 rounded-md border border-stone-300 bg-white p-2 shadow-sm focus:ring-2 focus:outline-none" />
+          <div class="rounded-2xl border border-stone-100 bg-white p-4 shadow-sm">
+            <label class="mb-2 block text-sm font-semibold text-stone-700">搜尋文章</label>
+
+            <div class="flex gap-2">
+              <input
+                v-model="searchInput"
+                type="text"
+                placeholder="搜尋標題、內容、分類或作者..."
+                class="focus:ring-brand-success-400 min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:ring-2 focus:outline-none"
+                @keyup.enter="handleSearch" />
+
+              <button
+                type="button"
+                class="bg-brand-success-600 hover:bg-brand-success-700 rounded-xl px-4 py-2 text-sm text-white"
+                @click="handleSearch">
+                搜尋
+              </button>
+            </div>
+
+            <button
+              v-if="searchInput.trim() || searchQuery.trim() || selectedTag.trim()"
+              type="button"
+              class="mt-2 text-xs text-stone-400 hover:text-amber-600"
+              @click="clearSearch">
+              清除搜尋
+            </button>
+          </div>
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
             <button
               @click="goToCreatePage"
@@ -208,33 +463,80 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
-            <div class="flex flex-col gap-2">
-              <h3>熱門標籤</h3>
-              <div class="flex flex-row flex-wrap gap-x-2 gap-y-2">
+            <div class="rounded-2xl p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-stone-800">最近搜尋的標籤</h3>
+
                 <button
-                  class="w-fit rounded-full bg-orange-50 px-3 py-1 text-sm whitespace-nowrap text-orange-600">
-                  # 鮮食
-                </button>
-                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
-                  # 寵物健康
-                </button>
-                <button class="w-fit rounded-full bg-[#f2b29b] px-3 py-1 text-sm whitespace-nowrap">
-                  # 訓練技巧
+                  v-if="recentSearchedTags.length > 0"
+                  type="button"
+                  class="text-xs text-stone-400 hover:text-amber-600"
+                  @click="clearRecentSearchedTags">
+                  清除
                 </button>
               </div>
+
+              <div v-if="recentSearchedTags.length > 0" class="flex flex-row flex-wrap gap-2">
+                <button
+                  v-for="tag in recentSearchedTags"
+                  :key="tag"
+                  type="button"
+                  class="group rounded-full border border-transparent bg-[#f7ebe5] px-3 py-1 text-sm font-medium whitespace-nowrap text-[#9c6d6d] transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]"
+                  @click="handleTagSearch(tag)">
+                  <span class="text-[#d4a373]">#</span>
+                  {{ tag }}
+                </button>
+              </div>
+
+              <div
+                v-else
+                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                尚無搜尋標籤
+              </div>
             </div>
-            <div class="flex flex-col gap-2">
-              <h3>最近瀏覽</h3>
-              <ul class="flex list-disc flex-col gap-2 pl-5 text-sm text-gray-600">
-                <li>如何照顧幼貓？</li>
-                <li>柴犬個性分析—其實原本是狼!?</li>
-                <li>犬貓鮮食推薦~!來自鮮味小姐自創研發品牌</li>
+            <div class="rounded-2xl p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-stone-800">最近瀏覽</h3>
+
+                <button
+                  v-if="recentViewedArticles.length > 0"
+                  class="text-xs text-stone-400 hover:text-amber-600"
+                  @click="clearRecentViewed">
+                  清除
+                </button>
+              </div>
+
+              <ul
+                v-if="recentViewedArticles.length > 0"
+                class="flex flex-col divide-y divide-stone-100">
+                <li v-for="article in recentViewedArticles" :key="article.articleId" class="py-2">
+                  <RouterLink
+                    :to="{ name: 'article-detail', params: { id: article.articleId } }"
+                    class="group block rounded-lg px-2 py-1 transition-colors hover:bg-[#fbf5f1]">
+                    <p
+                      class="line-clamp-2 text-sm font-medium text-stone-700 transition-colors group-hover:text-[#9c6d6d]">
+                      {{ article.title }}
+                    </p>
+
+                    <p
+                      class="mt-1 text-xs text-stone-400 transition-colors group-hover:text-[#d4a373]">
+                      {{ article.categoryName }}
+                    </p>
+                  </RouterLink>
+                </li>
               </ul>
+
+              <div
+                v-else
+                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                尚無最近瀏覽紀錄
+              </div>
             </div>
           </div>
         </aside>
       </div>
     </div>
+    <ScrollToTopButton />
   </div>
 </template>
 

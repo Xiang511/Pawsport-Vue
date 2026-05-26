@@ -1,8 +1,5 @@
 import { ref, reactive, watch } from 'vue'
-import axios from 'axios'
 import request from '@/api/axios'
-import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
-import Quill from 'quill'
 
 export function useEditorState(emit, quillInstanceRef) {
   const isNewArticleModalOpen = ref(false)
@@ -53,21 +50,24 @@ export function useEditorState(emit, quillInstanceRef) {
     toastRef.value?.trigger('已放棄變更，已開啟全新文章！')
   }
 
-  const extractTags = (htmlContent) => {
-    if (!htmlContent) return []
-    try {
-      const doc = new DOMParser().parseFromString(htmlContent, 'text/html')
-      const pureText = doc.body.textContent || ''
-      const regex = /#([^#\s,、.]+)/g
-      const matches = pureText.match(regex)
-      if (!matches) return []
+  const extractTags = (plainText) => {
+    if (!plainText) return []
 
-      const cleanTags = matches.map((tag) => tag.replace('#', '').trim())
-      return [...new Set(cleanTags)].filter((tag) => tag.length > 0)
-    } catch (e) {
-      return []
+    const regex = /#([^#\s,，、。.!！?？；;：:]+)/g
+    const tags = []
+    let match
+
+    while ((match = regex.exec(plainText)) !== null) {
+      const tag = match[1]?.trim()
+
+      if (tag) {
+        tags.push(tag)
+      }
     }
+
+    return [...new Set(tags)]
   }
+
   //因為內文在 Quill 實體裡，我們利用 Quill 的 text-change 事件或直接監聽實體
   watch(
     () => quillInstanceRef.value,
@@ -76,8 +76,8 @@ export function useEditorState(emit, quillInstanceRef) {
 
       // 標籤偵測
       quill.on('text-change', () => {
-        const htmlContent = quill.root.innerHTML
-        detectedTags.value = extractTags(htmlContent)
+        const plainText = quill.getText()
+        detectedTags.value = extractTags(plainText)
       })
 
       // 游標監聽：只要游標一有變動，立刻存起來
@@ -91,11 +91,19 @@ export function useEditorState(emit, quillInstanceRef) {
   )
 
   const imageHandler = () => {
-    console.log('imageHandler triggered')
+    const quill = quillInstanceRef.value
+
+    if (quill) {
+      const range = quill.getSelection(true)
+
+      if (range && range.index !== undefined) {
+        savedIndex = range.index
+      } else {
+        savedIndex = quill.getLength() - 1
+      }
+    }
 
     const input = document.getElementById('quill-hidden-image-input')
-
-    console.log('input=', input)
 
     if (input) {
       input.click()
@@ -132,11 +140,12 @@ export function useEditorState(emit, quillInstanceRef) {
       }
 
       const insertIndex = Math.min(savedIndex, quill.getLength() - 1)
-
       quill.insertEmbed(insertIndex, 'image', imageUrl, 'user')
+      quill.insertText(insertIndex + 1, '\n', 'user')
 
       setTimeout(() => {
-        quill.setSelection(insertIndex + 1, 0, 'silent')
+        quill.setSelection(insertIndex + 2, 0, 'silent')
+        savedIndex = insertIndex + 2
       }, 0)
     } catch (err) {
       console.error(err)
@@ -145,6 +154,20 @@ export function useEditorState(emit, quillInstanceRef) {
     } finally {
       isUploading = false
       event.target.value = ''
+    }
+  }
+
+  const loadDraftToEditor = (draftDetail) => {
+    post.articleId = draftDetail.articleId
+    post.title = draftDetail.title || ''
+    post.categoryId = draftDetail.categoryId || ''
+    post.content = draftDetail.content || ''
+    post.tag = draftDetail.tags?.map((tag) => `#${tag}`).join(' ') || ''
+
+    detectedTags.value = draftDetail.tags || []
+
+    if (quillInstanceRef.value) {
+      quillInstanceRef.value.root.innerHTML = draftDetail.content || ''
     }
   }
 
@@ -159,5 +182,6 @@ export function useEditorState(emit, quillInstanceRef) {
     imageHandler,
     toastRef,
     handleRealImageUpload,
+    loadDraftToEditor,
   }
 }
