@@ -17,13 +17,18 @@ export function useCommunityHome() {
   const pageSize = ref(5) // 每頁顯示幾篇
 
   // === 串接 API 取得真實資料 ===
-  const fetchData = async () => {
+  const fetchData = async (keyword = '') => {
     isLoading.value = true
     isError.value = false
+
     try {
       const [categoriesResponse, articlesResponse] = await Promise.all([
         request.get('/Category'),
-        request.get('/Users/articles'),
+        request.get('/Users/articles', {
+          params: {
+            keyword: keyword?.trim() || undefined,
+          },
+        }),
       ])
 
       allCategories.value = categoriesResponse.data.data || []
@@ -91,7 +96,7 @@ export function useCommunityHome() {
       }))
   })
 
-  // === 2. 核心篩選邏輯：支援多層級與關鍵字 (Computed) ===
+  // === 2. 核心篩選邏輯：支援多層級 (Computed) ===
   const filteredArticles = computed(() => {
     return articleData.value.filter((article) => {
       let matchCategory = true
@@ -102,28 +107,19 @@ export function useCommunityHome() {
 
       if (parentId !== 0) {
         if (subId !== 0) {
-          // 選了小分類：只顯示這個小分類的文章
           matchCategory = articleCategoryId === subId
         } else {
-          // 只選大分類：顯示該大分類本身 + 底下所有小分類的文章
           const allowedCategoryIds = subCategories.value.map((c) => Number(c.categoryid))
-
-          // 如果有文章直接掛在大分類，也一起顯示
           allowedCategoryIds.push(parentId)
 
           matchCategory = allowedCategoryIds.includes(articleCategoryId)
         }
       }
 
-      const keyword = searchQuery.value.trim().toLowerCase()
-      const matchKeyword =
-        !keyword ||
-        article.title?.toLowerCase().includes(keyword) ||
-        article.summary?.toLowerCase().includes(keyword)
-
-      return matchCategory && matchKeyword
+      return matchCategory
     })
   })
+
   // === 3. 分頁切片邏輯 (Computed) ===
   // 總頁數
   const totalPages = computed(() => {

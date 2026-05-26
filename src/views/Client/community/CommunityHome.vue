@@ -28,6 +28,7 @@ const {
 } = useCommunityHome()
 
 const recentViewedArticles = ref([])
+const searchInput = ref('')
 
 // 跳轉
 const goToArticleDetail = (article) => {
@@ -63,6 +64,23 @@ const clearRecentViewed = () => {
   recentViewedArticles.value = []
 }
 
+const handleSearch = async () => {
+  const keyword = searchInput.value.trim()
+
+  searchQuery.value = keyword
+  currentPage.value = 1
+
+  await fetchData(keyword)
+}
+
+const clearSearch = async () => {
+  searchInput.value = ''
+  searchQuery.value = ''
+  currentPage.value = 1
+
+  await fetchData()
+}
+
 watch([currentPage, currentParentId, currentSubId, searchQuery], ([page, parent, sub, keyword]) => {
   router.replace({
     name: 'community-home',
@@ -90,16 +108,18 @@ watch(totalPages, () => {
 })
 
 onMounted(async () => {
-  await fetchData()
-
   const pageFromQuery = Number(route.query.page)
   const parentFromQuery = Number(route.query.parent)
   const subFromQuery = Number(route.query.sub)
   const keywordFromQuery = route.query.keyword
 
+  searchQuery.value = typeof keywordFromQuery === 'string' ? keywordFromQuery : ''
+  searchInput.value = searchQuery.value
+
+  await fetchData(searchQuery.value)
+
   currentParentId.value = Number.isNaN(parentFromQuery) ? 0 : parentFromQuery
   currentSubId.value = Number.isNaN(subFromQuery) ? 0 : subFromQuery
-  searchQuery.value = typeof keywordFromQuery === 'string' ? keywordFromQuery : ''
 
   if (!Number.isNaN(pageFromQuery) && pageFromQuery > 0) {
     currentPage.value = pageFromQuery
@@ -291,10 +311,33 @@ onMounted(async () => {
 
         <!-- 左邊30% -->
         <aside class="flex w-full flex-col gap-4 md:w-1/4">
-          <input
-            v-model="searchQuery"
-            placeholder="搜尋關鍵字..."
-            class="focus:ring-brand-success-400 rounded-md border border-stone-300 bg-white p-2 shadow-sm focus:ring-2 focus:outline-none" />
+          <div class="rounded-2xl border border-stone-100 bg-white p-4 shadow-sm">
+            <label class="mb-2 block text-sm font-semibold text-stone-700">搜尋文章</label>
+
+            <div class="flex gap-2">
+              <input
+                v-model="searchInput"
+                type="text"
+                placeholder="搜尋標題、內容、分類或作者..."
+                class="focus:ring-brand-success-400 min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:ring-2 focus:outline-none"
+                @keyup.enter="handleSearch" />
+
+              <button
+                type="button"
+                class="bg-brand-success-600 hover:bg-brand-success-700 rounded-xl px-4 py-2 text-sm text-white"
+                @click="handleSearch">
+                搜尋
+              </button>
+            </div>
+
+            <button
+              v-if="searchQuery.trim()"
+              type="button"
+              class="mt-2 text-xs text-stone-400 hover:text-amber-600"
+              @click="clearSearch">
+              清除搜尋
+            </button>
+          </div>
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
             <button
               @click="goToCreatePage"
