@@ -106,6 +106,25 @@ const clearSearch = async () => {
   await fetchData()
 }
 
+const handleSelectParent = async (id) => {
+  const parentId = Number(id)
+
+  // 按「全部」時，清除搜尋與標籤，重新撈全部文章
+  if (parentId === 0) {
+    searchInput.value = ''
+    searchQuery.value = ''
+    selectedTag.value = ''
+    currentParentId.value = 0
+    currentSubId.value = 0
+    currentPage.value = 1
+
+    await fetchData()
+    return
+  }
+
+  selectParent(parentId)
+}
+
 watch(
   [currentPage, currentParentId, currentSubId, searchQuery, selectedTag],
   ([page, parent, sub, keyword, tag]) => {
@@ -242,7 +261,7 @@ onMounted(async () => {
                 <button
                   v-for="c in parentCategories"
                   :key="c.categoryid"
-                  @click="selectParent(c.categoryid)"
+                  @click="handleSelectParent(c.categoryid)"
                   :class="[
                     'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
                     Number(currentParentId) === Number(c.categoryid)
