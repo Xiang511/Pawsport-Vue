@@ -74,65 +74,71 @@ const toggleFaq = (id) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#FCF4E5] px-4 py-12 font-sans">
+  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased px-4 py-12 font-sans">
     <div class="mx-auto w-11/12 lg:w-[95%] xl:w-10/12">
       <SupportHeader />
       <LineBotFloat />
       <AiChatFloat />
 
-      <div class="mb-10 flex flex-wrap justify-center gap-4 lg:gap-6">
-        <button
-          v-for="cat in categories"
-          :key="cat"
-          @click="activeCategory = cat"
-          :class="[
-            'rounded-full px-8 py-3 text-base font-bold transition-all duration-300 active:scale-95 lg:text-lg',
-            activeCategory === cat
-              ? 'bg-[#7a6856] text-white shadow-md hover:-translate-y-1 hover:bg-[#5c4e40]'
-              : 'bg-[#e8dccb] text-[#7a6856] hover:-translate-y-1 hover:bg-[#d8ccbb]',
-          ]">
-          {{ cat }}
-        </button>
+      <!-- Category Filter Tabs -->
+      <div class="mb-10 flex justify-center border-b-4 border-[#445944] pb-5">
+        <div class="flex flex-wrap justify-center gap-3 sm:gap-4">
+          <button
+            v-for="cat in categories"
+            :key="cat"
+            @click="activeCategory = cat"
+            :class="[
+              'rounded-full px-5 py-2.5 text-sm font-black transition-all duration-300 lg:text-base border-2',
+              activeCategory === cat 
+                ? 'bg-[#445944] border-[#445944] text-white shadow-[2px_2px_0px_#445944]' 
+                : 'bg-white border-[#445944]/40 text-[#7a6856] hover:border-[#445944] hover:text-[#445944]',
+            ]">
+            {{ cat }}
+          </button>
+        </div>
       </div>
 
+      <!-- Search Bar -->
       <div
-        class="relative mx-auto mb-10 max-w-2xl rounded-full transition-all duration-300 hover:shadow-md">
+        class="relative mx-auto mb-12 max-w-2xl rounded-2xl border-4 border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-all hover:shadow-[6px_6px_0px_#445944]">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
-          <Search class="h-5 w-5 text-[#968677]" />
+          <Search class="h-5 w-5 text-[#7a6856]" />
         </div>
         <input
           v-model="searchQuery"
           type="text"
           placeholder="請輸入關鍵字... 例如：疫苗、晶片、領養"
-          class="w-full rounded-full border-2 border-[#e8dccb] bg-white py-4 pr-6 pl-12 text-gray-700 shadow-sm transition-all focus:border-[#7a6856] focus:ring-4 focus:ring-[#fcf7c6]/50 focus:outline-none" />
+          class="w-full rounded-xl py-4 pr-16 pl-12 text-base font-bold text-gray-700 bg-transparent outline-none" />
         <button
           v-if="searchQuery"
           @click="searchQuery = ''"
-          class="absolute inset-y-0 right-0 flex items-center pr-5 text-sm font-bold text-gray-400 hover:text-[#7a6856]">
+          class="absolute inset-y-0 right-0 flex items-center pr-5 text-sm font-black text-gray-400 hover:text-[#445944] transition-colors">
           清除
         </button>
       </div>
 
-      <div v-if="isLoading" class="py-10 text-center text-xl text-[#968677]">
-        正在為您尋找解答中... 🐾
+      <!-- Loading State -->
+      <div v-if="isLoading" class="py-16 text-center text-[#7a6856]">
+        <div class="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#445944] border-t-transparent"></div>
+        <div class="font-extrabold tracking-wide">正在為您尋找解答中... 🐾</div>
       </div>
 
+      <!-- FAQ Accordion List -->
       <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
         <div
           v-for="faq in filteredFaqs"
           :key="faq.faqid"
-          class="h-fit overflow-hidden rounded-2xl border-2 border-[#e8dccb] bg-white transition-all duration-300 hover:shadow-md">
+          class="h-fit overflow-hidden rounded-2xl border-4 border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-all duration-300 hover:shadow-[6px_6px_0px_#445944]">
           <button
             @click="toggleFaq(faq.faqid)"
             :class="[
-              'flex w-full items-center justify-between px-6 py-5 text-left transition-colors',
-              openFaqId === faq.faqid ? 'bg-[#FAE4AE]' : 'bg-white hover:bg-[#fceecc]',
+              'flex w-full items-center justify-between px-6 py-5 text-left transition-colors font-bold',
+              openFaqId === faq.faqid ? 'bg-[#FAE4AE] text-[#445944]' : 'bg-white text-[#5a4d40] hover:bg-[#FCF4E5]/50',
             ]">
             <div class="flex items-center gap-3 pr-4">
               <HelpCircle class="h-6 w-6 shrink-0 text-[#7a6856]" />
-
               <span
-                class="text-lg font-bold text-[#5a4d40]"
+                class="text-base sm:text-lg font-black"
                 v-html="highlightText(faq.question)"></span>
             </div>
 
@@ -150,11 +156,10 @@ const toggleFaq = (id) => {
             ">
             <div class="overflow-hidden">
               <div
-                class="border-t-2 border-dashed border-[#e8dccb] bg-white px-8 py-6 text-base leading-relaxed text-gray-700 lg:px-12">
+                class="border-t-4 border-dashed border-[#445944] bg-[#FDF9F3] px-6 py-5 text-base leading-relaxed text-gray-700 font-semibold lg:px-8">
                 <div class="flex items-start gap-3">
-                  <MessageCircleMore class="mt-1 h-5 w-5 shrink-0 text-[#968677]" />
-
-                  <div class="grow whitespace-pre-wrap" v-html="highlightText(faq.answer)"></div>
+                  <MessageCircleMore class="mt-1 h-5 w-5 shrink-0 text-[#7a6856]" />
+                  <div class="grow whitespace-pre-wrap leading-relaxed text-gray-700" v-html="highlightText(faq.answer)"></div>
                 </div>
               </div>
             </div>
@@ -162,10 +167,11 @@ const toggleFaq = (id) => {
         </div>
       </div>
 
+      <!-- Empty Search List State -->
       <div
         v-if="!isLoading && filteredFaqs.length === 0"
-        class="py-10 text-center text-lg text-[#968677]">
-        找不到與「{{ searchQuery }}」相關的問題喔！
+        class="mx-auto max-w-md rounded-2xl border-4 border-dashed border-[#7a6856]/40 bg-[#FCF4E5] py-12 text-center text-lg font-bold text-[#7a6856]">
+        找不到與「{{ searchQuery }}」相關的問題喔！ 🐾
       </div>
     </div>
   </div>
