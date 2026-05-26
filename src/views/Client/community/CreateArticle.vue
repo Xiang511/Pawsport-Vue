@@ -12,7 +12,8 @@ import { useArticleActions } from '@/composables/useArticleActions'
 import { useCategories } from '@/composables/useCategories'
 
 const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
-const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle } = useArticleActions()
+const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle, fetchDraftDetail } =
+  useArticleActions()
 
 const router = useRouter()
 const articleEditorRef = ref(null)
@@ -70,18 +71,17 @@ const handleSaveDraft = async (postData) => {
 // 點擊草稿後載入詳細資料
 const handleLoadDraft = async (id) => {
   try {
-    const response = await request.get(`/Article/${id}`)
-    const draftDetail = response.data.data || response.data
+    const draftDetail = await fetchDraftDetail(id)
 
-    // 💡 接下來把你拿到的詳細資料，塞進你目前表單的 Ref 變數裡
-    // 舉例（請換成你專案實際的變數名稱）：
-    // currentArticleId.value = draftDetail.articleId
-    // form.title = draftDetail.title
-    // form.categoryId = draftDetail.categoryId
-    // quillEditor.value.setHTML(draftDetail.content) // 如果是用富文本編輯器
+    articleId.value = draftDetail.articleId
 
-    console.log('草稿詳細資料載入成功！', draftDetail)
+    if (articleEditorRef.value) {
+      articleEditorRef.value.loadDraftToEditor(draftDetail)
+    }
+
+    toastRef.value?.trigger('草稿載入成功')
   } catch (error) {
+    console.error('載入草稿失敗:', error)
     toastRef.value?.trigger('載入草稿失敗')
   }
 }

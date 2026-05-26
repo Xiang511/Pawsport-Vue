@@ -1,10 +1,7 @@
 import { ref } from 'vue'
 import request from '@/api/axios'
-import { useAuthStore } from '@/stores/auth'
 
 export function useArticleActions() {
-  const authStore = useAuthStore()
-
   // 共享的狀態
   const draftsData = ref([])
   const isActionLoading = ref(false)
@@ -12,25 +9,22 @@ export function useArticleActions() {
   // ===撈取草稿清單===
   const fetchDrafts = async () => {
     try {
-      const userId = authStore.userInfo?.userId
-      if (!userId) {
-        console.warn('找不到使用者 ID，無法載入草稿')
-        return
-      }
-      const response = await request.get('/Article', {
-        params: {
-          Status: 0,
-          UserId: userId,
-          IsActive: true,
-        },
-      })
-
-      if (response.data && response.data.data) {
-        draftsData.value = response.data.data
-      }
+      const response = await request.get('/Users/articles/drafts')
+      draftsData.value = response.data.data || []
     } catch (error) {
       console.error('Composable 撈取草稿失敗:', error)
+    } finally {
+      isActionLoading.value = false
     }
+  }
+
+  const fetchDraftDetail = async (id) => {
+    if (!id || id === 'undefined' || id === 'null') {
+      throw new Error(`無效的草稿 ID：${id}`)
+    }
+
+    const response = await request.get(`/Users/articles/drafts/${id}`)
+    return response.data.data
   }
 
   // ===軟刪除===
@@ -38,7 +32,7 @@ export function useArticleActions() {
     isActionLoading.value = true
     try {
       // 呼叫後端刪除 API（後端內部會把 IsExist 設為 false）
-      await request.patch(`/Article/${id}`)
+      await request.patch(`/Users/articles/${id}`)
       await fetchDrafts()
 
       return { success: true, message: '草稿已成功刪除' }
@@ -57,18 +51,24 @@ export function useArticleActions() {
 
     try {
       if (isNew) {
-        // 全新文章：POST
-        const response = await request.post('/Article', payload)
-        // 回傳後端生成的新 ID
-        return { success: true, isNew: true, status: response.status, data: response.data?.data }
-      } else {
-        // 現有文章更新：PUT
-        const response = await request.put(`/Article/${currentId}`, payload)
-        return { success: true, isNew: false, status: response.status, data: currentId }
+        const response = await request.post('/Users/articles', payload)
+        return {
+          success: true,
+          isNew: true,
+          status: response.status,
+          data: response.data?.data,
+        }
+      }
+      const response = await request.put(`/Users/articles/${currentId}`, payload)
+      return {
+        success: true,
+        isNew: false,
+        status: response.status,
+        data: currentId,
       }
     } catch (error) {
       console.error('文章處理失敗:', error)
-      throw error // 丟給組件去處理 alert 錯誤訊息
+      throw error
     }
   }
 
@@ -79,5 +79,6 @@ export function useArticleActions() {
     fetchDrafts,
     deleteDraft,
     saveOrUpdateArticle,
+    fetchDraftDetail,
   }
 }

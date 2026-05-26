@@ -36,6 +36,7 @@ const {
   detectedTags,
   imageHandler,
   handleRealImageUpload,
+  loadDraftToEditor,
 } = useEditorState(emit, quillWrapper)
 
 //頁面必須等quill載入
@@ -115,13 +116,25 @@ const onSubmit = () => {
 }
 
 // 選擇某篇草稿（點擊後載入）
-const selectDraft = (draft) => {
-  // 觸發 emit 讓父組件去抓那篇草稿的詳細資料並塞回編輯器
-  emit('load-draft', draft.id)
-  isDraftListModalOpen.value = false // 關閉彈窗
+const selectDraft = (draftId) => {
+  console.log('ArticleEditor 收到草稿 id =', draftId)
+
+  if (!draftId) {
+    console.warn('草稿 ID 無效：', draftId)
+    return
+  }
+
+  emit('load-draft', draftId)
+  isDraftListModalOpen.value = false
 }
+
 // 刪除某篇草稿
 const deleteDraftItem = (draftId) => {
+  if (!draftId) {
+    console.warn('刪除草稿失敗，草稿 ID 無效：', draftId)
+    return
+  }
+
   if (confirm('確定要永久刪除這篇草稿嗎？')) {
     emit('delete-draft', draftId)
   }
@@ -132,6 +145,7 @@ const syncArticleId = (id) => {
 }
 defineExpose({
   syncArticleId,
+  loadDraftToEditor,
 })
 </script>
 

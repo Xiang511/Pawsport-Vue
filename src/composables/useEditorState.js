@@ -145,6 +145,20 @@ export function useEditorState(emit, quillInstanceRef) {
     }
   }
 
+  const loadDraftToEditor = (draftDetail) => {
+    post.articleId = draftDetail.articleId
+    post.title = draftDetail.title || ''
+    post.categoryId = draftDetail.categoryId || ''
+    post.content = draftDetail.content || ''
+    post.tag = draftDetail.tags?.map((tag) => `#${tag}`).join(' ') || ''
+
+    detectedTags.value = draftDetail.tags || []
+
+    if (quillInstanceRef.value) {
+      quillInstanceRef.value.root.innerHTML = draftDetail.content || ''
+    }
+  }
+
   return {
     post,
     isNewArticleModalOpen,
@@ -156,5 +170,6 @@ export function useEditorState(emit, quillInstanceRef) {
     imageHandler,
     toastRef,
     handleRealImageUpload,
+    loadDraftToEditor,
   }
 }
