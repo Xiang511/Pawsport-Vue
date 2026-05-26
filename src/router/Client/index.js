@@ -167,6 +167,22 @@ export default [
         },
       },
       {
+        path: '/error-401',
+        name: 'Client-error-401',
+        component: () => import('@/views/Client/Errors/UnauthorizedView.vue'),
+        meta: {
+          title: '401 請先登入 | Petmily 寵物媒合平台',
+        },
+      },
+      {
+        path: '/error-403',
+        name: 'Client-error-403',
+        component: () => import('@/views/Client/Errors/ForbiddenView.vue'),
+        meta: {
+          title: '403 權限不足 | Petmily 寵物媒合平台',
+        },
+      },
+      {
         path: '/faq',
         name: 'Client-faq',
         component: () => import('@/views/Client/Support/FaqView.vue'),
