@@ -3,8 +3,10 @@ import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Sparkles } from 'lucide-vue-next'
 import request from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // 1. 表單狀態定義 (完全對齊後端 PetCreateDto)
 const form = reactive({
@@ -63,6 +65,7 @@ const submitForm = async () => {
     // 依照企劃書：將行為特徵陣列轉為逗號分隔字串
     const submitData = {
       ...form,
+      userId: authStore.userInfo?.userId,
       behavioralTraits: form.behavioralTraits.join(','),
       currentStatus: 1, // 刊登中
     }
