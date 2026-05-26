@@ -16,7 +16,7 @@ export function useCommunityHome() {
   const sortType = ref('newest')
 
   const currentPage = ref(1) // 當前頁碼
-  const pageSize = ref(5) // 每頁顯示幾篇
+  const pageSize = ref(10) // 每頁顯示幾篇
 
   // === 串接 API 取得真實資料 ===
   const fetchData = async (keyword = '', tag = '') => {

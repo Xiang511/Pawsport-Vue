@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 // 自己做的卡片樣式
 import Article_ListCard from '@/components/Client/Article_ListCard.vue'
 import { useCommunityHome } from '@/composables/useCommunityHome'
+import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -336,7 +337,7 @@ onMounted(async () => {
             </section>
 
             <section
-              class="min-h-[720px] overflow-hidden rounded-xl border border-stone-100 bg-transparent">
+              class="min-h-[420px] overflow-hidden rounded-xl border border-stone-100 bg-transparent">
               <!-- 文章列表 Header + 排序 -->
               <div class="flex items-center justify-between border-b border-stone-100 px-4 py-3">
                 <div>
@@ -354,14 +355,14 @@ onMounted(async () => {
                 </select>
               </div>
 
-              <!-- Loading / Error -->
-              <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
+              <div v-if="isLoading" class="bg-white py-12 text-center text-stone-500">
+                ⏳ 資料讀取中...
+              </div>
 
-              <div v-else-if="isError" class="py-12 text-center text-red-500">
+              <div v-else-if="isError" class="bg-white py-12 text-center text-red-500">
                 ❌ 系統異常，請稍後再試。
               </div>
 
-              <!-- 文章列表 -->
               <div v-else>
                 <Article_ListCard
                   v-for="article in pagedArticles"
@@ -382,20 +383,20 @@ onMounted(async () => {
                   @click-card="() => goToArticleDetail(article)"
                   @click-tag="handleTagSearch"
                   @toggle-bookmark="(id) => console.log('收藏文章：', id)"
-                  class="cursor-pointer transition-colors" />
+                  class="cursor-pointer" />
 
                 <div
                   v-if="pagedArticles.length === 0"
-                  class="min-h-[360px] border-t border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                  class="border-t border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
                   🐾 找不到相關的文章喔！
                 </div>
               </div>
             </section>
-            <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
+            <div v-if="totalPages > 1" class="mt-3 flex items-center justify-center gap-2">
               <button
                 @click="currentPage = 1"
                 :disabled="currentPage === 1"
-                class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronLeft :size="18" />
               </button>
 
@@ -418,7 +419,7 @@ onMounted(async () => {
               <button
                 @click="currentPage = totalPages"
                 :disabled="currentPage === totalPages"
-                class="bg-brand-success-200 text-white- hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40">
+                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronRight :size="18" />
               </button>
             </div>
@@ -447,7 +448,7 @@ onMounted(async () => {
             </div>
 
             <button
-              v-if="searchInput.trim() || searchQuery.trim()"
+              v-if="searchInput.trim() || searchQuery.trim() || selectedTag.trim()"
               type="button"
               class="mt-2 text-xs text-stone-400 hover:text-amber-600"
               @click="clearSearch">
@@ -535,6 +536,7 @@ onMounted(async () => {
         </aside>
       </div>
     </div>
+    <ScrollToTopButton />
   </div>
 </template>
 

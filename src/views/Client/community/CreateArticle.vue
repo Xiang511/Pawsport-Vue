@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import ArticleEditor from '@/components/Client/Article_ArticleEditor.vue'
 import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
+import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 
 import { useArticleActions } from '@/composables/useArticleActions'
 import { useCategories } from '@/composables/useCategories'
@@ -145,6 +146,7 @@ onMounted(async () => {
       </div>
     </div>
     <Article_ToastAlert ref="toastRef" />
+    <ScrollToTopButton />
   </div>
 </template>
 

@@ -15,6 +15,7 @@ import {
 
 import { useDateTime } from '@/composables/useDateTime'
 import Article_CommentSection from '@/components/Client/Article_CommentSection.vue'
+import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 import { useArticleComments } from '@/composables/useArticleComments'
 
 import request from '@/api/axios'
@@ -249,6 +250,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <ScrollToTopButton />
   </div>
 </template>
 
