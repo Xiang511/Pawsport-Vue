@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { LucideCat, Save, Edit2, X } from 'lucide-vue-next'
+import { LucideCat, Save, Edit2, X, PawPrint } from 'lucide-vue-next'
 import 'animate.css'
 import { useGameAudio } from '@/composables/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
@@ -321,6 +321,12 @@ const startClose = (type) => {
           </div>
 
           <div class="card-content">
+            <div class="paw-track">
+    <div class="paw paw-1"><PawPrint :size="70"/></div>
+    <div class="paw paw-2"><PawPrint :size="70"/></div>
+    <div class="paw paw-3"><PawPrint :size="70"/></div>
+    <div class="paw paw-4"><PawPrint :size="70"/></div>
+  </div>
             <!-- 左側：頭像和點數 -->
             <div class="photo-section">
               <div class="photo-frame">
@@ -558,6 +564,38 @@ const startClose = (type) => {
   gap: 60px;
   position: relative;
   z-index: 2;
+}
+
+.paw-track {
+  position: absolute;
+  top: -10%;
+  right: -5%; /* 集中在右半部 */
+  width: 200px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.paw {
+  position: absolute;
+  opacity: 0;
+  color: #453a27;
+  animation: walk-path 4s linear infinite;
+}
+
+/* 設定每個腳印的位置和出現延遲 */
+.paw-1 { bottom: 10%; right: 80%; animation-delay: 0s; }
+.paw-2 { bottom: 30%; right: 40%; animation-delay: 1s; }
+.paw-3 { bottom: 50%; right: 60%; animation-delay: 2s; }
+.paw-4 { bottom: 70%; right: 20%; animation-delay: 3s; }
+
+/* 浮現與移動動畫 */
+@keyframes walk-path {
+  0% { opacity: 0; transform: scale(0); }
+  10% { opacity: 1; transform: scale(1); } /* 浮現 */
+  70% { opacity: 1; }
+  90% { opacity: 0; transform: scale(0.5); } /* 消失 */
+  100% { opacity: 0; }
 }
 
 /* 照片區塊 */

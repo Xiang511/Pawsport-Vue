@@ -138,14 +138,17 @@ const backToWebHome = (event) => {
   <Transition name="fade">
     <div v-if="showAudioModal" class="audio-auth-mask">
       <div class="audio-auth-card">
-        <h3 class="auth-title">Petmily知識遊戲</h3>
-        <p class="auth-desc">
-          為了提供最好的遊戲體驗，本遊戲包含背景音樂與療癒音效。是否開啟音訊？
-        </p>
+        <h3 class="auth-title">PETMILY 知識問答</h3>
+        <div class="auth-desc">
+          <p>為了提供最好的遊戲體驗，建議按下F11全螢幕遊玩。</p>
+          </div>
+        <div class="auth-desc-2">
+          <p>本遊戲包含背景音樂與療癒音效。<br>是否開啓音效？</p>
+        </div>
 
         <div class="auth-btn-group">
-          <button class="auth-btn btn-confirm" @click="enableAudio">🔊 開啟音效進場</button>
-          <button class="auth-btn btn-cancel" @click="disableAudio">🔇 靜音進場</button>
+          <button class="auth-btn btn-confirm" @click="enableAudio">🔊 開啓音效</button>
+          <button class="auth-btn btn-cancel" @click="disableAudio">🔇 靜音遊玩</button>
         </div>
       </div>
     </div>
@@ -224,7 +227,7 @@ const backToWebHome = (event) => {
 }
 
 .game-logo {
-  font-size: 200px;
+  font-size: 250px;
   font-weight: 900;
   color: #fcf4e5;                  /* 最內層核心：粉嫩鵝黃肉體 */
   letter-spacing: 15px;
@@ -262,8 +265,8 @@ const backToWebHome = (event) => {
   margin-top: 100px;
   font-weight: 500;
   color: #453a27;
-  font-size: 1.2rem;
-  letter-spacing: 2px;
+  font-size: 1.5rem;
+  letter-spacing: 5px;
   animation: blink 2s infinite;
 }
 
@@ -305,25 +308,32 @@ const backToWebHome = (event) => {
   border: 4px solid #453a27; /* 招牌咖啡色粗框 */
   border-radius: 20px;
   padding: 30px;
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
+  height: 400px;
+  max-width: 500px;
   text-align: center;
   box-shadow: 0 8px 0 #453a27; /* 復古感厚重陰影 */
 }
 
 .auth-title {
-  font-size: 1.6rem;
+  font-size: 2.5rem;
   font-weight: 900;
   color: #453a27;
-  margin-bottom: 15px;
 }
 
 .auth-desc {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #6e5f47;
   line-height: 1.5;
   margin-bottom: 25px;
+}
+.auth-desc-2 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #6e5f47;
+  line-height: 1.5;
+  margin-bottom: 15px;
 }
 
 /* 按鈕群組 */

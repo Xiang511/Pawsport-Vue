@@ -20,7 +20,7 @@ const formatNumber = (num) => {
   return Math.round(num).toLocaleString('en-US')
 }
 // 【新增】Loading 狀態管理
-const isLoading = ref(false)
+const isLoading = ref(true)
 const loadingProgress = ref(0)
 
 // 【新增】Loading 文字計算屬性
@@ -68,26 +68,38 @@ const pathD = computed(() => {
 
 const areas = ref([
   {
-    name: '微風森林',
+    name: 'Cozy Corner',
     idRange: [1, 10],
     bgUrl: '/public/images/game/map-bg-1.png',
-    desc: '探索綠意盎然的森林，尋找隱藏的足跡。',
   },
   {
-    name: '霓虹雨後街',
+    name: 'Warm Haven',
     idRange: [11, 20],
     bgUrl: '/public/images/game/map-bg-2.png',
-    desc: '在城市燈火中，追尋貓咪留下的線索。',
   },
   {
-    name: '恆溫冰原',
+    name: 'Resting Oasis',
     idRange: [21, 30],
     bgUrl: '/public/images/game/map-bg-3.png',
-    desc: '在寒冷的冰原上，守護溫暖的歸宿。',
   },
 ])
 
 const currentAreaIndex = ref(0)
+const levelDescriptions = {
+  1: '學習如何照顧新家人！',
+  2: '了解狗狗的習性與照護知識！',
+  3: '貓咪的心思你猜不透？',
+  4: '鳥兒的世界多采多姿！',
+  5: '從倉鼠到兔子你都分得清楚嗎？',
+  6: '探索水族與爬蟲的奧秘！',
+};
+
+// 計算當前應該顯示哪一段文字
+const currentDescription = computed(() => {
+  const levelId = selectedLevel?.value?.id;
+  // 如果找到對應 ID 的敘述就顯示，找不到則顯示預設文字
+  return levelDescriptions[levelId] || '準備好挑戰了嗎？點擊開始關卡吧！';
+});
 const levels = ref([
   { id: 1, name: '認養須知', isLocked: false },
   { id: 2, name: '狗狗百科', isLocked: true },
@@ -443,7 +455,7 @@ const startGame = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async() => {
   const lastPlayedId = parseInt(route.query.lastPlayedLevelId)
   if (lastPlayedId && !isNaN(lastPlayedId)) {
     // 自動推算剛剛玩的關卡在哪個大區，避免一開畫面固定卡在第一章
@@ -453,6 +465,15 @@ onMounted(() => {
     if (targetAreaIndex !== -1) {
       currentAreaIndex.value = targetAreaIndex
     }
+  }
+  isLoading.value = true
+  if (playerStore.playerId) {
+    // 已經有 ID，代表是重整後的恢復狀態
+    // 這裡可以選擇不重新 fetch，直接顯示頁面，大幅提升速度
+    isLoading.value = false; 
+  } else {
+    // 真的沒資料，才執行初始化
+    await playerStore.initializePlayer();
   }
   updateAreaContent()
 })
@@ -541,7 +562,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
             <div class="info-image-box">
               <img :key="selectedLevel?.id" :src="selectedLevel?.previewUrl" alt="關卡預覽" />
             </div>
-            <p class="info-description">{{ selectedLevel?.id === 1 ? '學習如何照顧新家人，點擊開始進入「認養須知」問答！' : areas[currentAreaIndex].desc }}</p>
+            <p class="info-description" >{{ currentDescription }}</p>
             <button
               class="start-game-btn"
               @click="playSFX('click'); startGame()"
@@ -603,7 +624,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 }
 .path-svg {
   position: absolute;
-  inset: 50px 50px 50px 80px; /* top, right, bottom, left */
+  inset: 70px 50px 50px 80px; /* top, right, bottom, left */
   pointer-events: none;
   z-index: 1;
 }
@@ -692,7 +713,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   border-radius: 20px;
 }
 .area-title h2 {
-  font-size: 5.5rem; /* 從 2.5rem 增加到 3.5rem */
+  font-size: 7.5rem; /* 從 2.5rem 增加到 3.5rem */
   font-weight: 900;
   margin: 0; /* 移除預設 margin */
   line-height: 1.2;
@@ -757,7 +778,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
 }
 .info-image-box {
   width: 100%;
-  height: 250px;
+  height: 300px;
   border: 5px solid #453a27; /* 統一邊框厚度 */
   border-radius: 30px; /* 大圓角矩形 */
   overflow: hidden; /* 確保圖片不超出圓角 */
@@ -770,7 +791,7 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   transition: opacity 0.3s ease-in-out;
 }
 .info-description {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   color: #453a27;
   line-height: 1.6;
   text-align: center;

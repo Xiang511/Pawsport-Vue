@@ -544,36 +544,31 @@ const exitLevel = () => {
         </div>
 
         <div class="main-card">
-          <div class="question-body">
-            <p>{{ currentQuestion.questions }}</p>
-          </div>
+  <div class="question-body">
+    <p :key="currentQuestionIndex" class="bounce-in">{{ currentQuestion.questions }}</p>
+  </div>
 
-          <div v-if="!showExplanation" class="action-buttons">
-            <button class="answer-btn circle-btn" @click="handleAnswer(true, $event)">
-              <Circle :size="70" stroke-width="4" />
-            </button>
+  <div class="interaction-area">
+    <Transition name="fade" mode="out-in">
+      <div v-if="!showExplanation" key="buttons" class="action-buttons">
+        <button class="answer-btn circle-btn" @click="handleAnswer(true, $event)">
+          <Circle :size="70" stroke-width="4" />
+        </button>
+        <button class="answer-btn cross-btn" @click="handleAnswer(false, $event)">
+          <X :size="80" stroke-width="4" />
+        </button>
+      </div>
 
-            <button class="answer-btn cross-btn" @click="handleAnswer(false, $event)">
-              <X :size="80" stroke-width="4" />
-            </button>
-          </div>
-
-          <div v-else class="explanation-box" :class="isUserCorrect ? 'bg-correct' : 'bg-wrong'">
-            <div class="result-label">
-              {{ isUserCorrect ? '回答正確！' : '回答錯誤...' }}
-            </div>
-            <p class="explanation-text">{{ currentQuestion.answersDetail }}</p>
-            <button
-              class="next-btn"
-              @click="
-                playSFX('click');
-                nextQuestion()
-              ">
-              下一題
-              <ChevronRight />
-            </button>
-          </div>
-        </div>
+      <div v-else key="explanation" class="explanation-box" :class="isUserCorrect ? 'bg-correct' : 'bg-wrong'">
+        <div class="result-label">{{ isUserCorrect ? '回答正確！' : '回答錯誤...' }}</div>
+        <p class="explanation-text">{{ currentQuestion.answersDetail }}</p>
+        <button class="next-btn" @click="playSFX('click'); nextQuestion()">
+          下一題 <ChevronRight />
+        </button>
+      </div>
+    </Transition>
+  </div>
+</div>
       </div>
 
     </div>
@@ -829,7 +824,15 @@ const exitLevel = () => {
 .game-page {
   width: 100vw;
   height: 100vh;
-  background: #fcf4e5; /* 沿用 Morandi 米色 */
+   background-color: #f6ebe0; 
+  
+  /* 🎯 點矩陣魔法：利用極小的圓形與錯位 */
+  background-image: 
+    radial-gradient(#e5d5c5 10%, transparent 11%),
+    radial-gradient(#e5d5c5 10%, transparent 11%);
+  
+  /* 讓圓點變得極小（僅 3px），且彼此間距 24px，非常內斂 */
+  background-size: 24px 24px;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -937,24 +940,49 @@ const exitLevel = () => {
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   box-shadow: 0 15px 0 #453a27;
 }
 
 .question-body {
   width: 100%;
-  max-width: 1000px; /* 限制文字最大寬度，避免在超寬螢幕上一行太長難閱讀 */
   font-size: 3.5rem;
   font-weight: 800;
   color: #453a27;
   text-align: center;
   line-height: 1.6; /* 增加行高讓文字更舒適 */
+  height: 200px; /* 固定高度，讓下方按鈕位置穩定 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .question-body p {
-  font-size: 2.8rem; /* 從 3.5rem 下修 */
-  line-height: 1.4;
   margin-bottom: 30px;
+}
+.bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05); /* 超過正常尺寸一點點 */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.interaction-area {
+  height: 250px; 
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 讓按鈕或詳解框在這個區域內居中 */
+  position: relative;
 }
 
 /* 圈叉按鈕 */
@@ -1058,15 +1086,21 @@ const exitLevel = () => {
 
 /* 詳細解答區塊基礎樣式 */
 .explanation-box {
-  margin-top: 40px; /* 關鍵：增加與上方題目文字的間隙 */
+  margin-top: 0px; /* 關鍵：增加與上方題目文字的間隙 */
   padding: 30px;
   border-radius: 25px;
   border: 4px solid #453a27;
   animation: slideUp 0.4s ease-out;
   transition: background-color 0.3s ease;
   box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
-
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 /* 答對時的綠色 (莫蘭迪綠) */
 .bg-correct {
   background-color: #a8d5ba !important;
@@ -1085,7 +1119,7 @@ const exitLevel = () => {
 }
 
 .explanation-text {
-  font-size: 1.4rem; /* 從 1.25rem 增加到 1.4rem */
+  font-size: 1.6rem;
   font-weight: 700;
   color: #453a27;
   line-height: 1.6;

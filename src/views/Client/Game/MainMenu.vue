@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
@@ -12,7 +12,7 @@ const { playSFX, updateBGMVolume, updateSFXVolume, bgmVolume, sfxVolume } = useG
 
 const playerStore = usePlayerStore()
 // 玩家資料狀態
-const playerName = ref('玩家名稱')
+const playerName = computed(() => playerStore.playerName || '玩家名稱')
 const playerData = ref(null)
 const isLoadingPlayer = ref(true)
 
@@ -99,9 +99,10 @@ const openProfile = () => {
   isProfileOpen.value = true
 }
 const showCancelEffect = ref(false)
-const handleClose = (type) => {
+const handleClose = async (type) => {
   closeType.value = type
-
+  await playerStore.refreshPlayerData();
+  console.log("視窗已關閉，大廳資料已自動重新整理");
   if (type === 'save') {
     playSFX('click')
     showBigSave.value = true
@@ -126,6 +127,7 @@ const handleClose = (type) => {
       showCancelEffect.value = false
     }, 1000)
   }
+
 }
 
 const router = useRouter()
@@ -386,7 +388,7 @@ const closeNicknameModal = () => {
   background-image: url("../../../../public/images/game/MainMenuBG.png");
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 115%;
+  background-size: 130%;
   color: #453a27;
   display: flex;
   position: relative;
@@ -399,7 +401,7 @@ const closeNicknameModal = () => {
 .user-profile-trigger {
   /* 完好保留你原本的絕對定位，釘在右上角不動 */
   position: absolute;
-  top: 40px;
+  top: 60px;
   right: 60px;
 
   /* 完好保留原本外框與基礎樣式 */
