@@ -90,6 +90,7 @@ const communityStats = ref({
 
 const myPets = ref([])
 const petsLoading = ref(false)
+const showHealthSummary = ref(false)
 
 const myPosts = ref([])
 const postsLoading = ref(false)
@@ -527,12 +528,20 @@ const avatarInitials = computed(() => {
             <!-- Header -->
             <div class="flex items-center justify-between">
               <h2 class="font-fredoka text-2xl font-black text-[#445944]">我的毛孩</h2>
-              <router-link
-                to="/healthpassport/addpet"
-                class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
-                <Plus :size="15" />
-                新增毛孩
-              </router-link>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="showHealthSummary = !showHealthSummary"
+                  class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-white px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#D4E6D0] hover:shadow-[1px_1px_0px_#445944]">
+                  <Shield :size="15" />
+                  {{ showHealthSummary ? '隱藏摘要' : '健康摘要' }}
+                </button>
+                <router-link
+                  to="/healthpassport/addpet"
+                  class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
+                  <Plus :size="15" />
+                  新增毛孩
+                </router-link>
+              </div>
             </div>
 
             <!-- Loading -->
@@ -541,6 +550,32 @@ const avatarInitials = computed(() => {
             </div>
 
             <template v-else>
+              <!-- Pet Health Summary -->
+              <div v-show="showHealthSummary" class="rounded-3xl border-4 border-[#445944] p-5 shadow-[5px_5px_0px_#445944]">
+                <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
+                  <Shield :size="20" />
+                  健康摘要
+                </h3>
+                <div class="grid grid-cols-3 divide-x-2 divide-[#445944]/30">
+                  <div class="flex flex-col items-center">
+                    <span class="text-2xl font-black text-[#445944]">{{ myPets.length }}</span>
+                    <span class="text-xs text-[#445944]/70">飼養數量</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <span class="text-2xl font-black text-[#445944]">
+                      {{ myPets.filter((p) => p.health === 'good').length }}
+                    </span>
+                    <span class="text-xs text-[#445944]/70">健康良好</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <span class="text-2xl font-black text-[#A07A3C]">
+                      {{ myPets.filter((p) => p.health === 'warning' || p.health === 'bad').length }}
+                    </span>
+                    <span class="text-xs text-[#445944]/70">疫苗提醒</span>
+                  </div>
+                </div>
+                
+              </div>
               <!-- Pet cards -->
               <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div
@@ -614,31 +649,7 @@ const avatarInitials = computed(() => {
                 </router-link>
               </div>
 
-              <!-- Pet Health Summary -->
-              <div class="rounded-3xl border-4 border-[#445944] p-5 shadow-[5px_5px_0px_#445944]">
-                <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
-                  <Shield :size="20" />
-                  健康摘要
-                </h3>
-                <div class="grid grid-cols-3 divide-x-2 divide-[#445944]/30">
-                  <div class="flex flex-col items-center">
-                    <span class="text-2xl font-black text-[#445944]">{{ myPets.length }}</span>
-                    <span class="text-xs text-[#445944]/70">飼養數量</span>
-                  </div>
-                  <div class="flex flex-col items-center">
-                    <span class="text-2xl font-black text-[#445944]">
-                      {{ myPets.filter((p) => p.health === 'good').length }}
-                    </span>
-                    <span class="text-xs text-[#445944]/70">健康良好</span>
-                  </div>
-                  <div class="flex flex-col items-center">
-                    <span class="text-2xl font-black text-[#A07A3C]">
-                      {{ myPets.filter((p) => p.health === 'warning' || p.health === 'bad').length }}
-                    </span>
-                    <span class="text-xs text-[#445944]/70">疫苗提醒</span>
-                  </div>
-                </div>
-              </div>
+              
             </template>
           </div>
 
