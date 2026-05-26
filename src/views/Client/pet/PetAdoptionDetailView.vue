@@ -143,6 +143,14 @@ const formattedPublishDate = computed(() => {
 
 const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
 
+const getImageUrl = (url) => {
+  if (!url) return DEFAULT_PET_IMAGE
+  if (url.startsWith('/Images') || url.startsWith('/images')) {
+    return `https://localhost:7048${url}`
+  }
+  return url
+}
+
 const handleImageError = (e) => {
   e.target.src = DEFAULT_PET_IMAGE
 }
@@ -212,7 +220,7 @@ onMounted(() => {
             class="sticky top-8 overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
             <div class="relative aspect-square w-full overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
               <img
-                :src="pet.photo || DEFAULT_PET_IMAGE"
+                :src="getImageUrl(pet.photo)"
                 @error="handleImageError"
                 :alt="pet.name"
                 class="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { Dog, Sparkles } from 'lucide-vue-next'
 
 // 1. 狀態定義
+const authStore = useAuthStore()
 const loading = ref(true)
 const rawPets = ref([]) // 存放 API 回傳的原始資料
 
@@ -118,6 +119,14 @@ const resetFilters = () => {
 }
 
 const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const getImageUrl = (url) => {
+  if (!url) return DEFAULT_PET_IMAGE
+  if (url.startsWith('/Images') || url.startsWith('/images')) {
+    return `https://localhost:7048${url}`
+  }
+  return url
+}
 
 const handleImageError = (e) => {
   e.target.src = DEFAULT_PET_IMAGE
@@ -363,7 +372,7 @@ onMounted(() => {
           <!-- Image Section -->
           <div class="relative aspect-square overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
             <img
-              :src="pet.imageUrl || DEFAULT_PET_IMAGE"
+              :src="getImageUrl(pet.imageUrl)"
               @error="handleImageError"
               :alt="pet.name"
               class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />

@@ -73,6 +73,14 @@ const onAddWeight = () => {
 
 const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
 
+const getImageUrl = (url) => {
+  if (!url) return DEFAULT_PET_IMAGE
+  if (url.startsWith('/Images') || url.startsWith('/images')) {
+    return `https://localhost:7048${url}`
+  }
+  return url
+}
+
 const handleImageError = (e) => {
   e.target.src = DEFAULT_PET_IMAGE
 }
@@ -205,7 +213,7 @@ const handleImageError = (e) => {
             <div class="mb-6 flex flex-col items-center text-center" v-if="currentPet">
               <div
                 class="relative mb-4 h-32 w-32 overflow-hidden rounded-full border-4 border-[#445944] bg-gray-100 shadow-md">
-                <img :src="currentPet.photo || DEFAULT_PET_IMAGE" @error="handleImageError" class="h-full w-full object-cover" />
+                <img :src="getImageUrl(currentPet.photo)" @error="handleImageError" class="h-full w-full object-cover" />
               </div>
               <h2 class="flex items-center justify-center gap-2 text-2xl font-black text-[#445944]">
                 {{ currentPet.name }}
@@ -239,7 +247,7 @@ const handleImageError = (e) => {
                       ? 'scale-110 border-4 border-[#445944] opacity-100'
                       : 'border-gray-300 opacity-60'
                   ">
-                  <img :src="pet.photo || DEFAULT_PET_IMAGE" @error="handleImageError" class="h-full w-full object-cover" />
+                  <img :src="getImageUrl(pet.photo)" @error="handleImageError" class="h-full w-full object-cover" />
                 </div>
               </div>
             </div>

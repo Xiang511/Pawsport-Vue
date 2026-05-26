@@ -3,9 +3,11 @@ import { ref, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import request from '@/api/axios'
 import { Trash2, Undo2, Sparkles, Camera } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 const passportId = ref(null)
 
 const fileInput = ref(null)
@@ -42,10 +44,19 @@ const form = reactive({
   photo: '',
 })
 
+const getImageUrl = (url) => {
+  if (!url) return 'https://placecats.com/g/100/100'
+  if (url.startsWith('/Images') || url.startsWith('/images')) {
+    return `https://localhost:7048${url}`
+  }
+  return url
+}
+
 onMounted(async () => {
   passportId.value = route.params.id
   try {
-    const response = await request.get(`/users/pet/passport/${passportId.value}`)
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+    const response = await request.get(`/users/pet/passport/${passportId.value}?userId=${userId}`)
     if (response.data && response.data.data) {
       const data = response.data.data
       const genderRevMap = {
@@ -79,7 +90,10 @@ const saveChanges = async () => {
       '未知': null
     }
 
+    const userId = authStore.userInfo?.userId || authStore.userInfo?.id
+
     const payload = {
+      userId: userId,
       recordDate: form.recordDate,
       weight: parseFloat(form.weight),
       note: form.note,
@@ -130,7 +144,7 @@ const saveChanges = async () => {
           <div
             @click="triggerFileInput"
             class="group relative h-24 w-24 cursor-pointer overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md transition hover:scale-105 active:scale-95">
-            <img :src="form.photo || 'https://placecats.com/g/100/100'" class="h-full w-full object-cover" />
+            <img :src="getImageUrl(form.photo)" class="h-full w-full object-cover" />
             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
               <Camera class="h-5 w-5" />
               <span class="text-[10px] font-black mt-0.5">更換照片</span>
