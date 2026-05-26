@@ -12,12 +12,13 @@ export function useCommunityHome() {
   const currentParentId = ref(0) // 當前選取的大分類 ID (0 代表全部)
   const currentSubId = ref(0) // 當前選取的子分類 ID (0 代表不限子分類)
   const searchQuery = ref('')
+  const selectedTag = ref('')
 
   const currentPage = ref(1) // 當前頁碼
   const pageSize = ref(5) // 每頁顯示幾篇
 
   // === 串接 API 取得真實資料 ===
-  const fetchData = async (keyword = '') => {
+  const fetchData = async (keyword = '', tag = '') => {
     isLoading.value = true
     isError.value = false
 
@@ -27,6 +28,7 @@ export function useCommunityHome() {
         request.get('/Users/articles', {
           params: {
             keyword: keyword?.trim() || undefined,
+            tag: tag?.trim() || undefined,
           },
         }),
       ])
@@ -178,5 +180,6 @@ export function useCommunityHome() {
     selectSub,
     fetchData,
     saveRecentViewedArticle,
+    selectedTag,
   }
 }

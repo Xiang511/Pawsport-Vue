@@ -22,7 +22,7 @@ const props = defineProps({
   commentCount: { type: Number, default: 0 },
 })
 
-const emit = defineEmits(['toggle-bookmark', 'click-card'])
+const emit = defineEmits(['toggle-bookmark', 'click-card', 'click-tag'])
 
 const displayDate = computed(() => {
   if (!props.date) return '近期發表'
@@ -41,6 +41,11 @@ const handleCardClick = () => {
 const handleBookmark = (e) => {
   e.stopPropagation() // 防止觸發整張卡片的點擊
   emit('toggle-bookmark', props.id)
+}
+
+const handleTagClick = (tag, e) => {
+  e.stopPropagation()
+  emit('click-tag', tag)
 }
 </script>
 
@@ -84,14 +89,14 @@ const handleBookmark = (e) => {
             {{ title }}
           </h2>
 
-          <div v-if="tags.length > 0" class="flex min-w-0 flex-wrap items-center gap-1">
-            <span
-              v-for="tag in tags.slice(0, 5)"
-              :key="tag"
-              class="max-w-[72px] truncate rounded-full bg-stone-100 px-2 py-0.5 text-xs text-stone-500">
-              #{{ tag }}
-            </span>
-          </div>
+          <button
+            v-for="tag in tags.slice(0, 5)"
+            :key="tag"
+            type="button"
+            class="max-w-[72px] truncate rounded-full bg-stone-100 px-2 py-0.5 text-xs text-stone-500 transition hover:bg-amber-50 hover:text-amber-700"
+            @click="handleTagClick(tag, $event)">
+            #{{ tag }}
+          </button>
         </div>
 
         <p class="mt-1 line-clamp-1 text-[13px] text-stone-500">

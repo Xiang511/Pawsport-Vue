@@ -25,6 +25,7 @@ const {
   selectSub,
   fetchData,
   saveRecentViewedArticle,
+  selectedTag,
 } = useCommunityHome()
 
 const recentViewedArticles = ref([])
@@ -67,6 +68,7 @@ const clearRecentViewed = () => {
 const handleSearch = async () => {
   const keyword = searchInput.value.trim()
 
+  selectedTag.value = ''
   searchQuery.value = keyword
   currentParentId.value = 0
   currentSubId.value = 0
@@ -75,33 +77,62 @@ const handleSearch = async () => {
   await fetchData(keyword)
 }
 
+const handleTagSearch = async (tag) => {
+  const tagText = String(tag || '')
+    .replace(/^#/, '')
+    .trim()
+
+  console.log('點到 tag =', tag)
+  console.log('送給後端的 tagText =', tagText)
+
+  if (!tagText) return
+
+  selectedTag.value = tagText
+  searchInput.value = `#${tagText}`
+  searchQuery.value = ''
+  currentParentId.value = 0
+  currentSubId.value = 0
+  currentPage.value = 1
+
+  await fetchData('', tagText)
+}
+
 const clearSearch = async () => {
   searchInput.value = ''
   searchQuery.value = ''
+  selectedTag.value = ''
   currentPage.value = 1
 
   await fetchData()
 }
 
-watch([currentPage, currentParentId, currentSubId, searchQuery], ([page, parent, sub, keyword]) => {
-  router.replace({
-    name: 'community-home',
-    query: {
-      page: page || 1,
-      parent: parent || undefined,
-      sub: sub || undefined,
-      keyword: keyword?.trim() || undefined,
-    },
-  })
-})
+watch(
+  [currentPage, currentParentId, currentSubId, searchQuery, selectedTag],
+  ([page, parent, sub, keyword, tag]) => {
+    router.replace({
+      name: 'community-home',
+      query: {
+        page: page || 1,
+        parent: parent || undefined,
+        sub: sub || undefined,
+        keyword: keyword?.trim() || undefined,
+        tag: tag?.trim() || undefined,
+      },
+    })
+  },
+)
 
 watch(searchQuery, () => {
   currentPage.value = 1
 })
 
 watch(searchInput, async (newValue) => {
-  if (newValue.trim() === '' && searchQuery.value.trim() !== '') {
+  if (
+    newValue.trim() === '' &&
+    (searchQuery.value.trim() !== '' || selectedTag.value.trim() !== '')
+  ) {
     searchQuery.value = ''
+    selectedTag.value = ''
     currentPage.value = 1
 
     await fetchData()
@@ -123,11 +154,18 @@ onMounted(async () => {
   const parentFromQuery = Number(route.query.parent)
   const subFromQuery = Number(route.query.sub)
   const keywordFromQuery = route.query.keyword
+  const tagFromQuery = route.query.tag
 
   searchQuery.value = typeof keywordFromQuery === 'string' ? keywordFromQuery : ''
-  searchInput.value = searchQuery.value
+  selectedTag.value = typeof tagFromQuery === 'string' ? tagFromQuery : ''
 
-  await fetchData(searchQuery.value)
+  if (selectedTag.value) {
+    searchInput.value = `#${selectedTag.value}`
+  } else {
+    searchInput.value = searchQuery.value
+  }
+
+  await fetchData(searchQuery.value, selectedTag.value)
 
   currentParentId.value = Number.isNaN(parentFromQuery) ? 0 : parentFromQuery
   currentSubId.value = Number.isNaN(subFromQuery) ? 0 : subFromQuery
@@ -276,6 +314,7 @@ onMounted(async () => {
                 :isBookmarked="article.isBookmarked ?? false"
                 :comment-count="article.commentCount ?? 0"
                 @click-card="() => goToArticleDetail(article)"
+                @click-tag="handleTagSearch"
                 @toggle-bookmark="(id) => console.log('收藏文章：', id)"
                 class="cursor-pointer transition-transform hover:-translate-y-0.5" />
 
