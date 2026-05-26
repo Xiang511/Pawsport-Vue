@@ -13,6 +13,7 @@ export function useCommunityHome() {
   const currentSubId = ref(0) // 當前選取的子分類 ID (0 代表不限子分類)
   const searchQuery = ref('')
   const selectedTag = ref('')
+  const sortType = ref('newest')
 
   const currentPage = ref(1) // 當前頁碼
   const pageSize = ref(5) // 每頁顯示幾篇
@@ -122,17 +123,39 @@ export function useCommunityHome() {
     })
   })
 
+  const sortedArticles = computed(() => {
+    const articles = [...filteredArticles.value]
+
+    switch (sortType.value) {
+      case 'oldest':
+        return articles.sort((a, b) => {
+          return new Date(a.createAt) - new Date(b.createAt)
+        })
+
+      case 'mostViewed':
+        return articles.sort((a, b) => {
+          return Number(b.viewCount || 0) - Number(a.viewCount || 0)
+        })
+
+      case 'newest':
+      default:
+        return articles.sort((a, b) => {
+          return new Date(b.createAt) - new Date(a.createAt)
+        })
+    }
+  })
+
   // === 3. 分頁切片邏輯 (Computed) ===
   // 總頁數
   const totalPages = computed(() => {
-    return Math.ceil(filteredArticles.value.length / pageSize.value) || 1
+    return Math.ceil(sortedArticles.value.length / pageSize.value) || 1
   })
 
   // 真正渲染到畫面上的「當頁文章」
   const pagedArticles = computed(() => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
-    return filteredArticles.value.slice(start, end)
+    return sortedArticles.value.slice(start, end)
   })
 
   // === 狀態重置工具 ===
@@ -181,5 +204,6 @@ export function useCommunityHome() {
     fetchData,
     saveRecentViewedArticle,
     selectedTag,
+    sortType,
   }
 }

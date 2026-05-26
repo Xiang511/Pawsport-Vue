@@ -26,6 +26,7 @@ const {
   fetchData,
   saveRecentViewedArticle,
   selectedTag,
+  sortType,
 } = useCommunityHome()
 
 const recentViewedArticles = ref([])
@@ -144,6 +145,10 @@ const handleSelectParent = async (id) => {
   }
 
   selectParent(parentId)
+}
+
+const handleSortChange = () => {
+  currentPage.value = 1
 }
 
 watch(
@@ -331,6 +336,23 @@ onMounted(async () => {
             </section>
           </div>
 
+          <div
+            class="flex items-center justify-between rounded-xl border border-stone-100 bg-white px-4 py-3 shadow-sm">
+            <div>
+              <h3 class="text-sm font-semibold text-stone-700">文章列表</h3>
+              <p class="text-xs text-stone-400">可依發文時間或觀看數排序</p>
+            </div>
+
+            <select
+              v-model="sortType"
+              class="focus:border-brand-success-400 focus:ring-brand-success-400/20 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-600 transition outline-none focus:ring-2"
+              @change="handleSortChange">
+              <option value="newest">最新發文</option>
+              <option value="oldest">最早發文</option>
+              <option value="mostViewed">最多觀看</option>
+            </select>
+          </div>
+
           <div class="flex min-h-[720px] flex-col gap-4">
             <div v-if="isLoading" class="py-12 text-center text-stone-500">⏳ 資料讀取中...</div>
             <div v-else-if="isError" class="py-12 text-center text-red-500">
@@ -437,8 +459,8 @@ onMounted(async () => {
             </button>
           </div>
           <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center justify-between">
+            <div class="rounded-2xl p-4">
+              <div class="mb-3 flex items-center justify-between">
                 <h3 class="text-base font-semibold text-stone-800">最近搜尋的標籤</h3>
 
                 <button
@@ -450,16 +472,15 @@ onMounted(async () => {
                 </button>
               </div>
 
-              <div
-                v-if="recentSearchedTags.length > 0"
-                class="flex flex-row flex-wrap gap-x-2 gap-y-2">
+              <div v-if="recentSearchedTags.length > 0" class="flex flex-row flex-wrap gap-2">
                 <button
                   v-for="tag in recentSearchedTags"
                   :key="tag"
                   type="button"
-                  class="w-fit rounded-full bg-orange-50 px-3 py-1 text-sm whitespace-nowrap text-orange-600 transition hover:bg-orange-100"
+                  class="group rounded-full border border-transparent bg-[#f7ebe5] px-3 py-1 text-sm font-medium whitespace-nowrap text-[#9c6d6d] transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]"
                   @click="handleTagSearch(tag)">
-                  # {{ tag }}
+                  <span class="text-[#d4a373]">#</span>
+                  {{ tag }}
                 </button>
               </div>
 
@@ -487,13 +508,14 @@ onMounted(async () => {
                 <li v-for="article in recentViewedArticles" :key="article.articleId" class="py-2">
                   <RouterLink
                     :to="{ name: 'article-detail', params: { id: article.articleId } }"
-                    class="group block rounded-lg px-2 py-1 transition-colors hover:bg-amber-50">
+                    class="group block rounded-lg px-2 py-1 transition-colors hover:bg-[#fbf5f1]">
                     <p
-                      class="line-clamp-2 text-sm font-medium text-stone-700 group-hover:text-amber-700">
+                      class="line-clamp-2 text-sm font-medium text-stone-700 transition-colors group-hover:text-[#9c6d6d]">
                       {{ article.title }}
                     </p>
 
-                    <p class="mt-1 text-xs text-stone-400">
+                    <p
+                      class="mt-1 text-xs text-stone-400 transition-colors group-hover:text-[#d4a373]">
                       {{ article.categoryName }}
                     </p>
                   </RouterLink>

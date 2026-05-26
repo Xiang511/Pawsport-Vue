@@ -93,9 +93,10 @@ const handleTagClick = (tag, e) => {
             v-for="tag in tags.slice(0, 5)"
             :key="tag"
             type="button"
-            class="max-w-[72px] truncate rounded-full bg-stone-100 px-2 py-0.5 text-xs text-stone-500 transition hover:bg-amber-50 hover:text-amber-700"
+            class="max-w-[72px] truncate rounded-full border border-transparent bg-stone-100 px-2 py-0.5 text-xs text-stone-500 transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]"
             @click="handleTagClick(tag, $event)">
-            #{{ tag }}
+            <span class="text-[#d4a373]">#</span>
+            {{ tag }}
           </button>
         </div>
 
