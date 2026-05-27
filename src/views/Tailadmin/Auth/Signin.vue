@@ -178,7 +178,7 @@ const verifyCodeAndLogin = async () => {
 
       // 使用 replace 並處理可能的錯誤
       try {
-        await router.replace('/dashboard/ecommerce')
+        await router.replace('/dashboard')
       } catch (navError) {
         // 如果路由跳轉失敗，使用硬跳轉
         console.warn('路由跳轉失敗，使用硬跳轉', navError)
