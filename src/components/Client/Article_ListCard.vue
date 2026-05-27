@@ -51,28 +51,27 @@ const handleTagClick = (tag, e) => {
 
 <template>
   <article
-    class="group relative cursor-pointer border-4 border-[#445944] bg-white p-5 rounded-3xl shadow-[5px_5px_0px_#445944] transition-all duration-300 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_#445944]"
+    class="group relative cursor-pointer rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[5px_5px_0px_#445944] transition-all duration-300 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_#445944]"
     @click="handleCardClick">
-
-    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
-      
+    <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
       <!-- 區塊 A：分類 / 收藏數 (桌機版側欄) -->
       <aside class="hidden w-20 shrink-0 border-r border-[#445944]/10 pr-2 text-center md:block">
         <div
-          class="inline-block rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2 py-0.5 text-[11px] font-black text-[#445944] shadow-[1px_1px_0px_#445944] truncate max-w-full"
+          class="inline-block max-w-full truncate rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2 py-0.5 text-[11px] font-black text-[#445944] shadow-[1px_1px_0px_#445944]"
           :title="category"
           :data-category="categoryid">
           {{ category }}
         </div>
 
         <div class="mt-2 flex flex-col items-center justify-center">
-          <Heart :size="14" class="text-rose-500 fill-rose-500 mb-0.5" />
+          <Heart :size="14" class="mb-0.5 fill-rose-500 text-rose-500" />
           <span class="text-sm font-black text-[#445944]">{{ bookmarkCount }}</span>
         </div>
       </aside>
 
       <!-- 區塊 B：縮圖，增強為立體厚框 -->
-      <div class="h-[76px] w-[114px] shrink-0 overflow-hidden rounded-2xl border-2 border-[#445944] bg-stone-100 shadow-[2px_2px_0px_#445944]">
+      <div
+        class="h-[76px] w-[114px] shrink-0 overflow-hidden rounded-2xl border-2 border-[#445944] bg-stone-100 shadow-[2px_2px_0px_#445944]">
         <img
           :src="image || 'https://placehold.co/400x260'"
           :alt="title"
@@ -80,7 +79,7 @@ const handleTagClick = (tag, e) => {
       </div>
 
       <!-- 區塊 C：主內容 -->
-      <main class="min-w-0 flex-1 w-full">
+      <main class="w-full min-w-0 flex-1">
         <!-- 標題 + 標籤 -->
         <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
           <h2
@@ -94,7 +93,8 @@ const handleTagClick = (tag, e) => {
             type="button"
             class="max-w-[80px] truncate rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2 py-0.5 text-[10px] font-black text-[#445944] shadow-[1px_1px_0px_#445944] transition hover:bg-[#445944] hover:text-white"
             @click="handleTagClick(tag, $event)">
-            <span class="text-amber-500">#</span>{{ tag }}
+            <span class="text-amber-500">#</span>
+            {{ tag }}
           </button>
         </div>
 
@@ -114,11 +114,13 @@ const handleTagClick = (tag, e) => {
             <span>{{ commentCount }}</span>
           </span>
 
-          <span class="max-w-[100px] truncate text-[#445944]/80 font-black bg-[#FCF4E5] border border-[#445944]/25 px-1.5 py-0.5 rounded-lg" :title="author">
+          <span
+            class="max-w-[100px] truncate rounded-lg border border-[#445944]/25 bg-[#FCF4E5] px-1.5 py-0.5 font-black text-[#445944]/80"
+            :title="author">
             👤 {{ author }}
           </span>
 
-          <span class="whitespace-nowrap text-stone-400 font-bold sm:ml-auto" :title="fullDate">
+          <span class="font-bold whitespace-nowrap text-stone-400 sm:ml-auto" :title="fullDate">
             {{ displayDate }}
           </span>
         </div>

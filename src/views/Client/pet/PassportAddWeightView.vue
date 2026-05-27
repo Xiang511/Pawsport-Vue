@@ -58,21 +58,21 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka px-4 py-8">
-    <div class="mx-auto w-[70%] mt-6">
-      
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] px-4 py-8 text-gray-800 antialiased">
+    <div class="mx-auto mt-6 w-[70%]">
       <!-- MAIN CONTAINER CARD -->
-      <div class="relative rounded-3xl bg-[#FCF4E5] p-6 md:p-8 border-4 border-[#445944] shadow-[6px_6px_0px_#445944]">
-        
+      <div
+        class="relative rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <!-- HEADER ROW -->
-        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
+        <div class="mb-6 flex items-center justify-between border-b-4 border-[#445944] pb-4">
           <button
             @click="router.back()"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
             <Undo2 class="h-5 w-5" />
           </button>
-          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
-            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+          <h1 class="flex items-center gap-1.5 text-xl font-black tracking-wide text-[#445944]">
+            <Sparkles :size="18" class="animate-spin-slow text-amber-500" />
             新增體重紀錄
           </h1>
           <div class="w-10"></div>
@@ -80,11 +80,11 @@ const submitForm = async () => {
 
         <!-- FORM BODY -->
         <div class="space-y-6">
-
           <!-- 體重 -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">
-              體重 <span class="text-red-500">*</span>
+              體重
+              <span class="text-red-500">*</span>
             </label>
             <div class="relative">
               <input
@@ -93,20 +93,23 @@ const submitForm = async () => {
                 step="0.01"
                 min="0"
                 placeholder="請輸入體重"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 pr-14 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[#445944]">KG</span>
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 pr-14 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
+              <span class="absolute top-1/2 right-4 -translate-y-1/2 font-black text-[#445944]">
+                KG
+              </span>
             </div>
           </div>
 
           <!-- 記錄日期 -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">
-              記錄日期 <span class="text-red-500">*</span>
+              記錄日期
+              <span class="text-red-500">*</span>
             </label>
             <input
               v-model="form.recordDate"
               type="date"
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- 健康備註 -->
@@ -116,12 +119,17 @@ const submitForm = async () => {
               v-model="form.note"
               placeholder="例：飼料換新品牌後體重上升；獸醫建議控制飲食..."
               rows="4"
-              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 font-bold placeholder-gray-400 shadow-[2px_2px_0px_#445944] outline-none focus:border-[#445944] focus:ring-0" />
           </div>
 
           <!-- 體重預覽卡片 -->
-          <div v-if="form.weight" class="flex items-center gap-4 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#445944] transition-all">
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#445944] bg-white text-2xl shadow-[2px_2px_0px_#445944]">⚖️</span>
+          <div
+            v-if="form.weight"
+            class="flex items-center gap-4 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#445944] transition-all">
+            <span
+              class="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#445944] bg-white text-2xl shadow-[2px_2px_0px_#445944]">
+              ⚖️
+            </span>
             <div>
               <p class="text-lg font-black text-[#445944]">{{ form.weight }} KG</p>
               <p class="text-xs font-bold text-gray-500">{{ form.recordDate }}</p>
@@ -133,7 +141,7 @@ const submitForm = async () => {
             <button
               @click="submitForm"
               :disabled="submitting"
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] disabled:opacity-50 disabled:cursor-not-allowed">
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] disabled:cursor-not-allowed disabled:opacity-50">
               {{ submitting ? '儲存中...' : '完成新增' }}
             </button>
           </div>

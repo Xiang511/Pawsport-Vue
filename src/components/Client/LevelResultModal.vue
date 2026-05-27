@@ -5,8 +5,6 @@ import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 import { Icon } from '@iconify/vue'
 
-
-
 // 接收外部傳進來的參數
 const props = defineProps({
   isOpen: { type: Boolean, default: false },
@@ -49,14 +47,14 @@ watch(
       try {
         const playerStore = usePlayerStore()
         const playerId = playerStore.playerId
-        
+
         console.log('🎮 LevelResultModal - 取得 PlayerId:', playerId)
-        
+
         if (!playerId) {
           console.error('❌ PlayerId 不存在')
           return
         }
-        
+
         const submitData = {
           PlayerId: playerId, // 【修改】使用動態 PlayerId
           GameId: props.levelId, // 目前關卡 ID
@@ -166,7 +164,6 @@ const playModalAnimations = () => {
         </div>
 
         <div class="result-body">
-          
           <div class="stars-row">
             <div v-for="i in 3" :key="i" class="star-container">
               <svg
@@ -189,7 +186,10 @@ const playModalAnimations = () => {
           </div>
           <div class="stat-line">
             <span class="stat-label">獲得獎勵</span>
-            <span class="stat-value points-val"><Icon icon="bi:coin" /> {{ bonusPoints }}</span>
+            <span class="stat-value points-val">
+              <Icon icon="bi:coin" />
+              {{ bonusPoints }}
+            </span>
           </div>
         </div>
 
@@ -331,9 +331,9 @@ const playModalAnimations = () => {
 }
 
 .points-val {
-  display: flex;         /* 關鍵：讓內部的 Icon 和數字水平並排 */
-  align-items: center;   /* 關鍵：讓 Icon 和數字垂直置中對齊 */
-  gap: 6px;              /* Icon 和數字之間的水平間距，可依喜好調整 */
+  display: flex; /* 關鍵：讓內部的 Icon 和數字水平並排 */
+  align-items: center; /* 關鍵：讓 Icon 和數字垂直置中對齊 */
+  gap: 6px; /* Icon 和數字之間的水平間距，可依喜好調整 */
   color: #e4987e; /* 主橘色 */
 }
 
@@ -349,7 +349,9 @@ const playModalAnimations = () => {
   font-weight: 900;
   border: 4px solid #453a27;
   border-radius: 16px;
-cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor:
+    url('../../../../public/images/game/pointer.png') 16 16,
+    auto !important;
   display: flex;
   align-items: center;
   gap: 8px;

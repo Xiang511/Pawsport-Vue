@@ -18,7 +18,8 @@ const goHome = () => {
       <div class="mb-8 flex justify-center">
         <div class="relative">
           <div class="absolute inset-0 rounded-full bg-yellow-400 opacity-25"></div>
-          <div class="relative flex h-32 w-32 items-center justify-center rounded-full bg-yellow-100">
+          <div
+            class="relative flex h-32 w-32 items-center justify-center rounded-full bg-yellow-100">
             <svg
               class="h-20 w-20 text-yellow-600"
               fill="none"
@@ -41,12 +42,12 @@ const goHome = () => {
       <div class="flex justify-center gap-4">
         <button
           @click="goLogin"
-          class="rounded-lg bg-yellow-500 px-6 py-3 text-sm font-medium text-white hover:bg-yellow-600 transition-colors">
+          class="rounded-lg bg-yellow-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-yellow-600">
           前往登入
         </button>
         <button
           @click="goHome"
-          class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
           返回首頁
         </button>
       </div>

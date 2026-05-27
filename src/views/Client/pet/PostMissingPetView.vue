@@ -187,7 +187,7 @@ const closePage = () => {
     </header>
 
     <!-- FORM BODY CONTAINER -->
-    <div class="mx-auto mt-12 w-[60%] ">
+    <div class="mx-auto mt-12 w-[60%]">
       <div
         class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-10">
         <!-- Close page button -->

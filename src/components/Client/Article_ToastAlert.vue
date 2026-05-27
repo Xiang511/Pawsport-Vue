@@ -51,8 +51,8 @@ defineExpose({
     <transition name="toast-slide">
       <div
         v-if="isVisible"
-        class="fixed top-24 left-1/2 z-50 flex min-w-[320px] max-w-[90%] -translate-x-1/2 transform items-center justify-center gap-3 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] px-6 py-3.5 text-sm font-black text-[#445944] shadow-[6px_6px_0px_#445944] font-fredoka">
-        <span class="text-lg shrink-0">{{ statusEmoji }}</span>
+        class="font-fredoka fixed top-24 left-1/2 z-50 flex max-w-[90%] min-w-[320px] -translate-x-1/2 transform items-center justify-center gap-3 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] px-6 py-3.5 text-sm font-black text-[#445944] shadow-[6px_6px_0px_#445944]">
+        <span class="shrink-0 text-lg">{{ statusEmoji }}</span>
         <span class="leading-relaxed">{{ errorMessage }}</span>
       </div>
     </transition>

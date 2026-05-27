@@ -208,10 +208,10 @@ async function handleDeletePermission(mappingId) {
   if (confirm('確定要刪除此權限嗎？')) {
     try {
       await request.delete(`/users/${mappingId}/roles`)
-      
+
       // 重新載入數據
       await GetAllMemberPermission()
-      
+
       // 更新 modal 中的權限列表
       const updatedUser = groupedUsers.value.find((u) => u.userId === selectedUser.userId)
       if (updatedUser) {
@@ -220,7 +220,7 @@ async function handleDeletePermission(mappingId) {
           updatedAt: perm.updatedAt instanceof Date ? perm.updatedAt : new Date(perm.updatedAt),
         }))
       }
-      
+
       alert('刪除成功')
     } catch (error) {
       console.error('刪除失敗:', error)

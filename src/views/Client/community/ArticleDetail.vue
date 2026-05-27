@@ -265,7 +265,7 @@ onMounted(async () => {
                     </span>
                   </div>
 
-                  <div class="flex items-center justify-between ">
+                  <div class="flex items-center justify-between">
                     <span class="flex items-center gap-1.5 text-[#445944]/75">
                       <Calendar class="h-4 w-4" />
                       發表日期

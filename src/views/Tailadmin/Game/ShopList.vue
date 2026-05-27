@@ -211,7 +211,9 @@ const handleFileUpload = (event) => {
                 <div
                   class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-gray-200 dark:bg-white/5">
                   <div class="flex flex-col items-center justify-center">
-                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 ">無圖片</span>
+                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500">
+                      無圖片
+                    </span>
                   </div>
 
                   <img

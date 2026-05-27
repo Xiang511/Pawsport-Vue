@@ -474,8 +474,9 @@ const changePage = (newPage) => {
     v-if="showEditModal"
     class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
     <div
-      class=" mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
-      <div class="sticky top-0 bg-white z-1 flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      class="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
+      <div
+        class="sticky top-0 z-1 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">修改電子報</h3>
           <p class="mt-1 text-sm text-gray-500"><span class="text-red-500">* 必填 *</span></p>

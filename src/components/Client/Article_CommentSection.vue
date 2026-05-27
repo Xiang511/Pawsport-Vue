@@ -35,19 +35,20 @@ const updateCommentText = (event) => {
 </script>
 
 <template>
-  <section class="mt-6 space-y-4 font-fredoka">
+  <section class="font-fredoka mt-6 space-y-4">
     <!-- 留言標題 -->
     <div class="flex items-center justify-between px-2">
       <h3 class="flex items-center gap-2 text-lg font-black text-[#445944]">
-        <MessageSquare class="text-amber-500 h-5 w-5 animate-bounce-slow" />
+        <MessageSquare class="animate-bounce-slow h-5 w-5 text-amber-500" />
         全部回覆
-        <span class="text-xs font-black text-white bg-[#445944] border-2 border-[#445944] px-2.5 py-0.5 rounded-lg shadow-[1px_1px_0px_#445944]">
+        <span
+          class="rounded-lg border-2 border-[#445944] bg-[#445944] px-2.5 py-0.5 text-xs font-black text-white shadow-[1px_1px_0px_#445944]">
           {{ comments.length }}
         </span>
       </h3>
 
       <select
-        class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1.5 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] focus:outline-none cursor-pointer">
+        class="cursor-pointer rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1.5 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] focus:outline-none">
         <option>最新優先</option>
         <option>熱門排序</option>
       </select>
@@ -68,10 +69,11 @@ const updateCommentText = (event) => {
             rows="3"
             maxlength="300"
             placeholder="留下你的溫馨想法吧... ✏️"
-            class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-sm font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944] transition-all focus:bg-white"></textarea>
+            class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] transition-all focus:border-[#445944] focus:bg-white focus:ring-0 focus:outline-none"></textarea>
 
           <div class="mt-3 flex items-center justify-between">
-            <span class="text-xs font-black text-[#445944]/65 bg-white border border-[#445944]/20 px-2.5 py-0.5 rounded-lg">
+            <span
+              class="rounded-lg border border-[#445944]/20 bg-white px-2.5 py-0.5 text-xs font-black text-[#445944]/65">
               {{ commentText.length }} / 300
             </span>
 
@@ -79,11 +81,11 @@ const updateCommentText = (event) => {
               type="button"
               @click="emit('submit-comment')"
               :disabled="commentText.trim().length === 0 || isSubmittingComment"
-              class="rounded-2xl border-2 border-[#445944] px-5 py-2 text-sm font-black transition-all shadow-[3px_3px_0px_#445944] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+              class="rounded-2xl border-2 border-[#445944] px-5 py-2 text-sm font-black shadow-[3px_3px_0px_#445944] transition-all disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
               :class="[
                 commentText.trim().length === 0 || isSubmittingComment
                   ? 'bg-gray-200 text-gray-400'
-                  : 'bg-amber-400 text-[#445944] hover:bg-[#445944] hover:text-white active:translate-y-[1px] active:shadow-[1px_1px_0px_#445944]'
+                  : 'bg-amber-400 text-[#445944] hover:bg-[#445944] hover:text-white active:translate-y-[1px] active:shadow-[1px_1px_0px_#445944]',
               ]">
               {{ isSubmittingComment ? '送出中...' : '送出留言' }}
             </button>
@@ -95,7 +97,7 @@ const updateCommentText = (event) => {
     <!-- 留言列表 -->
     <div
       v-if="isCommentLoading"
-      class="rounded-3xl border-2 border-dashed border-[#445944]/30 bg-white py-12 text-center text-sm font-black text-[#445944] animate-pulse">
+      class="animate-pulse rounded-3xl border-2 border-dashed border-[#445944]/30 bg-white py-12 text-center text-sm font-black text-[#445944]">
       ⏳ 正在尋找大家的想法中...
     </div>
 
@@ -122,7 +124,8 @@ const updateCommentText = (event) => {
                   {{ comment.userName }}
                 </span>
 
-                <span class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2.5 py-0.5 text-xs font-black text-[#445944] shadow-[1px_1px_0px_#445944]">
+                <span
+                  class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2.5 py-0.5 text-xs font-black text-[#445944] shadow-[1px_1px_0px_#445944]">
                   B{{ index + 1 }}
                 </span>
               </div>
@@ -132,7 +135,7 @@ const updateCommentText = (event) => {
               </span>
             </div>
 
-            <p class="text-sm leading-relaxed whitespace-pre-line text-gray-700 font-bold">
+            <p class="text-sm leading-relaxed font-bold whitespace-pre-line text-gray-700">
               {{ comment.content }}
             </p>
           </div>
@@ -154,7 +157,8 @@ const updateCommentText = (event) => {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

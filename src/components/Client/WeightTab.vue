@@ -107,7 +107,8 @@ const series = ref([
         :key="item.id"
         class="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-4 transition hover:bg-gray-100">
         <div class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F7F3F1] text-[#9C6D6D]">
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F7F3F1] text-[#9C6D6D]">
             ⚖️
           </span>
           <div>
@@ -118,7 +119,9 @@ const series = ref([
         <button class="text-xs text-gray-400 hover:text-[#9C6D6D]">編輯</button>
       </div>
 
-      <div v-if="records.length === 0" class="py-10 text-center text-gray-400">目前尚無體重紀錄</div>
+      <div v-if="records.length === 0" class="py-10 text-center text-gray-400">
+        目前尚無體重紀錄
+      </div>
     </div>
   </div>
 </template>

@@ -124,28 +124,28 @@ onMounted(async () => {
 
 <template>
   <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
-  <div class="min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka">
-    
+  <div class="font-fredoka min-h-screen bg-[#FCF4E5] text-gray-800 antialiased">
     <!-- HERO BANNER SECTION -->
     <section class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8">
       <!-- Floating Background Ornaments -->
-      <div class="absolute top-8 left-10 pointer-events-none opacity-20 animate-float">
+      <div class="animate-float pointer-events-none absolute top-8 left-10 opacity-20">
         <span class="text-4xl">✏️</span>
       </div>
-      <div class="absolute bottom-8 right-20 pointer-events-none opacity-20 animate-float delay-2s">
+      <div class="animate-float delay-2s pointer-events-none absolute right-20 bottom-8 opacity-20">
         <span class="text-4xl">🐾</span>
       </div>
 
       <div class="mx-auto max-w-3xl">
         <div class="text-center">
-          <div class="inline-flex items-center gap-1.5 rounded-full  bg-[#7a6856] px-3.5 py-1 text-sm font-black text-white uppercase tracking-wider mb-3">
-            <Sparkles :size="12" class="text-amber-500 animate-spin-slow" />
+          <div
+            class="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#7a6856] px-3.5 py-1 text-sm font-black tracking-wider text-white uppercase">
+            <Sparkles :size="12" class="animate-spin-slow text-amber-500" />
             PETMILY EDITOR
           </div>
           <h1 class="text-center text-4xl font-black tracking-tight text-[#445944]">
             撰寫社群貼文
           </h1>
-          <p class="text-center text-lg font-bold text-gray-500 mt-2">
+          <p class="mt-2 text-center text-lg font-bold text-gray-500">
             與大家分享您與毛孩的有趣生活、實用知識或是疑難雜症吧！
           </p>
         </div>
@@ -154,10 +154,12 @@ onMounted(async () => {
 
     <!-- 內容區：最大1280px -->
     <div class="container mx-auto px-4 py-8">
-      <div v-if="isCategoryLoading" class="py-16 text-center font-black text-[#445944] text-lg animate-pulse">
+      <div
+        v-if="isCategoryLoading"
+        class="animate-pulse py-16 text-center text-lg font-black text-[#445944]">
         ⏳ 正在載入分類資料...
       </div>
-      
+
       <!-- 編輯器元件 -->
       <ArticleEditor
         v-if="!isCategoryLoading"
@@ -205,7 +207,8 @@ onMounted(async () => {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {

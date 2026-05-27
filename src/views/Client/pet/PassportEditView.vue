@@ -61,7 +61,7 @@ onMounted(async () => {
       const data = response.data.data
       const genderRevMap = {
         1: '公',
-        2: '母'
+        2: '母',
       }
       data.gender = genderRevMap[data.gender] || '未知'
       Object.assign(form, data)
@@ -85,9 +85,9 @@ const deletePet = () => {
 const saveChanges = async () => {
   try {
     const genderMap = {
-      '公': 1,
-      '母': 2,
-      '未知': null
+      公: 1,
+      母: 2,
+      未知: null,
     }
 
     const userId = authStore.userInfo?.userId || authStore.userInfo?.id
@@ -113,44 +113,46 @@ const saveChanges = async () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka px-4 py-8">
-    <div class="mx-auto w-[70%] mt-6">
-      
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] px-4 py-8 text-gray-800 antialiased">
+    <div class="mx-auto mt-6 w-[70%]">
       <!-- MAIN CONTAINER CARD -->
-      <div class="relative rounded-3xl bg-[#FCF4E5] p-6 md:p-8 border-4 border-[#445944] shadow-[6px_6px_0px_#445944]">
-        
+      <div
+        class="relative rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <!-- HEADER ROW -->
-        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
+        <div class="mb-6 flex items-center justify-between border-b-4 border-[#445944] pb-4">
           <button
             @click="router.back()"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
             <Undo2 class="h-5 w-5" />
           </button>
-          
-          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
-            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+
+          <h1 class="flex items-center gap-1.5 text-xl font-black tracking-wide text-[#445944]">
+            <Sparkles :size="18" class="animate-spin-slow text-amber-500" />
             編輯健康護照
           </h1>
-          
+
           <button
             @click="deletePet"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-100 text-red-600 transition hover:bg-red-500 hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-100 text-red-600 shadow-[2px_2px_0px_#445944] transition hover:bg-red-500 hover:text-white active:translate-y-[1px]">
             <Trash2 class="h-5 w-5" />
           </button>
         </div>
 
         <!-- ACTIVE PROFILE IMAGE BOX -->
-        <div class="relative mb-6 flex flex-col items-center justify-center py-6 bg-[#FCF4E5] rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
+        <div
+          class="relative mb-6 flex flex-col items-center justify-center rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] py-6 shadow-[4px_4px_0px_#445944]">
           <div
             @click="triggerFileInput"
             class="group relative h-24 w-24 cursor-pointer overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md transition hover:scale-105 active:scale-95">
             <img :src="getImageUrl(form.photo)" class="h-full w-full object-cover" />
-            <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+            <div
+              class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
               <Camera class="h-5 w-5" />
-              <span class="text-[10px] font-black mt-0.5">更換照片</span>
+              <span class="mt-0.5 text-[10px] font-black">更換照片</span>
             </div>
           </div>
-          <p class="mt-3 text-xs font-black text-gray-500 text-center">點擊頭像上傳/更換新照片</p>
+          <p class="mt-3 text-center text-xs font-black text-gray-500">點擊頭像上傳/更換新照片</p>
           <input
             type="file"
             ref="fileInput"
@@ -161,7 +163,6 @@ const saveChanges = async () => {
 
         <!-- FORM BODY -->
         <div class="space-y-6">
-          
           <!-- Name Disabled -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">毛孩姓名 (不可變更)</label>
@@ -169,7 +170,7 @@ const saveChanges = async () => {
               v-model="form.name"
               type="text"
               disabled
-              class="w-full rounded-2xl border-2 border-[#445944] bg-gray-100 px-4 py-3.5 font-bold text-gray-400 cursor-not-allowed shadow-[2px_2px_0px_rgba(0,0,0,0.05)]" />
+              class="w-full cursor-not-allowed rounded-2xl border-2 border-[#445944] bg-gray-100 px-4 py-3.5 font-bold text-gray-400 shadow-[2px_2px_0px_rgba(0,0,0,0.05)]" />
           </div>
 
           <!-- Gender & Desex Selects -->
@@ -178,18 +179,18 @@ const saveChanges = async () => {
               <label class="mb-2 block text-sm font-black text-gray-500">性別</label>
               <select
                 v-model="form.gender"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                 <option value="公">公</option>
                 <option value="母">母</option>
                 <option value="未知">未知</option>
               </select>
             </div>
-            
+
             <div>
               <label class="mb-2 block text-sm font-black text-gray-500">絕育狀態</label>
               <select
                 v-model="form.isDesex"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                 <option :value="true">已絕育</option>
                 <option :value="false">未絕育</option>
               </select>
@@ -202,7 +203,7 @@ const saveChanges = async () => {
             <input
               v-model="form.recordDate"
               type="date"
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- Weight -->
@@ -212,7 +213,7 @@ const saveChanges = async () => {
               v-model="form.weight"
               type="number"
               step="0.1"
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- Note text area -->
@@ -221,7 +222,7 @@ const saveChanges = async () => {
             <textarea
               v-model="form.note"
               rows="3"
-              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 font-bold placeholder-gray-400 shadow-[2px_2px_0px_#445944] outline-none focus:border-[#445944] focus:ring-0" />
           </div>
 
           <!-- Save button -->

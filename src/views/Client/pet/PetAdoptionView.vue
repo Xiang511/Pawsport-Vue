@@ -138,7 +138,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka">
+  <div class="page-container font-fredoka min-h-screen bg-[#FCF4E5] text-gray-800 antialiased">
     <!-- HERO SECTION -->
     <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
       <!-- Background floating ornaments -->
@@ -163,7 +163,8 @@ onMounted(() => {
         </svg>
       </div>
 
-      <div class="relative z-10 mx-auto grid w-[90%] max-w-7xl grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+      <div
+        class="relative z-10 mx-auto grid w-[90%] max-w-7xl grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
         <!-- Hero Left Info -->
         <div class="hero-left flex flex-col justify-center lg:col-span-6">
           <div
@@ -177,14 +178,16 @@ onMounted(() => {
             <span class="relative z-10 inline-block px-2 text-[#7a6856]">
               狗狗領養津貼
               <span
-              class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-5"></span>
+                class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-5"></span>
             </span>
             <span>熱烈上路</span>
           </h2>
           <p class="mb-8 max-w-xl text-base leading-relaxed text-gray-700 md:text-lg">
             經過預備學校社會化的狗狗，更能融入人類家庭。
             <br />
-            現在領養還有見面禮—價值近一萬一千元的大禮包！<br>給牠一個家，就是給自己最真摯的幸福。
+            現在領養還有見面禮—價值近一萬一千元的大禮包！
+            <br />
+            給牠一個家，就是給自己最真摯的幸福。
           </p>
           <div class="flex flex-col gap-4 sm:flex-row">
             <button
@@ -196,16 +199,20 @@ onMounted(() => {
         </div>
 
         <!-- Hero Right Illustration -->
-        <div class="hero-right lg:col-span-6 flex justify-center items-center">
-          <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-4 shadow-[8px_8px_0px_#445944] overflow-hidden max-w-md w-full">
-            <img src="/images/carousel/carousel-02.png" alt="狗狗領養津貼" class="w-full h-64 md:h-80 object-cover rounded-2xl border-2 border-[#445944]" />
+        <div class="hero-right flex items-center justify-center lg:col-span-6">
+          <div
+            class="relative w-full max-w-md overflow-hidden rounded-3xl border-4 border-[#445944] bg-white p-4 shadow-[8px_8px_0px_#445944]">
+            <img
+              src="/images/carousel/carousel-02.png"
+              alt="狗狗領養津貼"
+              class="h-64 w-full rounded-2xl border-2 border-[#445944] object-cover md:h-80" />
           </div>
         </div>
       </div>
     </header>
 
     <!-- MAIN BODY -->
-    <main class="mx-auto max-w-7xl w-[90%] px-4 py-12">
+    <main class="mx-auto w-[90%] max-w-7xl px-4 py-12">
       <!-- Title & CTA Button -->
       <div class="mb-10 flex flex-col items-center justify-between gap-6 md:flex-row">
         <h1 class="text-4xl font-black text-[#445944]">領養狗狗</h1>
@@ -233,7 +240,8 @@ onMounted(() => {
       </div>
 
       <!-- Filters Card -->
-      <div class="mb-10 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
+      <div
+        class="mb-10 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <!-- Search Input -->
           <div class="lg:col-span-1">
@@ -243,7 +251,7 @@ onMounted(() => {
                 v-model="filters.search"
                 type="text"
                 placeholder="輸入狗狗名字..."
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 font-bold text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#445944] text-sm" />
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-bold text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#445944] focus:outline-none" />
             </div>
           </div>
 
@@ -257,8 +265,8 @@ onMounted(() => {
                   @click="filters.gender = 'male'"
                   :class="
                     filters.gender === 'male'
-                      ? 'bg-[#445944] text-white border-[#445944]'
-                      : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
+                      ? 'border-[#445944] bg-[#445944] text-white'
+                      : 'border-[#445944] bg-[#FCF4E5] text-[#445944] hover:bg-white'
                   "
                   class="rounded-2xl border-2 px-6 py-2.5 text-sm font-bold transition duration-200">
                   弟弟
@@ -267,8 +275,8 @@ onMounted(() => {
                   @click="filters.gender = 'female'"
                   :class="
                     filters.gender === 'female'
-                      ? 'bg-[#445944] text-white border-[#445944]'
-                      : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
+                      ? 'border-[#445944] bg-[#445944] text-white'
+                      : 'border-[#445944] bg-[#FCF4E5] text-[#445944] hover:bg-white'
                   "
                   class="rounded-2xl border-2 px-6 py-2.5 text-sm font-bold transition duration-200">
                   妹妹
@@ -284,7 +292,7 @@ onMounted(() => {
               </h5>
               <select
                 v-model="filters.ageRange"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] text-sm font-bold text-gray-800 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#445944]">
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#445944] focus:outline-none">
                 <option value="">全部年齡</option>
                 <option value="0,1">幼犬 (0-1)</option>
                 <option value="1,3">青少年 (1-3)</option>
@@ -301,7 +309,7 @@ onMounted(() => {
               </h5>
               <select
                 v-model="filters.sizeRange"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] text-sm font-bold text-gray-800 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#445944]">
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#445944] focus:outline-none">
                 <option value="">全部體型</option>
                 <option value="0,12">小型犬 (under 12)</option>
                 <option value="12,25">中型犬 (12-25)</option>
@@ -312,51 +320,55 @@ onMounted(() => {
         </div>
 
         <!-- Checkboxes & Reset -->
-        <div class="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-2 border-[#445944] pt-6">
+        <div
+          class="mt-8 flex flex-col justify-between gap-4 border-t-2 border-[#445944] pt-6 sm:flex-row sm:items-center">
           <div class="flex flex-wrap items-center gap-6">
             <span class="text-sm font-black text-[#445944]">適合相處：</span>
-            <label class="inline-flex items-center text-sm font-bold text-gray-700 cursor-pointer">
+            <label class="inline-flex cursor-pointer items-center text-sm font-bold text-gray-700">
               <input
                 type="checkbox"
                 v-model="filters.goodWith"
                 value="kids"
-                class="mr-2 h-5 w-5 rounded-lg border-2 border-[#445944] text-[#445944] focus:ring-0 bg-white" />
+                class="mr-2 h-5 w-5 rounded-lg border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
               小孩
             </label>
-            <label class="inline-flex items-center text-sm font-bold text-gray-700 cursor-pointer">
+            <label class="inline-flex cursor-pointer items-center text-sm font-bold text-gray-700">
               <input
                 type="checkbox"
                 v-model="filters.goodWith"
                 value="dogs"
-                class="mr-2 h-5 w-5 rounded-lg border-2 border-[#445944] text-[#445944] focus:ring-0 bg-white" />
+                class="mr-2 h-5 w-5 rounded-lg border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
               其他狗狗
             </label>
           </div>
           <button
             @click="resetFilters"
-            class="text-sm font-black text-gray-500 transition hover:text-[#9C6D6D] flex items-center gap-1">
+            class="flex items-center gap-1 text-sm font-black text-gray-500 transition hover:text-[#9C6D6D]">
             🔄 重置篩選條件
           </button>
         </div>
       </div>
 
       <!-- Loading State with Premium Neo-Brutalist Skeleton Cards -->
-      <div v-if="loading" class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div
+        v-if="loading"
+        class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div
           v-for="i in 8"
           :key="i"
           class="animate-pulse overflow-hidden rounded-3xl border-4 border-[#445944]/30 bg-white shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
           <!-- Image Skeleton -->
-          <div class="relative aspect-square bg-[#FCF4E5] border-b-4 border-[#445944]/20 flex items-center justify-center">
+          <div
+            class="relative flex aspect-square items-center justify-center border-b-4 border-[#445944]/20 bg-[#FCF4E5]">
             <span class="text-4xl opacity-25">🐾</span>
           </div>
           <!-- Info Body Skeleton -->
-          <div class="p-5 bg-[#FCF4E5]/40 space-y-4">
-            <div class="h-6 bg-[#445944]/20 rounded-xl w-2/3"></div>
+          <div class="space-y-4 bg-[#FCF4E5]/40 p-5">
+            <div class="h-6 w-2/3 rounded-xl bg-[#445944]/20"></div>
             <div class="flex gap-2">
-              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/3"></div>
-              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
-              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
+              <div class="h-5 w-1/3 rounded-lg bg-[#445944]/15"></div>
+              <div class="h-5 w-1/4 rounded-lg bg-[#445944]/15"></div>
+              <div class="h-5 w-1/4 rounded-lg bg-[#445944]/15"></div>
             </div>
           </div>
         </div>
@@ -368,24 +380,24 @@ onMounted(() => {
           v-for="pet in filteredPets"
           :key="pet.id"
           class="group overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944] transition-all duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944]">
-          
           <!-- Image Section -->
-          <div class="relative aspect-square overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
+          <div
+            class="relative aspect-square overflow-hidden border-b-4 border-[#445944] bg-gray-100">
             <img
               :src="getImageUrl(pet.imageUrl)"
               @error="handleImageError"
               :alt="pet.name"
               class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-            
+
             <!-- Nickname Badge -->
             <span
-              class="absolute top-3 left-3 rounded-full bg-[#9C6D6D] px-3 py-1 text-xs font-black text-white ">
+              class="absolute top-3 left-3 rounded-full bg-[#9C6D6D] px-3 py-1 text-xs font-black text-white">
               {{ pet.nickname || '精選夥伴' }}
             </span>
 
             <!-- Hover overlay with stylish neo-brutalist button -->
             <div
-              class="bg-black/20 absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <router-link
                 :to="{ name: 'pet-adoption-detail', params: { id: pet.id } }"
                 class="translate-y-4 transform rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] px-6 py-2.5 text-center font-black text-[#445944] opacity-0 shadow-[4px_4px_0px_#445944] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
@@ -395,10 +407,10 @@ onMounted(() => {
           </div>
 
           <!-- Card Body Info -->
-          <div class="p-5 bg-[#FCF4E5]">
+          <div class="bg-[#FCF4E5] p-5">
             <div class="mb-3 flex items-center justify-between">
-              <h3 class="text-xl font-black text-[#445944] truncate">{{ pet.name }}</h3>
-              
+              <h3 class="truncate text-xl font-black text-[#445944]">{{ pet.name }}</h3>
+
               <!-- Gender Badge -->
               <span
                 v-if="pet.gender === 'male'"
@@ -410,10 +422,7 @@ onMounted(() => {
                   viewBox="0 0 24 24"
                   stroke="currentColor">
                   <circle cx="10" cy="14" r="5" />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M14 10l6-6M15 4h5v5" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 10l6-6M15 4h5v5" />
                 </svg>
               </span>
               <span v-else class="inline-flex shrink-0 text-[#ec4899]" title="女生">
@@ -430,13 +439,16 @@ onMounted(() => {
 
             <!-- Pet details -->
             <div class="flex flex-wrap items-center gap-1.5 text-xs font-black text-gray-700">
-              <span class="rounded bg-white px-2 py-0.5 border-2 border-[#445944] shadow-[1px_1px_0px_#445944]">
+              <span
+                class="rounded border-2 border-[#445944] bg-white px-2 py-0.5 shadow-[1px_1px_0px_#445944]">
                 {{ pet.color || '米克斯' }}
               </span>
-              <span class="rounded bg-white px-2 py-0.5 border-2 border-[#445944] shadow-[1px_1px_0px_#445944]">
+              <span
+                class="rounded border-2 border-[#445944] bg-white px-2 py-0.5 shadow-[1px_1px_0px_#445944]">
                 {{ pet.age }} 歲
               </span>
-              <span class="rounded bg-white px-2 py-0.5 border-2 border-[#445944] shadow-[1px_1px_0px_#445944]">
+              <span
+                class="rounded border-2 border-[#445944] bg-white px-2 py-0.5 shadow-[1px_1px_0px_#445944]">
                 {{ pet.weight }} kg
               </span>
             </div>
@@ -445,10 +457,14 @@ onMounted(() => {
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && filteredPets.length === 0" class="py-16 text-center max-w-md mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
-        <span class="text-5xl block mb-4">🐶</span>
-        <h3 class="text-xl font-black text-[#445944] mb-2">找不到符合條件的狗狗</h3>
-        <p class="text-sm font-bold text-gray-600">嘗試調整一下篩選條件，或許命定的夥伴就在那裡喔！</p>
+      <div
+        v-if="!loading && filteredPets.length === 0"
+        class="mx-auto max-w-md rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 py-16 text-center shadow-[6px_6px_0px_#445944]">
+        <span class="mb-4 block text-5xl">🐶</span>
+        <h3 class="mb-2 text-xl font-black text-[#445944]">找不到符合條件的狗狗</h3>
+        <p class="text-sm font-bold text-gray-600">
+          嘗試調整一下篩選條件，或許命定的夥伴就在那裡喔！
+        </p>
       </div>
     </main>
   </div>

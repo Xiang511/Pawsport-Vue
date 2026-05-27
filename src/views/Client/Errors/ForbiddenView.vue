@@ -41,12 +41,12 @@ const goHome = () => {
       <div class="flex justify-center gap-4">
         <button
           @click="goBack"
-          class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
           返回上頁
         </button>
         <button
           @click="goHome"
-          class="rounded-lg bg-red-500 px-6 py-3 text-sm font-medium text-white hover:bg-red-600 transition-colors">
+          class="rounded-lg bg-red-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-red-600">
           返回首頁
         </button>
       </div>

@@ -9,16 +9,16 @@ const route = useRoute()
   <div>
     <!-- Support Header Section -->
     <div class="mb-10 text-center">
-      <h1 class="mb-4 flex items-center justify-center gap-3 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
-        <Cat class="h-10 w-10 text-[#445944] animate-bounce" />
+      <h1
+        class="mb-4 flex items-center justify-center gap-3 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
+        <Cat class="h-10 w-10 animate-bounce text-[#445944]" />
         <span class="relative z-10 inline-block px-3 py-1">
           客服中心
-          <span class="absolute right-0 bottom-1 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
+          <span
+            class="absolute right-0 bottom-1 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
         </span>
       </h1>
-      <p class="text-lg font-bold text-[#7a6856]">
-        關於 Petmily 的疑難雜症，都在這裡為您解答！ 🐾
-      </p>
+      <p class="text-lg font-bold text-[#7a6856]">關於 Petmily 的疑難雜症，都在這裡為您解答！ 🐾</p>
     </div>
 
     <!-- Navigation Tab Buttons -->

@@ -9,12 +9,10 @@ const emit = defineEmits(['update:modelValue', 'discard', 'save'])
   <div
     v-if="modelValue"
     @click.self="emit('update:modelValue', false)"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4 font-fredoka">
-    
+    class="font-fredoka fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">
     <!-- 彈窗本體 -->
     <div
       class="w-full max-w-md transform cursor-default rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[8px_8px_0px_#445944] transition-all">
-      
       <!-- 標題與圖示 -->
       <div class="flex items-center space-x-3 text-amber-500">
         <svg class="h-6 w-6 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,14 +25,13 @@ const emit = defineEmits(['update:modelValue', 'discard', 'save'])
       </div>
 
       <!-- 說明內文 -->
-      <p class="mt-3 text-xs font-bold leading-relaxed text-gray-500">
+      <p class="mt-3 text-xs leading-relaxed font-bold text-gray-500">
         您正在嘗試建立一篇全新文章。點擊儲存將會把目前的進度留存為草稿，避免內容遺失喔！🐾
       </p>
 
       <!-- 按鈕控制區 -->
       <div
         class="mt-6 flex flex-col space-y-3.5 text-xs sm:flex-row sm:justify-end sm:space-y-0 sm:space-x-2.5">
-        
         <!-- 取消 -->
         <button
           @click="emit('update:modelValue', false)"

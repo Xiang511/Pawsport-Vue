@@ -304,8 +304,7 @@ onMounted(() => {
 <template>
   <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased">
     <!-- HERO SECTION -->
-    <header
-      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -405,7 +404,7 @@ onMounted(() => {
     </header>
 
     <!-- CORE FEATURES SECTION -->
-    <section class=" bg-[#FCF4E5] py-20">
+    <section class="bg-[#FCF4E5] py-20">
       <div class="mx-auto w-[90%] max-w-7xl">
         <div class="mx-auto mb-16 max-w-2xl text-center">
           <h2 class="mb-4 text-3xl font-black text-[#445944] md:text-4xl">
@@ -451,7 +450,7 @@ onMounted(() => {
                     {{ pet.nickname }}
                   </span>
                 </div>
-                <div class="p-3 bg-[#FCF4E5]">
+                <div class="bg-[#FCF4E5] p-3">
                   <div class="mb-1 flex items-center justify-between">
                     <h4 class="truncate text-base font-bold">{{ pet.name }}</h4>
                     <!-- Custom Inline SVG for Gender -->
@@ -493,12 +492,12 @@ onMounted(() => {
             <div class="flex gap-3">
               <router-link
                 to="/adopt"
-                class="flex-1 rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+                class="text-theme-lg flex-1 rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 🐾 給牠一個溫暖的家
               </router-link>
               <router-link
                 to="/adopt/create"
-                class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center text-theme-lg font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+                class="text-theme-lg rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 刊登送養
               </router-link>
             </div>
@@ -506,11 +505,11 @@ onMounted(() => {
 
           <!-- CARD 2: 健康護照 (Pawsport) -->
           <div
-            class="card-feature group rounded-3xl border-4 border-brand-success-950 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group border-brand-success-950 rounded-3xl border-4 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
-                  class="text-brand-success-950 rounded-2xl border-2 border-brand-success-950 bg-[#FCF4E5] p-3">
+                  class="text-brand-success-950 border-brand-success-950 rounded-2xl border-2 bg-[#FCF4E5] p-3">
                   <Activity :size="28" />
                 </div>
                 <div>
@@ -531,7 +530,7 @@ onMounted(() => {
               <div class="mb-3 flex items-center justify-between">
                 <span class="text-xs font-black text-gray-500">愛寵體重追蹤曲線 (kg)</span>
                 <span
-                  class="rounded-full bg-brand-success-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                  class="bg-brand-success-500 rounded-full px-2 py-0.5 text-[10px] font-bold text-white">
                   狀態良好
                 </span>
               </div>
@@ -591,14 +590,14 @@ onMounted(() => {
 
             <router-link
               to="/healthpassport"
-              class="block w-full rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+              class="text-theme-lg block w-full rounded-xl border-2 border-[#445944] bg-[#445944] py-3 text-center font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
               📊 開啟專屬健康檔案
             </router-link>
           </div>
 
           <!-- CARD 3: 遺失協尋 (Missing Report) -->
           <div
-            class="card-feature group rounded-3xl border-4 border-brand-success-950 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
+            class="card-feature group border-brand-success-950 rounded-3xl border-4 bg-white p-6 shadow-[6px_6px_0px_#445944] transition-all hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944] md:p-8">
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
@@ -628,7 +627,8 @@ onMounted(() => {
                 v-for="pet in missingPets"
                 :key="pet.id"
                 class="relative flex items-center gap-4 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3">
-                <div class="h-22 w-22 shrink-0 overflow-hidden rounded-xl border-2 border-[#445944]">
+                <div
+                  class="h-22 w-22 shrink-0 overflow-hidden rounded-xl border-2 border-[#445944]">
                   <img :src="pet.photo" :alt="pet.breed" class="h-full w-full object-cover" />
                 </div>
                 <div class="min-w-0 flex-1">
@@ -656,12 +656,12 @@ onMounted(() => {
             <div class="flex gap-3">
               <router-link
                 to="/missingreport"
-                class="flex-1 rounded-xl bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+                class="text-theme-lg flex-1 rounded-xl bg-[#445944] py-3 text-center font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 🚨 我有協尋線索
               </router-link>
               <router-link
                 to="/missingreport/create"
-                class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center text-theme-lg font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+                class="text-theme-lg rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-center font-bold text-[#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
                 刊登協尋啟事
               </router-link>
             </div>
@@ -673,7 +673,7 @@ onMounted(() => {
             <div class="mb-6 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div
-                  class="text-[#445944] rounded-2xl border-2 border-[#445944] bg-[#f2d44d]/15 p-3">
+                  class="rounded-2xl border-2 border-[#445944] bg-[#f2d44d]/15 p-3 text-[#445944]">
                   <Award :size="28" />
                 </div>
                 <div>
@@ -757,7 +757,7 @@ onMounted(() => {
 
             <router-link
               to="/game"
-              class="block w-full rounded-xl bg-[#445944] py-3 text-center text-theme-lg font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+              class="text-theme-lg block w-full rounded-xl bg-[#445944] py-3 text-center font-bold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
               🎮 開始寵物問答挑戰
             </router-link>
           </div>
@@ -766,7 +766,7 @@ onMounted(() => {
     </section>
 
     <!-- SUCCESS STORIES SECTION -->
-    <section class=" bg-[#FCF4E5] py-20">
+    <section class="bg-[#FCF4E5] py-20">
       <div class="mx-auto w-[90%] max-w-7xl">
         <div class="mx-auto mb-16 max-w-2xl text-center">
           <span

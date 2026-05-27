@@ -12,7 +12,7 @@ const currentPageTitle = ref('新增領養紀錄')
 const breadcrumbItems = ref([
   { name: '首頁', route: '/dashboard' },
   { name: '領養紀錄', route: '/dashboard/adoption' },
-  { name: '新增領養紀錄', route: '' }
+  { name: '新增領養紀錄', route: '' },
 ])
 
 // 1. 定義表單資料 (與 ViewModel 對應)
@@ -59,7 +59,8 @@ const goBack = () => {
 <template>
   <PageBreadcrumb :pageTitle="currentPageTitle" :items="breadcrumbItems" />
 
-  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-7 py-4 dark:border-gray-800">
       <h3 class="font-medium text-gray-800 dark:text-white/90">填寫領養資訊</h3>
     </div>
@@ -67,7 +68,6 @@ const goBack = () => {
     <div class="p-7">
       <form @submit.prevent="handleSubmit">
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          
           <div>
             <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
               領養人名稱
@@ -76,84 +76,91 @@ const goBack = () => {
               v-model="form.name"
               type="text"
               placeholder="請輸入名稱"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-              required
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"
+              required />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">寵物 ID</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              寵物 ID
+            </label>
             <input
               v-model.number="form.petId"
               type="number"
               placeholder="輸入寵物編號"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-              required
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"
+              required />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">使用者 ID</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              使用者 ID
+            </label>
             <input
               v-model.number="form.userId"
               type="number"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-              required
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"
+              required />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">處理狀態</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              處理狀態
+            </label>
             <input
               v-model="form.status"
               type="text"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">申請日期</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              申請日期
+            </label>
             <input
               v-model="form.applyDate"
               type="date"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">領養日期</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              領養日期
+            </label>
             <input
               v-model="form.adoptDate"
               type="date"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">追蹤截止日</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              追蹤截止日
+            </label>
             <input
               v-model="form.followUpDeadline"
               type="date"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div>
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">退回日期</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              退回日期
+            </label>
             <input
               v-model="form.returnDate"
               type="date"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            />
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700" />
           </div>
 
           <div class="md:col-span-2">
-            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">退回原因 / 備註</label>
+            <label class="mb-2.5 block text-sm font-medium text-gray-800 dark:text-white/90">
+              退回原因 / 備註
+            </label>
             <textarea
               v-model="form.returnReason"
               rows="3"
-              class="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none focus:border-primary dark:border-gray-700"
-            ></textarea>
+              class="focus:border-primary w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none dark:border-gray-700"></textarea>
           </div>
         </div>
 
@@ -161,15 +168,13 @@ const goBack = () => {
           <button
             type="submit"
             :disabled="loading"
-            class="flex justify-center rounded bg-primary px-10 py-3 font-medium text-white hover:bg-opacity-90 disabled:bg-gray-400"
-          >
+            class="bg-primary hover:bg-opacity-90 flex justify-center rounded px-10 py-3 font-medium text-white disabled:bg-gray-400">
             {{ loading ? '建立中...' : '確認新增' }}
           </button>
           <button
             @click="goBack"
             type="button"
-            class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:text-white"
-          >
+            class="flex justify-center rounded border border-gray-300 px-10 py-3 font-medium text-gray-800 hover:bg-gray-50 dark:text-white">
             取消
           </button>
         </div>

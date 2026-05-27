@@ -231,8 +231,7 @@ onMounted(async () => {
   <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
   <div class="font-fredoka min-h-screen bg-[#FCF4E5] text-gray-800 antialiased">
     <!-- HERO BANNER SECTION -->
-    <section
-      class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8 md:pt-16 md:pb-12">
+    <section class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8 md:pt-16 md:pb-12">
       <!-- Floating Background Ornaments -->
       <div class="animate-float pointer-events-none absolute top-10 left-10 opacity-20">
         <span class="text-4xl">🐾</span>
@@ -241,8 +240,7 @@ onMounted(async () => {
         class="animate-float delay-2s pointer-events-none absolute right-20 bottom-10 opacity-20">
         <span class="text-4xl">💬</span>
       </div>
-      <div
-        class="animate-float delay-4s pointer-events-none absolute top-24 right-1/4 opacity-20">
+      <div class="animate-float delay-4s pointer-events-none absolute top-24 right-1/4 opacity-20">
         <span class="text-4xl">✨</span>
       </div>
 
@@ -260,7 +258,9 @@ onMounted(async () => {
               社群專區
             </h1>
             <p class="max-w-md text-base leading-relaxed font-bold text-gray-600 md:text-lg">
-              歡迎來到我們的寵物社群！<br>在這裡，你可以與全台的毛家長交流經驗、分享溫馨故事與實用知識。
+              歡迎來到我們的寵物社群！
+              <br />
+              在這裡，你可以與全台的毛家長交流經驗、分享溫馨故事與實用知識。
             </p>
           </div>
 

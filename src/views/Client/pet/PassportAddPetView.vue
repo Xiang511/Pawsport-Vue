@@ -60,9 +60,9 @@ const submitForm = async () => {
     }
 
     const genderMap = {
-      '公': 1,
-      '母': 2,
-      '未知': null
+      公: 1,
+      母: 2,
+      未知: null,
     }
 
     const payload = {
@@ -93,21 +93,21 @@ const closePage = () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka px-4 py-8">
-    <div class="mx-auto w-[60%] mt-6">
-      
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] px-4 py-8 text-gray-800 antialiased">
+    <div class="mx-auto mt-6 w-[60%]">
       <!-- MAIN CONTAINER CARD -->
-      <div class=" relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
-        
+      <div
+        class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <!-- HEADER ROW -->
-        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
+        <div class="mb-6 flex items-center justify-between border-b-4 border-[#445944] pb-4">
           <button
             @click="closePage"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
             <Undo2 class="h-5 w-5" />
           </button>
-          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
-            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+          <h1 class="flex items-center gap-1.5 text-xl font-black tracking-wide text-[#445944]">
+            <Sparkles :size="18" class="animate-spin-slow text-amber-500" />
             建立毛孩健康護照
           </h1>
           <div class="w-10"></div>
@@ -115,40 +115,45 @@ const closePage = () => {
 
         <!-- FORM BODY -->
         <div class="space-y-6">
-
           <!-- 寵物頭像上傳 -->
-          <div class="flex flex-col items-center justify-center py-6 bg-[#FCF4E5] rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944] mb-4">
-            <div class="relative h-28 w-28 overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md">
+          <div
+            class="mb-4 flex flex-col items-center justify-center rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] py-6 shadow-[4px_4px_0px_#445944]">
+            <div
+              class="relative h-28 w-28 overflow-hidden rounded-full border-4 border-[#445944] bg-white shadow-md">
               <img :src="form.photo || 'default_pet.jpg'" class="h-full w-full object-cover" />
-              <label class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
-                <Camera class="h-6 w-6 mb-1" />
+              <label
+                class="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100">
+                <Camera class="mb-1 h-6 w-6" />
                 <span class="text-xs font-black">上傳相片</span>
                 <input type="file" @change="handleImageUpload" class="hidden" accept="image/*" />
               </label>
             </div>
-            
+
             <button
               v-if="form.photo"
               @click="removeImage"
               type="button"
-              class="mt-3 rounded-xl border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944] hover:bg-red-600 transition-colors">
+              class="mt-3 rounded-xl border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944] transition-colors hover:bg-red-600">
               移除照片 ✕
             </button>
-            
-            <p class="mt-3 text-xs font-bold text-gray-500 text-center px-4">建議上傳毛孩清楚的面部照片 (限 2MB)</p>
+
+            <p class="mt-3 px-4 text-center text-xs font-bold text-gray-500">
+              建議上傳毛孩清楚的面部照片 (限 2MB)
+            </p>
           </div>
 
           <!-- 寵物姓名 -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">
-              寵物姓名 <span class="text-red-500">*</span>
+              寵物姓名
+              <span class="text-red-500">*</span>
             </label>
             <input
               v-model="form.name"
               type="text"
               placeholder="請輸入毛孩名字"
               required
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- 出生日期 -->
@@ -157,7 +162,7 @@ const closePage = () => {
             <input
               v-model="form.birthDate"
               type="date"
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- 性別 & 絕育 -->
@@ -166,7 +171,7 @@ const closePage = () => {
               <label class="mb-2 block text-sm font-black text-gray-500">毛孩性別</label>
               <select
                 v-model="form.gender"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                 <option value="公">公</option>
                 <option value="母">母</option>
                 <option value="未知">未知</option>
@@ -177,7 +182,7 @@ const closePage = () => {
               <label class="mb-2 block text-sm font-black text-gray-500">絕育狀況</label>
               <select
                 v-model="form.isDesex"
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                 <option :value="true">已絕育</option>
                 <option :value="false">未絕育</option>
               </select>
@@ -187,7 +192,8 @@ const closePage = () => {
           <!-- 目前體重 -->
           <div>
             <label class="mb-2 block text-sm font-black text-gray-500">
-              目前體重 <span class="text-red-500">*</span>
+              目前體重
+              <span class="text-red-500">*</span>
             </label>
             <div class="relative">
               <input
@@ -196,21 +202,24 @@ const closePage = () => {
                 step="0.01"
                 placeholder="請輸入體重"
                 required
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
-              <span class="absolute top-1/2 right-4 -translate-y-1/2 font-black text-[#445944]">KG</span>
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
+              <span class="absolute top-1/2 right-4 -translate-y-1/2 font-black text-[#445944]">
+                KG
+              </span>
             </div>
           </div>
 
           <!-- 記錄測量日期 -->
           <div>
             <label class="mb-2 block text-sm font-black text-gray-500">
-              記錄測量日期 <span class="text-red-500">*</span>
+              記錄測量日期
+              <span class="text-red-500">*</span>
             </label>
             <input
               v-model="form.recordDate"
               type="date"
               required
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
           </div>
 
           <!-- 健康狀況備註描述 -->
@@ -220,7 +229,7 @@ const closePage = () => {
               v-model="form.note"
               placeholder="請輸入此階段的常規健康描述（如：食慾正常、精神好...）"
               rows="3"
-              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 font-bold placeholder-gray-400 shadow-[2px_2px_0px_#445944] outline-none focus:border-[#445944] focus:ring-0" />
           </div>
 
           <!-- 提交按鈕 -->
