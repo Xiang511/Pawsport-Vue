@@ -395,6 +395,19 @@ const closeNicknameModal = () => {
   align-content: center;
   padding: 40px 80px;
   user-select: none;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+}
+
+.main-menu-container:active {
+  /* 把 pointer 換成你原本的圖片路徑 */
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+}
+
+/* 如果你的按鈕原本有 hover 變小手的效果，也要強制覆蓋 */
+button:hover, 
+.nav-item:hover, 
+.user-profile-trigger:hover {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
 /* 玩家檔案按鈕 */
@@ -858,6 +871,7 @@ const closeNicknameModal = () => {
   align-items: center;
   z-index: 99999;
   backdrop-filter: blur(4px);
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .audio-auth-card {
@@ -888,6 +902,7 @@ const closeNicknameModal = () => {
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-label,
@@ -895,6 +910,7 @@ const closeNicknameModal = () => {
   color: #453a27;
   font-weight: bold;
   font-size: 1.1rem;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-percentage {
@@ -918,6 +934,7 @@ const closeNicknameModal = () => {
     #e5dfd5 100%
   );
   outline: none;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* 網頁滑桿的圓鈕（Thumb）樣式 */
@@ -931,6 +948,7 @@ const closeNicknameModal = () => {
   cursor: pointer;
   border: 2px solid #fcf4e5;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-input-range::-moz-range-thumb {

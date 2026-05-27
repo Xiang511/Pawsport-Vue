@@ -594,8 +594,21 @@ const goBack = () => router.push({ name: 'Client-mainmenu' })
   background-position: center;
   background-attachment: fixed; /* 新增：防止背景滾動 */
   overflow: hidden; /* 新增：隱藏溢出內容 */
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
+.back-btn,
+.circle-spot-card,
+.arrow-btn,
+.start-game-btn,
+.menu-item,
+.currency-box,
+.loading-overlay {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+}
+.level-select-page:active {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+}
 .level-list-panel {
   flex: 1.6;
   background-color: #f6ebe0; 

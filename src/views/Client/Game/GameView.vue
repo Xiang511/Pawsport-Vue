@@ -195,10 +195,21 @@ const backToWebHome = (event) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
   position: relative;
   overflow: hidden;
   user-select: none;
+  transition: cursor 0.1s ease;
+}
+
+.game-start-screen:active {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, pointer;
+}
+
+/* 確保按鈕或特殊元件不會覆蓋掉這個游標 (選用) */
+.game-start-screen button, 
+.game-start-screen .back-home-btn {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
 .back-home-btn {
