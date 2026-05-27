@@ -179,7 +179,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="mx-auto my-5 max-w-3xl text-gray-800">
+  <div class="mx-auto my-5 w-[80%] text-gray-800">
     <!-- 頂部功能 -->
     <div
       class="mb-6 flex flex-col gap-4 border-b-4 border-[#445944] pb-4 sm:flex-row sm:items-center sm:justify-between">

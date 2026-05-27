@@ -87,10 +87,10 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka pb-20">
     
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 lg:py-16 text-center">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -122,18 +122,18 @@ const handleSearch = () => {
         <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           遺失協尋
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
-            啟事列表
+            啓事列表
             <span
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
         </h1>
         <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
-          凝聚社群力量，守護毛孩回家防線。希望能幫助每個走失的寶貝早日回到溫暖的避風港。
+          凝聚社群力量，守護毛孩回家防線。<br>希望能幫助每個走失的寶貝早日回到溫暖的避風港。
         </p>
         <div
           class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] px-5 py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944]">
           <span>📢</span>
-          尋獲寵物後，請記得辦理撤銷申報唷！
+          尋獲寵物後，請記得辦理撤銷申報喲！
         </div>
       </div>
     </header>
@@ -246,7 +246,7 @@ const handleSearch = () => {
       <div class="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div class="flex items-center gap-2.5">
           <span class="text-[#445944] text-2xl">📋</span>
-          <h2 class="text-2xl font-black text-[#445944]">最新遺失啟事</h2>
+          <h2 class="text-2xl font-black text-[#445944]">最新遺失啓事</h2>
         </div>
 
         <router-link
@@ -292,7 +292,7 @@ const handleSearch = () => {
               @error="handleImageError"
               class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div
-              class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+              class="absolute top-3 left-3 rounded-full border-2 border-red-500 bg-red-500 px-3 py-1 text-xs font-black text-white">
               🚨 LOST 協尋中
             </div>
           </div>
@@ -329,7 +329,7 @@ const handleSearch = () => {
             <router-link
               :to="{ name: 'missing-report-detail', params: { id: pet.id } }"
               class="block w-full text-center rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
-              🔍 查看詳細啟事
+              🔍 査看詳細啓事
             </router-link>
           </div>
         </div>

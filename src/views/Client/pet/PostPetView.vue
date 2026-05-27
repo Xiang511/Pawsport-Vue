@@ -97,10 +97,10 @@ const traitOptions = [
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-24">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka pb-24">
     
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 lg:py-16 text-center">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -144,8 +144,8 @@ const traitOptions = [
     </header>
 
     <!-- FORM BODY CONTAINER -->
-    <div class="container mx-auto max-w-6xl px-4 mt-12">
-      <div v-if="currentStep === 1" class="mx-auto max-w-4xl w-[90%]">
+    <div class="container mx-auto  px-4 mt-12">
+      <div v-if="currentStep === 1" class="mx-auto w-[80%]">
         <div class="overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
           
           <div class="bg-[#445944] border-b-4 border-[#445944] px-8 py-5 flex items-center justify-between">

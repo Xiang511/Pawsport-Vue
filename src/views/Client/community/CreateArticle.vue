@@ -124,10 +124,10 @@ onMounted(async () => {
 
 <template>
   <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
-  <div class="min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka">
+  <div class="min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka">
     
     <!-- HERO BANNER SECTION -->
-    <section class="relative overflow-hidden bg-[#FDF9F3] px-6 pt-12 pb-8 border-b-4 border-[#445944]">
+    <section class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8">
       <!-- Floating Background Ornaments -->
       <div class="absolute top-8 left-10 pointer-events-none opacity-20 animate-float">
         <span class="text-4xl">✏️</span>
@@ -137,15 +137,15 @@ onMounted(async () => {
       </div>
 
       <div class="mx-auto max-w-3xl">
-        <div class="text-center md:text-left">
-          <div class="inline-flex items-center gap-1.5 rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1 text-xs font-black text-[#445944] uppercase tracking-wider mb-3 shadow-[2px_2px_0px_#445944]">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-1.5 rounded-full  bg-[#7a6856] px-3.5 py-1 text-sm font-black text-white uppercase tracking-wider mb-3">
             <Sparkles :size="12" class="text-amber-500 animate-spin-slow" />
             PETMILY EDITOR
           </div>
-          <h1 class="text-3xl font-black tracking-tight text-[#445944] md:text-4xl">
+          <h1 class="text-center text-4xl font-black tracking-tight text-[#445944]">
             撰寫社群貼文
           </h1>
-          <p class="max-w-md text-sm font-bold text-gray-500 mt-2">
+          <p class="text-center text-lg font-bold text-gray-500 mt-2">
             與大家分享您與毛孩的有趣生活、實用知識或是疑難雜症吧！
           </p>
         </div>
@@ -153,7 +153,7 @@ onMounted(async () => {
     </section>
 
     <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-3xl px-4 py-8">
+    <div class="container mx-auto px-4 py-8">
       <div v-if="isCategoryLoading" class="py-16 text-center font-black text-[#445944] text-lg animate-pulse">
         ⏳ 正在載入分類資料...
       </div>

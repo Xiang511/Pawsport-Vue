@@ -58,11 +58,11 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka px-4 py-8">
-    <div class="mx-auto max-w-xl mt-6">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka px-4 py-8">
+    <div class="mx-auto w-[70%] mt-6">
       
       <!-- MAIN CONTAINER CARD -->
-      <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
+      <div class="relative rounded-3xl bg-[#FCF4E5] p-6 md:p-8 border-4 border-[#445944] shadow-[6px_6px_0px_#445944]">
         
         <!-- HEADER ROW -->
         <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">

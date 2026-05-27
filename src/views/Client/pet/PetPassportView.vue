@@ -87,10 +87,10 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka pb-20">
     
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 lg:py-16 text-center">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -119,7 +119,7 @@ const handleImageError = (e) => {
           <Sparkles :size="14" class="animate-spin-slow" />
           PAWSPORT HEALTH RECORD
         </div>
-        <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
+        <h1 class="mb-6 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           健康護照
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
             毛孩 Pawsport
@@ -127,8 +127,8 @@ const handleImageError = (e) => {
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
         </h1>
-        <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
-          科學化記錄愛寵健康成長點滴，包含醫療史、疫苗接種、日常體重與醫療影像，全方位守護寶貝健康。
+        <p class="mb-2 max-w-xl text-base font-bold text-gray-600">
+          科學化記錄愛寵健康成長點滴，包含醫療史、疫苗接種、日常體重與醫療影像，<br>全方位守護寶貝健康。
         </p>
       </div>
     </header>
@@ -136,11 +136,11 @@ const handleImageError = (e) => {
     <!-- MAIN BODY -->
     <div class="relative mx-auto max-w-7xl w-[90%] px-4 mt-12">
       <!-- Add New Pet Floating Action Item -->
-      <button
+      <!-- <button
         @click="addNewPet"
         class="absolute -top-16 right-4 flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#445944] text-white shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] z-10">
         <SquarePlus :size="22" />
-      </button>
+      </button> -->
 
       <!-- Loading State (Premium Neo-Brutalist Skeleton Detailed Loader) -->
       <div v-if="loading" class="animate-pulse flex flex-col gap-8 lg:flex-row">
@@ -193,7 +193,7 @@ const handleImageError = (e) => {
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="pets.length === 0" class="py-16 text-center max-w-md mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
+      <div v-else-if="pets.length === 0" class=" w-full py-16 text-center  mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
         <span class="text-5xl block mb-4">📖</span>
         <h3 class="text-xl font-black text-[#445944] mb-2">尚無健康護照紀錄</h3>
         <p class="text-sm font-bold text-gray-600 mb-6">目前還沒有為您的毛孩建立護照紀錄唷！</p>
@@ -266,7 +266,7 @@ const handleImageError = (e) => {
                 'flex-1 rounded-xl px-4 py-2.5 text-sm font-black transition-all duration-200',
                 activeTab === tab
                   ? 'bg-[#445944] text-white border-2 border-[#445944]'
-                  : 'text-gray-600 border-2 border-transparent hover:bg-white hover:text-[#445944]',
+                  : 'text-gray-600 border-2 border-transparent hover:text-[#445944]',
               ]">
               {{ tab }}
             </button>

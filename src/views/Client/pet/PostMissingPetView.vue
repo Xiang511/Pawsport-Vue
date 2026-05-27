@@ -140,10 +140,10 @@ const closePage = () => {
 
 <template>
   <div
-    class="page-container font-fredoka min-h-screen bg-[#FDF9F3] pb-20 text-gray-800 antialiased">
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] pb-20 text-gray-800 antialiased">
     <!-- HERO SECTION -->
     <header
-      class="hero-container relative overflow-hidden border-b-4 border-[#445944] bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
+      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -175,7 +175,7 @@ const closePage = () => {
         <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           刊登遺失
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
-            協尋啟事
+            協尋啓事
             <span
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
@@ -187,15 +187,15 @@ const closePage = () => {
     </header>
 
     <!-- FORM BODY CONTAINER -->
-    <div class="mx-auto mt-12 w-[90%] max-w-4xl">
+    <div class="mx-auto mt-12 w-[60%] ">
       <div
         class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-10">
         <!-- Close page button -->
-        <button
+        <!-- <button
           @click="closePage"
           class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#445944] hover:text-white hover:shadow-[1px_1px_0px_#445944]">
           ✕
-        </button>
+        </button> -->
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
           <!-- 寵物照片上傳 -->

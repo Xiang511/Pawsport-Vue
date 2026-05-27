@@ -229,10 +229,10 @@ onMounted(async () => {
 
 <template>
   <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
-  <div class="font-fredoka min-h-screen bg-[#FDF9F3] text-gray-800 antialiased">
+  <div class="font-fredoka min-h-screen bg-[#FCF4E5] text-gray-800 antialiased">
     <!-- HERO BANNER SECTION -->
     <section
-      class="relative overflow-hidden border-b-4 border-[#445944] bg-[#FDF9F3] px-6 pt-12 pb-8 md:pt-16 md:pb-12">
+      class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8 md:pt-16 md:pb-12">
       <!-- Floating Background Ornaments -->
       <div class="animate-float pointer-events-none absolute top-10 left-10 opacity-20">
         <span class="text-4xl">🐾</span>
@@ -251,7 +251,7 @@ onMounted(async () => {
           <!-- Title Text Block -->
           <div class="text-center md:text-left">
             <div
-              class="mb-4 inline-flex items-center gap-1.5 rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1 text-xs font-black tracking-wider text-[#445944] uppercase shadow-[2px_2px_0px_#445944]">
+              class="mb-4 inline-flex items-center gap-1.5 rounded-full bg-[#7a6856] px-3.5 py-1 text-sm font-black tracking-wider text-white uppercase">
               <Sparkles :size="12" class="animate-spin-slow text-amber-500" />
               PETMILY FORUM
             </div>
@@ -260,7 +260,7 @@ onMounted(async () => {
               社群專區
             </h1>
             <p class="max-w-md text-base leading-relaxed font-bold text-gray-600 md:text-lg">
-              歡迎來到我們的寵物社群！在這裡，你可以與全台的毛家長交流經驗、分享溫馨故事與實用知識。
+              歡迎來到我們的寵物社群！<br>在這裡，你可以與全台的毛家長交流經驗、分享溫馨故事與實用知識。
             </p>
           </div>
 
@@ -416,7 +416,7 @@ onMounted(async () => {
                   @click-card="() => goToArticleDetail(article)"
                   @click-tag="handleTagSearch"
                   @toggle-bookmark="(id) => console.log('收藏文章：', id)"
-                  class="cursor-pointer" />
+                  class="cursor-pointer hover:bg-[#FCF4E5]" />
 
                 <!-- 查無資料時顯示 -->
                 <div

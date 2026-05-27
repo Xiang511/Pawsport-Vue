@@ -49,10 +49,10 @@ const clipboard = (text) => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka pb-20">
     
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 lg:py-16 text-center">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -84,13 +84,13 @@ const clipboard = (text) => {
         <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           遺失協尋
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
-            詳細啟事
+            詳細啓事
             <span
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
         </h1>
         <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
-          尋獲及領回寵物的飼主，請至登記站辦理尋獲及領回的登記！讓我們攜手幫助毛孩回家。
+          尋獲及領回寵物的飼主，請至登記站辦理尋獲及領回的登記！<br>讓我們攜手幫助毛孩回家。
         </p>
       </div>
     </header>

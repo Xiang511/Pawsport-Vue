@@ -138,9 +138,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka">
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-16 lg:py-24">
+    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-16 lg:py-24">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -177,14 +177,14 @@ onMounted(() => {
             <span class="relative z-10 inline-block px-2 text-[#7a6856]">
               狗狗領養津貼
               <span
-                class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-5"></span>
+              class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-5"></span>
             </span>
-            熱烈上路
+            <span>熱烈上路</span>
           </h2>
           <p class="mb-8 max-w-xl text-base leading-relaxed text-gray-700 md:text-lg">
             經過預備學校社會化的狗狗，更能融入人類家庭。
             <br />
-            現在領養還有見面禮—價值近一萬一千元的大禮包！給牠一個家，就是給自己最真摯的幸福。
+            現在領養還有見面禮—價值近一萬一千元的大禮包！<br>給牠一個家，就是給自己最真摯的幸福。
           </p>
           <div class="flex flex-col gap-4 sm:flex-row">
             <button
@@ -379,7 +379,7 @@ onMounted(() => {
             
             <!-- Nickname Badge -->
             <span
-              class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-[#9C6D6D] px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+              class="absolute top-3 left-3 rounded-full bg-[#9C6D6D] px-3 py-1 text-xs font-black text-white ">
               {{ pet.nickname || '精選夥伴' }}
             </span>
 

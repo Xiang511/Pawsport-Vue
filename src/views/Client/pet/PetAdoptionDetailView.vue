@@ -161,7 +161,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-24">
+  <div class="page-container min-h-screen bg-[#FCF4E5] text-gray-800 antialiased font-fredoka pb-24">
     
     <!-- 導覽返回欄 -->
     <div class="mx-auto max-w-7xl w-[90%] px-4 pt-8">
@@ -229,11 +229,11 @@ onMounted(() => {
               <div class="absolute top-6 left-6 flex flex-col gap-2">
                 <span
                   v-if="pet.isHighMaintenance"
-                  class="rounded-full border-2 border-[#445944] bg-red-500 px-4 py-1.5 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+                  class="rounded-full  bg-red-500 px-4 py-1.5 text-xs font-black text-white ">
                   ⚠️ 特別關注
                 </span>
                 <span
-                  class="rounded-full border-2 border-[#445944] bg-emerald-500 px-4 py-1.5 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+                  class="rounded-full  bg-emerald-500 px-4 py-1.5 text-xs font-black text-white ">
                   🐾 開放領養中
                 </span>
               </div>

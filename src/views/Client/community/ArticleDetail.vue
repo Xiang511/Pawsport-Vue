@@ -85,7 +85,7 @@ onMounted(async () => {
 
 <template>
   <!-- 外層對齊暖沙背景與 Fredoka 字型 -->
-  <div class="font-fredoka min-h-screen bg-[#FDF9F3] pt-6 pb-12 text-slate-800 antialiased">
+  <div class="font-fredoka min-h-screen bg-[#FCF4E5] pt-6 pb-12 text-slate-800 antialiased">
     <!-- 讀取狀態 -->
     <div v-if="isLoading" class="animate-pulse py-24 text-center text-lg font-black text-[#445944]">
       <div
@@ -265,13 +265,13 @@ onMounted(async () => {
                     </span>
                   </div>
 
-                  <div class="flex items-center justify-between w-max">
+                  <div class="flex items-center justify-between ">
                     <span class="flex items-center gap-1.5 text-[#445944]/75">
                       <Calendar class="h-4 w-4" />
                       發表日期
                     </span>
                     <span class="font-mono text-xs text-slate-700">
-                      {{ articleDetail.createAt ? new Date(articleDetail.createAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) : '' }}
+                      {{ formatLocalDate(articleDetail.createAt) }}
                     </span>
                   </div>
                 </div>
