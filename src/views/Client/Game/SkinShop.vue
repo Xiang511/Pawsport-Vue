@@ -204,6 +204,7 @@ const confirmBuySkin = async () => {
       if (previewSkin.value.id === pendingSkin.value.id) {
         previewSkin.value.isOwned = true
       }
+      await equipSkin(pendingSkin.value.id)
 
       closeModal()
       playSFX('success')
