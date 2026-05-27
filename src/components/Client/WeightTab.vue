@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import apexchart from 'vue3-apexcharts'
 
 const emit = defineEmits(['add-weight'])
@@ -82,6 +82,28 @@ const series = ref([
     data: props.records.map((r) => r.weight),
   },
 ])
+
+// 監聽體重紀錄變化，動態更新圖表資料與 X 軸時間分類
+watch(
+  () => props.records,
+  (newRecords) => {
+    const recordsArray = newRecords || []
+    series.value = [
+      {
+        name: '體重',
+        data: recordsArray.map((r) => r.weight),
+      },
+    ]
+    chartOptions.value = {
+      ...chartOptions.value,
+      xaxis: {
+        ...chartOptions.value.xaxis,
+        categories: recordsArray.map((r) => r.date),
+      },
+    }
+  },
+  { immediate: true, deep: true },
+)
 </script>
 
 <template>

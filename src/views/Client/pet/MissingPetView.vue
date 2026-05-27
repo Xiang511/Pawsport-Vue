@@ -97,12 +97,23 @@ const onCityChange = () => {
 // 3. 搜尋方法 (前端過濾)
 const filteredPets = computed(() => {
   return lostPets.value.filter((pet) => {
-    // 雖然 API 中沒有明確的 Species，但我們可以在後端或前端簡單過濾 (假設目前 DTO 有或是預設)
-    // 這裡主要針對前端提供的條件過濾
+    // 類別篩選
+    if (filters.type && filters.type !== '不限') {
+      if (filters.type === '其他') {
+        if (pet.species === '狗' || pet.species === '貓') return false
+      } else {
+        if (pet.species !== filters.type) return false
+      }
+    }
+
+    // 性別篩選
     if (filters.gender && filters.gender !== '不限' && pet.gender !== filters.gender) return false
+
+    // 地區篩選
     if (filters.city && pet.city !== filters.city) return false
     if (filters.district && pet.district !== filters.district) return false
 
+    // 關鍵字篩選
     if (filters.keyword) {
       const kw = filters.keyword.toLowerCase()
       const matchFeature = pet.feature?.toLowerCase().includes(kw)
@@ -190,9 +201,9 @@ const handleSearch = () => {
           <!-- Animal Type Filter -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">動物類別</label>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button
-                v-for="t in ['狗', '貓', '其他']"
+                v-for="t in ['不限', '狗', '貓', '其他']"
                 :key="t"
                 @click="filters.type = t"
                 :class="
@@ -200,7 +211,7 @@ const handleSearch = () => {
                     ? 'border-[#445944] bg-[#445944] text-white'
                     : 'border-[#445944] bg-[#FCF4E5] text-[#445944] hover:bg-white'
                 "
-                class="rounded-2xl border-2 px-6 py-2 text-sm font-black transition duration-200">
+                class="rounded-2xl border-2 px-4 py-2 text-sm font-black transition duration-200">
                 {{ t }}
               </button>
             </div>
@@ -380,7 +391,7 @@ const handleSearch = () => {
 
       <!-- Empty State -->
       <div
-        v-if="filteredPets.length === 0"
+        v-if="filteredPets.length === 0 && !loading"
         class="mx-auto max-w-md rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 py-16 text-center shadow-[6px_6px_0px_#445944]">
         <span class="mb-4 block text-5xl">😿</span>
         <h3 class="mb-2 text-xl font-black text-[#445944]">找不到符合條件的遺失毛孩</h3>

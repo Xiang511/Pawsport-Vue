@@ -54,9 +54,9 @@ const deletePet = async (id) => {
   if (!confirm('確定要刪除嗎?')) return
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/Pet/${id}`)
+    const response = await axios.patch(`https://localhost:7048/api/Pet/${id}`)
     // 你的後端回傳 NoContent (204)，Axios 會判定為成功
-    if (response.status === 204 || response.data.status === 200) {
+    if (response.status === 204 || response.data?.success === true || response.data?.status === 200) {
       alert('刪除成功')
       fetchPets() // 刷新列表
     }

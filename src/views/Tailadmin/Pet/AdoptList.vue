@@ -50,7 +50,7 @@ const deleteRecord = async (id) => {
   if (!confirm('確定要刪除這筆領養紀錄嗎?')) return
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/AdoptionRecord/${id}`)
+    const response = await axios.patch(`https://localhost:7048/api/AdoptionRecord/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchRecords() // 刷新列表
