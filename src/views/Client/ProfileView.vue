@@ -413,6 +413,7 @@ const avatarInitials = computed(() => {
             <div class="avatar-wrapper relative shrink-0">
               <div
                 class="avatar-ring flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border-4 border-black bg-[#445944] shadow-[4px_4px_0px_#000]">
+                class="avatar-ring flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border-4 border-black bg-[#445944] shadow-[4px_4px_0px_#000]">
                 <img
                   v-if="user.avatar"
                   :src="user.avatar"
@@ -422,6 +423,7 @@ const avatarInitials = computed(() => {
               </div>
               <button
                 class="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-black bg-[#FAE4AE] shadow-[2px_2px_0px_#000] transition-all hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]"
+                class="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-black bg-[#FAE4AE] shadow-[2px_2px_0px_#000] transition-all hover:bg-[#f2d44d] hover:shadow-[1px_1px_0px_#000]"
                 title="更換頭像">
                 <Camera :size="14" />
               </button>
@@ -429,6 +431,7 @@ const avatarInitials = computed(() => {
 
             <!-- User details -->
             <div class="flex-1">
+              <div class="mb-1 flex flex-wrap items-center gap-3">
               <div class="mb-1 flex flex-wrap items-center gap-3">
                 <h1 class="font-fredoka text-3xl font-black text-[#445944]">
                   {{ user.name || '匿名使用者' }}
@@ -467,6 +470,7 @@ const avatarInitials = computed(() => {
             <button
               @click="startEdit"
               class="flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-white px-5 py-2.5 text-sm font-bold text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#FAE4AE] hover:shadow-[1px_1px_0px_#445944]">
+              class="flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-white px-5 py-2.5 text-sm font-bold text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#FAE4AE] hover:shadow-[1px_1px_0px_#445944]">
               <Edit3 :size="16" />
               編輯資料
             </button>
@@ -483,7 +487,11 @@ const avatarInitials = computed(() => {
         <div
           class="mt-6 grid grid-cols-3 divide-x-2 divide-[#445944] rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[4px_4px_0px_#445944] sm:grid-cols-3">
           <div class="flex flex-col items-center px-2 py-4">
+        <div
+          class="mt-6 grid grid-cols-3 divide-x-2 divide-[#445944] rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[4px_4px_0px_#445944] sm:grid-cols-3">
+          <div class="flex flex-col items-center px-2 py-4">
             <span class="font-fredoka text-2xl font-black text-[#445944]">{{ myPets.length }}</span>
+            <span class="mt-0.5 text-xs text-gray-500">我的毛孩</span>
             <span class="mt-0.5 text-xs text-gray-500">我的毛孩</span>
           </div>
           <div class="flex flex-col items-center px-2 py-4">
@@ -491,7 +499,17 @@ const avatarInitials = computed(() => {
               {{ gameStats.points.toLocaleString() }}
             </span>
             <span class="mt-0.5 text-xs text-gray-500">毛幣點數</span>
+          <div class="flex flex-col items-center px-2 py-4">
+            <span class="font-fredoka text-2xl font-black text-[#A07A3C]">
+              {{ gameStats.points.toLocaleString() }}
+            </span>
+            <span class="mt-0.5 text-xs text-gray-500">毛幣點數</span>
           </div>
+          <div class="flex flex-col items-center px-2 py-4">
+            <span class="font-fredoka text-2xl font-black text-[#7a6856]">
+              {{ myPosts.length }}
+            </span>
+            <span class="mt-0.5 text-xs text-gray-500">我的文章</span>
           <div class="flex flex-col items-center px-2 py-4">
             <span class="font-fredoka text-2xl font-black text-[#7a6856]">
               {{ myPosts.length }}
@@ -508,6 +526,8 @@ const avatarInitials = computed(() => {
         <!-- ── LEFT COLUMN (2/3) ──────────────────────────────── -->
         <div class="space-y-8 lg:col-span-2">
           <!-- TAB NAV -->
+          <div
+            class="flex gap-2 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-1.5 shadow-[3px_3px_0px_#445944]">
           <div
             class="flex gap-2 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-1.5 shadow-[3px_3px_0px_#445944]">
             <button
@@ -666,11 +686,18 @@ const avatarInitials = computed(() => {
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
               <div
                 class="game-stat-card rounded-3xl border-4 border-[#A07A3C] bg-[#FAE4AE] p-5 text-center shadow-[5px_5px_0px_#A07A3C] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#A07A3C]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#A07A3C] bg-[#FAE4AE] p-5 text-center shadow-[5px_5px_0px_#A07A3C] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#A07A3C]">
                 <div class="mb-2 flex justify-center">
+                  <div
+                    class="shadow-[2px_2px_0px_#A07A3C rounded-2xl border-2 border-[#A07A3C] bg-white p-2.5">
                   <div
                     class="shadow-[2px_2px_0px_#A07A3C rounded-2xl border-2 border-[#A07A3C] bg-white p-2.5">
                     <Zap :size="24" class="text-[#A07A3C]" />
                   </div>
+                </div>
+                <div class="font-fredoka text-3xl font-black text-[#A07A3C]">
+                  {{ gameStats.points.toLocaleString() }}
                 </div>
                 <div class="font-fredoka text-3xl font-black text-[#A07A3C]">
                   {{ gameStats.points.toLocaleString() }}
@@ -680,11 +707,18 @@ const avatarInitials = computed(() => {
 
               <div
                 class="game-stat-card rounded-3xl border-4 border-[#9C6D6D] bg-[#9C6D6D]/15 p-5 text-center shadow-[5px_5px_0px_#9C6D6D] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#9C6D6D]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#9C6D6D] bg-[#9C6D6D]/15 p-5 text-center shadow-[5px_5px_0px_#9C6D6D] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#9C6D6D]">
                 <div class="mb-2 flex justify-center">
+                  <div
+                    class="rounded-2xl border-2 border-[#9C6D6D] bg-white p-2.5 shadow-[2px_2px_0px_#9C6D6D]">
                   <div
                     class="rounded-2xl border-2 border-[#9C6D6D] bg-white p-2.5 shadow-[2px_2px_0px_#9C6D6D]">
                     <Trophy :size="24" class="text-[#9C6D6D]" />
                   </div>
+                </div>
+                <div class="font-fredoka text-3xl font-black text-[#9C6D6D]">
+                  {{ gameStats.level || 0 }}
                 </div>
                 <div class="font-fredoka text-3xl font-black text-[#9C6D6D]">
                   {{ gameStats.level || 0 }}
@@ -694,11 +728,18 @@ const avatarInitials = computed(() => {
 
               <div
                 class="game-stat-card rounded-3xl border-4 border-[#5B7FA0] bg-[#D0E2F3] p-5 text-center shadow-[5px_5px_0px_#5B7FA0] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#5B7FA0]">
+              <div
+                class="game-stat-card rounded-3xl border-4 border-[#5B7FA0] bg-[#D0E2F3] p-5 text-center shadow-[5px_5px_0px_#5B7FA0] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_#5B7FA0]">
                 <div class="mb-2 flex justify-center">
+                  <div
+                    class="rounded-2xl border-2 border-[#5B7FA0] bg-white p-2.5 shadow-[2px_2px_0px_#5B7FA0]">
                   <div
                     class="rounded-2xl border-2 border-[#5B7FA0] bg-white p-2.5 shadow-[2px_2px_0px_#5B7FA0]">
                     <ShoppingBag :size="24" class="text-[#5B7FA0]" />
                   </div>
+                </div>
+                <div class="font-fredoka text-3xl font-black text-[#5B7FA0]">
+                  {{ gameStats.skins }}
                 </div>
                 <div class="font-fredoka text-3xl font-black text-[#5B7FA0]">
                   {{ gameStats.skins }}
@@ -712,10 +753,16 @@ const avatarInitials = computed(() => {
               class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[5px_5px_0px_#445944]">
               <h3
                 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[5px_5px_0px_#445944]">
+              <h3
+                class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
                 <Award :size="20" />
                 遊戲進度
               </h3>
               <div class="space-y-3">
+                <div
+                  class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
                 <div
                   class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
                   <span class="text-sm font-bold text-gray-600">目前進度</span>
@@ -723,10 +770,19 @@ const avatarInitials = computed(() => {
                     class="rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-sm font-black text-[#7A5A20] shadow-[2px_2px_0px_#445944]">
                     {{ gameStats.progress }}
                   </span>
+                  <span
+                    class="rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-sm font-black text-[#7A5A20] shadow-[2px_2px_0px_#445944]">
+                    {{ gameStats.progress }}
+                  </span>
                 </div>
                 <div
                   class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
+                <div
+                  class="flex items-center justify-between rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] px-4 py-3">
                   <span class="text-sm font-bold text-gray-600">最後遊玩</span>
+                  <span class="text-sm font-bold text-[#445944]">
+                    {{ formatDate(gameStats.lastPlayed) }}
+                  </span>
                   <span class="text-sm font-bold text-[#445944]">
                     {{ formatDate(gameStats.lastPlayed) }}
                   </span>
@@ -748,6 +804,7 @@ const avatarInitials = computed(() => {
               <h2 class="font-fredoka text-2xl font-black text-[#445944]">我的文章</h2>
               <router-link
                 to="/create-article"
+                class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
                 class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-4 py-2 text-sm font-bold text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]">
                 <Plus :size="15" />
                 寫文章
@@ -850,6 +907,9 @@ const avatarInitials = computed(() => {
           <div
             class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
             <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
               <Zap :size="18" />
               快速導覽
             </h3>
@@ -864,11 +924,17 @@ const avatarInitials = computed(() => {
                 <span class="text-[11px] leading-tight font-bold" :style="{ color: link.color }">
                   {{ link.label }}
                 </span>
+                <span class="text-[11px] leading-tight font-bold" :style="{ color: link.color }">
+                  {{ link.label }}
+                </span>
               </router-link>
             </div>
           </div>
 
           <!-- Community Stats -->
+          <div
+            class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#7a6856]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
           <div
             class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#7a6856]">
             <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
@@ -878,6 +944,8 @@ const avatarInitials = computed(() => {
             <div class="space-y-3">
               <div
                 class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
                   <FileText :size="15" class="text-[#7a6856]" />
                   發表文章
@@ -885,7 +953,12 @@ const avatarInitials = computed(() => {
                 <span class="font-fredoka text-xl font-black text-[#7a6856]">
                   {{ myPosts.length }}
                 </span>
+                <span class="font-fredoka text-xl font-black text-[#7a6856]">
+                  {{ myPosts.length }}
+                </span>
               </div>
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
               <div
                 class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
@@ -896,6 +969,8 @@ const avatarInitials = computed(() => {
                   {{ myPosts.filter((p) => p.status === 1).length }}
                 </span>
               </div>
+              <div
+                class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
               <div
                 class="flex items-center justify-between rounded-xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3">
                 <span class="flex items-center gap-2 text-sm font-bold text-[#7a6856]">
@@ -912,10 +987,15 @@ const avatarInitials = computed(() => {
               class="mt-4 flex items-center justify-center gap-1 text-sm font-bold text-[#7a6856] hover:underline">
               前往社群
               <ChevronRight :size="14" />
+              前往社群
+              <ChevronRight :size="14" />
             </router-link>
           </div>
 
           <!-- Support & Contact -->
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
           <div
             class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[5px_5px_0px_#445944]">
             <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#445944]">
@@ -930,12 +1010,18 @@ const avatarInitials = computed(() => {
                 class="group flex items-center gap-3 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#445944]/30 hover:shadow-[2px_2px_0px_#445944]">
                 <div
                   class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[2px_2px_0px_#445944] transition-all group-hover:shadow-none">
+                <div
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] shadow-[2px_2px_0px_#445944] transition-all group-hover:shadow-none">
                   <component :is="link.icon" :size="16" class="text-[#445944]" />
                 </div>
+                <div class="min-w-0 flex-1">
                 <div class="min-w-0 flex-1">
                   <div class="text-sm font-bold text-[#445944]">{{ link.label }}</div>
                   <div class="truncate text-xs text-[#445944]">{{ link.desc }}</div>
                 </div>
+                <ChevronRight
+                  :size="14"
+                  class="shrink-0 text-gray-400 transition-transform group-hover:translate-x-1" />
                 <ChevronRight
                   :size="14"
                   class="shrink-0 text-gray-400 transition-transform group-hover:translate-x-1" />
@@ -944,6 +1030,9 @@ const avatarInitials = computed(() => {
           </div>
 
           <!-- Account Settings -->
+          <div
+            class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#7a6856]">
+            <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
           <div
             class="rounded-3xl border-4 border-[#7a6856] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#7a6856]">
             <h3 class="font-fredoka mb-4 flex items-center gap-2 text-lg font-black text-[#7a6856]">
@@ -959,11 +1048,17 @@ const avatarInitials = computed(() => {
                 <ChevronRight
                   :size="14"
                   class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
+                <ChevronRight
+                  :size="14"
+                  class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 class="group flex w-full items-center gap-3 rounded-2xl border-2 border-[#7a6856] bg-[#FCF4E5] px-4 py-3 text-left transition-all hover:bg-[#7a6856]/30">
                 <Bell :size="15" class="text-[#7a6856]" />
                 <span class="text-sm font-bold text-[#7a6856]">通知設定</span>
+                <ChevronRight
+                  :size="14"
+                  class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />
                 <ChevronRight
                   :size="14"
                   class="ml-auto text-[#7a6856] transition-transform group-hover:translate-x-1" />

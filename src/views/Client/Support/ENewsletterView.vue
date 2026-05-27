@@ -87,6 +87,7 @@ const formatDate = (dateString) => {
         <div class="font-extrabold tracking-wide">正在為您遞送最新毛孩情報... 🐾</div>
       </div>
 
+      <!-- Newsletter Grid -->
       <div v-else class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
         <article
           v-for="enews in filteredEnews"
@@ -102,6 +103,7 @@ const formatDate = (dateString) => {
             </template>
             <template v-else>
               <ImageIcon class="h-12 w-12 text-[#7a6856]/40" />
+              <ImageIcon class="h-12 w-12 text-[#7a6856]/40" />
             </template>
 
             <span
@@ -110,6 +112,7 @@ const formatDate = (dateString) => {
             </span>
           </div>
 
+          <div class="flex flex-grow flex-col p-6 lg:p-7">
           <div class="flex flex-grow flex-col p-6 lg:p-7">
             <h2
               class="mb-3 line-clamp-2 text-xl font-black text-[#445944] transition-colors group-hover:text-[#7a6856]">
@@ -138,8 +141,11 @@ const formatDate = (dateString) => {
         </article>
       </div>
 
+      <!-- Empty State -->
       <div
         v-if="!isLoading && filteredEnews.length === 0"
+        class="mx-auto max-w-md rounded-2xl border-4 border-dashed border-[#7a6856]/40 bg-[#FCF4E5] py-12 text-center text-lg font-bold text-[#7a6856]">
+        這個分類目前還沒有電子報喔！ 🐾
         class="mx-auto max-w-md rounded-2xl border-4 border-dashed border-[#7a6856]/40 bg-[#FCF4E5] py-12 text-center text-lg font-bold text-[#7a6856]">
         這個分類目前還沒有電子報喔！ 🐾
       </div>

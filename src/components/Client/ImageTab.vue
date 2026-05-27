@@ -8,6 +8,12 @@ defineProps({
 })
 
 const emit = defineEmits(['add-image'])
+
+const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
+
+const handleImageError = (e) => {
+  e.target.src = DEFAULT_PET_IMAGE
+}
 </script>
 
 <template>
@@ -22,9 +28,9 @@ const emit = defineEmits(['add-image'])
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div v-for="record in passportRecords.filter(r => r.photo)" :key="record.passportId" class="group relative">
+      <div v-for="(record, index) in passportRecords.filter(r => r.photo)" :key="record.passportId || record.id || index" class="group relative">
         <div class="aspect-square overflow-hidden rounded-2xl border border-gray-100 bg-gray-200">
-          <img :src="record.photo" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+          <img :src="record.photo || DEFAULT_PET_IMAGE" @error="handleImageError" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
         </div>
         <div class="mt-2">
           <p class="text-xs font-bold text-gray-800">{{ record.recordDate }}</p>

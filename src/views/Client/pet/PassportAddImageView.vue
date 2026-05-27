@@ -2,7 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import request from '@/api/axios'
-import { Undo2, Upload, X } from 'lucide-vue-next'
+import { Undo2, Upload, X, Sparkles } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -75,69 +75,117 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-[#F7F3F1] px-6 py-4">
-    <!-- 頁面標題 -->
-    <div class="relative mb-8 flex items-center justify-center">
-      <h1 class="text-xl font-bold text-gray-700">上傳毛孩影像</h1>
-      <button @click="router.back()" class="absolute right-0 text-gray-400 hover:text-gray-600">
-        <Undo2 class="h-6 w-6" />
-      </button>
-    </div>
-
-    <div class="mx-auto max-w-xl space-y-6">
-
-      <!-- 圖片上傳區 -->
-      <div>
-        <label class="mb-2 block font-bold text-[#9C6D6D]">
-          選擇照片 <span class="text-red-500">*</span>
-        </label>
-
-        <!-- 預覽區域 -->
-        <div v-if="previewUrl" class="relative mb-4">
-          <img
-            :src="previewUrl"
-            class="h-64 w-full rounded-2xl object-cover shadow-md" />
+  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka px-4 py-8">
+    <div class="mx-auto max-w-xl mt-6">
+      
+      <!-- MAIN CONTAINER CARD -->
+      <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
+        
+        <!-- HEADER ROW -->
+        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
           <button
-            @click="removeImage"
-            class="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-600 shadow hover:bg-white">
-            <X class="h-4 w-4" />
+            @click="router.back()"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            <Undo2 class="h-5 w-5" />
           </button>
+          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
+            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+            上傳毛孩影像
+          </h1>
+          <div class="w-10"></div>
         </div>
 
-        <!-- 上傳按鈕（未選圖時顯示） -->
-        <label
-          v-else
-          class="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#9C6D6D]/40 bg-white transition hover:border-[#9C6D6D] hover:bg-[#F7F3F1]">
-          <Upload class="mb-3 h-10 w-10 text-[#9C6D6D]/60" />
-          <span class="text-sm font-medium text-gray-500">點擊選擇圖片</span>
-          <span class="mt-1 text-xs text-gray-400">支援 JPG、PNG、WEBP</span>
-          <input
-            type="file"
-            accept="image/*"
-            @change="onFileChange"
-            class="hidden" />
-        </label>
-      </div>
+        <!-- FORM BODY -->
+        <div class="space-y-6">
 
-      <!-- 備註描述 -->
-      <div>
-        <label class="mb-2 block font-bold text-gray-500">備註描述（選填）</label>
-        <textarea
-          v-model="form.photoNote"
-          placeholder="例：第一次帶麻糬去看診的照片..."
-          rows="4"
-          class="w-full resize-none rounded-2xl border-none bg-white p-4 shadow-sm outline-none focus:ring-2 focus:ring-[#9C6D6D]" />
-      </div>
+          <!-- 圖片上傳區 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-[#445944]">
+              選擇照片 <span class="text-red-500">*</span>
+            </label>
 
-      <!-- 提交按鈕 -->
-      <div class="pb-12 pt-4">
-        <button
-          @click="submitForm"
-          :disabled="submitting || !previewUrl"
-          class="w-full rounded-full bg-[#B59891] py-3 text-lg font-bold text-white shadow-lg transition hover:bg-[#9C6D6D] disabled:cursor-not-allowed disabled:opacity-50">
-          {{ submitting ? '上傳中...' : '完成上傳' }}
-        </button>
+            <!-- 預覽區域 -->
+            <div v-if="previewUrl" class="relative border-4 border-[#445944] rounded-2xl overflow-hidden shadow-[4px_4px_0px_#445944]">
+              <img
+                :src="previewUrl"
+                class="h-64 w-full object-cover" />
+              <button
+                @click="removeImage"
+                class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-500 text-white font-black hover:bg-red-600 shadow-md">
+                ✕
+              </button>
+            </div>
+
+            <!-- 上傳按鈕（未選圖時顯示） -->
+            <label
+              v-else
+              class="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] hover:bg-white transition-all shadow-[4px_4px_0px_#445944]">
+              <Upload class="mb-2 h-10 w-10 text-[#445944] animate-bounce-slow" />
+              <span class="text-sm font-black text-[#445944]">點擊選擇圖片</span>
+              <span class="mt-1 text-xs font-bold text-gray-400">支援 JPG、PNG、WEBP</span>
+              <input
+                type="file"
+                accept="image/*"
+                @change="onFileChange"
+                class="hidden" />
+            </label>
+          </div>
+
+          <!-- 備註描述 -->
+          <div>
+            <label class="mb-2 block text-sm font-black text-[#445944]">備註描述 (選填)</label>
+            <textarea
+              v-model="form.photoNote"
+              placeholder="例：第一次帶麻糬去看診的照片..."
+              rows="4"
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+          </div>
+
+          <!-- 提交按鈕 -->
+          <div class="pt-4">
+            <button
+              @click="submitForm"
+              :disabled="submitting || !previewUrl"
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] disabled:cursor-not-allowed disabled:opacity-50">
+              {{ submitting ? '上傳中...' : '完成上傳' }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+</style>

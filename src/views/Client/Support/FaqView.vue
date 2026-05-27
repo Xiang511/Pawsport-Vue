@@ -106,9 +106,11 @@ const toggleFaq = (id) => {
         </div>
       </div>
 
+      <!-- Search Bar -->
       <div
         class="relative mx-auto mt-8 mb-12 max-w-2xl rounded-2xl border-4 border-[#7a6856] bg-white shadow-[4px_4px_0px_#7a6856] transition-all hover:shadow-[6px_6px_0px_#7a6856]">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
+          <Search class="h-5 w-5 text-[#7a6856]" />
           <Search class="h-5 w-5 text-[#7a6856]" />
         </div>
         <input
@@ -130,10 +132,12 @@ const toggleFaq = (id) => {
         <div class="font-extrabold tracking-wide">正在為您尋找解答中... 🐾</div>
       </div>
 
+      <!-- FAQ Accordion List -->
       <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
         <div
           v-for="faq in filteredFaqs"
           :key="faq.faqid"
+          class="h-fit overflow-hidden rounded-2xl border-4 border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-all duration-300 hover:shadow-[6px_6px_0px_#445944]">
           class="h-fit overflow-hidden rounded-2xl border-4 border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-all duration-300 hover:shadow-[6px_6px_0px_#445944]">
           <button
             @click="toggleFaq(faq.faqid)"
@@ -176,8 +180,11 @@ const toggleFaq = (id) => {
         </div>
       </div>
 
+      <!-- Empty Search List State -->
       <div
         v-if="!isLoading && filteredFaqs.length === 0"
+        class="mx-auto max-w-md rounded-2xl border-4 border-dashed border-[#7a6856]/40 bg-[#FCF4E5] py-12 text-center text-lg font-bold text-[#7a6856]">
+        找不到與「{{ searchQuery }}」相關的問題喔！ 🐾
         class="mx-auto max-w-md rounded-2xl border-4 border-dashed border-[#7a6856]/40 bg-[#FCF4E5] py-12 text-center text-lg font-bold text-[#7a6856]">
         找不到與「{{ searchQuery }}」相關的問題喔！ 🐾
       </div>

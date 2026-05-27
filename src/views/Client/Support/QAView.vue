@@ -64,11 +64,14 @@ const submitForm = async () => {
       <SupportHeader />
 
       <div class="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12">
+        <!-- Question Submission Form -->
         <div class="order-2 lg:order-1 lg:col-span-3">
           <div
             class="rounded-3xl border-4 border-[#445944] bg-white p-8 shadow-[8px_8px_0px_#445944] transition-all duration-300 hover:shadow-[10px_10px_0px_#445944] sm:p-10">
+            class="rounded-3xl border-4 border-[#445944] bg-white p-8 shadow-[8px_8px_0px_#445944] transition-all duration-300 hover:shadow-[10px_10px_0px_#445944] sm:p-10">
             <form @submit.prevent="submitForm" class="space-y-7">
               <div>
+                <label class="mb-3 block text-base font-black text-[#7a6856]">
                 <label class="mb-3 block text-base font-black text-[#7a6856]">
                   您想詢問的類型：
                   <span class="text-red-400">*</span>
@@ -86,6 +89,7 @@ const submitForm = async () => {
 
               <div>
                 <label class="mb-3 block text-base font-black text-[#7a6856]">
+                <label class="mb-3 block text-base font-black text-[#7a6856]">
                   詢問主旨：
                   <span class="text-red-400">*</span>
                 </label>
@@ -97,6 +101,7 @@ const submitForm = async () => {
               </div>
 
               <div>
+                <label class="mb-3 block text-base font-black text-[#7a6856]">
                 <label class="mb-3 block text-base font-black text-[#7a6856]">
                   詳細狀況描述：
                   <span class="text-red-400">*</span>
@@ -113,6 +118,7 @@ const submitForm = async () => {
                   type="submit"
                   :disabled="isSubmitting"
                   class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-10 py-3.5 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_#445944] active:translate-y-[3px] active:shadow-[1px_1px_0px_#445944] disabled:opacity-50 sm:w-auto">
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-10 py-3.5 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_#445944] active:translate-y-[3px] active:shadow-[1px_1px_0px_#445944] disabled:opacity-50 sm:w-auto">
                   <Send v-if="!isSubmitting" class="h-5 w-5" />
                   {{ isSubmitting ? '正在發送中...' : '送出問題' }}
                 </button>
@@ -121,8 +127,10 @@ const submitForm = async () => {
           </div>
         </div>
 
+        <!-- LINE Connect Sidebar -->
         <div class="order-1 lg:order-2 lg:col-span-2">
           <div
+            class="flex flex-col items-center justify-center rounded-3xl border-4 border-[#7a6856] bg-white p-8 text-center shadow-[6px_6px_0px_#7a6856] transition-all duration-300 hover:shadow-[8px_8px_0px_#7a6856] sm:p-10">
             class="flex flex-col items-center justify-center rounded-3xl border-4 border-[#7a6856] bg-white p-8 text-center shadow-[6px_6px_0px_#7a6856] transition-all duration-300 hover:shadow-[8px_8px_0px_#7a6856] sm:p-10">
             <div
               class="mb-4 flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#FCF4E5] shadow-inner">
@@ -135,6 +143,7 @@ const submitForm = async () => {
               智慧客服與專員將線上即時為您處理！
             </p>
             <div
+              class="mb-6 hidden aspect-square w-44 shrink-0 items-center justify-center rounded-2xl border-4 border-dashed border-[#7a6856] bg-[#FCF4E5]/50 p-3 lg:flex">
               class="mb-6 hidden aspect-square w-44 shrink-0 items-center justify-center rounded-2xl border-4 border-dashed border-[#7a6856] bg-[#FCF4E5]/50 p-3 lg:flex">
               <img
                 src="/images/support/M_Petmily_LineQRcode.png"

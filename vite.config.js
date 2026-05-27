@@ -28,6 +28,11 @@ export default defineConfig({
         //   })
         // },
       },
+      '/Images': {
+        target: 'https://localhost:7048',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   resolve: {
