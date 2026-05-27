@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { Sparkles } from 'lucide-vue-next'
 
 import request from '@/api/axios'
 import { useAuthStore } from '@/stores/auth'
@@ -91,7 +92,6 @@ const handleLoadDraft = async (id) => {
 const handleDeleteDraft = async (id) => {
   try {
     const result = await deleteDraft(id)
-    // 💡 8. 換掉 alert
     toastRef.value?.trigger(result.message || '草稿刪除成功')
   } catch (error) {
     toastRef.value?.trigger('刪除草稿失敗')
@@ -123,31 +123,93 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#f9f6f4] pt-6">
-    <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-6xl px-4">
-      <!-- 左右分邊容器，flex -->
-
-      <div class="container mx-auto p-4">
-        <div v-if="isCategoryLoading" class="py-10 text-center text-gray-500">
-          <span>正在載入分類資料...</span>
-        </div>
-        <!-- 編輯器元件 -->
-        <ArticleEditor
-          ref="articleEditorRef"
-          :categories="categoriesData"
-          :drafts="draftsData"
-          @publish="handlePublish"
-          @save-draft="handleSaveDraft"
-          @reset-id="handleResetArticleId"
-          @load-draft="handleLoadDraft"
-          @delete-draft="handleDeleteDraft" />
+  <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
+  <div class="min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka">
+    
+    <!-- HERO BANNER SECTION -->
+    <section class="relative overflow-hidden bg-[#FDF9F3] px-6 pt-12 pb-8 border-b-4 border-[#445944]">
+      <!-- Floating Background Ornaments -->
+      <div class="absolute top-8 left-10 pointer-events-none opacity-20 animate-float">
+        <span class="text-4xl">✏️</span>
       </div>
+      <div class="absolute bottom-8 right-20 pointer-events-none opacity-20 animate-float delay-2s">
+        <span class="text-4xl">🐾</span>
+      </div>
+
+      <div class="mx-auto max-w-3xl">
+        <div class="text-center md:text-left">
+          <div class="inline-flex items-center gap-1.5 rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1 text-xs font-black text-[#445944] uppercase tracking-wider mb-3 shadow-[2px_2px_0px_#445944]">
+            <Sparkles :size="12" class="text-amber-500 animate-spin-slow" />
+            PETMILY EDITOR
+          </div>
+          <h1 class="text-3xl font-black tracking-tight text-[#445944] md:text-4xl">
+            撰寫社群貼文
+          </h1>
+          <p class="max-w-md text-sm font-bold text-gray-500 mt-2">
+            與大家分享您與毛孩的有趣生活、實用知識或是疑難雜症吧！
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 內容區：最大1280px -->
+    <div class="container mx-auto w-full max-w-3xl px-4 py-8">
+      <div v-if="isCategoryLoading" class="py-16 text-center font-black text-[#445944] text-lg animate-pulse">
+        ⏳ 正在載入分類資料...
+      </div>
+      
+      <!-- 編輯器元件 -->
+      <ArticleEditor
+        v-if="!isCategoryLoading"
+        ref="articleEditorRef"
+        :categories="categoriesData"
+        :drafts="draftsData"
+        @publish="handlePublish"
+        @save-draft="handleSaveDraft"
+        @reset-id="handleResetArticleId"
+        @load-draft="handleLoadDraft"
+        @delete-draft="handleDeleteDraft" />
     </div>
+
     <Article_ToastAlert ref="toastRef" />
     <ScrollToTopButton />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.delay-2s {
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+</style>

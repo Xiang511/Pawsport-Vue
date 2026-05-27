@@ -442,7 +442,23 @@ const goBack = () => {
 
   padding: 24px;
   box-sizing: border-box;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
+
+.shop-page-container button,
+.shop-page-container .item-card,
+.shop-page-container .close-btn,
+.shop-page-container .equip-btn,
+.shop-page-container .tab-item {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+}
+
+.spinner-large,
+.spinner-small,
+.loading-overlay {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+}
+
 
 .shop-header {
   display: flex;
@@ -871,6 +887,7 @@ const goBack = () => {
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .product-card:hover {
@@ -942,8 +959,14 @@ const goBack = () => {
   position: relative;
   overflow: hidden;
   margin-bottom: 8px;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
-
+.product-img-box:active {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+}
+.product-img-box * {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+}
 .product-real-img {
   width: 85%;
   height: 85%;

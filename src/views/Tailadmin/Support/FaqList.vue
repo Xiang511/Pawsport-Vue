@@ -398,8 +398,8 @@ const formatDate = (dateStr) => {
     v-if="showEditModal"
     class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900 px-4 py-6">
     <div
-      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
-      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      class="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
+      <div class="sticky top-0 bg-white z-1 flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">修改項目</h3>
           <p class="mt-2 text-sm text-gray-500">

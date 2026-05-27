@@ -444,8 +444,18 @@ const startClose = (type) => {
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
+.modal-overlay button,
+.modal-overlay .close-btn,
+.modal-overlay .save-btn,
+.modal-overlay .nav-item {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+}
+.modal-overlay:active {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+}
 /* 玩家檔案主體：圓角與背景 */
 .profile-card {
   --animate-duration: 0.8s;
@@ -458,7 +468,7 @@ const startClose = (type) => {
   position: relative;
   color: #453a27;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
-  
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
 /* 半透明線條裝飾層 */
@@ -714,6 +724,7 @@ const startClose = (type) => {
   background-color: #fff;
   color: #453a27;
   transition: all 0.3s ease;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
 .name-input:focus {

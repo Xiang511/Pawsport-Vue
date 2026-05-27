@@ -349,7 +349,7 @@ const playModalAnimations = () => {
   font-weight: 900;
   border: 4px solid #453a27;
   border-radius: 16px;
-  cursor: pointer;
+cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
   display: flex;
   align-items: center;
   gap: 8px;

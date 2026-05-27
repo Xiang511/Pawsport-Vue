@@ -51,29 +51,28 @@ const handleTagClick = (tag, e) => {
 
 <template>
   <article
-    class="group relative cursor-pointer border-b border-[#e8e4de] bg-white px-4 py-3 transition-colors duration-200 hover:bg-[#faf9f7]"
+    class="group relative cursor-pointer border-4 border-[#445944] bg-white p-5 rounded-3xl shadow-[5px_5px_0px_#445944] transition-all duration-300 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_#445944]"
     @click="handleCardClick">
-    <!-- Hover 左側裝飾線 -->
-    <div
-      class="pointer-events-none absolute inset-y-0 left-0 w-1 bg-transparent transition-colors duration-200 group-hover:bg-[#d4a373]"></div>
 
-    <div class="flex items-center gap-5">
-      <!-- 區塊 A：分類 / 收藏數 -->
-      <aside class="hidden w-20 shrink-0 border-r border-stone-100 text-center md:block">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+      
+      <!-- 區塊 A：分類 / 收藏數 (桌機版側欄) -->
+      <aside class="hidden w-20 shrink-0 border-r border-[#445944]/10 pr-2 text-center md:block">
         <div
-          class="truncate text-[13px] text-stone-400"
+          class="inline-block rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2 py-0.5 text-[11px] font-black text-[#445944] shadow-[1px_1px_0px_#445944] truncate max-w-full"
           :title="category"
           :data-category="categoryid">
           {{ category }}
         </div>
 
-        <div class="mt-1 text-lg font-bold text-[#d4a373]">
-          {{ bookmarkCount }}
+        <div class="mt-2 flex flex-col items-center justify-center">
+          <Heart :size="14" class="text-rose-500 fill-rose-500 mb-0.5" />
+          <span class="text-sm font-black text-[#445944]">{{ bookmarkCount }}</span>
         </div>
       </aside>
 
-      <!-- 區塊 B：縮圖，維持原本 110x70 -->
-      <div class="h-[70px] w-[110px] shrink-0 overflow-hidden rounded bg-stone-100">
+      <!-- 區塊 B：縮圖，增強為立體厚框 -->
+      <div class="h-[76px] w-[114px] shrink-0 overflow-hidden rounded-2xl border-2 border-[#445944] bg-stone-100 shadow-[2px_2px_0px_#445944]">
         <img
           :src="image || 'https://placehold.co/400x260'"
           :alt="title"
@@ -81,11 +80,11 @@ const handleTagClick = (tag, e) => {
       </div>
 
       <!-- 區塊 C：主內容 -->
-      <main class="min-w-0 flex-1">
+      <main class="min-w-0 flex-1 w-full">
         <!-- 標題 + 標籤 -->
-        <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+        <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
           <h2
-            class="max-w-full truncate text-[17px] font-semibold text-stone-800 transition-colors group-hover:text-[#9c6d6d]">
+            class="max-w-full truncate text-[17px] font-black text-[#445944] transition-colors group-hover:text-amber-600">
             {{ title }}
           </h2>
 
@@ -93,48 +92,48 @@ const handleTagClick = (tag, e) => {
             v-for="tag in tags.slice(0, 5)"
             :key="tag"
             type="button"
-            class="max-w-[72px] truncate rounded-full border border-transparent bg-stone-100 px-2 py-0.5 text-xs text-stone-500 transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]"
+            class="max-w-[80px] truncate rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2 py-0.5 text-[10px] font-black text-[#445944] shadow-[1px_1px_0px_#445944] transition hover:bg-[#445944] hover:text-white"
             @click="handleTagClick(tag, $event)">
-            <span class="text-[#d4a373]">#</span>
-            {{ tag }}
+            <span class="text-amber-500">#</span>{{ tag }}
           </button>
         </div>
 
-        <p class="mt-1 line-clamp-1 text-[13px] text-stone-500">
+        <!-- 摘要內容 -->
+        <p class="mt-1.5 line-clamp-1 text-xs font-bold text-gray-500">
           {{ summary }}
         </p>
 
-        <!-- 點閱 / 作者 / 日期：改放在文章區塊下方，跟標題左側對齊 -->
-        <div class="mt-2 flex items-center gap-4 text-xs text-stone-400">
-          <span class="flex items-center gap-1 font-medium text-stone-500">
-            <Eye :size="14" />
+        <!-- 點閱 / 作者 / 日期 -->
+        <div class="mt-3 flex flex-wrap items-center gap-4 text-xs font-bold text-gray-400">
+          <span class="flex items-center gap-1 font-black text-[#445944]">
+            <Eye :size="14" class="stroke-[2.5]" />
             <span>{{ viewCount }}</span>
           </span>
-          <span class="flex items-center gap-1 font-medium text-stone-500">
-            <MessageSquare :size="14" />
+          <span class="flex items-center gap-1 font-black text-[#445944]">
+            <MessageSquare :size="14" class="stroke-[2.5]" />
             <span>{{ commentCount }}</span>
           </span>
 
-          <span class="max-w-[80px] truncate text-slate-500" :title="author">
-            {{ author }}
+          <span class="max-w-[100px] truncate text-[#445944]/80 font-black bg-[#FCF4E5] border border-[#445944]/25 px-1.5 py-0.5 rounded-lg" :title="author">
+            👤 {{ author }}
           </span>
 
-          <span class="whitespace-nowrap text-stone-400" :title="fullDate">
+          <span class="whitespace-nowrap text-stone-400 font-bold sm:ml-auto" :title="fullDate">
             {{ displayDate }}
           </span>
         </div>
       </main>
 
-      <!-- 區塊 D：右側只放收藏按鈕 -->
+      <!-- 區塊 D：右側收藏按鈕 -->
       <footer class="hidden w-[48px] shrink-0 items-center justify-center md:flex">
         <slot name="action">
           <button
             type="button"
-            class="rounded-full p-1.5 text-stone-300 transition-colors duration-200 hover:bg-rose-50 hover:text-rose-500"
+            class="rounded-xl border-2 border-transparent p-2 text-stone-300 transition duration-200 hover:border-rose-500 hover:bg-rose-50 hover:text-rose-500"
             :class="isBookmarked ? 'text-rose-500' : ''"
             @click.stop="handleBookmark"
             aria-label="收藏文章">
-            <Heart :size="20" :fill="isBookmarked ? 'currentColor' : 'none'" stroke-width="2" />
+            <Heart :size="20" :fill="isBookmarked ? 'currentColor' : 'none'" stroke-width="2.5" />
           </button>
         </slot>
       </footer>

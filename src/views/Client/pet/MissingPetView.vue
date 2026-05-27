@@ -232,13 +232,13 @@ const handleSearch = () => {
           </div>
 
           <!-- Search Button -->
-          <div class="flex items-end">
+          <!-- <div class="flex items-end">
             <button
               @click="handleSearch"
               class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-3 text-sm font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
               🔍 執行篩選
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -279,7 +279,7 @@ const handleSearch = () => {
       </div>
 
       <!-- Cards Grid -->
-      <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
         <div
           v-for="pet in filteredPets"
           :key="pet.id"

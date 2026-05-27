@@ -88,7 +88,7 @@ const menuGroups = [
         name: '系統設定',
         subItems: [
           { name: '登入活動', path: '/dashboard/log-activity', pro: false },
-          { name: 'Bar Chart', path: '/dashboard/bar-chart', pro: false },
+          // { name: 'Bar Chart', path: '/dashboard/bar-chart', pro: false },
         ],
       },
     ],

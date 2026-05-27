@@ -581,10 +581,17 @@ const exitLevel = () => {
     @retry="handleRetry"
     @continue="handleContinue"
     @nextLevel="handleNextLevel"
+    class="result-modal"
   />
 </template>
 
 <style scoped>
+  .result-modal {
+    cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  }
+  .result-modal:active {
+    cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  }
 .pause-btn-trigger {
   position: fixed;
   top: 20px;
@@ -595,7 +602,7 @@ const exitLevel = () => {
   border: 4px solid #453a27;
   border-radius: 15px;
   color: #453a27;
-  cursor: pointer;
+cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
   box-shadow: 0 4px 0 #453a27;
   z-index: 1000;
   display: flex;
@@ -664,6 +671,7 @@ const exitLevel = () => {
   box-shadow: 0 12px 0 #453a27;
   text-align: center;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .modal-title {
@@ -706,6 +714,7 @@ const exitLevel = () => {
   background: #fff;
   color: #453a27;
   box-shadow: 0 6px 0 #453a27; /* 預設陰影厚度 */
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .menu-opt:hover {
@@ -735,6 +744,7 @@ const exitLevel = () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control {
@@ -743,18 +753,21 @@ const exitLevel = () => {
   gap: 12px;
   color: #453a27;
   font-weight: 800;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control .label {
   width: 80px; /* 固定寬度讓滑桿對齊 */
   text-align: left;
   font-size: 1rem;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control .val-num {
   width: 45px;
   font-size: 0.9rem;
   text-align: right;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-slider {
@@ -763,6 +776,7 @@ const exitLevel = () => {
   cursor: pointer;
   height: 8px;
   border-radius: 4px;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* --- 調整關卡頁面的滑桿外觀，與主選單完全同步 --- */
@@ -782,6 +796,7 @@ const exitLevel = () => {
     #e5dfd5 100%
   );
   outline: none;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* Chrome / Safari / Edge 的圓鈕樣式 */
@@ -792,7 +807,7 @@ const exitLevel = () => {
   height: 24px;
   border-radius: 50%;
   background: #453a27; /* 招牌深咖啡色 */
-  cursor: pointer;
+cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
   border: 2px solid #fcf4e5; /* 奶油米色細邊框 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -838,21 +853,7 @@ const exitLevel = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* 控制按鈕 */
-.control-btn {
-  position: absolute;
-  top: 30px;
-  left: 30px;
-  z-index: 1000;
-  background: #fcf4e5;
-  border: 4px solid #453a27;
-  border-radius: 15px;
-  padding: 10px;
-  cursor: pointer;
-  color: #453a27;
-  box-shadow: 0 4px 0 #453a27;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* 倒數與暫停遮罩 */
@@ -998,7 +999,7 @@ const exitLevel = () => {
   height: 140px;
   border-radius: 50%;
   border: 6px solid #453a27;
-  cursor: pointer;
+cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1135,7 +1136,7 @@ const exitLevel = () => {
   border: 4px solid #453a27;
   border-radius: 15px;
   font-weight: 900;
-  cursor: pointer;
+cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
   float: right;
   display: flex;
   align-items: center;

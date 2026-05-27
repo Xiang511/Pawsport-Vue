@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Sparkles, Plus } from 'lucide-vue-next'
 
 // 自己做的卡片樣式
 import Article_ListCard from '@/components/Client/Article_ListCard.vue'
@@ -228,73 +228,97 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#f9f6f4]">
+  <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
+  <div class="font-fredoka min-h-screen bg-[#FDF9F3] text-gray-800 antialiased">
+    <!-- HERO BANNER SECTION -->
     <section
-      class="relative flex min-h-64 items-center overflow-hidden bg-[#9C6D6D] text-white md:min-h-125">
-      <!-- 1. 圖片作為絕對定位，直接鋪滿整個 section 的上下左右 -->
-      <div class="absolute inset-0 h-full w-full">
-        <img
-          src="/images/banner/dogs-playing-together-stockcake.jpg"
-          alt="Petmily Community Banner"
-          class="h-full w-full object-cover object-[center_65%]" />
-        <!-- 💡 加上一層淡淡的黑色半透明遮罩，可以防止圖片太亮導致白字看不清楚 -->
-        <div class="absolute inset-0 bg-black/30"></div>
+      class="relative overflow-hidden border-b-4 border-[#445944] bg-[#FDF9F3] px-6 pt-12 pb-8 md:pt-16 md:pb-12">
+      <!-- Floating Background Ornaments -->
+      <div class="animate-float pointer-events-none absolute top-10 left-10 opacity-20">
+        <span class="text-4xl">🐾</span>
+      </div>
+      <div
+        class="animate-float delay-2s pointer-events-none absolute right-20 bottom-10 opacity-20">
+        <span class="text-4xl">💬</span>
+      </div>
+      <div
+        class="animate-float delay-4s pointer-events-none absolute top-24 right-1/4 opacity-20">
+        <span class="text-4xl">✨</span>
       </div>
 
-      <!-- 2. 原本的內層容器，加上 z-10 讓它完全浮在背景圖片之上 -->
-      <div class="z-10 container mx-auto flex max-w-6xl flex-col items-start px-8 py-8 md:py-0">
-        <!-- 文字區塊，寬度可以自由調整（例如 md:w-2/3 或 max-w-xl），讓畫面更舒適 -->
-        <div class="w-full max-w-xl md:-mt-40">
-          <h2 class="mb-4 text-3xl font-bold drop-shadow-md md:text-5xl">社群專區</h2>
-          <p
-            p
-            class="line-clamp-1 text-sm leading-relaxed text-gray-100 drop-shadow-sm md:line-clamp-none md:text-lg">
-            歡迎來到我們的社群專區！在這裡，你可以分享你的經驗與知識。
-          </p>
+      <div class="mx-auto max-w-7xl">
+        <div class="flex flex-col items-center gap-8 md:flex-row md:justify-between">
+          <!-- Title Text Block -->
+          <div class="text-center md:text-left">
+            <div
+              class="mb-4 inline-flex items-center gap-1.5 rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1 text-xs font-black tracking-wider text-[#445944] uppercase shadow-[2px_2px_0px_#445944]">
+              <Sparkles :size="12" class="animate-spin-slow text-amber-500" />
+              PETMILY FORUM
+            </div>
+            <h1
+              class="mb-4 text-4xl font-black tracking-tight text-[#445944] md:text-5xl lg:text-6xl">
+              社群專區
+            </h1>
+            <p class="max-w-md text-base leading-relaxed font-bold text-gray-600 md:text-lg">
+              歡迎來到我們的寵物社群！在這裡，你可以與全台的毛家長交流經驗、分享溫馨故事與實用知識。
+            </p>
+          </div>
+
+          <!-- Premium Banner Image Framed Card -->
+          <div class="relative w-full max-w-md shrink-0">
+            <div
+              class="relative overflow-hidden rounded-3xl border-4 border-[#445944] bg-white p-2 shadow-[8px_8px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[4px_4px_0px_#445944]">
+              <img
+                src="/images/banner/dogs-playing-together-stockcake.jpg"
+                alt="Petmily Community Banner"
+                class="h-56 w-full rounded-2xl object-cover object-center" />
+            </div>
+          </div>
         </div>
       </div>
     </section>
+
     <!-- 內容區：最大1280px -->
     <div class="container mx-auto w-full max-w-7xl px-4">
       <!-- 左右分邊容器，flex -->
       <div class="flex flex-col gap-6 py-8 md:flex-row">
-        <!-- 右邊70% -->
+        <!-- 左邊 70%：文章與分類區 -->
         <main class="flex w-full flex-col gap-8 md:w-3/4">
+          <!-- 今日焦點焦點告示 -->
           <div
-            class="flex items-center gap-3 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+            class="flex items-center gap-3 rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 shadow-[4px_4px_0px_#445944]">
             <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-base">
+              class="animate-bounce-slow flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-amber-400 text-lg shadow-[2px_2px_0px_#445944]">
               📢
             </span>
-            <p class="text-sm leading-relaxed text-orange-900">
-              <span class="font-bold">今日焦點：</span>
+            <p class="text-sm leading-relaxed font-bold text-gray-800">
+              <span class="font-black text-[#445944]">今日焦點：</span>
               歡迎來到 Petmily！本週六將舉辦「線上毛孩鮮食講座」，詳情請密切注意官方消息。
             </p>
           </div>
-          <div class="flex flex-col gap-4">
+
+          <div class="flex flex-col gap-6">
             <!-- 大分類區塊 -->
-            <section class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
-              <h2 class="mb-5 flex items-center gap-2 text-xl font-bold text-[#433D3C]">
-                <span class="bg-brand-success-600 inline-block h-5 w-1.5 rounded-full"></span>
-                分類瀏覽
+            <section
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]">
+              <h2
+                class="mb-4 flex items-center gap-2 text-lg font-black tracking-wide text-[#445944]">
+                <span
+                  class="inline-block h-5 w-2.5 rounded-full border border-[#445944] bg-amber-400"></span>
+                分類主題瀏覽
               </h2>
 
-              <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-stone-700">大分類</h3>
-                <span class="text-xs text-stone-400">選擇文章主題</span>
-              </div>
-
-              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
+              <div
+                class="flex flex-wrap gap-2.5 rounded-2xl border-2 border-dashed border-[#445944]/30 bg-[#FDF9F3] p-4">
                 <button
                   v-for="c in parentCategories"
                   :key="c.categoryid"
                   @click="handleSelectParent(c.categoryid)"
                   :class="[
-                    'rounded-full px-4 py-1.5 text-sm shadow-sm transition-all duration-200',
+                    'rounded-xl border-2 border-[#445944] px-4 py-2 text-sm font-black transition-all',
                     Number(currentParentId) === Number(c.categoryid)
-                      ? 'bg-brand-success-600 scale-105 font-medium text-white'
-                      : 'bg-white text-stone-600 hover:bg-stone-100',
+                      ? 'bg-[#445944] text-white shadow-[2px_2px_0px_#445944]'
+                      : 'bg-white text-[#445944] shadow-[2px_2px_0px_#445944] hover:bg-[#FCF4E5] active:translate-y-[1px]',
                   ]">
                   {{ c.categoryname }}
                 </button>
@@ -304,19 +328,23 @@ onMounted(async () => {
             <!-- 小分類區塊：選全部時完全不出現 -->
             <section
               v-if="Number(currentParentId) !== 0 && subCategories.length > 0"
-              class="rounded-xl border border-stone-100 bg-white p-6 shadow-sm">
-              <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-stone-700">小分類</h3>
-              </div>
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]">
+              <h2
+                class="mb-4 flex items-center gap-2 text-lg font-black tracking-wide text-[#445944]">
+                <span
+                  class="inline-block h-5 w-2.5 rounded-full border border-[#445944] bg-[#445944]"></span>
+                子主題分類
+              </h2>
 
-              <div class="flex flex-wrap gap-2 rounded-2xl bg-stone-50 p-4">
+              <div
+                class="flex flex-wrap gap-2 rounded-2xl border-2 border-dashed border-[#445944]/30 bg-[#FDF9F3] p-4">
                 <button
                   @click="selectSub(0)"
                   :class="[
-                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    'rounded-xl border-2 border-[#445944] px-3 py-1.5 text-xs font-black transition-all',
                     Number(currentSubId) === 0
-                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
-                      : 'hover:border-brand-success-300 hover:text-brand-success-600 border-stone-200 bg-white text-stone-500',
+                      ? 'bg-[#445944] text-white shadow-[2px_2px_0px_#445944]'
+                      : 'bg-white text-[#445944] shadow-[2px_2px_0px_#445944] hover:bg-[#FCF4E5] active:translate-y-[1px]',
                   ]">
                   全部小分類
                 </button>
@@ -326,28 +354,29 @@ onMounted(async () => {
                   :key="sc.categoryid"
                   @click="selectSub(sc.categoryid)"
                   :class="[
-                    'rounded-full border px-3 py-1 text-xs transition-all',
+                    'rounded-xl border-2 border-[#445944] px-3 py-1.5 text-xs font-black transition-all',
                     Number(currentSubId) === Number(sc.categoryid)
-                      ? 'border-brand-success-400 bg-brand-success-600/10 text-brand-success-700 font-medium'
-                      : 'hover:text-brand-success-400 hover:border-brand-success-300 border-stone-200 bg-white text-stone-500',
+                      ? 'bg-[#445944] text-white shadow-[2px_2px_0px_#445944]'
+                      : 'bg-white text-[#445944] shadow-[2px_2px_0px_#445944] hover:bg-[#FCF4E5] active:translate-y-[1px]',
                   ]">
                   {{ sc.categoryname }}
                 </button>
               </div>
             </section>
 
+            <!-- 文章列表 -->
             <section
-              class="min-h-[420px] overflow-hidden rounded-xl border border-stone-100 bg-transparent">
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]">
               <!-- 文章列表 Header + 排序 -->
-              <div class="flex items-center justify-between border-b border-stone-100 px-4 py-3">
+              <div class="mb-6 flex items-center justify-between border-b-4 border-[#445944] pb-4">
                 <div>
-                  <h3 class="text-sm font-semibold text-stone-700">文章列表</h3>
-                  <p class="text-xs text-stone-400">可依發文時間或觀看數排序</p>
+                  <h3 class="text-lg font-black tracking-wide text-[#445944]">文章列表</h3>
+                  <p class="text-xs font-bold text-gray-400">可依發文時間或觀看數排序</p>
                 </div>
 
                 <select
                   v-model="sortType"
-                  class="focus:border-brand-success-400 focus:ring-brand-success-400/20 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-600 transition outline-none focus:ring-2"
+                  class="cursor-pointer appearance-none rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-2 text-sm font-black text-[#445944] shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none"
                   @change="handleSortChange">
                   <option value="newest">最新發文</option>
                   <option value="oldest">最早發文</option>
@@ -355,15 +384,19 @@ onMounted(async () => {
                 </select>
               </div>
 
-              <div v-if="isLoading" class="bg-white py-12 text-center text-stone-500">
-                ⏳ 資料讀取中...
+              <!-- 載入與錯誤狀態 -->
+              <div
+                v-if="isLoading"
+                class="animate-pulse py-16 text-center text-lg font-black text-[#445944]">
+                ⏳ 尋找貼文知識中...
               </div>
 
-              <div v-else-if="isError" class="bg-white py-12 text-center text-red-500">
+              <div v-else-if="isError" class="py-16 text-center text-lg font-black text-red-500">
                 ❌ 系統異常，請稍後再試。
               </div>
 
-              <div v-else>
+              <!-- 渲染列表 -->
+              <div v-else class="space-y-4">
                 <Article_ListCard
                   v-for="article in pagedArticles"
                   :key="article.articleId"
@@ -385,141 +418,163 @@ onMounted(async () => {
                   @toggle-bookmark="(id) => console.log('收藏文章：', id)"
                   class="cursor-pointer" />
 
+                <!-- 查無資料時顯示 -->
                 <div
                   v-if="pagedArticles.length === 0"
-                  class="border-t border-dashed border-stone-200 bg-white py-12 text-center text-stone-400">
+                  class="rounded-2xl border-2 border-dashed border-[#445944]/30 bg-[#FDF9F3] py-16 text-center font-bold text-gray-400">
                   🐾 找不到相關的文章喔！
                 </div>
               </div>
             </section>
-            <div v-if="totalPages > 1" class="mt-3 flex items-center justify-center gap-2">
+
+            <!-- 分頁列 -->
+            <div v-if="totalPages > 1" class="mt-4 flex items-center justify-center gap-2">
               <button
                 @click="currentPage = 1"
                 :disabled="currentPage === 1"
-                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
+                class="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#445944] bg-white font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#FCF4E5] disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronLeft :size="18" class="-mr-1.5" />
                 <ChevronLeft :size="18" />
               </button>
 
               <button
                 @click="currentPage--"
                 :disabled="currentPage === 1"
-                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                class="rounded-xl border-2 border-[#445944] bg-white px-3 py-1.5 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#FCF4E5] disabled:cursor-not-allowed disabled:opacity-40">
                 上一頁
               </button>
 
-              <span class="text-sm text-stone-600">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+              <span
+                class="mx-2 rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3.5 py-1.5 text-sm font-black text-[#445944] shadow-[2px_2px_0px_#445944]">
+                第 {{ currentPage }} / {{ totalPages }} 頁
+              </span>
 
               <button
                 @click="currentPage++"
                 :disabled="currentPage === totalPages"
-                class="rounded-lg border border-stone-300 bg-white px-3 py-1 text-sm hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40">
+                class="rounded-xl border-2 border-[#445944] bg-white px-3 py-1.5 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#FCF4E5] disabled:cursor-not-allowed disabled:opacity-40">
                 下一頁
               </button>
 
               <button
                 @click="currentPage = totalPages"
                 :disabled="currentPage === totalPages"
-                class="bg-brand-success-200 hover:bg-brand-success-50 rounded-lg px-3 py-1 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">
+                class="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#445944] bg-white font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#FCF4E5] disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronRight :size="18" />
+                <ChevronRight :size="18" class="-ml-1.5" />
               </button>
             </div>
           </div>
         </main>
 
-        <!-- 左邊30% -->
-        <aside class="flex w-full flex-col gap-4 md:w-1/4">
-          <div class="rounded-2xl border border-stone-100 bg-white p-4 shadow-sm">
-            <label class="mb-2 block text-sm font-semibold text-stone-700">搜尋文章</label>
+        <!-- 右邊 30%：側邊欄 (Aside Column) -->
+        <aside class="flex w-full flex-col gap-6 md:w-1/4">
+          <!-- 搜尋文章卡片 -->
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
+            <label class="mb-2 block text-sm font-black text-[#445944]">搜尋貼文</label>
 
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-2">
               <input
                 v-model="searchInput"
                 type="text"
-                placeholder="搜尋標題、內容、分類或作者..."
-                class="focus:ring-brand-success-400 min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:ring-2 focus:outline-none"
+                placeholder="搜尋標題、內容或作者..."
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none"
                 @keyup.enter="handleSearch" />
 
               <button
                 type="button"
-                class="bg-brand-success-600 hover:bg-brand-success-700 rounded-xl px-4 py-2 text-sm text-white"
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-2.5 text-sm font-black text-white shadow-[2px_2px_0px_#445944] transition-all hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#445944]"
                 @click="handleSearch">
-                搜尋
+                搜尋貼文
               </button>
             </div>
 
             <button
               v-if="searchInput.trim() || searchQuery.trim() || selectedTag.trim()"
               type="button"
-              class="mt-2 text-xs text-stone-400 hover:text-amber-600"
+              class="mt-3 block w-full text-center text-xs font-black text-amber-600 hover:underline"
               @click="clearSearch">
-              清除搜尋
+              ✕ 清除搜尋條件
             </button>
           </div>
-          <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
+
+          <!-- 新增貼文按鈕卡片 -->
+          <div
+            class="rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
             <button
               @click="goToCreatePage"
-              class="bg-brand-success-600 hover:bg-brand-success-700 w-fit rounded-full px-5 py-2 text-white shadow-sm">
-              新增貼文
+              class="flex w-full items-center justify-center gap-1.5 rounded-2xl border-2 border-[#445944] bg-amber-400 py-3 text-base font-black text-[#445944] shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] active:translate-y-1">
+              <Plus :size="20" class="stroke-[3]" />
+              撰寫新貼文
             </button>
           </div>
-          <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow">
-            <div class="rounded-2xl p-4">
-              <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-base font-semibold text-stone-800">最近搜尋的標籤</h3>
+
+          <!-- 最近搜尋 & 最近瀏覽區 -->
+          <div
+            class="space-y-6 rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
+            <!-- 最近搜尋的標籤 -->
+            <div>
+              <div
+                class="mb-3 flex items-center justify-between border-b-2 border-[#445944]/10 pb-2">
+                <h3 class="text-sm font-black text-[#445944]">最近搜尋標籤</h3>
 
                 <button
                   v-if="recentSearchedTags.length > 0"
                   type="button"
-                  class="text-xs text-stone-400 hover:text-amber-600"
+                  class="text-xs font-bold text-gray-400 hover:text-amber-600"
                   @click="clearRecentSearchedTags">
-                  清除
+                  清除 ✕
                 </button>
               </div>
 
-              <div v-if="recentSearchedTags.length > 0" class="flex flex-row flex-wrap gap-2">
+              <div v-if="recentSearchedTags.length > 0" class="flex flex-wrap gap-2">
                 <button
                   v-for="tag in recentSearchedTags"
                   :key="tag"
                   type="button"
-                  class="group rounded-full border border-transparent bg-[#f7ebe5] px-3 py-1 text-sm font-medium whitespace-nowrap text-[#9c6d6d] transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]"
+                  class="group rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2.5 py-1 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition-all hover:bg-white active:translate-y-[1px]"
                   @click="handleTagSearch(tag)">
-                  <span class="text-[#d4a373]">#</span>
+                  <span class="text-amber-500">#</span>
                   {{ tag }}
                 </button>
               </div>
 
               <div
                 v-else
-                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                class="rounded-xl border-2 border-dashed border-[#445944]/20 bg-[#FDF9F3] px-4 py-4 text-center text-xs font-bold text-gray-400">
                 尚無搜尋標籤
               </div>
             </div>
-            <div class="rounded-2xl p-4">
-              <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-base font-semibold text-stone-800">最近瀏覽</h3>
+
+            <!-- 最近瀏覽 -->
+            <div>
+              <div
+                class="mb-3 flex items-center justify-between border-b-2 border-[#445944]/10 pb-2">
+                <h3 class="text-sm font-black text-[#445944]">最近瀏覽紀錄</h3>
 
                 <button
                   v-if="recentViewedArticles.length > 0"
-                  class="text-xs text-stone-400 hover:text-amber-600"
+                  class="text-xs font-bold text-gray-400 hover:text-amber-600"
                   @click="clearRecentViewed">
-                  清除
+                  清除 ✕
                 </button>
               </div>
 
               <ul
                 v-if="recentViewedArticles.length > 0"
-                class="flex flex-col divide-y divide-stone-100">
-                <li v-for="article in recentViewedArticles" :key="article.articleId" class="py-2">
+                class="space-y-2 divide-y divide-[#445944]/10">
+                <li
+                  v-for="(article, idx) in recentViewedArticles"
+                  :key="article.articleId"
+                  :class="idx > 0 ? 'pt-2' : ''">
                   <RouterLink
                     :to="{ name: 'article-detail', params: { id: article.articleId } }"
-                    class="group block rounded-lg px-2 py-1 transition-colors hover:bg-[#fbf5f1]">
-                    <p
-                      class="line-clamp-2 text-sm font-medium text-stone-700 transition-colors group-hover:text-[#9c6d6d]">
+                    class="group block rounded-xl border-2 border-transparent p-2 transition-all hover:border-[#445944] hover:bg-[#FCF4E5]">
+                    <p class="line-clamp-2 text-xs font-black text-[#445944]">
                       {{ article.title }}
                     </p>
-
-                    <p
-                      class="mt-1 text-xs text-stone-400 transition-colors group-hover:text-[#d4a373]">
+                    <p class="mt-1 text-[10px] font-bold text-gray-400">
                       {{ article.categoryName }}
                     </p>
                   </RouterLink>
@@ -528,7 +583,7 @@ onMounted(async () => {
 
               <div
                 v-else
-                class="rounded-xl bg-stone-50 px-4 py-6 text-center text-sm text-stone-400">
+                class="rounded-xl border-2 border-dashed border-[#445944]/20 bg-[#FDF9F3] px-4 py-4 text-center text-xs font-bold text-gray-400">
                 尚無最近瀏覽紀錄
               </div>
             </div>
@@ -540,4 +595,59 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.delay-2s {
+  animation-delay: 2s;
+}
+
+.delay-4s {
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+</style>

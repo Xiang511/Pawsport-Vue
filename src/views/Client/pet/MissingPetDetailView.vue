@@ -101,7 +101,7 @@ const clipboard = (text) => {
         
         <!-- Left Side Column: Photo Box Card -->
         <aside class="w-full lg:w-1/3">
-          <div class="sticky top-6 rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
+          <div class="sticky top-30 rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
             <div class="mb-4 flex items-center justify-center gap-2 border-b-2 border-[#445944] pb-3">
               <span class="text-xl">📸</span>
               <h3 class="text-center text-lg font-black text-[#445944]">寵物照片</h3>
