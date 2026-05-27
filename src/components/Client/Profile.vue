@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import request from '@/api/axios'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -76,8 +77,13 @@ const saveProfile = async () => {
 }
 
 // 登出
-const logout = () => {
+const logout = async () => {
   if (confirm('確定要登出嗎？')) {
+    try {
+      await request.post('/Auth/logout')
+    } catch (error) {
+      console.error('登出請求失敗:', error)
+    }
     authStore.clearLoginInfo()
     router.push('/')
   }

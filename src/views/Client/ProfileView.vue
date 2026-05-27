@@ -369,8 +369,13 @@ const saveProfile = async () => {
   }
 }
 
-const logout = () => {
+const logout = async () => {
   if (confirm('確定要登出嗎？')) {
+    try {
+      await request.post('/Auth/logout')
+    } catch (error) {
+      console.error('登出請求失敗:', error)
+    }
     authStore.clearLoginInfo()
     router.replace('/').then(() => {
       window.location.reload()
