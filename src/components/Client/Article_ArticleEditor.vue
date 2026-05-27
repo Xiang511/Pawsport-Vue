@@ -179,58 +179,71 @@ defineExpose({
 </script>
 
 <template>
-  <div class="mx-auto my-5 max-w-3xl font-sans text-gray-800">
+  <div class="mx-auto my-5 w-[80%] text-gray-800">
     <!-- 頂部功能 -->
-    <div class="mb-4 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="cursor-pointer" @click="$router.back()">
-          <ArrowLeft />
-        </span>
-        <span class="text-2xl font-bold">建立貼文</span>
+    <div
+      class="mb-6 flex flex-col gap-4 border-b-4 border-[#445944] pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <button
+          @click="$router.back()"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] shadow-[3px_3px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
+          <ArrowLeft :size="20" class="stroke-[3]" />
+        </button>
+        <div class="flex flex-col">
+          <span class="text-2xl font-black tracking-wide text-[#445944]">建立貼文</span>
+          <span class="text-xs font-bold text-gray-400">請選取適當大分類以獲得精確觸及</span>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <span>
-          <button
-            class="bg-brand-success-300 hover:bg-brand-success-100 rounded-full p-2"
-            @click="isNewArticleModalOpen = true">
-            <SquarePlus />
-          </button>
-        </span>
-        <span>
-          <Article_BaseButton type="draft" @click="isDraftListModalOpen = true">
-            草稿匣
-          </Article_BaseButton>
-        </span>
+
+      <div class="flex items-center gap-2.5">
+        <button
+          @click="isNewArticleModalOpen = true"
+          class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-amber-400 text-[#445944] shadow-[3px_3px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]"
+          title="開新文章">
+          <SquarePlus :size="20" class="stroke-[3]" />
+        </button>
+
+        <button
+          @click="isDraftListModalOpen = true"
+          class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
+          📂 打開草稿匣
+        </button>
       </div>
     </div>
+
     <!-- 主要發文區塊 (包覆標題與編輯器) -->
-    <div class="rounded-2xl border border-gray-200 bg-white p-4">
-      <div class="mb-2 text-sm font-medium text-gray-500">分類選取*</div>
-      <div class="flex flex-col gap-3 sm:flex-row">
+    <div
+      class="mb-6 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944]">
+      <!-- 分類選取 -->
+      <div class="mb-2 text-sm font-black text-[#445944]">選取發文主題分類 *</div>
+
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row">
         <!-- 大分類 -->
         <div class="w-full sm:w-1/2">
-          <!-- 大分類 select -->
           <select
             v-model="post.mainCategory"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500 outline-none focus:bg-white"
+            class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-black text-[#445944] shadow-[2px_2px_0px_#445944] outline-none focus:bg-white"
             :class="{ 'text-gray-800': post.mainCategory }">
-            <option value="" disabled hidden>請選擇分類</option>
+            <option value="" disabled hidden>請選擇大分類主題</option>
             <option v-for="(subs, main) in props.categories" :key="main" :value="main">
               {{ main }}
             </option>
           </select>
         </div>
+
         <!-- 小分類 -->
         <div class="w-full sm:w-1/2">
           <select
             v-model="post.categoryId"
             :disabled="!post.mainCategory || currentSubCategories.length === 0"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500 outline-none focus:bg-white disabled:opacity-50"
+            class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2.5 text-sm font-black text-[#445944] shadow-[2px_2px_0px_#445944] outline-none focus:bg-white disabled:cursor-not-allowed disabled:opacity-40"
             :class="{ 'text-gray-800': post.categoryId }">
             <option value="" disabled hidden>
-              <template v-if="!post.mainCategory">請先選擇大分類</template>
-              <template v-else-if="currentSubCategories.length === 0">無子分類（免選）</template>
-              <template v-else>請選擇小分類</template>
+              <template v-if="!post.mainCategory">請先選取大分類</template>
+              <template v-else-if="currentSubCategories.length === 0">
+                無子分類（直接填寫標題）
+              </template>
+              <template v-else>請選擇子分類</template>
             </option>
             <option v-for="sub in currentSubCategories" :key="sub.id" :value="sub.id">
               {{ sub.name }}
@@ -240,41 +253,45 @@ defineExpose({
       </div>
 
       <!-- 標題輸入框 -->
-      <!-- note:這裡之後加上require的動態顯示 -->
-      <div class="relative mt-2 mb-2">
+      <div class="relative mt-2 mb-4">
         <input
           type="text"
           v-model="post.title"
-          placeholder="標題*"
+          placeholder="請填寫貼文標題... *"
           maxlength="30"
-          class="text-md w-full rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 pr-16 transition-colors outline-none focus:border-gray-300" />
+          class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3.5 pr-16 text-sm font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
+
         <!-- 右側字數統計定位 -->
-        <span class="absolute top-1/2 right-4 -translate-y-1/2 text-sm text-gray-400">
+        <span
+          class="absolute top-1/2 right-4 -translate-y-1/2 rounded-lg border border-[#445944]/20 bg-white px-2 py-0.5 text-xs font-black text-[#445944]/65">
           {{ post.title.length }}/30
         </span>
       </div>
+
       <!-- Quill 編輯器區塊 -->
       <div
-        class="mt-3 bg-white [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-gray-200 [&_.ql-editor]:text-base [&_.ql-editor_.ql-align-center_img]:mx-auto [&_.ql-editor_.ql-align-right_img]:mr-0 [&_.ql-editor_.ql-align-right_img]:ml-auto [&_.ql-editor_img]:my-4 [&_.ql-editor_img]:mr-auto [&_.ql-editor_img]:ml-0 [&_.ql-editor_img]:block [&_.ql-editor_img]:h-auto [&_.ql-editor_img]:max-h-[360px] [&_.ql-editor_img]:max-w-full [&_.ql-editor_img]:rounded-xl [&_.ql-editor_img]:object-contain [&_.ql-editor_img]:shadow-sm [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200">
+        class="mt-3 overflow-hidden rounded-2xl border-2 border-[#445944] bg-white shadow-[2px_2px_0px_#445944] [&_.ql-container]:border-0 [&_.ql-editor]:text-base [&_.ql-editor_.ql-align-center_img]:mx-auto [&_.ql-editor_.ql-align-right_img]:mr-0 [&_.ql-editor_.ql-align-right_img]:ml-auto [&_.ql-editor_img]:my-4 [&_.ql-editor_img]:mr-auto [&_.ql-editor_img]:ml-0 [&_.ql-editor_img]:block [&_.ql-editor_img]:h-auto [&_.ql-editor_img]:max-h-[360px] [&_.ql-editor_img]:max-w-full [&_.ql-editor_img]:rounded-xl [&_.ql-editor_img]:object-contain [&_.ql-editor_img]:shadow-sm [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b-2 [&_.ql-toolbar]:border-[#445944] [&_.ql-toolbar]:bg-[#FCF4E5]">
         <div ref="editorRef" class="[&_.ql-editor]:min-h-62.5 [&_.ql-editor]:cursor-text"></div>
       </div>
 
       <!-- 標籤區 -->
-      <div class="mt-5 mb-2 flex min-h-9 flex-wrap items-center gap-2 px-4">
+      <div
+        class="mt-5 mb-2 flex min-h-9 flex-wrap items-center gap-2 rounded-xl border-2 border-dashed border-[#445944]/30 bg-[#FDF9F3] p-3 px-4">
         <span
           v-for="(tag, index) in detectedTags"
           :key="index"
-          class="bg-brand-success-600 hover:bg-brand-success-700 flex h-7 w-fit items-center justify-center rounded-full px-3 text-sm whitespace-nowrap text-white transition-all duration-200">
+          class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3 py-1 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944]">
           #{{ tag }}
         </span>
-        <!-- 防呆提示（可選）：沒標籤時顯示淡色提示 -->
+
         <span
           v-if="detectedTags.length === 0"
-          class="self-center align-middle text-sm text-gray-400 italic">
-          輸入 #標籤 後請用空白、換行或標點分隔
+          class="self-center align-middle text-xs font-bold text-gray-400 italic">
+          💡 提示：在內文中輸入 #標籤名稱 後用空白、換行或標點分隔，即可自動偵測標籤！
         </span>
       </div>
     </div>
+
     <!-- 底部按鈕 -->
     <div class="mt-5 flex justify-end gap-2.5">
       <Article_BaseButton type="draft" @click="onSaveDraft">儲存草稿</Article_BaseButton>
@@ -289,7 +306,7 @@ defineExpose({
         發佈貼文
       </Article_BaseButton>
 
-      <!-- 💡 拆分出去的子元件彈窗，乾乾淨淨！ -->
+      <!-- 💡 拆分出去的子元件彈窗 -->
       <NewArticleModal
         v-model="isNewArticleModalOpen"
         @discard="discardAndNew"
@@ -302,7 +319,7 @@ defineExpose({
         @delete="deleteDraftItem" />
 
       <Article_ToastAlert ref="toastRef" />
-      <!-- 這就是那篇文章裡提到的「被觸發者」-->
+
       <input
         id="quill-hidden-image-input"
         type="file"

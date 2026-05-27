@@ -92,7 +92,7 @@ import { Dog } from 'lucide-vue-next'
             </p>
             <div class="flex items-center">
               <p class="mr-6 text-sm font-bold tracking-widest">官方帳號</p>
-              <ul class="flex justify-evenly gap-4 ">
+              <ul class="flex justify-evenly gap-4">
                 <li class="icon inline-block hover:bg-[#434343]">
                   <a href="#">
                     <span>
@@ -198,8 +198,8 @@ import { Dog } from 'lucide-vue-next'
           </div>
         </div>
 
-        <div class="w-[83%] mx-auto flex justify-between">
-          <div class="inline-block my-6 w-4/12 xl:w-auto">
+        <div class="mx-auto flex w-[83%] justify-between">
+          <div class="my-6 inline-block w-4/12 xl:w-auto">
             <div>
               <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block">
                 高雄市動物保護處
@@ -212,7 +212,7 @@ import { Dog } from 'lucide-vue-next'
               <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block">動物保護資訊網</a>
             </div>
           </div>
-          <div class="inline-block my-6 w-8/12 xl:w-8/12">
+          <div class="my-6 inline-block w-8/12 xl:w-8/12">
             <p class="text-right text-sm text-[#8a8a8a]">Copyright © 2026 PETMILY.</p>
           </div>
         </div>

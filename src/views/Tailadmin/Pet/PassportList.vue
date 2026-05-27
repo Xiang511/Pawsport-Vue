@@ -47,7 +47,7 @@ const deletePassport = async (id) => {
   if (!confirm('確定要刪除這筆健康護照紀錄嗎？此動作不可撤回。')) return
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/PassPort/${id}`)
+    const response = await axios.patch(`https://localhost:7048/api/PassPort/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchPassports()

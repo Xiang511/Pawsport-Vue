@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { Sparkles } from 'lucide-vue-next'
 
 import request from '@/api/axios'
 import { useAuthStore } from '@/stores/auth'
@@ -19,7 +20,7 @@ const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle, fetchDraftDet
 const router = useRouter()
 const articleEditorRef = ref(null)
 const articleId = ref(null)
-const toastRef = ref(null)
+const toastRef = ref(true)
 
 const authStore = useAuthStore()
 
@@ -91,7 +92,6 @@ const handleLoadDraft = async (id) => {
 const handleDeleteDraft = async (id) => {
   try {
     const result = await deleteDraft(id)
-    // 💡 8. 換掉 alert
     toastRef.value?.trigger(result.message || '草稿刪除成功')
   } catch (error) {
     toastRef.value?.trigger('刪除草稿失敗')
@@ -123,31 +123,96 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- 頁面最外層：只寫背景顏色 -->
-  <div class="min-h-screen bg-[#f9f6f4] pt-6">
-    <!-- 內容區：最大1280px -->
-    <div class="container mx-auto w-full max-w-6xl px-4">
-      <!-- 左右分邊容器，flex -->
-
-      <div class="container mx-auto p-4">
-        <div v-if="isCategoryLoading" class="py-10 text-center text-gray-500">
-          <span>正在載入分類資料...</span>
-        </div>
-        <!-- 編輯器元件 -->
-        <ArticleEditor
-          ref="articleEditorRef"
-          :categories="categoriesData"
-          :drafts="draftsData"
-          @publish="handlePublish"
-          @save-draft="handleSaveDraft"
-          @reset-id="handleResetArticleId"
-          @load-draft="handleLoadDraft"
-          @delete-draft="handleDeleteDraft" />
+  <!-- 頁面最外層：對齊 warm sand 背景與 Fredoka 字型 -->
+  <div class="font-fredoka min-h-screen bg-[#FCF4E5] text-gray-800 antialiased">
+    <!-- HERO BANNER SECTION -->
+    <section class="relative overflow-hidden bg-[#FCF4E5] px-6 pt-12 pb-8">
+      <!-- Floating Background Ornaments -->
+      <div class="animate-float pointer-events-none absolute top-8 left-10 opacity-20">
+        <span class="text-4xl">✏️</span>
       </div>
+      <div class="animate-float delay-2s pointer-events-none absolute right-20 bottom-8 opacity-20">
+        <span class="text-4xl">🐾</span>
+      </div>
+
+      <div class="mx-auto max-w-3xl">
+        <div class="text-center">
+          <div
+            class="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#7a6856] px-3.5 py-1 text-sm font-black tracking-wider text-white uppercase">
+            <Sparkles :size="12" class="animate-spin-slow text-amber-500" />
+            PETMILY EDITOR
+          </div>
+          <h1 class="text-center text-4xl font-black tracking-tight text-[#445944]">
+            撰寫社群貼文
+          </h1>
+          <p class="mt-2 text-center text-lg font-bold text-gray-500">
+            與大家分享您與毛孩的有趣生活、實用知識或是疑難雜症吧！
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 內容區：最大1280px -->
+    <div class="container mx-auto px-4 py-8">
+      <div
+        v-if="isCategoryLoading"
+        class="animate-pulse py-16 text-center text-lg font-black text-[#445944]">
+        ⏳ 正在載入分類資料...
+      </div>
+
+      <!-- 編輯器元件 -->
+      <ArticleEditor
+        v-if="!isCategoryLoading"
+        ref="articleEditorRef"
+        :categories="categoriesData"
+        :drafts="draftsData"
+        @publish="handlePublish"
+        @save-draft="handleSaveDraft"
+        @reset-id="handleResetArticleId"
+        @load-draft="handleLoadDraft"
+        @delete-draft="handleDeleteDraft" />
     </div>
+
     <Article_ToastAlert ref="toastRef" />
     <ScrollToTopButton />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.delay-2s {
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+</style>

@@ -76,6 +76,7 @@ const newNewsletter = reactive({
   title: '',
   summary: '',
   content: '',
+  image: '',
   category: '活動公告',
   status: '待發佈',
   note: '',
@@ -85,6 +86,7 @@ const openCreateModal = () => {
   newNewsletter.title = ''
   newNewsletter.summary = ''
   newNewsletter.content = ''
+  newNewsletter.image = ''
   newNewsletter.category = '活動公告'
   newNewsletter.status = '待發佈'
   newNewsletter.note = ''
@@ -132,6 +134,7 @@ const currentEditNewsletter = reactive({
   title: '',
   summary: '',
   content: '',
+  image: '',
   category: '活動公告',
   status: '待發佈',
   userId: 1,
@@ -144,6 +147,8 @@ const openEditModal = (item) => {
   currentEditNewsletter.title = item.title
   currentEditNewsletter.summary = item.summary || ''
   currentEditNewsletter.content = item.content
+  currentEditNewsletter.image = item.image || ''
+  currentEditNewsletter.image = item.image || ''
   currentEditNewsletter.category = item.category || '活動公告'
   currentEditNewsletter.status = item.status || '待發佈'
   currentEditNewsletter.note = item.note || ''
@@ -175,6 +180,7 @@ const submitEdit = async () => {
           title: currentEditNewsletter.title,
           summary: currentEditNewsletter.summary,
           content: currentEditNewsletter.content,
+          image: currentEditNewsletter.image,
           category: currentEditNewsletter.category,
           status: currentEditNewsletter.status,
           note: currentEditNewsletter.note,
@@ -362,10 +368,11 @@ const changePage = (newPage) => {
 
   <div
     v-if="showCreateModal"
-    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
+    class="bg-opacity-50 bg-brand-success-950 fixed inset-0 z-[9999] flex items-center justify-center px-4 py-6">
     <div
-      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
-      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      class="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
+      <div
+        class="sticky top-0 z-1 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">新增電子報</h3>
           <p class="mt-1 text-sm text-gray-500"><span class="text-red-500">* 必填 *</span></p>
@@ -396,6 +403,15 @@ const changePage = (newPage) => {
             type="text"
             v-model="newNewsletter.summary"
             placeholder="請輸入顯示在列表的簡短摘要"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">圖片網址</label>
+          <input
+            type="text"
+            v-model="newNewsletter.image"
+            placeholder="例如：https://images.unsplash.com/..."
             class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
         </div>
 
@@ -472,10 +488,11 @@ const changePage = (newPage) => {
 
   <div
     v-if="showEditModal"
-    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-black px-4 py-6">
+    class="bg-opacity-50 fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900 px-4 py-6">
     <div
-      class="mx-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
-      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      class="mx-auto max-h-[70vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-lg">
+      <div
+        class="sticky top-0 z-1 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
         <div>
           <h3 class="text-xl font-bold text-gray-800">修改電子報</h3>
           <p class="mt-1 text-sm text-gray-500"><span class="text-red-500">* 必填 *</span></p>
@@ -505,6 +522,14 @@ const changePage = (newPage) => {
           <input
             type="text"
             v-model="currentEditNewsletter.summary"
+            class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">圖片網址</label>
+          <input
+            type="text"
+            v-model="currentEditNewsletter.image"
             class="focus:border-brand-info-500 focus:ring-brand-info-500 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-1 focus:outline-none" />
         </div>
 

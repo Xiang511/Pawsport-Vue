@@ -11,6 +11,8 @@ import {
   Eye,
   Calendar,
   Hourglass,
+  Sparkles,
+  Undo2,
 } from 'lucide-vue-next'
 
 import { useDateTime } from '@/composables/useDateTime'
@@ -82,94 +84,114 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f9f6f4] pt-6 pb-12 text-slate-800">
-    <div v-if="isLoading" class="py-20 text-center text-slate-500">
+  <!-- 外層對齊暖沙背景與 Fredoka 字型 -->
+  <div class="font-fredoka min-h-screen bg-[#FCF4E5] pt-6 pb-12 text-slate-800 antialiased">
+    <!-- 讀取狀態 -->
+    <div v-if="isLoading" class="animate-pulse py-24 text-center text-lg font-black text-[#445944]">
       <div
-        class="mb-2 inline-block h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent"></div>
-      <div>⏳ 文章讀取中...</div>
+        class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#445944] border-t-transparent"></div>
+      <div>⏳ 尋找文章內容中...</div>
     </div>
 
-    <div v-else-if="isError" class="py-20 text-center text-red-500">
+    <!-- 錯誤狀態 -->
+    <div v-else-if="isError" class="py-24 text-center text-lg font-black text-red-500">
       ❌ 文章載入失敗
-      <button @click="goBack" class="mx-auto mt-4 block text-sm text-slate-500 hover:underline">
-        返回首頁
+      <button
+        @click="goBack"
+        class="mx-auto mt-6 flex items-center gap-1.5 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-2 font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
+        <Undo2 :size="16" />
+        返回社群首頁
       </button>
     </div>
 
-    <div v-else-if="articleDetail">
+    <div v-else-if="articleDetail" class="">
+      <!-- BREADCRUMBS NAVIGATION -->
       <nav
-        class="container mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 text-sm text-slate-500">
-        <button @click="goToHome" class="flex items-center gap-0.5 hover:text-orange-600">
-          首頁
-        </button>
-        <span>></span>
-        <button @click="goBack" class="flex items-center gap-0.5 hover:text-orange-600">
-          社群
-        </button>
-        <span>></span>
-        <span class="font-medium text-orange-600">{{ articleDetail.categoryName }}</span>
-        <span>></span>
-        <span class="line-clamp-1 max-w-xs">{{ articleDetail.title }}</span>
+        class="container mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-4 text-sm font-bold text-[#445944]">
+        <button @click="goToHome" class="flex items-center gap-0.5 hover:underline">首頁</button>
+        <span class="font-bold text-gray-400">></span>
+        <button @click="goBack" class="flex items-center gap-0.5 hover:underline">社群</button>
+        <span class="font-bold text-gray-400">></span>
+        <span
+          class="rounded-md border border-[#445944] bg-[#FCF4E5] px-2.5 py-0.5 text-xs text-[#445944] shadow-[1px_1px_0px_#445944]">
+          {{ articleDetail.categoryName }}
+        </span>
+        <span class="font-bold text-gray-400">></span>
+        <span class="line-clamp-1 max-w-xs font-medium text-gray-500">
+          {{ articleDetail.title }}
+        </span>
       </nav>
 
       <div class="container mx-auto w-full max-w-6xl px-4">
+        <!-- 左右分欄：行動版為 Main 在上，Aside 在下 -->
         <div class="flex flex-col gap-6 py-4 md:flex-row">
+          <!-- Main Content Column -->
           <main class="order-1 w-full md:order-2 md:w-3/4">
-            <article class="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
-              <header class="border-b border-slate-100 p-6 md:p-8">
-                <div class="mb-3 flex items-center gap-2">
-                  <span class="rounded bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">
+            <!-- ARTICLE CARD -->
+            <article
+              class="mb-6 overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
+              <!-- HEADER SECTION -->
+              <header class="border-b-4 border-[#445944] bg-[#FCF4E5] p-6 md:p-8">
+                <div class="mb-4 flex flex-wrap items-center gap-2.5">
+                  <span
+                    class="rounded-xl border-2 border-[#445944] bg-amber-400 px-3 py-1 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944]">
                     {{ articleDetail.categoryName }}
                   </span>
+
                   <div class="flex gap-2">
                     <span
                       v-for="tag in articleDetail.tags || []"
                       :key="tag"
-                      class="cursor-pointer text-xs text-blue-500 hover:underline">
+                      class="cursor-pointer rounded-xl border-2 border-[#445944] bg-white px-2.5 py-0.5 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944] hover:underline">
                       #{{ tag }}
                     </span>
                   </div>
                 </div>
-                <h1 class="text-2xl leading-tight font-black text-slate-800 md:text-3xl">
+
+                <h1 class="md:text-3.5xl text-2xl leading-tight font-black text-[#445944]">
                   {{ articleDetail.title }}
                 </h1>
               </header>
 
+              <!-- CONTENT SECTION (Rich HTML) -->
               <section class="px-6 py-8 md:px-10">
                 <div
                   v-html="articleDetail.content"
-                  class="prose prose-slate max-w-none leading-relaxed text-slate-700 [&_.ql-align-center]:text-center [&_.ql-align-center_img]:mx-auto [&_.ql-align-right_img]:mr-0 [&_.ql-align-right_img]:ml-auto [&_.ql-size-large]:text-2xl [&_.ql-size-large]:font-bold [&_img]:my-6 [&_img]:mr-auto [&_img]:ml-0 [&_img]:block [&_img]:h-auto [&_img]:max-h-[480px] [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_img]:shadow-sm [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-6 [&_span[style*='background-color']]:rounded [&_span[style*='background-color']]:px-1 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"></div>
+                  class="prose prose-slate max-w-none leading-relaxed font-bold text-[#445944] [&_.ql-align-center]:text-center [&_.ql-align-center_img]:mx-auto [&_.ql-align-right_img]:mr-0 [&_.ql-align-right_img]:ml-auto [&_.ql-size-large]:text-2xl [&_.ql-size-large]:font-black [&_img]:my-6 [&_img]:mr-auto [&_img]:ml-0 [&_img]:block [&_img]:h-auto [&_img]:max-h-[480px] [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:border-4 [&_img]:border-[#445944] [&_img]:object-contain [&_img]:shadow-[4px_4px_0px_#445944] [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-6 [&_span[style*='background-color']]:rounded [&_span[style*='background-color']]:px-1 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"></div>
               </section>
 
+              <!-- FOOTER ROW -->
               <footer
-                class="flex items-center justify-between border-t border-slate-50 bg-slate-50/50 px-6 py-4">
+                class="flex items-center justify-between border-t-4 border-[#445944] bg-[#FCF4E5] px-6 py-4">
                 <div class="flex items-center gap-4">
                   <button
-                    class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-slate-500 transition hover:bg-orange-100 hover:text-orange-600">
+                    class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-white px-3.5 py-1.5 text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
                     <ChevronUp class="h-5 w-5" />
-                    <span class="text-sm font-bold">{{ articleDetail.likeCount ?? 0 }}</span>
+                    <span class="text-sm font-black">{{ articleDetail.likeCount ?? 0 }}</span>
                   </button>
                   <button
-                    class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-slate-500 transition hover:bg-slate-200">
+                    class="flex items-center gap-1.5 rounded-xl border-2 border-[#445944] bg-white px-3.5 py-1.5 text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
                     <MessageSquare class="h-4 w-4" />
-                    <span class="text-sm font-bold">{{ comments.length }}</span>
+                    <span class="text-sm font-black">{{ comments.length }}</span>
                   </button>
                 </div>
 
                 <div class="flex items-center gap-2">
                   <button
-                    class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-200 hover:text-amber-500"
+                    class="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#445944] bg-white text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]"
                     title="收藏">
                     <Bookmark class="h-5 w-5" />
                   </button>
                   <button
-                    class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-200 hover:text-blue-500"
+                    class="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#445944] bg-white text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]"
                     title="分享">
                     <Link2 class="h-5 w-5" />
                   </button>
                 </div>
               </footer>
             </article>
+
+            <!-- COMMENTS SECTION -->
             <Article_CommentSection
               v-model:commentText="commentText"
               :comments="comments"
@@ -179,63 +201,72 @@ onMounted(async () => {
               @submit-comment="submitComment" />
           </main>
 
+          <!-- Aside Profile / Stats Column -->
           <aside class="order-2 w-full md:order-1 md:w-1/4">
-            <div class="sticky top-6 flex flex-col gap-4">
-              <div class="overflow-hidden rounded-2xl border border-[#eadbd3] bg-white shadow-sm">
+            <div class="sticky top-30 flex flex-col gap-6">
+              <!-- AUTHOR PROFILE CARD -->
+              <div
+                class="overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
                 <!-- 上方柔和色塊 -->
-                <div class="h-18 bg-[#fbf5f1]"></div>
+                <div class="h-18 border-b-4 border-[#445944] bg-[#FCF4E5]"></div>
 
                 <div class="px-5 pb-6">
                   <!-- 頭像 -->
                   <div class="-mt-9 mb-3 flex justify-center">
-                    <div class="rounded-full bg-white p-1 shadow-sm">
+                    <div class="rounded-full border-4 border-[#445944] bg-white p-1 shadow-md">
                       <img
                         :src="articleDetail.userPhoto || 'https://placecats.com/g/100/100'"
-                        class="h-20 w-20 rounded-full border border-[#f7ebe5] object-cover" />
+                        class="h-20 w-20 rounded-full object-cover" />
                     </div>
                   </div>
 
                   <!-- 作者資訊 -->
                   <div class="text-center">
-                    <p class="mb-1 text-xs font-medium tracking-wide text-[#d4a373]">文章作者</p>
+                    <p class="mb-1 text-xs font-black tracking-wide text-amber-600">文章作者</p>
 
-                    <h3 class="text-lg font-bold text-[#433D3C]">
+                    <h3 class="text-lg font-black text-[#445944]">
                       {{ articleDetail.userName }}
                     </h3>
 
                     <button
-                      class="mt-4 w-full rounded-full border border-transparent bg-[#f7ebe5] py-2 text-sm font-medium text-[#9c6d6d] transition-colors hover:border-[#d4a373] hover:bg-[#fbf5f1]">
-                      + 追蹤
+                      class="mt-4 w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
+                      + 追蹤作者
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div class="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
-                <h4 class="mb-3 flex items-center gap-1 text-sm font-bold text-slate-400">
+              <!-- ARTICLE STATS CARD -->
+              <div
+                class="rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
+                <h4
+                  class="mb-4 flex items-center gap-1 border-b-2 border-[#445944]/10 pb-2 text-sm font-black text-[#445944]">
+                  <Sparkles :size="14" class="animate-spin-slow text-amber-500" />
                   文章數據
                 </h4>
-                <div class="space-y-2.5 text-sm text-slate-600">
+                <div class="space-y-3.5 text-sm font-bold text-gray-700">
                   <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-slate-500">
+                    <span class="flex items-center gap-1.5 text-[#445944]/75">
                       <Eye class="h-4 w-4" />
                       閱讀數
                     </span>
-                    <span class="font-mono font-bold text-slate-700">
+                    <span class="font-mono font-black text-[#445944]">
                       {{ articleDetail.viewCount }}
                     </span>
                   </div>
+
                   <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-slate-500">
+                    <span class="flex items-center gap-1.5 text-[#445944]/75">
                       <Bookmark class="h-4 w-4" />
                       收藏數
                     </span>
-                    <span class="font-mono font-bold text-slate-700">
+                    <span class="font-mono font-black text-[#445944]">
                       {{ articleDetail.bookmarkCount }}
                     </span>
                   </div>
+
                   <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-slate-500">
+                    <span class="flex items-center gap-1.5 text-[#445944]/75">
                       <Calendar class="h-4 w-4" />
                       發表日期
                     </span>
@@ -254,4 +285,23 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+
+.font-fredoka {
+  font-family: 'Fredoka', 'GenJyuu', sans-serif;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

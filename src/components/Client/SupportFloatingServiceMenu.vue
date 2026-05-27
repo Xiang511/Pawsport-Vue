@@ -6,7 +6,7 @@ import { Icon } from '@iconify/vue'
 const isMenuOpen = ref(false)
 const isSubscribeOpen = ref(false)
 
-// 🌟 新增：電子報表單綁定的變數
+// 電子報表單綁定的變數
 const subscribeEmail = ref('')
 const isSubmittingEmail = ref(false)
 
@@ -27,16 +27,16 @@ const handleSubscribeClick = () => {
   isMenuOpen.value = false
 }
 
-// 🌟 新增：處理訂閱電子報的邏輯
+// 處理訂閱電子報的邏輯
 const handleSubscribeSubmit = async () => {
   if (!subscribeEmail.value) {
     alert('請輸入 Email 喔！')
     return
   }
-  
+
   isSubmittingEmail.value = true
-  
-  // 模擬 API 呼叫延遲 (這裡之後可以換成你真正的後端 API)
+
+  // 模擬 API 呼叫延遲
   setTimeout(() => {
     alert('訂閱成功！感謝您的加入 🐾')
     subscribeEmail.value = '' // 清空輸入框
@@ -50,9 +50,9 @@ const handleSubscribeSubmit = async () => {
   <div class="fixed right-8 bottom-8 z-50 flex flex-col items-end gap-3">
     <Transition name="fade-slide">
       <div v-if="isMenuOpen" class="flex flex-col items-end gap-4 pb-2">
-        
         <div class="group flex items-center gap-3">
-          <span class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
+          <span
+            class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
             訂閱電子報
           </span>
           <button
@@ -63,7 +63,8 @@ const handleSubscribeSubmit = async () => {
         </div>
 
         <div class="group flex items-center gap-3">
-          <span class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
+          <span
+            class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
             AI 智能客服
           </span>
           <button
@@ -74,7 +75,8 @@ const handleSubscribeSubmit = async () => {
         </div>
 
         <div class="group flex items-center gap-3">
-          <span class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
+          <span
+            class="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-[#755e44] opacity-0 shadow-sm transition-opacity duration-300 group-hover:opacity-100">
             LINE 真人客服
           </span>
           <button
@@ -94,31 +96,37 @@ const handleSubscribeSubmit = async () => {
     </button>
 
     <Transition name="fade">
-      <div v-if="isSubscribeOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div
+        v-if="isSubscribeOpen"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
         <div class="relative w-11/12 max-w-md rounded-3xl bg-[#fbf6ef] p-8 shadow-2xl">
-          <button @click="isSubscribeOpen = false" class="absolute top-4 right-4 rounded-full bg-[#e8dccb] p-2 text-[#7a6856] transition-colors hover:bg-[#d8ccbb]">
+          <button
+            @click="isSubscribeOpen = false"
+            class="absolute top-4 right-4 rounded-full bg-[#e8dccb] p-2 text-[#7a6856] transition-colors hover:bg-[#d8ccbb]">
             <X class="h-5 w-5" />
           </button>
 
           <div class="mb-4 flex justify-center">
-            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#FAE4AE] text-[#755e44] shadow-md">
+            <div
+              class="flex h-16 w-16 items-center justify-center rounded-full bg-[#FAE4AE] text-[#755e44] shadow-md">
               <Mail class="h-8 w-8" />
             </div>
           </div>
-          
+
           <h3 class="mb-2 text-center text-2xl font-bold text-[#7a6856]">訂閱 Petmily 電子報</h3>
-          <p class="mb-8 text-center text-sm font-medium leading-relaxed text-[#968677]">
-            輸入您的 Email，第一時間獲取<br>最新的毛孩照護知識與專屬活動情報！
+          <p class="mb-8 text-center text-sm leading-relaxed font-medium text-[#968677]">
+            輸入您的 Email，第一時間獲取
+            <br />
+            最新的毛孩照護知識與專屬活動情報！
           </p>
-          
+
           <form @submit.prevent="handleSubscribeSubmit" class="flex flex-col gap-4">
             <input
               v-model="subscribeEmail"
               type="email"
               required
               placeholder="請輸入您的 Email 地址"
-              class="w-full rounded-xl border-2 border-[#e8dccb] bg-white px-5 py-3.5 font-bold text-[#7a6856] shadow-inner transition-colors placeholder:font-medium placeholder:text-gray-400 focus:border-[#755e44] focus:outline-none"
-            />
+              class="w-full rounded-xl border-2 border-[#e8dccb] bg-white px-5 py-3.5 font-bold text-[#7a6856] shadow-inner transition-colors placeholder:font-medium placeholder:text-gray-400 focus:border-[#755e44] focus:outline-none" />
             <button
               type="submit"
               :disabled="isSubmittingEmail"

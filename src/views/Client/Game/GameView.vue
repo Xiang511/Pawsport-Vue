@@ -195,10 +195,21 @@ const backToWebHome = (event) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
   position: relative;
   overflow: hidden;
   user-select: none;
+  transition: cursor 0.1s ease;
+}
+
+.game-start-screen:active {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, pointer;
+}
+
+/* 確保按鈕或特殊元件不會覆蓋掉這個游標 (選用) */
+.game-start-screen button, 
+.game-start-screen .back-home-btn {
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
 }
 
 .back-home-btn {
@@ -300,6 +311,7 @@ const backToWebHome = (event) => {
   align-items: center;
   z-index: 99999;
   backdrop-filter: blur(4px); /* 稍微模糊背景，很有質感 */
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* 彈窗卡片 */
@@ -351,6 +363,7 @@ const backToWebHome = (event) => {
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.1s ease;
+  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
 }
 
 .auth-btn:active {

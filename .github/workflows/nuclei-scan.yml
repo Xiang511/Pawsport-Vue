@@ -1,5 +1,8 @@
 name: Nuclei Code Scan (Vite + Vue 3)
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:

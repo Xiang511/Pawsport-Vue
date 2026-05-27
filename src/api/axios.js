@@ -2,7 +2,6 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 
-
 // 1. 建立一個 Axios 實例
 const service = axios.create({
   baseURL: '/api', // 使用相對路徑，透過 Vite 代理轉發到後端

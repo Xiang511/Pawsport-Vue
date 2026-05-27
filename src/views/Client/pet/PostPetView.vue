@@ -97,10 +97,11 @@ const traitOptions = [
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-24">
-    
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] pb-24 text-gray-800 antialiased">
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header
+      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -123,9 +124,9 @@ const traitOptions = [
         </svg>
       </div>
 
-      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+      <div class="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4">
         <div
-          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          class="font-fredoka animate-pulse-slow mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm">
           <Sparkles :size="14" class="animate-spin-slow" />
           POST FOR ADOPTION
         </div>
@@ -144,22 +145,23 @@ const traitOptions = [
     </header>
 
     <!-- FORM BODY CONTAINER -->
-    <div class="container mx-auto max-w-6xl px-4 mt-12">
-      <div v-if="currentStep === 1" class="mx-auto max-w-4xl w-[90%]">
-        <div class="overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
-          
-          <div class="bg-[#445944] border-b-4 border-[#445944] px-8 py-5 flex items-center justify-between">
+    <div class="container mx-auto mt-12 px-4">
+      <div v-if="currentStep === 1" class="mx-auto w-[80%]">
+        <div
+          class="overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
+          <div
+            class="flex items-center justify-between border-b-4 border-[#445944] bg-[#445944] px-8 py-5">
             <h2 class="flex items-center gap-2.5 text-xl font-black text-white">
               <span>📋</span>
               送養資訊填寫
             </h2>
-            <span class="text-xs font-black bg-[#FCF4E5] border-2 border-[#445944] text-[#445944] px-3 py-1 rounded-full shadow-[2px_2px_0px_#445944]">
+            <span
+              class="rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3 py-1 text-xs font-black text-[#445944] shadow-[2px_2px_0px_#445944]">
               STEP 1 / 2
             </span>
           </div>
 
-          <form @submit.prevent="submitForm" class="space-y-8 p-6 md:p-8 bg-white">
-            
+          <form @submit.prevent="submitForm" class="space-y-8 bg-white p-6 md:p-8">
             <!-- Nickname & Coat Color -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
@@ -169,9 +171,9 @@ const traitOptions = [
                   type="text"
                   required
                   placeholder="請輸入毛孩名字"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-[#445944]">毛色 *</label>
                 <input
@@ -179,7 +181,7 @@ const traitOptions = [
                   type="text"
                   placeholder="如：橘白、奶油色"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
             </div>
 
@@ -190,32 +192,32 @@ const traitOptions = [
                 <select
                   v-model.number="form.species"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                  class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                   <option :value="null">請選擇</option>
                   <option :value="1">狗</option>
                   <option :value="2">貓</option>
                   <option :value="3">其他</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-[#445944]">性別 *</label>
                 <select
                   v-model.number="form.gender"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                  class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                   <option :value="null">請選擇</option>
                   <option :value="1">公</option>
                   <option :value="2">母</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-[#445944]">體型 *</label>
                 <select
                   v-model.number="form.size"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944] appearance-none">
+                  class="w-full appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none">
                   <option :value="null">請選擇</option>
                   <option :value="1">小型</option>
                   <option :value="2">中型</option>
@@ -234,49 +236,62 @@ const traitOptions = [
                   v-model="form.birthDate"
                   type="date"
                   required
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] shadow-[2px_2px_0px_#445944]" />
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none" />
               </div>
-              
+
               <div>
                 <label class="mb-2 block text-sm font-black text-[#445944]">晶片編號 (選填)</label>
                 <input
                   v-model="form.microchip"
                   type="text"
-                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]"
+                  class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none"
                   placeholder="若有植入請填寫" />
               </div>
             </div>
 
             <!-- Desex & Special care checkboxes -->
-            <div class="flex flex-wrap gap-6 bg-[#FCF4E5] p-5 rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
+            <div
+              class="flex flex-wrap gap-6 rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#445944]">
               <label class="flex cursor-pointer items-center gap-2.5">
-                <input type="checkbox" v-model="form.isDesex" class="rounded border-2 border-[#445944] text-[#445944] focus:ring-0 h-5 w-5 bg-white" />
+                <input
+                  type="checkbox"
+                  v-model="form.isDesex"
+                  class="h-5 w-5 rounded border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
                 <span class="text-sm font-black text-gray-700 select-none">是否已結紮 🩺</span>
               </label>
-              
+
               <label class="flex cursor-pointer items-center gap-2.5">
                 <input
                   type="checkbox"
                   v-model="form.isHighMaintenance"
-                  class="rounded border-2 border-[#445944] text-[#445944] focus:ring-0 h-5 w-5 bg-white" />
-                <span class="text-sm font-black text-gray-700 select-none">需要特別照護 (如：疾病、高齡) ⚠️</span>
+                  class="h-5 w-5 rounded border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
+                <span class="text-sm font-black text-gray-700 select-none">
+                  需要特別照護 (如：疾病、高齡) ⚠️
+                </span>
               </label>
             </div>
 
             <!-- Behavioral traits -->
-            <div class="bg-[#FDF9F3] p-5 rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
-              <label class="mb-3 block text-sm font-black text-[#445944]">行為特徵 (可多選) *</label>
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-[#FDF9F3] p-5 shadow-[4px_4px_0px_#445944]">
+              <label class="mb-3 block text-sm font-black text-[#445944]">
+                行為特徵 (可多選) *
+              </label>
               <div class="flex flex-wrap gap-3">
                 <label
                   v-for="opt in traitOptions"
                   :key="opt.value"
-                  :class="form.behavioralTraits.includes(opt.label) ? 'bg-[#FAE4AE] border-[#445944] shadow-[2px_2px_0px_#445944]' : 'bg-white border-gray-300 shadow-[1px_1px_0px_rgba(0,0,0,0.1)]'"
+                  :class="
+                    form.behavioralTraits.includes(opt.label)
+                      ? 'border-[#445944] bg-[#FAE4AE] shadow-[2px_2px_0px_#445944]'
+                      : 'border-gray-300 bg-white shadow-[1px_1px_0px_rgba(0,0,0,0.1)]'
+                  "
                   class="flex cursor-pointer items-center gap-2 rounded-xl border-2 px-4 py-2 text-sm font-black text-gray-700 transition-all duration-150 select-none">
                   <input
                     type="checkbox"
                     :value="opt.label"
                     v-model="form.behavioralTraits"
-                    class="rounded border-2 border-[#445944] text-[#445944] focus:ring-0 h-4.5 w-4.5 bg-white" />
+                    class="h-4.5 w-4.5 rounded border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
                   <span>{{ opt.label }}</span>
                 </label>
               </div>
@@ -291,7 +306,7 @@ const traitOptions = [
                 v-model="form.note"
                 rows="5"
                 required
-                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 focus:outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 shadow-[2px_2px_0px_#445944]"
+                class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 font-bold text-gray-800 placeholder-gray-400 shadow-[2px_2px_0px_#445944] focus:border-[#445944] focus:ring-0 focus:outline-none"
                 placeholder="請描述毛孩的故事..."></textarea>
               <p class="mt-2 text-right text-xs font-bold text-gray-500">
                 已輸入 {{ remarkCount }} / {{ maxRemark }} 字
@@ -299,23 +314,28 @@ const traitOptions = [
             </div>
 
             <!-- Photo Upload Area -->
-            <div class="bg-[#FCF4E5] p-5 rounded-3xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
-              <label class="mb-2 block text-sm font-black text-[#445944]">寵物照片 (限 1 張) *</label>
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-5 shadow-[4px_4px_0px_#445944]">
+              <label class="mb-2 block text-sm font-black text-[#445944]">
+                寵物照片 (限 1 張) *
+              </label>
               <div class="mt-4 flex justify-center sm:justify-start">
-                <div v-if="form.photo" class="relative h-48 w-48 border-4 border-[#445944] rounded-2xl overflow-hidden shadow-[4px_4px_0px_#445944]">
+                <div
+                  v-if="form.photo"
+                  class="relative h-48 w-48 overflow-hidden rounded-2xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
                   <img :src="form.photo" class="h-full w-full object-cover" />
                   <button
                     @click="removeImage"
                     type="button"
-                    class="absolute top-2 right-2 h-7 w-7 rounded-xl border-2 border-[#445944] bg-red-500 text-white font-black hover:bg-red-600 shadow-md flex items-center justify-center transition-colors">
+                    class="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-500 font-black text-white shadow-md transition-colors hover:bg-red-600">
                     ✕
                   </button>
                 </div>
-                
+
                 <label
                   v-else
-                  class="flex h-48 w-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-4 border-dashed border-[#445944] bg-white hover:bg-[#FDF9F3] transition-colors shadow-[4px_4px_0px_#445944]">
-                  <span class="text-4xl text-[#445944] font-black mb-1">+</span>
+                  class="flex h-48 w-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-4 border-dashed border-[#445944] bg-white shadow-[4px_4px_0px_#445944] transition-colors hover:bg-[#FDF9F3]">
+                  <span class="mb-1 text-4xl font-black text-[#445944]">+</span>
                   <span class="text-xs font-black text-gray-500">點擊上傳照片</span>
                   <input
                     type="file"
@@ -328,19 +348,21 @@ const traitOptions = [
             </div>
 
             <!-- Agreement Terms & Confirmation submit button -->
-            <div class="border-t-4 border-[#445944] pt-6 mt-8">
+            <div class="mt-8 border-t-4 border-[#445944] pt-6">
               <div class="mb-6 flex items-center gap-2">
                 <input
                   v-model="form.agreeTerms"
                   type="checkbox"
                   id="agree"
                   required
-                  class="rounded border-2 border-[#445944] text-[#445944] focus:ring-0 h-5 w-5 bg-white" />
-                <label for="agree" class="text-sm font-black text-gray-700 cursor-pointer select-none">
+                  class="h-5 w-5 rounded border-2 border-[#445944] bg-white text-[#445944] focus:ring-0" />
+                <label
+                  for="agree"
+                  class="cursor-pointer text-sm font-black text-gray-700 select-none">
                   我已詳閱且同意刊登條款
                 </label>
               </div>
-              
+
               <button
                 type="submit"
                 class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-4 text-lg font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
@@ -352,13 +374,17 @@ const traitOptions = [
       </div>
 
       <!-- SUCCESS AUDIT PENDING SCREEN -->
-      <div v-else class="mx-auto max-w-2xl w-[90%] rounded-3xl border-4 border-[#445944] bg-white p-12 md:p-20 text-center shadow-[6px_6px_0px_#445944] mt-12 animate-pulse-slow">
+      <div
+        v-else
+        class="animate-pulse-slow mx-auto mt-12 w-[90%] max-w-2xl rounded-3xl border-4 border-[#445944] bg-white p-12 text-center shadow-[6px_6px_0px_#445944] md:p-20">
         <div class="mb-6 text-7xl">⏳</div>
         <h2 class="mb-4 text-3xl font-black text-[#445944]">資料已送出，審核中</h2>
-        <p class="mb-8 text-sm md:text-base font-bold text-gray-600 leading-relaxed bg-[#FCF4E5] p-5 rounded-2xl border-2 border-dashed border-[#445944]">
-          我們將在 1-3 個工作天內完成審核，審核結果將會透過電子郵件通知您。非常感謝您對毛孩的關愛與付出！
+        <p
+          class="mb-8 rounded-2xl border-2 border-dashed border-[#445944] bg-[#FCF4E5] p-5 text-sm leading-relaxed font-bold text-gray-600 md:text-base">
+          我們將在 1-3
+          個工作天內完成審核，審核結果將會透過電子郵件通知您。非常感謝您對毛孩的關愛與付出！
         </p>
-        
+
         <button
           @click="router.push({ name: 'pet-adoption' })"
           class="rounded-2xl border-2 border-[#445944] bg-[#445944] px-10 py-4 font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">

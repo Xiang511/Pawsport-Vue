@@ -75,21 +75,21 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka px-4 py-8">
-    <div class="mx-auto max-w-xl mt-6">
-      
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] px-4 py-8 text-gray-800 antialiased">
+    <div class="mx-auto mt-6 w-[70%]">
       <!-- MAIN CONTAINER CARD -->
-      <div class="relative rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
-        
+      <div
+        class="relative rounded-3xl border-4 border-[#445944] bg-[#FCF4E5] p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <!-- HEADER ROW -->
-        <div class="flex items-center justify-between border-b-4 border-[#445944] pb-4 mb-6">
+        <div class="mb-6 flex items-center justify-between border-b-4 border-[#445944] pb-4">
           <button
             @click="router.back()"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-[#445944] font-black transition hover:bg-[#445944] hover:text-white shadow-[2px_2px_0px_#445944] active:translate-y-[1px]">
+            class="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-[#445944] shadow-[2px_2px_0px_#445944] transition hover:bg-[#445944] hover:text-white active:translate-y-[1px]">
             <Undo2 class="h-5 w-5" />
           </button>
-          <h1 class="text-xl font-black text-[#445944] tracking-wide flex items-center gap-1.5">
-            <Sparkles :size="18" class="text-amber-500 animate-spin-slow" />
+          <h1 class="flex items-center gap-1.5 text-xl font-black tracking-wide text-[#445944]">
+            <Sparkles :size="18" class="animate-spin-slow text-amber-500" />
             上傳毛孩影像
           </h1>
           <div class="w-10"></div>
@@ -97,21 +97,21 @@ const submitForm = async () => {
 
         <!-- FORM BODY -->
         <div class="space-y-6">
-
           <!-- 圖片上傳區 -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">
-              選擇照片 <span class="text-red-500">*</span>
+              選擇照片
+              <span class="text-red-500">*</span>
             </label>
 
             <!-- 預覽區域 -->
-            <div v-if="previewUrl" class="relative border-4 border-[#445944] rounded-2xl overflow-hidden shadow-[4px_4px_0px_#445944]">
-              <img
-                :src="previewUrl"
-                class="h-64 w-full object-cover" />
+            <div
+              v-if="previewUrl"
+              class="relative overflow-hidden rounded-2xl border-4 border-[#445944] shadow-[4px_4px_0px_#445944]">
+              <img :src="previewUrl" class="h-64 w-full object-cover" />
               <button
                 @click="removeImage"
-                class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-500 text-white font-black hover:bg-red-600 shadow-md">
+                class="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-[#445944] bg-red-500 font-black text-white shadow-md hover:bg-red-600">
                 ✕
               </button>
             </div>
@@ -119,15 +119,11 @@ const submitForm = async () => {
             <!-- 上傳按鈕（未選圖時顯示） -->
             <label
               v-else
-              class="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] hover:bg-white transition-all shadow-[4px_4px_0px_#445944]">
-              <Upload class="mb-2 h-10 w-10 text-[#445944] animate-bounce-slow" />
+              class="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] shadow-[4px_4px_0px_#445944] transition-all">
+              <Upload class="animate-bounce-slow mb-2 h-10 w-10 text-[#445944]" />
               <span class="text-sm font-black text-[#445944]">點擊選擇圖片</span>
               <span class="mt-1 text-xs font-bold text-gray-400">支援 JPG、PNG、WEBP</span>
-              <input
-                type="file"
-                accept="image/*"
-                @change="onFileChange"
-                class="hidden" />
+              <input type="file" accept="image/*" @change="onFileChange" class="hidden" />
             </label>
           </div>
 
@@ -138,7 +134,7 @@ const submitForm = async () => {
               v-model="form.photoNote"
               placeholder="例：第一次帶麻糬去看診的照片..."
               rows="4"
-              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 shadow-[2px_2px_0px_#445944] outline-none focus:ring-0 focus:border-[#445944] placeholder-gray-400 font-bold" />
+              class="w-full resize-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 font-bold placeholder-gray-400 shadow-[2px_2px_0px_#445944] outline-none focus:border-[#445944] focus:ring-0" />
           </div>
 
           <!-- 提交按鈕 -->
@@ -181,7 +177,8 @@ const submitForm = async () => {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

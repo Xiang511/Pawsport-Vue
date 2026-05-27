@@ -49,10 +49,11 @@ const clipboard = (text) => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
-    
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] pb-20 text-gray-800 antialiased">
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header
+      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -75,46 +76,50 @@ const clipboard = (text) => {
         </svg>
       </div>
 
-      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+      <div class="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4">
         <div
-          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          class="font-fredoka animate-pulse-slow mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm">
           <Sparkles :size="14" class="animate-spin-slow" />
           MISSING REPORT DETAILS
         </div>
         <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           遺失協尋
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
-            詳細啟事
+            詳細啓事
             <span
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
         </h1>
         <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
-          尋獲及領回寵物的飼主，請至登記站辦理尋獲及領回的登記！讓我們攜手幫助毛孩回家。
+          尋獲及領回寵物的飼主，請至登記站辦理尋獲及領回的登記！
+          <br />
+          讓我們攜手幫助毛孩回家。
         </p>
       </div>
     </header>
 
     <!-- MAIN BODY -->
-    <div v-if="pet" class="mx-auto max-w-7xl w-[90%] px-4 mt-12">
+    <div v-if="pet" class="mx-auto mt-12 w-[90%] max-w-7xl px-4">
       <div class="flex flex-col gap-8 lg:flex-row">
-        
         <!-- Left Side Column: Photo Box Card -->
         <aside class="w-full lg:w-1/3">
-          <div class="sticky top-6 rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
-            <div class="mb-4 flex items-center justify-center gap-2 border-b-2 border-[#445944] pb-3">
+          <div
+            class="sticky top-30 rounded-3xl border-4 border-[#445944] bg-white p-5 shadow-[6px_6px_0px_#445944]">
+            <div
+              class="mb-4 flex items-center justify-center gap-2 border-b-2 border-[#445944] pb-3">
               <span class="text-xl">📸</span>
               <h3 class="text-center text-lg font-black text-[#445944]">寵物照片</h3>
             </div>
-            
-            <div class="overflow-hidden rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] shadow-md">
+
+            <div
+              class="overflow-hidden rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] shadow-md">
               <img
                 :src="pet.photo || DEFAULT_PET_IMAGE"
                 @error="handleImageError"
                 class="w-full object-cover transition-transform duration-700 hover:scale-105"
                 :alt="pet.breed" />
             </div>
-            
+
             <button
               @click="goBack"
               class="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] py-3 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
@@ -126,23 +131,27 @@ const clipboard = (text) => {
 
         <!-- Right Side Column: Data Block Card -->
         <div class="w-full lg:w-2/3">
-          <div class="rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944] overflow-hidden">
-            
+          <div
+            class="overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
             <!-- Pet Information -->
             <div class="border-b-4 border-[#445944]">
-              <div class="flex items-center gap-3 bg-[#FCF4E5] border-b-2 border-[#445944] px-6 py-4 text-[#445944]">
+              <div
+                class="flex items-center gap-3 border-b-2 border-[#445944] bg-[#FCF4E5] px-6 py-4 text-[#445944]">
                 <Heart class="h-5 w-5 fill-[#445944]" />
                 <h3 class="text-lg font-black">寵物基本資訊</h3>
               </div>
-              
-              <ul class="divide-y-2 divide-[#445944] px-6 text-sm font-bold text-gray-700 bg-white">
+
+              <ul class="divide-y-2 divide-[#445944] bg-white px-6 text-sm font-bold text-gray-700">
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">寵物名 / 品種</p>
-                  <p class="text-gray-800 font-extrabold text-base">{{ pet.breed }}</p>
+                  <p class="text-base font-extrabold text-gray-800">{{ pet.breed }}</p>
                 </li>
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">晶片號碼</p>
-                  <p class="font-mono text-gray-800 bg-[#FCF4E5] px-2.5 py-1 rounded-xl border-2 border-[#445944] text-xs font-black shadow-[1.5px_1.5px_0px_#445944]">{{ pet.chipId || '無晶片資料' }}</p>
+                  <p
+                    class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-2.5 py-1 font-mono text-xs font-black text-gray-800 shadow-[1.5px_1.5px_0px_#445944]">
+                    {{ pet.chipId || '無晶片資料' }}
+                  </p>
                 </li>
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">性別 / 動物類別</p>
@@ -153,8 +162,9 @@ const clipboard = (text) => {
                   <p class="text-gray-800">{{ pet.color }}</p>
                 </li>
                 <li class="flex items-start py-4">
-                  <p class="w-32 font-black text-[#445944] shrink-0">特徵描述</p>
-                  <p class="text-gray-800 leading-relaxed bg-[#FDF9F3] p-4 rounded-2xl border-2 border-dashed border-[#445944] flex-1 text-xs">
+                  <p class="w-32 shrink-0 font-black text-[#445944]">特徵描述</p>
+                  <p
+                    class="flex-1 rounded-2xl border-2 border-dashed border-[#445944] bg-[#FDF9F3] p-4 text-xs leading-relaxed text-gray-800">
                     {{ pet.feature || '無特徵描述。' }}
                   </p>
                 </li>
@@ -163,15 +173,16 @@ const clipboard = (text) => {
 
             <!-- Lost Information -->
             <div class="border-b-4 border-[#445944]">
-              <div class="flex items-center gap-3 bg-[#FCF4E5] border-b-2 border-[#445944] px-6 py-4 text-[#445944]">
+              <div
+                class="flex items-center gap-3 border-b-2 border-[#445944] bg-[#FCF4E5] px-6 py-4 text-[#445944]">
                 <Calendar class="h-5 w-5" />
                 <h3 class="text-lg font-black">走失詳情</h3>
               </div>
-              
-              <ul class="divide-y-2 divide-[#445944] px-6 text-sm font-bold text-gray-700 bg-white">
+
+              <ul class="divide-y-2 divide-[#445944] bg-white px-6 text-sm font-bold text-gray-700">
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">遺失時間</p>
-                  <p class="text-gray-800 font-extrabold">{{ pet.lostTime }}</p>
+                  <p class="font-extrabold text-gray-800">{{ pet.lostTime }}</p>
                 </li>
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">申報時間</p>
@@ -179,12 +190,20 @@ const clipboard = (text) => {
                 </li>
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">遺失地點</p>
-                  <div class="flex items-center gap-3 text-gray-800 flex-wrap">
-                    <span class="font-extrabold">{{ pet.city }}{{ pet.district }}{{ pet.lostPlace }}</span>
+                  <div class="flex flex-wrap items-center gap-3 text-gray-800">
+                    <span class="font-extrabold">
+                      {{ pet.city }}{{ pet.district }}{{ pet.lostPlace }}
+                    </span>
                     <a
-                      :href="'https://www.google.com.tw/maps/search/' + pet.city + pet.district + pet.lostPlace + '/'"
+                      :href="
+                        'https://www.google.com.tw/maps/search/' +
+                        pet.city +
+                        pet.district +
+                        pet.lostPlace +
+                        '/'
+                      "
                       target="_blank"
-                      class="inline-flex items-center gap-1 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-xs font-black text-[#445944] shadow-[1.5px_1.5px_0px_#445944] hover:bg-white transition-all duration-150">
+                      class="inline-flex items-center gap-1 rounded-xl border-2 border-[#445944] bg-[#FAE4AE] px-3 py-1 text-xs font-black text-[#445944] shadow-[1.5px_1.5px_0px_#445944] transition-all duration-150 hover:bg-white">
                       <MapPin class="h-3.5 w-3.5" />
                       開啟地圖
                     </a>
@@ -195,15 +214,16 @@ const clipboard = (text) => {
 
             <!-- Contact Information -->
             <div>
-              <div class="flex items-center gap-3 bg-[#FCF4E5] border-b-2 border-[#445944] px-6 py-4 text-[#445944]">
+              <div
+                class="flex items-center gap-3 border-b-2 border-[#445944] bg-[#FCF4E5] px-6 py-4 text-[#445944]">
                 <User class="h-5 w-5" />
                 <h3 class="text-lg font-black">聯絡人方式</h3>
               </div>
-              
-              <ul class="divide-y-2 divide-[#445944] px-6 text-sm font-bold text-gray-700 bg-white">
+
+              <ul class="divide-y-2 divide-[#445944] bg-white px-6 text-sm font-bold text-gray-700">
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">發布人</p>
-                  <p class="text-gray-800 font-extrabold text-base">{{ pet.reporterName }}</p>
+                  <p class="text-base font-extrabold text-gray-800">{{ pet.reporterName }}</p>
                 </li>
                 <li class="flex items-center py-4">
                   <p class="w-32 font-black text-[#445944]">聯絡電話</p>
@@ -211,7 +231,7 @@ const clipboard = (text) => {
                     <span class="font-extrabold">{{ pet.contactPhone }}</span>
                     <button
                       @click="clipboard(pet.contactPhone)"
-                      class="text-gray-500 hover:text-[#445944] p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                      class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#445944]"
                       title="點擊複製電話">
                       <Copy class="h-4 w-4" />
                     </button>
@@ -223,7 +243,7 @@ const clipboard = (text) => {
                     <span class="font-extrabold">{{ pet.contactEmail }}</span>
                     <button
                       @click="clipboard(pet.contactEmail)"
-                      class="text-gray-500 hover:text-[#445944] p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                      class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#445944]"
                       title="點擊複製 E-mail">
                       <Copy class="h-4 w-4" />
                     </button>
@@ -235,27 +255,35 @@ const clipboard = (text) => {
         </div>
       </div>
     </div>
-    
+
     <!-- Loading State with Premium Neo-Brutalist Skeleton Detailed Loader -->
-    <div v-else class="mx-auto max-w-7xl w-[90%] px-4 mt-12 flex flex-col gap-8 lg:flex-row animate-pulse">
+    <div
+      v-else
+      class="mx-auto mt-12 flex w-[90%] max-w-7xl animate-pulse flex-col gap-8 px-4 lg:flex-row">
       <!-- Left Column skeleton photo box card -->
       <aside class="w-full lg:w-1/3">
-        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
-          <div class="mb-4 h-6 bg-[#445944]/20 rounded-xl w-1/3"></div>
-          <div class="aspect-square w-full rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5] flex items-center justify-center">
+        <div
+          class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div class="mb-4 h-6 w-1/3 rounded-xl bg-[#445944]/20"></div>
+          <div
+            class="flex aspect-square w-full items-center justify-center rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5]">
             <span class="text-4xl opacity-20">🚨</span>
           </div>
-          <div class="mt-6 h-12 bg-[#445944]/20 rounded-xl w-full"></div>
+          <div class="mt-6 h-12 w-full rounded-xl bg-[#445944]/20"></div>
         </div>
       </aside>
       <!-- Right Column skeleton data block card -->
       <div class="w-full lg:w-2/3">
-        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] space-y-6">
-          <div class="h-8 bg-[#445944]/20 rounded-xl w-1/4"></div>
+        <div
+          class="space-y-6 rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div class="h-8 w-1/4 rounded-xl bg-[#445944]/20"></div>
           <div class="space-y-4">
-            <div v-for="j in 4" :key="j" class="flex gap-4 border-b border-dashed border-gray-200 pb-2">
-              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/4"></div>
-              <div class="h-5 bg-[#445944]/15 rounded-lg w-1/2"></div>
+            <div
+              v-for="j in 4"
+              :key="j"
+              class="flex gap-4 border-b border-dashed border-gray-200 pb-2">
+              <div class="h-5 w-1/4 rounded-lg bg-[#445944]/15"></div>
+              <div class="h-5 w-1/2 rounded-lg bg-[#445944]/15"></div>
             </div>
           </div>
         </div>

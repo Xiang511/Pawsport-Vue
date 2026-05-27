@@ -161,16 +161,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-24">
-    
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] pb-24 text-gray-800 antialiased">
     <!-- 導覽返回欄 -->
-    <div class="mx-auto max-w-7xl w-[90%] px-4 pt-8">
+    <div class="mx-auto w-[90%] max-w-7xl px-4 pt-8">
       <button
         @click="router.push({ name: 'pet-adoption' })"
         class="group inline-flex items-center gap-2.5 rounded-2xl border-2 border-[#445944] bg-white px-5 py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
-        <span class="transition-transform duration-200 group-hover:-translate-x-1">
-          ⬅️
-        </span>
+        <span class="transition-transform duration-200 group-hover:-translate-x-1">⬅️</span>
         <span>返回領養列表</span>
       </button>
     </div>
@@ -178,32 +176,40 @@ onMounted(() => {
     <!-- 載入中狀態 with Premium Neo-Brutalist Skeleton Detailed Loader -->
     <div
       v-if="loading"
-      class="mx-auto max-w-7xl w-[90%] px-4 pt-8 flex flex-col gap-8 lg:flex-row animate-pulse">
+      class="mx-auto flex w-[90%] max-w-7xl animate-pulse flex-col gap-8 px-4 pt-8 lg:flex-row">
       <!-- Left skeleton aspect-square card -->
       <div class="w-full lg:w-5/12">
-        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
-          <div class="aspect-square w-full rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5] flex items-center justify-center">
+        <div
+          class="rounded-3xl border-4 border-[#445944]/30 bg-white p-5 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div
+            class="flex aspect-square w-full items-center justify-center rounded-2xl border-4 border-[#445944]/20 bg-[#FCF4E5]">
             <span class="text-5xl opacity-20">🐾</span>
           </div>
-          <div class="mt-6 h-12 bg-[#445944]/20 rounded-2xl w-full"></div>
+          <div class="mt-6 h-12 w-full rounded-2xl bg-[#445944]/20"></div>
         </div>
       </div>
       <!-- Right skeleton content cards -->
-      <div class="w-full lg:w-7/12 space-y-6">
-        <div class="rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)] space-y-4">
-          <div class="h-8 bg-[#445944]/20 rounded-xl w-1/3"></div>
-          <div class="h-6 bg-[#445944]/15 rounded-lg w-full"></div>
+      <div class="w-full space-y-6 lg:w-7/12">
+        <div
+          class="space-y-4 rounded-3xl border-4 border-[#445944]/30 bg-white p-8 shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
+          <div class="h-8 w-1/3 rounded-xl bg-[#445944]/20"></div>
+          <div class="h-6 w-full rounded-lg bg-[#445944]/15"></div>
         </div>
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div v-for="j in 4" :key="j" class="rounded-3xl border-4 border-[#445944]/30 bg-white p-4 shadow-[4px_4px_0px_rgba(68,89,68,0.1)] h-24 bg-[#FCF4E5]/20"></div>
+          <div
+            v-for="j in 4"
+            :key="j"
+            class="h-24 rounded-3xl border-4 border-[#445944]/30 bg-[#FCF4E5]/20 bg-white p-4 shadow-[4px_4px_0px_rgba(68,89,68,0.1)]"></div>
         </div>
       </div>
     </div>
 
     <!-- 錯誤狀態 -->
-    <div v-else-if="errorMsg" class="mx-auto max-w-md px-4 py-24 text-center rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944] mt-12">
+    <div
+      v-else-if="errorMsg"
+      class="mx-auto mt-12 max-w-md rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 px-4 py-24 text-center shadow-[6px_6px_0px_#445944]">
       <div class="mb-6 text-6xl">🐾</div>
-      <h3 class="mb-6 text-xl font-black text-[#445944] leading-relaxed">{{ errorMsg }}</h3>
+      <h3 class="mb-6 text-xl leading-relaxed font-black text-[#445944]">{{ errorMsg }}</h3>
       <button
         @click="router.push({ name: 'pet-adoption' })"
         class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#445944] px-6 py-3 font-bold text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
@@ -212,13 +218,14 @@ onMounted(() => {
     </div>
 
     <!-- 寵物詳細頁面主體 -->
-    <div v-else class="mx-auto max-w-7xl w-[90%] px-4 pt-8">
+    <div v-else class="mx-auto w-[90%] max-w-7xl px-4 pt-8">
       <div class="flex flex-col gap-8 lg:flex-row">
         <!-- 左側：照片呈現 -->
         <div class="w-full lg:w-5/12">
           <div
             class="sticky top-8 overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944]">
-            <div class="relative aspect-square w-full overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
+            <div
+              class="relative aspect-square w-full overflow-hidden border-b-4 border-[#445944] bg-gray-100">
               <img
                 :src="getImageUrl(pet.photo)"
                 @error="handleImageError"
@@ -229,11 +236,10 @@ onMounted(() => {
               <div class="absolute top-6 left-6 flex flex-col gap-2">
                 <span
                   v-if="pet.isHighMaintenance"
-                  class="rounded-full border-2 border-[#445944] bg-red-500 px-4 py-1.5 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+                  class="rounded-full bg-red-500 px-4 py-1.5 text-xs font-black text-white">
                   ⚠️ 特別關注
                 </span>
-                <span
-                  class="rounded-full border-2 border-[#445944] bg-emerald-500 px-4 py-1.5 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+                <span class="rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-black text-white">
                   🐾 開放領養中
                 </span>
               </div>
@@ -252,26 +258,32 @@ onMounted(() => {
         <div class="w-full lg:w-7/12">
           <div class="space-y-6">
             <!-- 檔頭：暱稱、性別與標籤 -->
-            <div class="rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
               <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                   <h1 class="text-4xl font-black tracking-tight text-[#445944]">{{ pet.name }}</h1>
                   <span
-                    :class="pet.gender === 1 ? 'bg-blue-100 text-blue-800 border-blue-400' : 'bg-pink-100 text-pink-800 border-pink-400'"
+                    :class="
+                      pet.gender === 1
+                        ? 'border-blue-400 bg-blue-100 text-blue-800'
+                        : 'border-pink-400 bg-pink-100 text-pink-800'
+                    "
                     class="flex h-9 items-center gap-1 rounded-full border-2 px-4 text-sm font-black shadow-sm">
                     {{ petGenderText }} {{ pet.gender === 1 ? '♂' : '♀' }}
                   </span>
                 </div>
 
                 <!-- 標註送養地 (簡化呈現) -->
-                <div class="flex items-center gap-1.5 text-sm font-black text-gray-600 bg-[#FCF4E5] border-2 border-[#445944] px-3 py-1 rounded-full shadow-[2px_2px_0px_#445944]">
+                <div
+                  class="flex items-center gap-1.5 rounded-full border-2 border-[#445944] bg-[#FCF4E5] px-3 py-1 text-sm font-black text-gray-600 shadow-[2px_2px_0px_#445944]">
                   <span>📍</span>
                   <span>{{ contactInfo.county }} • {{ contactInfo.district }}</span>
                 </div>
               </div>
 
               <!-- 簡短副標誌 -->
-              <p class="text-sm md:text-base leading-relaxed font-bold text-gray-500">
+              <p class="text-sm leading-relaxed font-bold text-gray-500 md:text-base">
                 {{ pet.note ? pet.note.split('\n')[0] : '一個期待擁有溫暖港灣的毛寶貝。' }}
               </p>
             </div>
@@ -279,38 +291,57 @@ onMounted(() => {
             <!-- 基本資料網格 -->
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <!-- 種類 -->
-              <div class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
+              <div
+                class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
                 <span class="mb-1.5 block text-xs font-black text-gray-400">種類</span>
-                <span class="text-base font-black text-[#445944] bg-[#FCF4E5] border border-gray-300 px-2 py-0.5 rounded-lg">{{ petSpecies }}</span>
+                <span
+                  class="rounded-lg border border-gray-300 bg-[#FCF4E5] px-2 py-0.5 text-base font-black text-[#445944]">
+                  {{ petSpecies }}
+                </span>
               </div>
               <!-- 年齡 -->
-              <div class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
+              <div
+                class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
                 <span class="mb-1.5 block text-xs font-black text-gray-400">年齡</span>
-                <span class="text-base font-black text-[#445944] bg-[#FCF4E5] border border-gray-300 px-2 py-0.5 rounded-lg">{{ petAgeText }}</span>
+                <span
+                  class="rounded-lg border border-gray-300 bg-[#FCF4E5] px-2 py-0.5 text-base font-black text-[#445944]">
+                  {{ petAgeText }}
+                </span>
               </div>
               <!-- 毛色 -->
-              <div class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
+              <div
+                class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
                 <span class="mb-1.5 block text-xs font-black text-gray-400">毛色</span>
-                <span class="text-base font-black text-[#445944] bg-[#FCF4E5] border border-gray-300 px-2 py-0.5 rounded-lg">{{ pet.coatColor || '未註記' }}</span>
+                <span
+                  class="rounded-lg border border-gray-300 bg-[#FCF4E5] px-2 py-0.5 text-base font-black text-[#445944]">
+                  {{ pet.coatColor || '未註記' }}
+                </span>
               </div>
               <!-- 體型 -->
-              <div class="rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944] flex flex-col justify-between">
+              <div
+                class="flex flex-col justify-between rounded-3xl border-4 border-[#445944] bg-white p-4 text-center shadow-[4px_4px_0px_#445944]">
                 <span class="mb-1 block text-xs font-black text-gray-400">體型 / 預估體重</span>
-                <span class="block text-sm font-black text-[#445944] bg-[#FCF4E5] border border-gray-300 py-0.5 rounded-lg mb-1">{{ petSizeText }}</span>
+                <span
+                  class="mb-1 block rounded-lg border border-gray-300 bg-[#FCF4E5] py-0.5 text-sm font-black text-[#445944]">
+                  {{ petSizeText }}
+                </span>
                 <span class="text-[10px] font-bold text-gray-500">({{ petWeightText }})</span>
               </div>
             </div>
 
             <!-- 健康與照護詳細資訊 -->
-            <div class="rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
-              <h3 class="mb-6 flex items-center gap-2 text-xl font-black text-[#445944] border-b-2 border-[#445944] pb-4">
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
+              <h3
+                class="mb-6 flex items-center gap-2 border-b-2 border-[#445944] pb-4 text-xl font-black text-[#445944]">
                 <span class="text-xl">🩺</span>
                 健康與照護明細
               </h3>
 
-              <div class="space-y-4 text-sm md:text-base font-bold text-gray-700 bg-white">
+              <div class="space-y-4 bg-white text-sm font-bold text-gray-700 md:text-base">
                 <!-- 結紮狀況 -->
-                <div class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
+                <div
+                  class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
                   <span class="font-black text-gray-400">結紮狀態</span>
                   <span class="flex items-center gap-1.5 font-black text-gray-800">
                     <span :class="pet.isDesex ? 'text-emerald-500' : 'text-amber-500'">●</span>
@@ -319,7 +350,8 @@ onMounted(() => {
                 </div>
 
                 <!-- 晶片號碼 -->
-                <div class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
+                <div
+                  class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
                   <span class="font-black text-gray-400">晶片號碼</span>
                   <span
                     class="rounded-xl border-2 border-[#445944] bg-[#FCF4E5] px-3 py-1 font-mono text-xs font-black text-gray-700 md:text-sm">
@@ -337,7 +369,8 @@ onMounted(() => {
                 </div>
 
                 <!-- 出生日期 -->
-                <div class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
+                <div
+                  class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-3">
                   <span class="font-black text-gray-400">預估出生日期</span>
                   <span class="font-black text-gray-800">
                     {{ pet.birthDate || '無詳細記錄' }}
@@ -355,8 +388,10 @@ onMounted(() => {
             </div>
 
             <!-- 生活習慣與相處特性 -->
-            <div class="rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
-              <h3 class="mb-6 flex items-center gap-2 text-xl font-black text-[#445944] border-b-2 border-[#445944] pb-4">
+            <div
+              class="rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
+              <h3
+                class="mb-6 flex items-center gap-2 border-b-2 border-[#445944] pb-4 text-xl font-black text-[#445944]">
                 <span class="text-xl">🤝</span>
                 生活習性與相處條件
               </h3>
@@ -377,14 +412,14 @@ onMounted(() => {
 
             <!-- 我的小故事 -->
             <div
-              class="relative overflow-hidden rounded-3xl border-4 border-[#445944] bg-[#FFFBF9] p-6 md:p-8 shadow-[6px_6px_0px_#445944]">
+              class="relative overflow-hidden rounded-3xl border-4 border-[#445944] bg-[#FFFBF9] p-6 shadow-[6px_6px_0px_#445944] md:p-8">
               <!-- 裝飾用雙引號 -->
               <span class="absolute top-4 right-6 font-serif text-8xl text-[#FBF1EC] select-none">
                 “
               </span>
 
               <h3
-                class="relative z-10 mb-5 flex items-center gap-2 text-xl font-black text-[#445944] border-b-2 border-[#445944] pb-4">
+                class="relative z-10 mb-5 flex items-center gap-2 border-b-2 border-[#445944] pb-4 text-xl font-black text-[#445944]">
                 <span class="text-xl">📖</span>
                 我的個性與故事
               </h3>
@@ -423,13 +458,13 @@ onMounted(() => {
       v-if="showContactModal"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm transition-opacity duration-300">
       <div
-        class="w-full max-w-md scale-100 transform rounded-3xl border-4 border-[#445944] bg-white p-6 md:p-8 shadow-[8px_8px_0px_#445944] transition-all duration-300">
+        class="w-full max-w-md scale-100 transform rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[8px_8px_0px_#445944] transition-all duration-300 md:p-8">
         <!-- Modal Header -->
         <div class="mb-6 flex items-center justify-between border-b-2 border-[#445944] pb-4">
           <h3 class="text-2xl font-black text-[#445944]">📫 送養聯絡窗口</h3>
           <button
             @click="showContactModal = false"
-            class="flex h-8 w-8 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] text-gray-600 transition hover:bg-white hover:text-black font-black">
+            class="flex h-8 w-8 items-center justify-center rounded-xl border-2 border-[#445944] bg-[#FCF4E5] font-black text-gray-600 transition hover:bg-white hover:text-black">
             ✕
           </button>
         </div>
@@ -437,7 +472,7 @@ onMounted(() => {
         <!-- Modal Body -->
         <div class="space-y-5">
           <div
-            class="rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 text-sm font-bold leading-relaxed text-gray-700">
+            class="rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-4 text-sm leading-relaxed font-bold text-gray-700">
             📌
             領養前請務必審慎評估家庭環境、經濟狀況與長期陪伴的決心，讓我們一起為寶貝打造幸福終點站！
           </div>
@@ -460,7 +495,8 @@ onMounted(() => {
             <!-- Line ID -->
             <div class="flex flex-col gap-1">
               <span class="text-xs font-black text-gray-400">Line 聯絡帳號</span>
-              <span class="flex items-center gap-1.5 font-mono text-base font-black text-gray-800 bg-[#FCF4E5] p-2 rounded-2xl border-2 border-[#445944] w-max shadow-[2px_2px_0px_#445944]">
+              <span
+                class="flex w-max items-center gap-1.5 rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-2 font-mono text-base font-black text-gray-800 shadow-[2px_2px_0px_#445944]">
                 <span class="text-emerald-500">🟢</span>
                 {{ contactInfo.lineId }}
               </span>

@@ -40,10 +40,45 @@ onMounted(() => {
 })
 
 const cityData = {
-  台北市: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
-  新北市: ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '土城區', '蘆洲區', '樹林區', '汐止區'],
+  台北市: [
+    '中正區',
+    '大同區',
+    '中山區',
+    '松山區',
+    '大安區',
+    '萬華區',
+    '信義區',
+    '士林區',
+    '北投區',
+    '內湖區',
+    '南港區',
+    '文山區',
+  ],
+  新北市: [
+    '板橋區',
+    '三重區',
+    '中和區',
+    '永和區',
+    '新莊區',
+    '新店區',
+    '土城區',
+    '蘆洲區',
+    '樹林區',
+    '汐止區',
+  ],
   桃園市: ['桃園區', '中壢區', '平鎮區', '八德區', '楊梅區', '蘆竹區'],
-  台中市: ['中區', '東區', '南區', '西區', '北區', '北屯區', '西屯區', '南屯區', '太平區', '大里區'],
+  台中市: [
+    '中區',
+    '東區',
+    '南區',
+    '西區',
+    '北區',
+    '北屯區',
+    '西屯區',
+    '南屯區',
+    '太平區',
+    '大里區',
+  ],
   台南市: ['中西區', '東區', '南區', '北區', '安平區', '安南區', '永康區', '歸仁區'],
   高雄市: ['新興區', '前金區', '苓雅區', '左營區', '楠梓區', '三民區', '鼓山區', '鳳山區'],
   嘉義市: ['東區', '西區'],
@@ -61,13 +96,24 @@ const onCityChange = () => {
 
 // 3. 搜尋方法 (前端過濾)
 const filteredPets = computed(() => {
-  return lostPets.value.filter(pet => {
-    // 雖然 API 中沒有明確的 Species，但我們可以在後端或前端簡單過濾 (假設目前 DTO 有或是預設)
-    // 這裡主要針對前端提供的條件過濾
+  return lostPets.value.filter((pet) => {
+    // 類別篩選
+    if (filters.type && filters.type !== '不限') {
+      if (filters.type === '其他') {
+        if (pet.species === '狗' || pet.species === '貓') return false
+      } else {
+        if (pet.species !== filters.type) return false
+      }
+    }
+
+    // 性別篩選
     if (filters.gender && filters.gender !== '不限' && pet.gender !== filters.gender) return false
+
+    // 地區篩選
     if (filters.city && pet.city !== filters.city) return false
     if (filters.district && pet.district !== filters.district) return false
-    
+
+    // 關鍵字篩選
     if (filters.keyword) {
       const kw = filters.keyword.toLowerCase()
       const matchFeature = pet.feature?.toLowerCase().includes(kw)
@@ -87,10 +133,11 @@ const handleSearch = () => {
 </script>
 
 <template>
-  <div class="page-container min-h-screen bg-[#FDF9F3] text-gray-800 antialiased font-fredoka pb-20">
-    
+  <div
+    class="page-container font-fredoka min-h-screen bg-[#FCF4E5] pb-20 text-gray-800 antialiased">
     <!-- HERO SECTION -->
-    <header class="hero-container relative overflow-hidden bg-[#FCF4E5] border-b-4 border-[#445944] pt-8 pb-12 lg:py-16 text-center">
+    <header
+      class="hero-container relative overflow-hidden bg-[#FCF4E5] pt-8 pb-12 text-center lg:py-16">
       <!-- Background floating ornaments -->
       <div class="pointer-events-none absolute inset-0 z-0 opacity-15">
         <svg
@@ -113,38 +160,40 @@ const handleSearch = () => {
         </svg>
       </div>
 
-      <div class="relative z-10 mx-auto max-w-4xl px-4 flex flex-col items-center">
+      <div class="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4">
         <div
-          class="font-fredoka mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm animate-pulse-slow">
+          class="font-fredoka animate-pulse-slow mb-4 inline-flex w-max items-center gap-2 rounded-full bg-[#7a6856] px-4 py-1.5 text-xs font-semibold tracking-wider text-white shadow-sm">
           <Sparkles :size="14" class="animate-spin-slow" />
           HELP US FIND THEM
         </div>
         <h1 class="mb-4 text-4xl leading-tight font-black text-[#445944] md:text-5xl">
           遺失協尋
           <span class="relative z-10 inline-block px-2 text-[#7a6856]">
-            啟事列表
+            啓事列表
             <span
               class="absolute right-0 bottom-1.5 left-0 -z-10 h-3 -rotate-1 transform rounded bg-[#FAE4AE] md:h-4"></span>
           </span>
         </h1>
         <p class="mb-6 max-w-xl text-base font-bold text-gray-600">
-          凝聚社群力量，守護毛孩回家防線。希望能幫助每個走失的寶貝早日回到溫暖的避風港。
+          凝聚社群力量，守護毛孩回家防線。
+          <br />
+          希望能幫助每個走失的寶貝早日回到溫暖的避風港。
         </p>
         <div
           class="inline-flex items-center gap-2 rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] px-5 py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944]">
           <span>📢</span>
-          尋獲寵物後，請記得辦理撤銷申報唷！
+          尋獲寵物後，請記得辦理撤銷申報喲！
         </div>
       </div>
     </header>
 
     <!-- MAIN BODY -->
-    <div class="mx-auto max-w-7xl w-[90%] px-4 mt-12">
-      
+    <div class="mx-auto mt-12 w-[90%] max-w-7xl px-4">
       <!-- Filters Card -->
-      <div class="mb-10 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
+      <div
+        class="mb-10 rounded-3xl border-4 border-[#445944] bg-white p-6 shadow-[6px_6px_0px_#445944] md:p-8">
         <div class="mb-6 flex items-center gap-2 border-b-2 border-[#445944] pb-4">
-          <span class="text-[#445944] text-xl">🔍</span>
+          <span class="text-xl text-[#445944]">🔍</span>
           <h2 class="text-xl font-black text-[#445944]">篩選條件</h2>
         </div>
 
@@ -152,17 +201,17 @@ const handleSearch = () => {
           <!-- Animal Type Filter -->
           <div>
             <label class="mb-2 block text-sm font-black text-[#445944]">動物類別</label>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button
-                v-for="t in ['狗', '貓', '其他']"
+                v-for="t in ['不限', '狗', '貓', '其他']"
                 :key="t"
                 @click="filters.type = t"
                 :class="
                   filters.type === t
-                    ? 'bg-[#445944] text-white border-[#445944]'
-                    : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
+                    ? 'border-[#445944] bg-[#445944] text-white'
+                    : 'border-[#445944] bg-[#FCF4E5] text-[#445944] hover:bg-white'
                 "
-                class="rounded-2xl border-2 px-6 py-2 text-sm font-black transition duration-200">
+                class="rounded-2xl border-2 px-4 py-2 text-sm font-black transition duration-200">
                 {{ t }}
               </button>
             </div>
@@ -178,8 +227,8 @@ const handleSearch = () => {
                 @click="filters.gender = g"
                 :class="
                   filters.gender === g
-                    ? 'bg-[#445944] text-white border-[#445944]'
-                    : 'bg-[#FCF4E5] text-[#445944] border-[#445944] hover:bg-white'
+                    ? 'border-[#445944] bg-[#445944] text-white'
+                    : 'border-[#445944] bg-[#FCF4E5] text-[#445944] hover:bg-white'
                 "
                 class="flex-1 rounded-2xl border-2 py-2 text-sm font-black transition duration-200">
                 {{ g }}
@@ -194,13 +243,14 @@ const handleSearch = () => {
               <select
                 v-model="filters.city"
                 @change="onCityChange"
-                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#445944]">
+                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#445944] focus:outline-none">
                 <option value="">請選擇縣市</option>
                 <option v-for="(districts, city) in cityData" :key="city" :value="city">
                   {{ city }}
                 </option>
               </select>
-              <i class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
+              <i
+                class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
             </div>
           </div>
 
@@ -211,13 +261,14 @@ const handleSearch = () => {
               <select
                 v-model="filters.district"
                 :disabled="!filters.city"
-                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#445944] disabled:cursor-not-allowed disabled:opacity-50">
+                class="w-full cursor-pointer appearance-none rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] p-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#445944] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="">{{ filters.city ? '請選擇地區' : '請先選擇縣市' }}</option>
                 <option v-for="dist in availableDistricts" :key="dist" :value="dist">
                   {{ dist }}
                 </option>
               </select>
-              <i class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
+              <i
+                class="fa-solid fa-chevron-down pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-xs text-gray-600"></i>
             </div>
           </div>
 
@@ -228,25 +279,25 @@ const handleSearch = () => {
               v-model="filters.keyword"
               type="text"
               placeholder="晶片號碼 / 特徵描述 / 遺失地點..."
-              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#445944]" />
+              class="w-full rounded-2xl border-2 border-[#445944] bg-[#FCF4E5] px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#445944] focus:outline-none" />
           </div>
 
           <!-- Search Button -->
-          <div class="flex items-end">
+          <!-- <div class="flex items-end">
             <button
               @click="handleSearch"
               class="w-full rounded-2xl border-2 border-[#445944] bg-[#445944] py-3 text-sm font-black text-white shadow-[4px_4px_0px_#445944] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#445944]">
               🔍 執行篩選
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
 
       <!-- Title & CTA Button -->
-      <div class="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div class="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
         <div class="flex items-center gap-2.5">
-          <span class="text-[#445944] text-2xl">📋</span>
-          <h2 class="text-2xl font-black text-[#445944]">最新遺失啟事</h2>
+          <span class="text-2xl text-[#445944]">📋</span>
+          <h2 class="text-2xl font-black text-[#445944]">最新遺失啓事</h2>
         </div>
 
         <router-link
@@ -258,88 +309,95 @@ const handleSearch = () => {
       </div>
 
       <!-- Loading State with Premium Neo-Brutalist Skeleton Cards -->
-      <div v-if="loading" class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div
+        v-if="loading"
+        class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div
           v-for="i in 8"
           :key="i"
           class="animate-pulse overflow-hidden rounded-3xl border-4 border-[#445944]/30 bg-white shadow-[6px_6px_0px_rgba(68,89,68,0.1)]">
           <!-- Image Skeleton -->
-          <div class="relative h-48 bg-[#FCF4E5] border-b-4 border-[#445944]/20 flex items-center justify-center">
+          <div
+            class="relative flex h-48 items-center justify-center border-b-4 border-[#445944]/20 bg-[#FCF4E5]">
             <span class="text-4xl opacity-25">🚨</span>
           </div>
           <!-- Info Body Skeleton -->
-          <div class="p-5 bg-[#FCF4E5]/40 space-y-4">
-            <div class="h-6 bg-[#445944]/20 rounded-xl w-2/3"></div>
+          <div class="space-y-4 bg-[#FCF4E5]/40 p-5">
+            <div class="h-6 w-2/3 rounded-xl bg-[#445944]/20"></div>
             <div class="space-y-2">
-              <div class="h-4 bg-[#445944]/15 rounded-lg w-full"></div>
-              <div class="h-4 bg-[#445944]/15 rounded-lg w-5/6"></div>
+              <div class="h-4 w-full rounded-lg bg-[#445944]/15"></div>
+              <div class="h-4 w-5/6 rounded-lg bg-[#445944]/15"></div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Cards Grid -->
-      <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
         <div
           v-for="pet in filteredPets"
           :key="pet.id"
           class="group overflow-hidden rounded-3xl border-4 border-[#445944] bg-white shadow-[6px_6px_0px_#445944] transition-all duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0px_#445944]">
-          
           <!-- Image Section -->
-          <div class="relative h-48 overflow-hidden bg-gray-100 border-b-4 border-[#445944]">
+          <div class="relative h-48 overflow-hidden border-b-4 border-[#445944] bg-gray-100">
             <img
               :src="pet.photo || DEFAULT_PET_IMAGE"
               @error="handleImageError"
               class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <div
-              class="absolute top-3 left-3 rounded-full border-2 border-[#445944] bg-red-500 px-3 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#445944]">
+              class="absolute top-3 left-3 rounded-full border-2 border-red-500 bg-red-500 px-3 py-1 text-xs font-black text-white">
               🚨 LOST 協尋中
             </div>
           </div>
 
           <!-- Card Info Body -->
-          <div class="p-5 bg-[#FCF4E5]">
-            <h3 class="mb-3 text-xl font-black text-[#445944] truncate">{{ pet.breed }}</h3>
+          <div class="bg-[#FCF4E5] p-5">
+            <h3 class="mb-3 truncate text-xl font-black text-[#445944]">{{ pet.breed }}</h3>
 
             <ul class="mb-4 space-y-2 text-xs font-bold text-gray-700">
               <li class="flex items-center gap-1.5">
-                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">毛色</span>
+                <span class="rounded border border-gray-300 bg-white px-2 py-0.5">毛色</span>
                 <span class="truncate">{{ pet.color || '未填寫' }}</span>
               </li>
               <li class="flex items-center gap-1.5">
-                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">時間</span>
+                <span class="rounded border border-gray-300 bg-white px-2 py-0.5">時間</span>
                 <span class="truncate">{{ pet.lostTime || '未知' }}</span>
               </li>
               <li class="flex items-center gap-1.5">
-                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">地點</span>
+                <span class="rounded border border-gray-300 bg-white px-2 py-0.5">地點</span>
                 <span class="truncate" :title="pet.lostPlace">{{ pet.lostPlace || '未知' }}</span>
               </li>
               <li class="flex items-center gap-1.5">
-                <span class="rounded bg-white px-2 py-0.5 border border-gray-300">晶片</span>
+                <span class="rounded border border-gray-300 bg-white px-2 py-0.5">晶片</span>
                 <span class="truncate">{{ pet.chipId || '無晶片或未填' }}</span>
               </li>
             </ul>
 
             <!-- Features Highlights Description Box -->
-            <p class="mb-4 min-h-[72px] line-clamp-3 rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] p-3 text-[11px] font-bold leading-relaxed text-gray-600">
+            <p
+              class="mb-4 line-clamp-3 min-h-[72px] rounded-2xl border-2 border-[#445944] bg-[#FDF9F3] p-3 text-[11px] leading-relaxed font-bold text-gray-600">
               {{ pet.feature || '無特徵描述。' }}
             </p>
 
             <!-- Card details link -->
             <router-link
               :to="{ name: 'missing-report-detail', params: { id: pet.id } }"
-              class="block w-full text-center rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] py-2.5 text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
-              🔍 查看詳細啟事
+              class="block w-full rounded-2xl border-2 border-[#445944] bg-[#FAE4AE] py-2.5 text-center text-sm font-black text-[#445944] shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
+              🔍 査看詳細啓事
             </router-link>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-if="filteredPets.length === 0" class="py-16 text-center max-w-md mx-auto rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 shadow-[6px_6px_0px_#445944]">
-        <span class="text-5xl block mb-4">😿</span>
-        <h3 class="text-xl font-black text-[#445944] mb-2">找不到符合條件的遺失毛孩</h3>
-        <p class="text-sm font-bold text-gray-600">嘗試調整一下篩選條件，或許命定毛孩就在下方唷！</p>
+      <div
+        v-if="filteredPets.length === 0 && !loading"
+        class="mx-auto max-w-md rounded-3xl border-4 border-dashed border-[#445944] bg-[#FCF4E5] p-8 py-16 text-center shadow-[6px_6px_0px_#445944]">
+        <span class="mb-4 block text-5xl">😿</span>
+        <h3 class="mb-2 text-xl font-black text-[#445944]">找不到符合條件的遺失毛孩</h3>
+        <p class="text-sm font-bold text-gray-600">
+          嘗試調整一下篩選條件，或許命定毛孩就在下方唷！
+        </p>
       </div>
     </div>
   </div>

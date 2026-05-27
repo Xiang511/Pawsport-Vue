@@ -29,9 +29,11 @@ onBeforeUnmount(() => {
   <button
     v-show="isVisible"
     type="button"
-    class="fixed right-6 bottom-6 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-transparent bg-[#f7ebe5] text-[#9c6d6d] shadow-md transition-all hover:-translate-y-0.5 hover:border-[#d4a373] hover:bg-[#fbf5f1]"
+    class="fixed right-6 bottom-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border-4 border-[#445944] bg-[#FCF4E5] text-[#445944] shadow-[4px_4px_0px_#445944] transition-all duration-300 hover:translate-y-[-2px] hover:bg-amber-400 hover:shadow-[5px_5px_0px_#445944] active:translate-y-[1px] active:shadow-[2px_2px_0px_#445944]"
     @click="scrollToTop"
     aria-label="回到最上方">
-    <ChevronUp class="h-5 w-5" />
+    <ChevronUp class="h-6 w-6 stroke-[3]" />
   </button>
 </template>
+
+<style scoped></style>

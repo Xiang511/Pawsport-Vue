@@ -19,19 +19,18 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 
-
 // 初始化 Google Login（禁用 One Tap 自動彈出）
 app.use(vue3GoogleLogin, {
-    clientId: googleOAuthConfig.clientId,
-    scope: googleOAuthConfig.scope,
-    auto_select: false,
-    cancel_on_tap_outside: true,
+  clientId: googleOAuthConfig.clientId,
+  scope: googleOAuthConfig.scope,
+  auto_select: false,
+  cancel_on_tap_outside: true,
 })
 
 // GSI 腳本載入後立即取消自動 One Tap 提示
 googleSdkLoaded((google) => {
-    google.accounts.id.cancel()
-    google.accounts.id.disableAutoSelect()
+  google.accounts.id.cancel()
+  google.accounts.id.disableAutoSelect()
 })
 
 app.mount('#app')

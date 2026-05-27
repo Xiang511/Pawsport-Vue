@@ -50,7 +50,7 @@ const deleteReport = async (id) => {
   if (!confirm('確定要刪除這筆走失報告嗎?')) return
 
   try {
-    const response = await axios.delete(`https://localhost:7048/api/MissingReports/${id}`)
+    const response = await axios.patch(`https://localhost:7048/api/MissingReports/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchReports()

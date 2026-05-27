@@ -2,8 +2,8 @@
 import { watch, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-const sfxVolume = ref(0.4) 
-const bgmVolume = ref(0.2) 
+const sfxVolume = ref(0.4)
+const bgmVolume = ref(0.2)
 
 let isAudioAuthorized = false
 // 用來確保只提示一次音訊授權，避免重複彈窗騷擾玩家
@@ -21,7 +21,7 @@ const sfxAssets = {
   fail: '/audio/lose.wav',
   win: '/audio/win.wav',
   lose: '/audio/lose.wav',
-  countdown: '/audio/countdown.wav'
+  countdown: '/audio/countdown.wav',
 }
 
 export function useGameAudio() {
@@ -42,7 +42,8 @@ export function useGameAudio() {
     isAudioAuthorized = true
     hasPromptedAudio.value = true
     if (bgm.paused) {
-      bgm.play()
+      bgm
+        .play()
         .then(() => console.log('BGM 經使用者允許成功播放'))
         .catch((e) => console.log('強制播放失敗:', e))
     }
@@ -124,6 +125,6 @@ export function useGameAudio() {
     pauseCountdown,
     resumeCountdown,
     forcePlayBGM,
-    hasPromptedAudio
+    hasPromptedAudio,
   }
 }

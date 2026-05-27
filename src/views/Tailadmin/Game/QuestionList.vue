@@ -244,7 +244,7 @@ const deleteQuestion = async (id) => {
     </div>
     <button
       @click="openModal"
-      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl transition-all active:scale-95">
+      class="bg-brand-success-500 text-theme-sm hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xl text-white transition-all active:scale-95">
       新增題目
     </button>
   </div>
@@ -254,7 +254,7 @@ const deleteQuestion = async (id) => {
     class="rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="max-w-full overflow-x-auto">
       <table class="w-full table-auto border-collapse">
-        <thead >
+        <thead>
           <tr class="border-b border-gray-100 text-center dark:border-gray-800">
             <th
               class="text-theme-xl px-4 py-4 tracking-wider text-gray-500 uppercase dark:text-white/90">
@@ -305,7 +305,9 @@ const deleteQuestion = async (id) => {
             <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
               {{ index + 1 }}
             </td>
-            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">{{ item.gameName }}</td>
+            <td class="text-theme-sm px-4 py-4 text-center text-gray-500 dark:text-white/90">
+              {{ item.gameName }}
+            </td>
             <td class="text-theme-sm max-w-xs px-4 py-4 text-left text-gray-500 dark:text-white/90">
               {{ item.questions }}
             </td>
@@ -343,22 +345,24 @@ const deleteQuestion = async (id) => {
                 {{ item.isActive ? '啓用' : '停用' }}
               </span>
             </td>
-            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
+            <td
+              class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
               {{ item.rewards }}
             </td>
-            <td class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
+            <td
+              class="text-theme-sm text-brand-info-600 px-4 py-4 text-center font-medium dark:text-white/90">
               {{ item.type }}
             </td>
             <td class="px-4 py-4 text-center">
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openModal(item)"
-                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  class="bg-brand-success-500 text-theme-xl hover:bg-brand-success-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
                   <EditIcon />
                 </button>
                 <button
                   @click="deleteQuestion(item.gameId)"
-                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm text-white inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 transition-all active:scale-95">
+                  class="bg-brand-error-500 text-theme-xl hover:bg-brand-error-600 shadow-theme-sm inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-white transition-all active:scale-95">
                   <Trash2 />
                 </button>
               </div>
@@ -514,7 +518,7 @@ const deleteQuestion = async (id) => {
           <button
             @click="saveQuestion"
             :disabled="isSubmitting"
-            class="bg-brand-success-500 text-white flex items-center gap-2 rounded-lg px-5 py-2 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
+            class="bg-brand-success-500 flex items-center gap-2 rounded-lg px-5 py-2 text-white transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
             <!-- 如果正在傳輸，顯示一個簡單的小轉圈或文字 -->
             <span v-if="isSubmitting" class="animate-spin text-lg">⏳</span>
             {{ isSubmitting ? '處理中...' : isEditMode ? '確認修改' : '確認新增' }}

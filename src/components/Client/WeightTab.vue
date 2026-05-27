@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import apexchart from 'vue3-apexcharts'
 
 const emit = defineEmits(['add-weight'])
@@ -82,6 +82,28 @@ const series = ref([
     data: props.records.map((r) => r.weight),
   },
 ])
+
+// 監聽體重紀錄變化，動態更新圖表資料與 X 軸時間分類
+watch(
+  () => props.records,
+  (newRecords) => {
+    const recordsArray = newRecords || []
+    series.value = [
+      {
+        name: '體重',
+        data: recordsArray.map((r) => r.weight),
+      },
+    ]
+    chartOptions.value = {
+      ...chartOptions.value,
+      xaxis: {
+        ...chartOptions.value.xaxis,
+        categories: recordsArray.map((r) => r.date),
+      },
+    }
+  },
+  { immediate: true, deep: true },
+)
 </script>
 
 <template>
@@ -107,7 +129,8 @@ const series = ref([
         :key="item.id"
         class="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-4 transition hover:bg-gray-100">
         <div class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F7F3F1] text-[#9C6D6D]">
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F7F3F1] text-[#9C6D6D]">
             ⚖️
           </span>
           <div>
@@ -118,7 +141,9 @@ const series = ref([
         <button class="text-xs text-gray-400 hover:text-[#9C6D6D]">編輯</button>
       </div>
 
-      <div v-if="records.length === 0" class="py-10 text-center text-gray-400">目前尚無體重紀錄</div>
+      <div v-if="records.length === 0" class="py-10 text-center text-gray-400">
+        目前尚無體重紀錄
+      </div>
     </div>
   </div>
 </template>
