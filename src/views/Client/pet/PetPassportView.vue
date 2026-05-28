@@ -139,11 +139,11 @@ const handleImageError = (e) => {
     <!-- MAIN BODY -->
     <div class="relative mx-auto mt-12 w-[90%] max-w-7xl px-4">
       <!-- Add New Pet Floating Action Item -->
-      <!-- <button
+      <button
         @click="addNewPet"
-        class="absolute -top-16 right-4 flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#445944] text-white shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944] z-10">
+        class="absolute -top-16 right-4 z-10 flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-[#445944] bg-[#445944] text-white shadow-[3px_3px_0px_#445944] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#445944]">
         <SquarePlus :size="22" />
-      </button> -->
+      </button>
 
       <!-- Loading State (Premium Neo-Brutalist Skeleton Detailed Loader) -->
       <div v-if="loading" class="flex animate-pulse flex-col gap-8 lg:flex-row">
