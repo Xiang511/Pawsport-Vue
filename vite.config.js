@@ -7,8 +7,13 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 import mkcert from 'vite-plugin-mkcert'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [vue(), vueDevTools(), tailwindcss(), mkcert()],
+export default defineConfig(({ command }) => ({
+  plugins: [
+    vue(),
+    tailwindcss(),
+    // 只在本地開發時載入，build 時不需要
+    ...(command === 'serve' ? [vueDevTools(), mkcert()] : []),
+  ],
   server: {
     https: true,
     port: 5173,
@@ -40,4 +45,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-})
+}))
