@@ -2,17 +2,22 @@ import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import basicSsl from '@vitejs/plugin-basic-ssl'
-import mkcert from 'vite-plugin-mkcert'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(async ({ command }) => {
+  const devPlugins =
+    command === 'serve'
+      ? [
+          (await import('vite-plugin-vue-devtools')).default(),
+          (await import('vite-plugin-mkcert')).default(),
+        ]
+      : []
+
+  return {
   plugins: [
     vue(),
     tailwindcss(),
-    // 只在本地開發時載入，build 時不需要
-    ...(command === 'serve' ? [vueDevTools(), mkcert()] : []),
+    ...devPlugins,
   ],
   server: {
     https: true,
@@ -45,4 +50,5 @@ export default defineConfig(({ command }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-}))
+  }
+})
