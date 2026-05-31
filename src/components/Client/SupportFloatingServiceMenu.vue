@@ -6,7 +6,7 @@ import { Icon } from '@iconify/vue'
 const isMenuOpen = ref(false)
 const isSubscribeOpen = ref(false)
 
-// 🌟 新增：電子報表單綁定的變數
+// 電子報表單綁定的變數
 const subscribeEmail = ref('')
 const isSubmittingEmail = ref(false)
 
@@ -27,7 +27,7 @@ const handleSubscribeClick = () => {
   isMenuOpen.value = false
 }
 
-// 🌟 新增：處理訂閱電子報的邏輯
+// 處理訂閱電子報的邏輯
 const handleSubscribeSubmit = async () => {
   if (!subscribeEmail.value) {
     alert('請輸入 Email 喔！')
@@ -36,7 +36,7 @@ const handleSubscribeSubmit = async () => {
 
   isSubmittingEmail.value = true
 
-  // 模擬 API 呼叫延遲 (這裡之後可以換成你真正的後端 API)
+  // 模擬 API 呼叫延遲
   setTimeout(() => {
     alert('訂閱成功！感謝您的加入 🐾')
     subscribeEmail.value = '' // 清空輸入框
