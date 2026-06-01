@@ -20,7 +20,7 @@ const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle, fetchDraftDet
 const router = useRouter()
 const articleEditorRef = ref(null)
 const articleId = ref(null)
-const toastRef = ref(null)
+const toastRef = ref(true)
 
 const authStore = useAuthStore()
 
