@@ -265,7 +265,7 @@ const startEdit = async () => {
     editForm.value = {
       photo: u.photo || '',
       name: u.name || u.userName || '',
-      phone: u.phone || '',
+      phone: u.phone?.trim() || '',
       job: u.job || '',
       birthday: u.birthday || '',
       city: u.city || '',
@@ -1114,7 +1114,7 @@ const avatarInitials = computed(() => {
                   <input
                     v-model="editForm.phone"
                     type="tel"
-                    placeholder="請輸入電話號碼"
+                    placeholder="請輸入電話號碼" maxlength="10"
                     class="w-full rounded-2xl border-2 border-gray-300 bg-white px-4 py-3 text-sm font-bold focus:border-[#445944] focus:ring-2 focus:ring-[#445944]/20 focus:outline-none" />
                 </div>
                 <!-- 職業 + 城市 -->
