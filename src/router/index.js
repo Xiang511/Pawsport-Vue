@@ -70,7 +70,11 @@ router.beforeEach((to, from) => {
   }
 
   // 前台需要認證的路由檢查 - 所有 /user 開頭的都需要登入
-  if (to.path.startsWith('/user') || to.path.startsWith('/game')) {
+  if (
+    to.path.startsWith('/user') ||
+    to.path.startsWith('/game') ||
+    to.path.startsWith('/healthpassport')
+  ) {
     if (!authStore.isLoggedIn) {
       // 前台需要認證但未登入，跳轉到前台登入頁
       console.log('未登入，從', to.path, '跳轉到 /login')
