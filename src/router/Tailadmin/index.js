@@ -228,38 +228,6 @@ export default [
         },
       },
       {
-        path: 'calendar',
-        name: 'admin-calendar',
-        component: () => import('@/views/Tailadmin/Others/Calendar.vue'),
-        meta: {
-          title: 'Calendar',
-        },
-      },
-      {
-        path: 'profile',
-        name: 'admin-profile',
-        component: () => import('@/views/Tailadmin/Others/UserProfile.vue'),
-        meta: {
-          title: 'User Profile',
-        },
-      },
-      {
-        path: 'form-elements',
-        name: 'admin-form-elements',
-        component: () => import('@/views/Tailadmin/Forms/FormElements.vue'),
-        meta: {
-          title: 'Form Elements',
-        },
-      },
-      {
-        path: 'basic-tables',
-        name: 'admin-basic-tables',
-        component: () => import('@/views/Tailadmin/Tables/BasicTables.vue'),
-        meta: {
-          title: 'Basic Tables',
-        },
-      },
-      {
         path: 'blank',
         name: 'admin-blank',
         component: () => import('@/views/Tailadmin/Pages/BlankPage.vue'),
@@ -281,70 +249,6 @@ export default [
         component: () => import('@/views/Tailadmin/Errors/Forbidden.vue'),
         meta: {
           title: '403 權限不足',
-        },
-      },
-      {
-        path: 'line-chart',
-        name: 'admin-line-chart',
-        component: () => import('@/views/Tailadmin/Chart/LineChart/LineChart.vue'),
-        meta: {
-          title: 'Line Chart',
-        },
-      },
-      {
-        path: 'bar-chart',
-        name: 'admin-bar-chart',
-        component: () => import('@/views/Tailadmin/Chart/BarChart/BarChart.vue'),
-        meta: {
-          title: 'Bar Chart',
-        },
-      },
-      {
-        path: 'alerts',
-        name: 'admin-alerts',
-        component: () => import('@/views/Tailadmin/UiElements/Alerts.vue'),
-        meta: {
-          title: 'Alerts',
-        },
-      },
-      {
-        path: 'avatars',
-        name: 'admin-avatars',
-        component: () => import('@/views/Tailadmin/UiElements/Avatars.vue'),
-        meta: {
-          title: 'Avatars',
-        },
-      },
-      {
-        path: 'badge',
-        name: 'admin-badge',
-        component: () => import('@/views/Tailadmin/UiElements/Badges.vue'),
-        meta: {
-          title: 'Badge',
-        },
-      },
-      {
-        path: 'buttons',
-        name: 'admin-buttons',
-        component: () => import('@/views/Tailadmin/UiElements/Buttons.vue'),
-        meta: {
-          title: 'Buttons',
-        },
-      },
-      {
-        path: 'images',
-        name: 'admin-images',
-        component: () => import('@/views/Tailadmin/UiElements/Images.vue'),
-        meta: {
-          title: 'Images',
-        },
-      },
-      {
-        path: 'videos',
-        name: 'admin-videos',
-        component: () => import('@/views/Tailadmin/UiElements/Videos.vue'),
-        meta: {
-          title: 'Videos',
         },
       },
       {
