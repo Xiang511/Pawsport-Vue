@@ -1,15 +1,9 @@
 name: Deploy Vue to Ubuntu
-
 on:
   workflow_dispatch:
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,11 +17,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check environment variables  # ← 新增
+        run: |
+          echo "VITE_ALGOLIA_APP_ID=$VITE_ALGOLIA_APP_ID"
+          echo "VITE_ALGOLIA_INDEX_NAME=$VITE_ALGOLIA_INDEX_NAME"
+          echo "VITE_ALGOLIA_MENU_INDEX_NAME=$VITE_ALGOLIA_MENU_INDEX_NAME"
+          echo "VITE_ALGOLIA_SEARCH_KEY=$VITE_ALGOLIA_SEARCH_KEY"
+          echo "VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID"
+        env:
+          VITE_ALGOLIA_APP_ID: ${{ secrets.VITE_ALGOLIA_APP_ID }}
+          VITE_ALGOLIA_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_INDEX_NAME }}
+          VITE_ALGOLIA_MENU_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_MENU_INDEX_NAME }}
+          VITE_ALGOLIA_SEARCH_KEY: ${{ secrets.VITE_ALGOLIA_SEARCH_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
       - name: Build
         run: npm run build
+        env:
+          VITE_ALGOLIA_APP_ID: ${{ secrets.VITE_ALGOLIA_APP_ID }}
+          VITE_ALGOLIA_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_INDEX_NAME }}
+          VITE_ALGOLIA_MENU_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_MENU_INDEX_NAME }}
+          VITE_ALGOLIA_SEARCH_KEY: ${{ secrets.VITE_ALGOLIA_SEARCH_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - name: Copy files to Server via SSH
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
@@ -37,7 +51,7 @@ jobs:
           strip_components: 1
 
       - name: Reload Nginx
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
