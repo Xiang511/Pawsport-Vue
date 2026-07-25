@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -32,7 +32,7 @@ const fetching = ref(true)
 // 2. 取得原始資料 (反填)
 const fetchPassportData = async () => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/PassPort/${passportId}`)
+    const response = await request.get(`/PassPort/${passportId}`)
     const result = response.data
 
     if (result.success === true) {
@@ -60,8 +60,8 @@ const fetchPassportData = async () => {
 const handleSubmit = async () => {
   loading.value = true
   try {
-    const response = await axios.put(
-      `https://localhost:7048/api/PassPort/${passportId}`,
+    const response = await request.put(
+      `/PassPort/${passportId}`,
       form.value,
     )
 

@@ -46,9 +46,6 @@ const form = reactive({
 
 const getImageUrl = (url) => {
   if (!url) return 'https://placecats.com/g/100/100'
-  if (url.startsWith('/Images') || url.startsWith('/images')) {
-    return `https://localhost:7048${url}`
-  }
   return url
 }
 

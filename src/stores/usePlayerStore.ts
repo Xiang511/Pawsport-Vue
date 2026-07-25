@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from './auth'
-
+import  request  from "@/api/axios";
 export const usePlayerStore = defineStore(
   'player',
   () => {
@@ -36,7 +36,7 @@ export const usePlayerStore = defineStore(
 
         console.log(`🔄 正在初始化玩家資料... UserId: ${currentUserId}`)
 
-        const response = await axios.get(
+        const response = await request.get(
           `https://localhost:7048/api/users/${currentUserId}/player-profile`,
         )
 
@@ -74,7 +74,7 @@ export const usePlayerStore = defineStore(
         isLoading.value = true
         error.value = null
 
-        const response = await axios.put(`https://localhost:7048/api/Player/${playerId.value}`, {
+        const response = await request.put(`https://localhost:7048/api/Player/${playerId.value}`, {
           playerId: playerId.value,
           userName: newName,
         })

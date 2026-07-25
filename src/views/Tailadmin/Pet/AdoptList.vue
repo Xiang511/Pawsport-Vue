@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
@@ -28,7 +28,7 @@ const fetchRecords = async () => {
   loading.value = true
   try {
     // 請根據你的 API Controller 路由調整路徑
-    const response = await axios.get('https://localhost:7048/api/AdoptionRecord', {
+    const response = await request.get('/AdoptionRecord', {
       params: { keyword: keyword.value },
     })
 
@@ -50,7 +50,7 @@ const deleteRecord = async (id) => {
   if (!confirm('確定要刪除這筆領養紀錄嗎?')) return
 
   try {
-    const response = await axios.patch(`https://localhost:7048/api/AdoptionRecord/${id}`)
+    const response = await request.patch(`/AdoptionRecord/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchRecords() // 刷新列表

@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-// 1. 引入 axios
-import axios from 'axios'
+// 1. 引入自訂 axios 攔截器
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
@@ -28,7 +28,7 @@ const fetchPets = async () => {
   try {
     // Axios 自動處理 JSON 轉換，且支援 params 參數寫法
     // 假設你的 API 基礎路徑在專案中已設定好，或使用完整路徑
-    const response = await axios.get('https://localhost:7048/api/Pet', {
+    const response = await request.get('/Pet', {
       params: { keyword: keyword.value },
     })
 
@@ -54,7 +54,7 @@ const deletePet = async (id) => {
   if (!confirm('確定要刪除嗎?')) return
 
   try {
-    const response = await axios.patch(`https://localhost:7048/api/Pet/${id}`)
+    const response = await request.patch(`/Pet/${id}`)
     // 你的後端回傳 NoContent (204)，Axios 會判定為成功
     if (response.status === 204 || response.data?.success === true || response.data?.status === 200) {
       alert('刪除成功')

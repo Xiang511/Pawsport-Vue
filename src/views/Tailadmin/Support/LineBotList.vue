@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { MessageCircle, Send, X, Bot } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 const lineMessages = ref([])
 const currentPage = ref(1)
@@ -11,23 +12,21 @@ const isLoading = ref(false)
 const loadLineMessages = async (page = 1) => {
   isLoading.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/LineBot?page=${page}`)
-    if (response.ok) {
-      const result = await response.json()
+    const response = await request.get(`/LineBot?page=${page}`)
+    const result = response.data
 
-      lineMessages.value =
-        result.data.items.map((item) => ({
-          messageId: item.id,
-          userName: `會員 ${item.userId}`,
-          userId: item.userId,
-          message: item.chatContent,
-          createAt: formatDate(item.chatDate),
-          status: item.status || '未回覆',
-        })) || []
+    lineMessages.value =
+      result.data.items.map((item) => ({
+        messageId: item.id,
+        userName: `會員 ${item.userId}`,
+        userId: item.userId,
+        message: item.chatContent,
+        createAt: formatDate(item.chatDate),
+        status: item.status || '未回覆',
+      })) || []
 
-      totalPages.value = result.data.totalPages || 1
-      currentPage.value = page
-    }
+    totalPages.value = result.data.totalPages || 1
+    currentPage.value = page
   } catch (error) {
     console.error('取得 LINE 訊息失敗:', error)
   } finally {
@@ -86,25 +85,16 @@ const submitReply = async () => {
   isSubmitting.value = true
   try {
     // 呼叫C#的Reply API，網址帶上當前訊息的ID
-    const response = await fetch(
-      `https://localhost:7048/api/LineBot/${currentReply.messageId}/reply`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ replyText: currentReply.replyText }),
-      },
-    )
+    await request.post(`/LineBot/${currentReply.messageId}/reply`, {
+      replyText: currentReply.replyText,
+    })
 
-    if (response.ok) {
-      const result = await response.json()
-      alert(`已成功發送 LINE 訊息給 ${currentReply.userName}！`)
-      showReplyModal.value = false
-      loadLineMessages()
-    } else {
-      alert('回覆發送失敗，請檢查後端狀態')
-    }
+    alert(`已成功發送 LINE 訊息給 ${currentReply.userName}！`)
+    showReplyModal.value = false
+    loadLineMessages()
   } catch (error) {
     console.error('API 錯誤:', error)
+    alert('回覆發送失敗，請檢查後端狀態')
   } finally {
     isSubmitting.value = false
   }

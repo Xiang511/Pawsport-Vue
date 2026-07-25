@@ -2,7 +2,7 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { MessageSquareText, Eye, X } from 'lucide-vue-next'
 import Chart from 'chart.js/auto'
-import axios from 'axios'
+import request from '@/api/axios'
 
 const qaData = ref([])
 const currentPage = ref(1)
@@ -13,13 +13,11 @@ const isDashboardLoading = ref(false)
 const loadQaData = async (page = 1) => {
   isLoading.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/Support/Qa?page=${page}`)
-    if (response.ok) {
-      const result = await response.json()
-      qaData.value = result.data.items || []
-      totalPages.value = result.data.totalPages || 1
-      currentPage.value = Number(result.data.currentPage || page)
-    }
+    const response = await request.get(`/Support/Qa?page=${page}`)
+    const result = response.data
+    qaData.value = result.data.items || []
+    totalPages.value = result.data.totalPages || 1
+    currentPage.value = Number(result.data.currentPage || page)
   } catch (error) {
     console.error('取得QA資料失敗:', error)
   } finally {
@@ -82,24 +80,17 @@ const submitReply = async () => {
   }
   isSubmitting.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/Support/Qa/${currentQa.value.qaId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        csname: currentQa.value.csname,
-        replyContent: currentQa.value.replyContent,
-        note: currentQa.value.note,
-      }),
+    await request.put(`/Support/Qa/${currentQa.value.qaId}`, {
+      csname: currentQa.value.csname,
+      replyContent: currentQa.value.replyContent,
+      note: currentQa.value.note,
     })
-    if (response.ok) {
-      showReplyModal.value = false
-      loadQaData(currentPage.value)
-      alert('回覆送出成功！')
-    } else {
-      alert('回覆失敗，請稍後再試')
-    }
+    showReplyModal.value = false
+    loadQaData(currentPage.value)
+    alert('回覆送出成功！')
   } catch (error) {
     console.error('API錯誤:', error)
+    alert('回覆失敗，請稍後再試')
   } finally {
     isSubmitting.value = false
   }
@@ -122,7 +113,7 @@ let statusChartInstance = null
 const fetchDashboardData = async () => {
   isDashboardLoading.value = true
   try {
-    const res = await axios.get('https://localhost:7048/api/Support/Dashboard')
+    const res = await request.get('/Support/Dashboard')
     const dashboardData = res.data.data
 
     isDashboardLoading.value = false

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, ImageIcon, Clock, Hash, Share2 } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,11 +11,8 @@ const enews = ref(null)
 
 onMounted(async () => {
   try {
-    const response = await fetch(`https://localhost:7048/api/ENewsletter/${enewsId}`)
-    if (response.ok) {
-      const result = await response.json()
-      enews.value = result.data
-    }
+    const response = await request.get(`/ENewsletter/${enewsId}`)
+    enews.value = response.data.data
   } catch (error) {
     console.error('撈取電子報失敗:', error)
   }

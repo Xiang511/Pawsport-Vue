@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Mail, Plus, Edit, Trash2, X } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 const newsletterData = ref([])
 const currentPage = ref(1)
@@ -10,13 +11,11 @@ const isLoading = ref(false)
 const loadNewsletterData = async (page = 1) => {
   isLoading.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/ENewsletter?page=${page}`)
-    if (response.ok) {
-      const result = await response.json()
-      newsletterData.value = result.data.items || []
-      totalPages.value = result.data.totalPages || 1
-      currentPage.value = page
-    }
+    const response = await request.get(`/ENewsletter?page=${page}`)
+    const result = response.data
+    newsletterData.value = result.data.items || []
+    totalPages.value = result.data.totalPages || 1
+    currentPage.value = page
   } catch (error) {
     console.error('取得電子報資料失敗:', error)
   } finally {
@@ -106,20 +105,13 @@ const submitCreate = async () => {
   }
   isSubmitting.value = true
   try {
-    const response = await fetch('https://localhost:7048/api/ENewsletter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newNewsletter),
-    })
-    if (response.ok) {
-      showCreateModal.value = false
-      loadNewsletterData(1)
-      alert('電子報新增成功！')
-    } else {
-      alert('新增失敗，請檢查資料格式')
-    }
+    await request.post('/ENewsletter', newNewsletter)
+    showCreateModal.value = false
+    loadNewsletterData(1)
+    alert('電子報新增成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
+    alert('新增失敗，請檢查資料格式')
   } finally {
     isSubmitting.value = false
   }
@@ -169,34 +161,24 @@ const submitEdit = async () => {
   }
   isEditing.value = true
   try {
-    const response = await fetch(
-      `https://localhost:7048/api/ENewsletter/${currentEditNewsletter.newsletterId}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          newsLetterId: currentEditNewsletter.newsletterId,
-          publishDate: currentEditNewsletter.publishDate,
-          title: currentEditNewsletter.title,
-          summary: currentEditNewsletter.summary,
-          content: currentEditNewsletter.content,
-          image: currentEditNewsletter.image,
-          category: currentEditNewsletter.category,
-          status: currentEditNewsletter.status,
-          note: currentEditNewsletter.note,
-          userId: 1,
-        }),
-      },
-    )
-    if (response.ok) {
-      showEditModal.value = false
-      loadNewsletterData(currentPage.value)
-      alert('電子報修改成功！')
-    } else {
-      alert('修改失敗，請檢查資料格式')
-    }
+    await request.put(`/ENewsletter/${currentEditNewsletter.newsletterId}`, {
+      newsLetterId: currentEditNewsletter.newsletterId,
+      publishDate: currentEditNewsletter.publishDate,
+      title: currentEditNewsletter.title,
+      summary: currentEditNewsletter.summary,
+      content: currentEditNewsletter.content,
+      image: currentEditNewsletter.image,
+      category: currentEditNewsletter.category,
+      status: currentEditNewsletter.status,
+      note: currentEditNewsletter.note,
+      userId: 1,
+    })
+    showEditModal.value = false
+    loadNewsletterData(currentPage.value)
+    alert('電子報修改成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
+    alert('修改失敗，請檢查資料格式')
   } finally {
     isEditing.value = false
   }
@@ -215,18 +197,13 @@ const submitDelete = async () => {
   if (!deleteTargetId.value) return
   isDeleting.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/ENewsletter/${deleteTargetId.value}`, {
-      method: 'PATCH',
-    })
-    if (response.ok) {
-      showDeleteModal.value = false
-      loadNewsletterData(currentPage.value)
-      alert('刪除成功！')
-    } else {
-      alert('刪除失敗')
-    }
+    await request.patch(`/ENewsletter/${deleteTargetId.value}`)
+    showDeleteModal.value = false
+    loadNewsletterData(currentPage.value)
+    alert('刪除成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
+    alert('刪除失敗')
   } finally {
     isDeleting.value = false
     deleteTargetId.value = null

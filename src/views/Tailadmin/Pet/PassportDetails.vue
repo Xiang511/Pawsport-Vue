@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const route = useRoute()
@@ -22,7 +22,7 @@ const breadcrumbItems = ref([
 // 取得詳情資料
 const fetchDetails = async () => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/PassPort/${passportId}/detail`)
+    const response = await request.get(`/PassPort/${passportId}/detail`)
     if (response.data.success) {
       detail.value = response.data.data
     } else {

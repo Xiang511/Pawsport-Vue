@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -26,7 +26,7 @@ const pageSize = ref(10)
 const fetchPassports = async () => {
   loading.value = true
   try {
-    const response = await axios.get('https://localhost:7048/api/PassPort', {
+    const response = await request.get('/PassPort', {
       params: { keyword: keyword.value },
     })
 
@@ -47,7 +47,7 @@ const deletePassport = async (id) => {
   if (!confirm('確定要刪除這筆健康護照紀錄嗎？此動作不可撤回。')) return
 
   try {
-    const response = await axios.patch(`https://localhost:7048/api/PassPort/${id}`)
+    const response = await request.patch(`/PassPort/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchPassports()

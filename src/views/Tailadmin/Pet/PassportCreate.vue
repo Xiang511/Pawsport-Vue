@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -46,7 +46,7 @@ const loading = ref(false)
 const handleSubmit = async () => {
   loading.value = true
   try {
-    const response = await axios.post('https://localhost:7048/api/PassPort', form.value)
+    const response = await request.post('/PassPort', form.value)
 
     if (response.data.success === true) {
       alert('健康護照紀錄新增成功！')

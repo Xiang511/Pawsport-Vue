@@ -33,39 +33,21 @@ router.beforeEach((to, from) => {
     document.title = to.meta.title
   }
 
+  // 強制登出：不論是否已登入、是否有權限，訪問後台（/dashboard 開頭）一律先登出再要求重新登入
+  // 登入頁本身排除，避免導向後產生無限迴圈
+  if (to.path.startsWith('/dashboard') && to.path !== '/dashboard/login') {
+    authStore.clearLoginInfo()
+    console.log('訪問後台，強制登出並跳轉到 /dashboard/login:', to.path)
+    return '/dashboard/login'
+  }
+
   // 防止直接訪問錯誤頁面（403, 404）
-  const errorPages = ['/dashboard/error-403', '/dashboard/error-404', '/error-404']
+  const errorPages = ['/error-404']
   if (errorPages.includes(to.path)) {
     // 如果是直接訪問（from.path 為空或是起始頁）
     if (!from.name || from.path === '/') {
       console.log('禁止直接訪問錯誤頁面:', to.path)
-      if (to.path.startsWith('/dashboard')) {
-        return '/dashboard'
-      } else {
-        return '/'
-      }
-    }
-  }
-
-  // 公開路由（不需要認證）
-  const publicRoutes = [
-    '/dashboard/login',
-    '/login',
-    '/signup',
-    '/',
-    '/error-404',
-    '/reset-password',
-    '/reset-password/confirm',
-  ]
-
-  // 後台路由檢查 - 所有 /dashboard 開頭的都需要登入
-  if (to.path.startsWith('/dashboard')) {
-    const isDashboardPublic =
-      publicRoutes.includes(to.path) || to.path.startsWith('/dashboard/error')
-    if (!isDashboardPublic && !authStore.isLoggedIn) {
-      // 後台需要認證但未登入，跳轉到後台登入頁
-      console.log('未登入，從', to.path, '跳轉到 /dashboard/login')
-      return '/dashboard/login'
+      return '/'
     }
   }
 

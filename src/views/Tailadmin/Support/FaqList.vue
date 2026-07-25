@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Plus, Edit, Trash2, X, HelpCircle } from 'lucide-vue-next'
+import request from '@/api/axios'
 
 const faqData = ref([])
 const currentPage = ref(1)
@@ -8,17 +9,12 @@ const totalPages = ref(1)
 
 const loadFaqData = async (page = 1) => {
   try {
-    const response = await fetch(`https://localhost:7048/api/Support/Faq?page=${page}&pageSize=10`)
-
-    if (response.ok) {
-      const result = await response.json()
-      console.log('後端回傳的完整資料：', result)
-      faqData.value = result.data.items
-      currentPage.value = result.data.currentPage
-      totalPages.value = result.data.totalPages
-    } else {
-      console.error('伺服器發生錯誤')
-    }
+    const response = await request.get(`/Support/Faq?page=${page}&pageSize=10`)
+    const result = response.data
+    console.log('後端回傳的完整資料：', result)
+    faqData.value = result.data.items
+    currentPage.value = result.data.currentPage
+    totalPages.value = result.data.totalPages
   } catch (error) {
     console.error('無法連線到API:', error)
   }
@@ -77,29 +73,19 @@ const submitCreate = async () => {
 
   isSubmitting.value = true
   try {
-    const response = await fetch('https://localhost:7048/api/Support/Faq', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        questionType: newFaq.questionType,
-        question: newFaq.question,
-        answer: newFaq.answer,
-        note: newFaq.note,
-      }),
+    await request.post('/Support/Faq', {
+      questionType: newFaq.questionType,
+      question: newFaq.question,
+      answer: newFaq.answer,
+      note: newFaq.note,
     })
 
-    if (response.ok) {
-      showCreateModal.value = false
-      loadFaqData(1)
-      alert('新增成功！')
-    } else {
-      alert('新增失敗，請檢查資料格式')
-    }
+    showCreateModal.value = false
+    loadFaqData(1)
+    alert('新增成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
-    alert('無法連線到伺服器')
+    alert('新增失敗，請檢查資料格式')
   } finally {
     isSubmitting.value = false
   }
@@ -136,30 +122,20 @@ const submitEdit = async () => {
 
   isEditing.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/Support/Faq/${currentEditFaq.faqId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        questionType: currentEditFaq.questionType,
-        question: currentEditFaq.question,
-        answer: currentEditFaq.answer,
-        note: currentEditFaq.note,
-        status: currentEditFaq.status,
-      }),
+    await request.put(`/Support/Faq/${currentEditFaq.faqId}`, {
+      questionType: currentEditFaq.questionType,
+      question: currentEditFaq.question,
+      answer: currentEditFaq.answer,
+      note: currentEditFaq.note,
+      status: currentEditFaq.status,
     })
 
-    if (response.ok) {
-      showEditModal.value = false
-      loadFaqData(currentPage.value)
-      alert('修改成功！')
-    } else {
-      alert('修改失敗，請檢查資料格式')
-    }
+    showEditModal.value = false
+    loadFaqData(currentPage.value)
+    alert('修改成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
-    alert('無法連線到伺服器')
+    alert('修改失敗，請檢查資料格式')
   } finally {
     isEditing.value = false
   }
@@ -179,20 +155,14 @@ const submitDelete = async () => {
 
   isDeleting.value = true
   try {
-    const response = await fetch(`https://localhost:7048/api/Support/Faq/${deleteTargetId.value}`, {
-      method: 'PATCH',
-    })
+    await request.patch(`/Support/Faq/${deleteTargetId.value}`)
 
-    if (response.ok) {
-      showDeleteModal.value = false
-      loadFaqData(currentPage.value)
-      alert('刪除成功！')
-    } else {
-      alert('刪除失敗，請檢查 API 設定')
-    }
+    showDeleteModal.value = false
+    loadFaqData(currentPage.value)
+    alert('刪除成功！')
   } catch (error) {
     console.error('API 錯誤:', error)
-    alert('無法連線到伺服器')
+    alert('刪除失敗，請檢查 API 設定')
   } finally {
     isDeleting.value = false
     deleteTargetId.value = null
