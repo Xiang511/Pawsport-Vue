@@ -5,10 +5,14 @@ import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import mkcert from 'vite-plugin-mkcert'
+import viteRemove from 'unplugin-remove/vite'
+
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools(), tailwindcss(), mkcert()],
+  plugins: [vue(), vueDevTools(), tailwindcss(), mkcert(), viteRemove({
+    consoleType: ['log'],  // 只移除 log，保留 warn/error
+  })],
   server: {
     https: true,
     port: 5173,
