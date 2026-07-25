@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 import { EditIcon, Trash2, FileText } from 'lucide-vue-next'
 
@@ -28,7 +28,7 @@ const fetchReports = async () => {
   loading.value = true
   try {
     // 假設後端 API 為 /api/MissingReports
-    const response = await axios.get('https://localhost:7048/api/MissingReports', {
+    const response = await request.get('/MissingReports', {
       params: { keyword: keyword.value },
     })
 
@@ -50,7 +50,7 @@ const deleteReport = async (id) => {
   if (!confirm('確定要刪除這筆走失報告嗎?')) return
 
   try {
-    const response = await axios.patch(`https://localhost:7048/api/MissingReports/${id}`)
+    const response = await request.patch(`/MissingReports/${id}`)
     if (response.status === 204 || response.data?.success === true) {
       alert('刪除成功')
       fetchReports()

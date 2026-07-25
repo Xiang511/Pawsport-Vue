@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -41,7 +41,7 @@ const fetching = ref(true) // 初始載入狀態
 // 2. 取得原始資料 (反填)
 const fetchPetData = async () => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/Pet/${petId}`)
+    const response = await request.get(`/Pet/${petId}`)
     const result = response.data
 
     if (result.success === true) {
@@ -70,7 +70,7 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     // 根據你的 Controller，PUT 路徑通常是 /api/Pet/{id}
-    const response = await axios.put(`https://localhost:7048/api/Pet/${petId}`, form.value)
+    const response = await request.put(`/Pet/${petId}`, form.value)
 
     // 注意：後端 Edit 如果回傳的是 NoContent()，status 會是 204
     if (response.status === 204 || response.data?.success === true) {

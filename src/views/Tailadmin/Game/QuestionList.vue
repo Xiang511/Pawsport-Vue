@@ -47,7 +47,7 @@ const filteredQuestions = computed(() => {
 const fetchQuestions = async () => {
   isLoading.value = true
   try {
-    const response = await request.get('https://localhost:7048/api/Questions')
+    const response = await request.get('/Questions')
     if (response.data && response.data.success) {
       questions.value = response.data.data.questionContent
     } else {
@@ -134,19 +134,15 @@ const saveQuestion = async () => {
 
     if (isEditMode.value) {
       // 編輯模式：使用 PUT 請求
-      response = await request.put(
-        `https://localhost:7048/api/Questions/${editingId.value}`,
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      response = await request.put(`/Questions/${editingId.value}`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+      })
     } else {
       // 新增模式：使用 POST 請求
-      console.log(`新增模式 - 發送 POST 請求到: https://localhost:7048/api/Questions`)
-      response = await request.post('https://localhost:7048/api/Questions', payload, {
+      console.log(`新增模式 - 發送 POST 請求到: /Questions`)
+      response = await request.post('/Questions', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -197,7 +193,7 @@ const deleteQuestion = async (id) => {
 
   try {
     console.log(`刪除題目 ID: ${id}`)
-    const response = await request.delete(`https://localhost:7048/api/Questions/${id}`, {
+    const response = await request.delete(`/Questions/${id}`, {
       headers: {
         'Content-Type': 'application/json',
       },

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -44,7 +44,7 @@ const formatDateForInput = (dateString) => {
 // 3. 取得原始走失資料
 const fetchReportData = async () => {
   try {
-    const response = await axios.get(`https://localhost:7048/api/MissingReports/${reportId}`)
+    const response = await request.get(`/MissingReports/${reportId}`)
     const result = response.data
 
     if (result.success === true) {
@@ -73,8 +73,8 @@ const fetchReportData = async () => {
 const handleSubmit = async () => {
   loading.value = true
   try {
-    const response = await axios.put(
-      `https://localhost:7048/api/MissingReports/${reportId}`,
+    const response = await request.put(
+      `/MissingReports/${reportId}`,
       form.value,
     )
 

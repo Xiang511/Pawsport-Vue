@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import request from '@/api/axios'
 import PageBreadcrumb from '@/components/Tailadmin/Pet/PageBreadcrumb.vue'
 
 const router = useRouter()
@@ -38,7 +38,7 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     // 呼叫你的 POST API
-    const response = await axios.post('https://localhost:7048/api/Pet', form.value)
+    const response = await request.post('/Pet', form.value)
     const result = response.data
 
     if (result.success === true) {

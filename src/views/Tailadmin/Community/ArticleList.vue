@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/api/axios'
 
 //存放文章的陣列
 const Articles = ref([])
@@ -12,7 +12,7 @@ const FetchArticles = async () => {
   //確認可以連後端api
   //data=後端傳來的資料包
   try {
-    const response = await axios.get('https://localhost:7048/api/Article')
+    const response = await request.get('/Article')
     console.log('API 回傳資料結構：', response.data)
     Articles.value = response.data.data
   } catch (error) {

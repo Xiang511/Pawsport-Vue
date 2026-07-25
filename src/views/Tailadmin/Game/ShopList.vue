@@ -30,7 +30,7 @@ const newSkin = ref(getInitialSkinState())
 const fetchSkins = async () => {
   isLoading.value = true
   try {
-    const response = await request.get('https://localhost:7048/api/Shop')
+    const response = await request.get('/Shop')
     if (response.data && response.data.success) {
       skins.value = response.data.data
     }
@@ -84,9 +84,9 @@ const saveSkin = async () => {
     }
 
     if (isEditMode.value) {
-      await request.put(`https://localhost:7048/api/Shop/${editingId.value}`, payload)
+      await request.put(`/Shop/${editingId.value}`, payload)
     } else {
-      await request.post('https://localhost:7048/api/Shop', payload)
+      await request.post('/Shop', payload)
     }
 
     alert('儲存成功')
@@ -104,7 +104,7 @@ const deleteSkin = async (id) => {
   if (!confirm('確定要從商店移除這個造型嗎？這可能影響玩家的持有紀錄！')) return
 
   try {
-    const response = await request.delete(`https://localhost:7048/api/Shop/${id}`)
+    const response = await request.delete(`/Shop/${id}`)
     if (response.data && response.data.success) {
       alert('造型已成功刪除')
       await fetchSkins()
