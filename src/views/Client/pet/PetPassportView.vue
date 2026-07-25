@@ -75,9 +75,6 @@ const DEFAULT_PET_IMAGE = 'https://placehold.co/600x600?text=Petmily'
 
 const getImageUrl = (url) => {
   if (!url) return DEFAULT_PET_IMAGE
-  if (url.startsWith('/Images') || url.startsWith('/images')) {
-    return `https://localhost:7048${url}`
-  }
   return url
 }
 
