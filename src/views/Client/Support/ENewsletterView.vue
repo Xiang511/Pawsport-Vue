@@ -5,6 +5,7 @@ import SupportHeader from '@/components/Client/SupportHeader.vue'
 import SupportFloatingServiceMenu from '@/components/Client/SupportFloatingServiceMenu.vue'
 import AiChatFloat from '@/views/Client/Support/AiChatFloatView.vue'
 import LineBotFloat from '@/views/Client/Support/LineBotView.vue'
+import request from '@/api/axios'
 
 const enewsList = ref([])
 const activeCategory = ref('全部')
@@ -22,14 +23,12 @@ const triggerLineChat = () => {
 const loadEnews = async () => {
   isLoading.value = true
   try {
-    const response = await fetch('https://localhost:7048/api/ENewsletter?page=1&pageSize=100')
-    if (response.ok) {
-      const result = await response.json()
-      const rawData = result.data?.items || result.items || result || []
+    const response = await request.get('/ENewsletter?page=1&pageSize=100')
+    const result = response.data
+    const rawData = result.data?.items || result.items || result || []
 
-      // 只保留狀態為已發送的電子報，擋掉預約發送的資料
-      enewsList.value = rawData.filter((news) => news.status === '已發送')
-    }
+    // 只保留狀態為已發送的電子報，擋掉預約發送的資料
+    enewsList.value = rawData.filter((news) => news.status === '已發送')
   } catch (error) {
     console.error('取得電子報失敗:', error)
   } finally {

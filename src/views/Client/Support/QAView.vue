@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Send } from 'lucide-vue-next'
 import { Icon } from '@iconify/vue'
+import request from '@/api/axios'
 import SupportHeader from '@/components/Client/SupportHeader.vue'
 import SupportFloatingServiceMenu from '@/components/Client/SupportFloatingServiceMenu.vue'
 import AiChatFloat from '@/views/Client/Support/AiChatFloatView.vue'
@@ -35,22 +36,15 @@ const submitForm = async () => {
 
   isSubmitting.value = true
   try {
-    const response = await fetch('https://localhost:7048/api/Support/Qa', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.value),
-    })
+    await request.post('/Support/Qa', form.value)
 
-    if (response.ok) {
-      alert('問題已送出！客服人員會盡快為您解答 🐾')
-      form.value.chiefComplaint = ''
-      form.value.chatContent = ''
-      form.value.questionType = '領養諮詢'
-    } else {
-      alert('送出失敗，請稍後再試。')
-    }
+    alert('問題已送出！客服人員會盡快為您解答 🐾')
+    form.value.chiefComplaint = ''
+    form.value.chatContent = ''
+    form.value.questionType = '領養諮詢'
   } catch (error) {
     console.error('API錯誤:', error)
+    alert('送出失敗，請稍後再試。')
   } finally {
     isSubmitting.value = false
   }

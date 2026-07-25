@@ -5,6 +5,7 @@ import SupportHeader from '@/components/Client/SupportHeader.vue'
 import SupportFloatingServiceMenu from '@/components/Client/SupportFloatingServiceMenu.vue'
 import AiChatFloat from '@/views/Client/Support/AiChatFloatView.vue'
 import LineBotFloat from '@/views/Client/Support/LineBotView.vue'
+import request from '@/api/axios'
 
 const faqList = ref([])
 const activeCategory = ref('全部')
@@ -24,11 +25,9 @@ const triggerLineChat = () => {
 const loadFaqs = async () => {
   isLoading.value = true
   try {
-    const response = await fetch('https://localhost:7048/api/Support/Faq?page=1&pageSize=100')
-    if (response.ok) {
-      const result = await response.json()
-      faqList.value = (result.data.items || []).filter((faq) => faq.status === '已發佈')
-    }
+    const response = await request.get('/Support/Faq?page=1&pageSize=100')
+    const result = response.data
+    faqList.value = (result.data.items || []).filter((faq) => faq.status === '已發佈')
   } catch (error) {
     console.error('取得 FAQ 失敗:', error)
   } finally {
