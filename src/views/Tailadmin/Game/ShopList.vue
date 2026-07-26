@@ -61,7 +61,7 @@ const openModal = (item = null) => {
       Description: item.description,
       Price: item.price,
       IsAvailable: item.isAvailable,
-      SkinImage: item.skinImage ? `https://localhost:7048${item.skinImage}` : '',
+      SkinImage: item.skinImage ? `${item.skinImage}` : '',
       ImageBase64: '', // 編輯時若沒重選檔案則保持空
     }
   } else {
@@ -218,7 +218,7 @@ const handleFileUpload = (event) => {
 
                   <img
                     v-if="item.skinImage"
-                    :src="'https://localhost:7048' + item.skinImage"
+                    :src="'' + item.skinImage"
                     class="absolute inset-0 z-10 h-full w-full object-cover"
                     @error="(e) => (e.target.style.opacity = 0)" />
                 </div>

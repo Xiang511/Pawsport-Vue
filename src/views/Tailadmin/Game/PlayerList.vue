@@ -410,7 +410,7 @@ const closeModal = () => {
                 <div class="flex items-center gap-4">
                   <img
                     v-if="skin.skinImage && !skin.hasError"
-                    :src="'https://localhost:7048' + skin.skinImage"
+                    :src="skin.skinImage"
                     class="h-12 w-12 rounded-lg object-cover shadow-sm"
                     @error="skin.hasError = true" />
                   <div

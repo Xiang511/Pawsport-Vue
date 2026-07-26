@@ -18,7 +18,7 @@ const chatContainer = ref(null) // 用來抓取聊天室的捲軸
 onMounted(async () => {
   // SignalR 連線設定
   connection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:7048/aiChatHub')
+    .withUrl('/aiChatHub')
     .withAutomaticReconnect()
     .build()
 

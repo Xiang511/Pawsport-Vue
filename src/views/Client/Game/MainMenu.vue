@@ -171,7 +171,7 @@ const submitNickname = async () => {
 
     // 呼叫 PUT /api/Player/{playerId} 更新暱稱
     const response = await request.put(
-      `https://localhost:7048/api/Player/${playerId}`,
+      `/Player/${playerId}`,
       {
         playerId: playerId,
         userName: newNickname.value.trim(),
@@ -385,7 +385,7 @@ const closeNicknameModal = () => {
 .main-menu-container {
   height: 100vh;
   background-color: #f7ede2; 
-  background-image: url("../../../../public/images/game/MainMenuBG.png");
+  background-image: url("/images/game/MainMenuBG.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 130%;
@@ -395,19 +395,19 @@ const closeNicknameModal = () => {
   align-content: center;
   padding: 40px 80px;
   user-select: none;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 .main-menu-container:active {
   /* 把 pointer 換成你原本的圖片路徑 */
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 /* 如果你的按鈕原本有 hover 變小手的效果，也要強制覆蓋 */
 button:hover, 
 .nav-item:hover, 
 .user-profile-trigger:hover {
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 /* 玩家檔案按鈕 */
@@ -871,7 +871,7 @@ button:hover,
   align-items: center;
   z-index: 99999;
   backdrop-filter: blur(4px);
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .audio-auth-card {
@@ -902,7 +902,7 @@ button:hover,
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-label,
@@ -910,7 +910,7 @@ button:hover,
   color: #453a27;
   font-weight: bold;
   font-size: 1.1rem;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-percentage {
@@ -934,7 +934,7 @@ button:hover,
     #e5dfd5 100%
   );
   outline: none;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* 網頁滑桿的圓鈕（Thumb）樣式 */
@@ -948,7 +948,7 @@ button:hover,
   cursor: pointer;
   border: 2px solid #fcf4e5;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-input-range::-moz-range-thumb {

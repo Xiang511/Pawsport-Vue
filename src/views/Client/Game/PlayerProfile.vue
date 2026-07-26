@@ -88,7 +88,7 @@ const fetchPlayerData = async () => {
     console.log(`【前端發送請求】正在獲取 UserId: ${userId} 的玩家資料庫記錄...`)
 
     // 使用你提供的新 API 端點
-    const response = await request.get(`https://localhost:7048/api/Users/${userId}/player-profile`)
+    const response = await request.get(`/users/${userId}/player-profile`)
     
     console.log('【後端回傳的原始資料】:', response.data)
 
@@ -153,7 +153,7 @@ const savePlayerName = async () => {
     }
 
     const response = await request.put(
-      `https://localhost:7048/api/Player/${playerData.value.playerId}`,
+      `/Player/${playerData.value.playerId}`,
       updateData,
     )
 
@@ -218,12 +218,12 @@ const getEnabledSkinImage = () => {
   // 先尋找 enable = true 的造型
   const enabledSkin = playerData.value.ownedSkins.find((skin) => skin.enable === true)
   if (enabledSkin?.skinImage) {
-    return `https://localhost:7048${enabledSkin.skinImage}`
+    return `${enabledSkin.skinImage}`
   }
 
   // 如果沒有裝備的造型，預設顯示 SkinId=2 的造型
   const defaultSkin = playerData.value.ownedSkins.find((skin) => skin.skinId === 2)
-  return defaultSkin?.skinImage ? `https://localhost:7048${defaultSkin.skinImage}` : null
+  return defaultSkin?.skinImage ? `${defaultSkin.skinImage}` : null
 }
 
 // 獲取啟用的造型名稱
@@ -444,17 +444,17 @@ const startClose = (type) => {
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 .modal-overlay button,
 .modal-overlay .close-btn,
 .modal-overlay .save-btn,
 .modal-overlay .nav-item {
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 .modal-overlay:active {
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 /* 玩家檔案主體：圓角與背景 */
 .profile-card {
@@ -468,7 +468,7 @@ const startClose = (type) => {
   position: relative;
   color: #453a27;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 /* 半透明線條裝飾層 */
@@ -724,7 +724,7 @@ const startClose = (type) => {
   background-color: #fff;
   color: #453a27;
   transition: all 0.3s ease;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto;
+  cursor: url('/images/game/pointer.png') 16 16, auto;
 }
 
 .name-input:focus {
