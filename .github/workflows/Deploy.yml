@@ -1,0 +1,61 @@
+name: Deploy Vue to Ubuntu
+on:
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check environment variables  # ← 新增
+        run: |
+          echo "VITE_ALGOLIA_APP_ID=$VITE_ALGOLIA_APP_ID"
+          echo "VITE_ALGOLIA_INDEX_NAME=$VITE_ALGOLIA_INDEX_NAME"
+          echo "VITE_ALGOLIA_MENU_INDEX_NAME=$VITE_ALGOLIA_MENU_INDEX_NAME"
+          echo "VITE_ALGOLIA_SEARCH_KEY=$VITE_ALGOLIA_SEARCH_KEY"
+          echo "VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID"
+        env:
+          VITE_ALGOLIA_APP_ID: ${{ secrets.VITE_ALGOLIA_APP_ID }}
+          VITE_ALGOLIA_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_INDEX_NAME }}
+          VITE_ALGOLIA_MENU_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_MENU_INDEX_NAME }}
+          VITE_ALGOLIA_SEARCH_KEY: ${{ secrets.VITE_ALGOLIA_SEARCH_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ALGOLIA_APP_ID: ${{ secrets.VITE_ALGOLIA_APP_ID }}
+          VITE_ALGOLIA_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_INDEX_NAME }}
+          VITE_ALGOLIA_MENU_INDEX_NAME: ${{ secrets.VITE_ALGOLIA_MENU_INDEX_NAME }}
+          VITE_ALGOLIA_SEARCH_KEY: ${{ secrets.VITE_ALGOLIA_SEARCH_KEY }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: Copy files to Server via SSH
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/*"
+          target: "/var/www/html"
+          strip_components: 1
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl reload nginx
+            sudo systemctl status nginx
