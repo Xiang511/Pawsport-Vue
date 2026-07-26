@@ -39,7 +39,7 @@ const isAdoptionLoading = ref(false)
 const adoptionPets = ref([])
 const missingPets = ref([])
 
-// 2. Banner Images (from local /public/images/carousel/)
+// 2. Banner Images (from local /images/carousel/)
 const carouselImages = ref([
   {
     url: '/images/carousel/carousel-01.png',
@@ -261,7 +261,7 @@ const resetQuiz = () => {
 const getAdoptionPets = async () => {
   try {
     isAdoptionLoading.value = true
-    const response = await axios.get('https://localhost:7048/api/users/pet/adoption')
+    const response = await axios.get('/users/pet/adoption')
     const { success, data } = response.data
     if (success && data && data.length > 0) {
       adoptionPets.value = data.slice(0, 4).map((pet) => {

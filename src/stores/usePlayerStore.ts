@@ -74,7 +74,7 @@ export const usePlayerStore = defineStore(
         isLoading.value = true
         error.value = null
 
-        const response = await request.put(`https://localhost:7048/api/Player/${playerId.value}`, {
+        const response = await request.put(`/Player/${playerId.value}`, {
           playerId: playerId.value,
           userName: newName,
         })

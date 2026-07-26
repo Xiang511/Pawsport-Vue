@@ -138,7 +138,7 @@ const fetchGameQuestions = async () => {
     console.log('【除錯資訊】準備丟給後端的分類名稱：', currentCategory)
     
     // 發送請求
-    const response = await request.get('https://localhost:7048/api/Questions/game-level', {
+    const response = await request.get('/Questions/game-level', {
       params: { category: currentCategory }
     })
     
@@ -587,10 +587,10 @@ const exitLevel = () => {
 
 <style scoped>
   .result-modal {
-    cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+    cursor: url('/images/game/pointer.png') 16 16, auto !important;
   }
   .result-modal:active {
-    cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+    cursor: url('/images/game/pointer.png') 16 16, auto !important;
   }
 .pause-btn-trigger {
   position: fixed;
@@ -602,7 +602,7 @@ const exitLevel = () => {
   border: 4px solid #453a27;
   border-radius: 15px;
   color: #453a27;
-cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+cursor: url('/images/game/pointer.png') 16 16, auto !important;
   box-shadow: 0 4px 0 #453a27;
   z-index: 1000;
   display: flex;
@@ -671,7 +671,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   box-shadow: 0 12px 0 #453a27;
   text-align: center;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .modal-title {
@@ -714,7 +714,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   background: #fff;
   color: #453a27;
   box-shadow: 0 6px 0 #453a27; /* 預設陰影厚度 */
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .menu-opt:hover {
@@ -744,7 +744,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   display: flex;
   flex-direction: column;
   gap: 15px;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control {
@@ -753,21 +753,21 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   gap: 12px;
   color: #453a27;
   font-weight: 800;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control .label {
   width: 80px; /* 固定寬度讓滑桿對齊 */
   text-align: left;
   font-size: 1rem;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-control .val-num {
   width: 45px;
   font-size: 0.9rem;
   text-align: right;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .volume-slider {
@@ -776,7 +776,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   cursor: pointer;
   height: 8px;
   border-radius: 4px;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* --- 調整關卡頁面的滑桿外觀，與主選單完全同步 --- */
@@ -796,7 +796,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
     #e5dfd5 100%
   );
   outline: none;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* Chrome / Safari / Edge 的圓鈕樣式 */
@@ -807,7 +807,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   height: 24px;
   border-radius: 50%;
   background: #453a27; /* 招牌深咖啡色 */
-cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+cursor: url('/images/game/pointer.png') 16 16, auto !important;
   border: 2px solid #fcf4e5; /* 奶油米色細邊框 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -853,7 +853,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 /* 倒數與暫停遮罩 */
@@ -999,7 +999,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   height: 140px;
   border-radius: 50%;
   border: 6px solid #453a27;
-cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+cursor: url('/images/game/pointer.png') 16 16, auto !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1136,7 +1136,7 @@ cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important
   border: 4px solid #453a27;
   border-radius: 15px;
   font-weight: 900;
-cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+cursor: url('/images/game/pointer.png') 16 16, auto !important;
   float: right;
   display: flex;
   align-items: center;

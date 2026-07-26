@@ -73,7 +73,7 @@ const fetchGameQuestions = async () => {
     loading.value = true
     
     // 📡 連接後端 7048 Port 網址，抓取「認養須知」分類題目
-    const response = await axios.get('https://localhost:7048/api/Questions/game-level', {
+    const response = await axios.get('/Questions/game-level', {
       params: { category: '認養須知' }
     })
     

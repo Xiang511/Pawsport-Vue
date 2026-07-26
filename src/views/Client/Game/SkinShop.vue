@@ -96,7 +96,7 @@ const fetchData = async () => {
   let imgUrl = skin.skinImage
   if (imgUrl && !imgUrl.startsWith('http' )) {
     // 如果是相對路徑，添加後端伺服器地址
-    imgUrl = `https://localhost:7048${imgUrl}?t=${Date.now( )}`
+    imgUrl = `${imgUrl}?t=${Date.now( )}`
   } else if (imgUrl) {
     // 如果已經是完整 URL，只添加時間戳
     imgUrl = `${imgUrl}?t=${Date.now()}`
@@ -504,7 +504,7 @@ const goBack = () => {
   
   padding: 24px;
   box-sizing: border-box;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .shop-page-container button,
@@ -512,13 +512,13 @@ const goBack = () => {
 .shop-page-container .close-btn,
 .shop-page-container .equip-btn,
 .shop-page-container .tab-item {
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .spinner-large,
 .spinner-small,
 .loading-overlay {
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .shop-header {
@@ -947,7 +947,7 @@ const goBack = () => {
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  cursor: url('../../../../public/images/game/pointer.png') 16 16, auto !important;
+  cursor: url('/images/game/pointer.png') 16 16, auto !important;
 }
 
 .product-card:hover {

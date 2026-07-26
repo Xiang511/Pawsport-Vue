@@ -65,7 +65,7 @@ watch(
         console.log('🚀 [API 傳送] 正在同步關卡進度至後端...', submitData)
 
         const res = await request.post(
-          'https://localhost:7048/api/Player/save-game-result',
+          '/Player/save-game-result',
           submitData,
         )
 
@@ -350,7 +350,7 @@ const playModalAnimations = () => {
   border: 4px solid #453a27;
   border-radius: 16px;
   cursor:
-    url('../../../../public/images/game/pointer.png') 16 16,
+    url('/images/game/pointer.png') 16 16,
     auto !important;
   display: flex;
   align-items: center;

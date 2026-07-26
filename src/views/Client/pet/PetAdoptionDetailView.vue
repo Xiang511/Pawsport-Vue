@@ -28,7 +28,7 @@ const contactInfo = ref({
 const fetchPetDetail = async () => {
   try {
     loading.value = true
-    const response = await request.get('https://localhost:7048/api/users/pet/adoption')
+    const response = await request.get('/users/pet/adoption')
     const { success, data } = response.data
 
     if (success && data) {
