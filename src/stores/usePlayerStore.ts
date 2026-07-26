@@ -37,7 +37,7 @@ export const usePlayerStore = defineStore(
         console.log(`🔄 正在初始化玩家資料... UserId: ${currentUserId}`)
 
         const response = await request.get(
-          `https://localhost:7048/api/users/${currentUserId}/player-profile`,
+          `/users/${currentUserId}/player-profile`,
         )
 
         if (response.data && response.data.success) {

@@ -88,7 +88,7 @@ const fetchPlayerData = async () => {
     console.log(`【前端發送請求】正在獲取 UserId: ${userId} 的玩家資料庫記錄...`)
 
     // 使用你提供的新 API 端點
-    const response = await request.get(`https://localhost:7048/api/Users/${userId}/player-profile`)
+    const response = await request.get(`/${userId}/player-profile`)
     
     console.log('【後端回傳的原始資料】:', response.data)
 
