@@ -1,10 +1,10 @@
-<script setup>
+﻿<script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { PawPrint, Save } from 'lucide-vue-next'
 import PlayerProfile from './PlayerProfile.vue'
 import 'animate.css'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 

@@ -1,7 +1,7 @@
-<script setup>
+﻿<script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 import { Eye, EyeOff } from 'lucide-vue-next'

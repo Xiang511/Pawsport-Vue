@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import {
   LucideTrainFront,
@@ -12,7 +12,7 @@ import {
   User,
   TwitterIcon,
 } from 'lucide-vue-next'
-import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
+import { useAlgoliaSearch } from '@/composables/Client/useAlgoliaSearch'
 import SearchBarAlgolia from '@/components/Client/SearchBarAlgolia.vue'
 import { useAuthStore } from '@/stores/auth'
 

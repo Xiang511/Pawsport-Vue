@@ -1,7 +1,7 @@
-<script setup>
+﻿<script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import { animate } from 'animejs'
 import { Eye, EyeOff, Coins, CoinsIcon } from 'lucide-vue-next'

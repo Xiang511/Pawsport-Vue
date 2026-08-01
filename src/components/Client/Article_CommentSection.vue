@@ -1,6 +1,6 @@
-<script setup>
+﻿<script setup>
 import { MessageSquare } from 'lucide-vue-next'
-import { useDateTime } from '@/composables/useDateTime'
+import { useDateTime } from '@/composables/Client/useDateTime'
 
 defineProps({
   comments: {

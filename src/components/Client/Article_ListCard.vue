@@ -1,7 +1,7 @@
-<script setup>
+﻿<script setup>
 import { computed } from 'vue'
 import { Eye, Heart, MessageSquare } from 'lucide-vue-next'
-import { useDateTime } from '@/composables/useDateTime'
+import { useDateTime } from '@/composables/Client/useDateTime'
 
 const { formatLocalDate, timeAgo } = useDateTime()
 
