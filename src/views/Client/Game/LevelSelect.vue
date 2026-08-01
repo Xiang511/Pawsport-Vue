@@ -1,9 +1,9 @@
-<script setup>
+﻿<script setup>
 import { onMounted, ref, nextTick, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ChevronLeft, ChevronRight, Lock, Star, Home, Play, Currency } from 'lucide-vue-next'
 import { animate, stagger } from 'animejs'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 import request from '@/api/axios'
 import { Icon } from '@iconify/vue'

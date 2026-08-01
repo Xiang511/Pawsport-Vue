@@ -47,11 +47,12 @@ export const algoliaConfig = {
       },
     },
 
-    // 導航頁面搜尋索引
+    // 導航頁面搜尋索引（僅前台，group = 導航）
     dev_page: {
       name: import.meta.env.VITE_ALGOLIA_INDEX_NAME || 'dev_PAGENAME',
       searchOptions: {
         hitsPerPage: 20,
+        filters: 'group:導航',
         attributesToRetrieve: [
           'name',
           'path',

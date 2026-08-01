@@ -1,9 +1,9 @@
-<script setup>
+﻿<script setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Home } from 'lucide-vue-next'
 import { animate, stagger } from 'animejs'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import { usePlayerStore } from '@/stores/usePlayerStore'
 
 const { playSFX, forcePlayBGM, updateBGMVolume, updateSFXVolume, hasPromptedAudio } = useGameAudio()

@@ -1,11 +1,11 @@
-<script setup>
+﻿<script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ChevronLeft, ChevronRight, Sparkles, Plus } from 'lucide-vue-next'
 
 // 自己做的卡片樣式
 import Article_ListCard from '@/components/Client/Article_ListCard.vue'
-import { useCommunityHome } from '@/composables/useCommunityHome'
+import { useCommunityHome } from '@/composables/Client/useCommunityHome'
 import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 
 const router = useRouter()

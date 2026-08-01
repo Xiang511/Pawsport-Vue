@@ -1,11 +1,11 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, watch, computed, shallowRef, markRaw, nextTick } from 'vue'
 import { ArrowLeft, SquarePlus } from 'lucide-vue-next'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 
 import { useAuthStore } from '@/stores/auth'
-import { useEditorState } from '@/composables/useEditorState'
+import { useEditorState } from '@/composables/Client/useEditorState'
 
 import Article_BaseButton from './Article_BaseButton.vue'
 import NewArticleModal from './Article_NewArticleModal.vue'

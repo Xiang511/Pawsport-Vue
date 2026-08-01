@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAlgoliaSearch } from '@/composables/useAlgoliaSearch'
+import { useAlgoliaSearch } from '@/composables/Client/useAlgoliaSearch'
 
 const router = useRouter()
 const emit = defineEmits(['select', 'close'])

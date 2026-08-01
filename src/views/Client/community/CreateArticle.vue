@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { Sparkles } from 'lucide-vue-next'
@@ -10,8 +10,8 @@ import ArticleEditor from '@/components/Client/Article_ArticleEditor.vue'
 import Article_ToastAlert from '@/components/Client/Article_ToastAlert.vue'
 import ScrollToTopButton from '@/components/Client/ScrollToTopButton.vue'
 
-import { useArticleActions } from '@/composables/useArticleActions'
-import { useCategories } from '@/composables/useCategories'
+import { useArticleActions } from '@/composables/Client/useArticleActions'
+import { useCategories } from '@/composables/Client/useCategories'
 
 const { categoriesData, isCategoryLoading, fetchCategories } = useCategories()
 const { draftsData, fetchDrafts, deleteDraft, saveOrUpdateArticle, fetchDraftDetail } =

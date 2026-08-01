@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
@@ -13,7 +13,7 @@ import {
   Star,
 } from 'lucide-vue-next'
 import { animate } from 'animejs'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 import LevelResultModal from '@/components/Client/LevelResultModal.vue' 
 import axios from 'axios'
 

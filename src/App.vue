@@ -1,6 +1,6 @@
-<script setup>
+﻿<script setup>
 import { RouterView, useRoute } from 'vue-router'
-import { useGameAudio } from '@/composables/useGameAudio'
+import { useGameAudio } from '@/composables/Client/useGameAudio'
 const { initAudioLogic } = useGameAudio()
 initAudioLogic()
 const route = useRoute()
