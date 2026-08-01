@@ -1,18 +1,18 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
 import { useAuthStore } from './auth'
-import  request  from "@/api/axios";
+import request from '@/api/axios'
+
 export const usePlayerStore = defineStore(
   'player',
   () => {
-    const authStore = useAuthStore() as { userInfo: { userId: number } | null }
+    const authStore = useAuthStore()
 
     // ============ 狀態 ============
-    const playerId = ref<number | null>(null)
-    const playerData = ref<any>(null)
+    const playerId = ref(null)
+    const playerData = ref(null)
     const isLoading = ref(false)
-    const error = ref<string | null>(null)
+    const error = ref(null)
 
     // ============ 計算屬性 ============
     const userId = computed(() => authStore.userInfo?.userId ?? null)
@@ -36,9 +36,7 @@ export const usePlayerStore = defineStore(
 
         console.log(`🔄 正在初始化玩家資料... UserId: ${currentUserId}`)
 
-        const response = await request.get(
-          `/users/${currentUserId}/player-profile`,
-        )
+        const response = await request.get(`/users/${currentUserId}/player-profile`)
 
         if (response.data && response.data.success) {
           const data = response.data.data
@@ -64,7 +62,7 @@ export const usePlayerStore = defineStore(
       }
     }
 
-    const updatePlayerName = async (newName: string) => {
+    const updatePlayerName = async (newName) => {
       if (!playerId.value) {
         error.value = '玩家 ID 不存在'
         return false
@@ -98,14 +96,14 @@ export const usePlayerStore = defineStore(
       }
     }
 
-    const updatePlayerPoints = (points: number) => {
+    const updatePlayerPoints = (points) => {
       if (playerData.value) {
         playerData.value.currentPoint = points
         console.log(`💰 玩家點數已更新: ${points}`)
       }
     }
 
-    const updateEnabledSkinId = (skinId: number) => {
+    const updateEnabledSkinId = (skinId) => {
       if (playerData.value) {
         playerData.value.enabledSkinId = skinId
         console.log(`🎨 裝備造型已更新: ${skinId}`)
