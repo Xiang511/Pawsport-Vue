@@ -1,6 +1,6 @@
 <script setup>
 import { Award, ChevronRight, Star, Sparkles, CheckCircle } from 'lucide-vue-next'
-import { useHomeTriviaQuiz } from '@/composables/Client/Home/useHomeTriviaQuiz'
+import { useHomeTriviaQuiz } from '@/composables/Client/home/useHomeTriviaQuiz'
 
 const { quizScore, quizState, selectedOption, quizQuestion, handleAnswer, resetQuiz } =
   useHomeTriviaQuiz()

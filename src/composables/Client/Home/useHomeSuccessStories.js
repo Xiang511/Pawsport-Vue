@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { mockSuccessStories } from '@/constants/Client/Home/mockData'
+import { mockSuccessStories } from '@/constants/Client/home/mockData'
 
 export function useHomeSuccessStories() {
   const successStories = ref([])

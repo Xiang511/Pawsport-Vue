@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { mockArticles } from '@/constants/Client/Home/mockData'
+import { mockArticles } from '@/constants/Client/home/mockData'
 
 export function useHomeCommunity() {
   const communityArticles = ref([])

@@ -1,18 +1,18 @@
 <script setup>
 import { onMounted } from 'vue'
-import { useHomeAdoption } from '@/composables/Client/Home/useHomeAdoption'
-import { useHomeMissing } from '@/composables/Client/Home/useHomeMissing'
-import { useHomeSuccessStories } from '@/composables/Client/Home/useHomeSuccessStories'
-import { useHomeCommunity } from '@/composables/Client/Home/useHomeCommunity'
+import { useHomeAdoption } from '@/composables/Client/home/useHomeAdoption'
+import { useHomeMissing } from '@/composables/Client/home/useHomeMissing'
+import { useHomeSuccessStories } from '@/composables/Client/home/useHomeSuccessStories'
+import { useHomeCommunity } from '@/composables/Client/home/useHomeCommunity'
 
-import HomeHero from '@/components/Client/Home/HomeHero.vue'
-import HomeAdoptionCard from '@/components/Client/Home/HomeAdoptionCard.vue'
-import HomeHealthPassportCard from '@/components/Client/Home/HomeHealthPassportCard.vue'
-import HomeMissingReportCard from '@/components/Client/Home/HomeMissingReportCard.vue'
-import HomeTriviaCard from '@/components/Client/Home/HomeTriviaCard.vue'
-import HomeSuccessStories from '@/components/Client/Home/HomeSuccessStories.vue'
-import HomeCommunitySpotlights from '@/components/Client/Home/HomeCommunitySpotlights.vue'
-import HomeNewsletter from '@/components/Client/Home/HomeNewsletter.vue'
+import HomeHero from '@/components/Client/home/HomeHero.vue'
+import HomeAdoptionCard from '@/components/Client/home/HomeAdoptionCard.vue'
+import HomeHealthPassportCard from '@/components/Client/home/HomeHealthPassportCard.vue'
+import HomeMissingReportCard from '@/components/Client/home/HomeMissingReportCard.vue'
+import HomeTriviaCard from '@/components/Client/home/HomeTriviaCard.vue'
+import HomeSuccessStories from '@/components/Client/home/HomeSuccessStories.vue'
+import HomeCommunitySpotlights from '@/components/Client/home/HomeCommunitySpotlights.vue'
+import HomeNewsletter from '@/components/Client/home/HomeNewsletter.vue'
 
 const { adoptionPets, isAdoptionLoading, getAdoptionPets } = useHomeAdoption()
 const { missingPets, getMissingPets } = useHomeMissing()

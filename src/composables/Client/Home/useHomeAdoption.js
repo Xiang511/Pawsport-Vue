@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import axios from 'axios'
-import { mockAdoptionPets } from '@/constants/Client/Home/mockData'
+import { mockAdoptionPets } from '@/constants/Client/home/mockData'
 
 export function useHomeAdoption() {
   const adoptionPets = ref([])

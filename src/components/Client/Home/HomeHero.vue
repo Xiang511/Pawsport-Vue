@@ -6,7 +6,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import 'swiper/css/effect-fade'
-import { carouselImages } from '@/constants/Client/Home/carouselData'
+import { carouselImages } from '@/constants/Client/home/carouselData'
 </script>
 
 <template>

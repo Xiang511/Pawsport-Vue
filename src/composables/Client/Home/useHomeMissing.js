@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { mockMissingPets } from '@/constants/Client/Home/mockData'
+import { mockMissingPets } from '@/constants/Client/home/mockData'
 
 export function useHomeMissing() {
   const missingPets = ref([])
