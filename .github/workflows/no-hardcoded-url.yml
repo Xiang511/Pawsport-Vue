@@ -1,0 +1,30 @@
+name: No Hardcoded URL
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect hardcoded localhost / 127.0.0.1 in src/
+        run: |
+          MATCHES=$(grep -rn "http://localhost\|https://localhost\|http://127\.0\.0\.1\|https://127\.0\.0\.1" src/ \
+            --include="*.vue" --include="*.js" --include="*.ts" || true)
+
+          if [ -n "$MATCHES" ]; then
+            echo "❌ 錯誤：發現寫死的本地端 URL！請改用環境變數（import.meta.env.VITE_*）。"
+            echo ""
+            echo "$MATCHES"
+            exit 1
+          else
+            echo "✅ 未發現硬編碼本地端 URL。"
+          fi

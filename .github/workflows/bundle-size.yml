@@ -1,0 +1,57 @@
+name: Bundle Size Check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+# 調整閾值：LIMIT_MB 為 dist/assets/ (JS + CSS) 的最大允許大小 (MB)
+env:
+  LIMIT_MB: 20
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Check bundle size
+        run: |
+          ASSETS_DIR="dist/assets"
+
+          if [ ! -d "$ASSETS_DIR" ]; then
+            echo "⚠️ 找不到 $ASSETS_DIR，跳過大小檢查。"
+            exit 0
+          fi
+
+          SIZE_KB=$(du -sk "$ASSETS_DIR" | cut -f1)
+          SIZE_MB=$(echo "scale=2; $SIZE_KB / 1024" | bc)
+          LIMIT_KB=$(( LIMIT_MB * 1024 ))
+
+          echo "📦 dist/assets/ 大小：${SIZE_MB} MB（上限：${LIMIT_MB} MB）"
+
+          if [ "$SIZE_KB" -gt "$LIMIT_KB" ]; then
+            echo "❌ 超過閾值！請檢查是否引入了過大的套件。"
+            echo ""
+            echo "各檔案大小（前 20 名）："
+            du -sh "$ASSETS_DIR"/* | sort -rh | head -20
+            exit 1
+          else
+            echo "✅ 大小符合規範。"
+          fi

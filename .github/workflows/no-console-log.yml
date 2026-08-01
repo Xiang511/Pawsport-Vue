@@ -1,0 +1,27 @@
+name: No console.log
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect console.log in src/
+        run: |
+          MATCHES=$(grep -rn "console\.log" src/ --include="*.vue" --include="*.js" --include="*.ts" || true)
+
+          if [ -n "$MATCHES" ]; then
+            echo "⚠️ 發現 console.log 殘留（build 時會自動移除，僅供參考）："
+            echo ""
+            echo "$MATCHES"
+          else
+            echo "✅ 未發現 console.log。"
+          fi

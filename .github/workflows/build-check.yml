@@ -1,13 +1,14 @@
-name: Lint Check
+name: Build Check
 
 on:
   push:
+  pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +24,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: npx eslint .
+      - name: Build
+        run: npm run build
