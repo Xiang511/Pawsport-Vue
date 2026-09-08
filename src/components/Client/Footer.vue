@@ -9,22 +9,28 @@ import { Dog } from 'lucide-vue-next'
 <template>
   <footer class="bg-[#2e2e2e] text-white lg:hidden">
     <div class="mx-auto w-11/12">
-      <a href="#" class="flex items-center justify-between border-b border-white/15">
-        <span class="py-6 font-bold" href="#">寵物 Pet</span>
+      <router-link
+        :to="{ name: 'pet-adoption' }"
+        class="flex items-center justify-between border-b border-white/15">
+        <span class="py-6 font-bold">寵物 Pet</span>
         <span class="py-3"><ChevronRight /></span>
-      </a>
-      <a href="#" class="flex items-center justify-between border-b border-white/15">
-        <span class="py-6 font-bold" href="#">遊戲 Game</span>
+      </router-link>
+      <router-link
+        :to="{ name: 'Client-gameview' }"
+        class="flex items-center justify-between border-b border-white/15">
+        <span class="py-6 font-bold">遊戲 Game</span>
         <span class="py-3"><ChevronRight /></span>
-      </a>
-      <a href="#" class="flex items-center justify-between border-b border-white/15">
-        <span class="py-6 font-bold" href="#">社群 Community</span>
+      </router-link>
+      <router-link
+        :to="{ name: 'community-home' }"
+        class="flex items-center justify-between border-b border-white/15">
+        <span class="py-6 font-bold">社群 Community</span>
         <span class="py-3"><ChevronRight /></span>
-      </a>
+      </router-link>
       <router-link
         :to="{ name: 'Client-faq' }"
         class="flex items-center justify-between border-b border-white/15">
-        <span class="py-6 font-bold" href="#">客服 Support</span>
+        <span class="py-6 font-bold">客服 Support</span>
         <span class="py-3"><ChevronRight /></span>
       </router-link>
     </div>
@@ -65,9 +71,9 @@ import { Dog } from 'lucide-vue-next'
       </a>
     </div>
     <div class="mx-auto mt-7 w-11/12 justify-center gap-4 sm:flex">
-      <a href="#" class="block py-3 text-center text-sm">最新消息</a>
+      <router-link :to="{ name: 'Client-enewsletter' }" class="block py-3 text-center text-sm">最新消息</router-link>
       <a href="#" class="block py-3 text-center text-sm">關於我們</a>
-      <a href="#" class="block py-3 text-center text-sm">會員專區</a>
+      <router-link :to="{ name: 'mypage' }" class="block py-3 text-center text-sm">會員專區</router-link>
       <router-link :to="{ name: 'Client-faq' }" class="block py-3 text-center text-sm">
         客服中心
       </router-link>
@@ -131,10 +137,16 @@ import { Dog } from 'lucide-vue-next'
         <div class="w-8/12 border-b-2 border-white/15 pb-12 xl:w-7/12">
           <div class="flex items-center justify-between">
             <div class="flex gap-6 xl:gap-8 2xl:gap-12">
-              <a class="inline-block text-sm font-normal xl:text-lg">最新消息</a>
-              <a class="inline-block text-sm font-normal xl:text-lg">關於我們</a>
-              <a class="inline-block text-sm font-normal xl:text-lg">會員專區</a>
-              <a class="inline-block text-sm font-normal xl:text-lg">社群分享</a>
+              <router-link
+                :to="{ name: 'Client-enewsletter' }"
+                class="inline-block text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">最新消息</router-link>
+              <a href="#" class="inline-block text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">關於我們</a>
+              <router-link
+                :to="{ name: 'Client-profile' }"
+                class="inline-block text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">會員專區</router-link>
+              <router-link
+                :to="{ name: 'community-home' }"
+                class="inline-block text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">社群分享</router-link>
               <router-link
                 :to="{ name: 'Client-faq' }"
                 class="inline-block cursor-pointer text-sm font-normal transition-colors hover:text-[#8a8a8a] xl:text-lg">
@@ -162,58 +174,54 @@ import { Dog } from 'lucide-vue-next'
 
           <div class="mt-12 flex gap-0">
             <div class="mt-6 w-1/5">
-              <span>• 寵物</span>
+              <router-link :to="{ name: 'pet-adoption' }" class="hover:text-[#8a8a8a]">• 寵物</router-link>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-4">領養資訊</li>
-                <li class="mt-4">健康護照</li>
-                <li class="mt-4">遺失協尋</li>
-                <!-- <li class="mt-4">其他</li> -->
+                <li class="mt-4"><router-link :to="{ name: 'pet-adoption' }" class="hover:text-white">領養資訊</router-link></li>
+                <li class="mt-4"><router-link :to="{ name: 'pet-health-passport' }" class="hover:text-white">健康護照</router-link></li>
+                <li class="mt-4"><router-link :to="{ name: 'missing-report' }" class="hover:text-white">遺失協尋</router-link></li>
               </ul>
             </div>
             <div class="mt-6 w-1/5">
-              <span>• 遊戲</span>
+              <router-link :to="{ name: 'Client-gameview' }" class="hover:text-[#8a8a8a]">• 遊戲</router-link>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-4">寵物知識問答</li>
-                <!-- <li class="mt-4">狗</li>
-                <li class="mt-4">鳥</li>
-                <li class="mt-4">其他</li> -->
+                <li class="mt-4"><router-link :to="{ name: 'Client-mainmenu' }" class="hover:text-white">寵物知識問答</router-link></li>
               </ul>
             </div>
 
             <div class="mt-6 w-1/5">
-              <span>• 社群</span>
+              <router-link :to="{ name: 'community-home' }" class="hover:text-[#8a8a8a]">• 社群</router-link>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-4">社群首頁</li>
-                <li class="mt-4">專業科普</li>
+                <li class="mt-4"><router-link :to="{ name: 'community-home' }" class="hover:text-white">社群首頁</router-link></li>
+                <!-- <li class="mt-4"><router-link :to="{ name: 'community-home' }" class="hover:text-white">專業科普</router-link></li> -->
               </ul>
             </div>
             <div class="mt-6 w-1/5">
-              <span>• 客服</span>
+              <router-link :to="{ name: 'Client-faq' }" class="hover:text-[#8a8a8a]">• 客服</router-link>
               <ul class="mt-4 text-[#8a8a8a]">
-                <li class="mt-4">常見問答</li>
-                <li class="mt-4">聯絡我們</li>
-                <li class="mt-4">寵物專欄</li>
+                <li class="mt-4"><router-link :to="{ name: 'Client-faq' }" class="hover:text-white">常見問答</router-link></li>
+                <li class="mt-4"><router-link :to="{ name: 'Client-qa' }" class="hover:text-white">聯絡我們</router-link></li>
+                <li class="mt-4"><router-link :to="{ name: 'Client-enewsletter' }" class="hover:text-white">寵物專欄</router-link></li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div class="mx-auto flex w-[83%] justify-between">
-          <div class="my-6 inline-block w-4/12 xl:w-auto">
+        <div class="mx-auto flex w-[83%] justify-between lg:w-[95%] xl:w-[83%]">
+          <div class="my-6 inline-block w-4/12 lg:w-auto xl:w-auto">
             <div>
-              <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block">
+              <a href="https://livestock.kcg.gov.tw/Pets/DongwuShourong" class="mr-4 inline-block lg:ml-0">
                 高雄市動物保護處
               </a>
               <a
                 href="https://www.pet.gov.tw/AnimalApp/AnnounceMent_Announce.aspx"
-                class="mx-4 inline-block">
+                class="mx-4 inline-block lg:ml-0">
                 全國動物收容系統
               </a>
-              <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block">動物保護資訊網</a>
+              <a href="https://animal.moa.gov.tw/#tab0" class="mx-4 inline-block lg:ml-0">動物保護資訊網</a>
             </div>
           </div>
-          <div class="my-6 inline-block w-8/12 xl:w-8/12">
-            <p class="text-right text-sm text-[#8a8a8a]">Copyright © 2026 PETMILY.</p>
+          <div class="my-6 inline-block lg:ml-0 w-4/12 xl:w-6/12">
+            <p class="text-right text-sm text-[#8a8a8a]">Copyright © 2026 PETMILY iSpan155全端班. </p>
           </div>
         </div>
       </div>
